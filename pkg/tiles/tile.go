@@ -1,11 +1,13 @@
-package main
+package tiles
 
 type Tile struct {
-	cities    []Connection
+	cities    []Connection //<- rozdzielić na osobne klasy
 	roads     []Connection
 	fields    []FarmConnection
 	hasShield bool
 	Bulding   Bulding
+
+	//dać Building po prostu by skomponować
 
 	//not sure how to include undefied/null?
 	//meeple    Meeple

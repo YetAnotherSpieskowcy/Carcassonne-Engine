@@ -1,4 +1,4 @@
-package main
+package tiles
 
 type Meeple struct {
 	player   Player

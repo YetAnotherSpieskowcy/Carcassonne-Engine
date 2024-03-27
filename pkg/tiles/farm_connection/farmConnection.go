@@ -1,4 +1,4 @@
-package main
+package farm_connection
 
 /**
 First direction is from center, then specyfing which side of edge
