@@ -1,7 +1,9 @@
 package tiles
 
+import Connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/connection/connection"
+
 type Tile struct {
-	cities    []Connection //<- rozdzielić na osobne klasy
+	cities    []Connection.Connection //<- rozdzielić na osobne klasy
 	roads     []Connection
 	fields    []FarmConnection
 	hasShield bool

@@ -1,4 +1,4 @@
-package connection
+package Connection
 
 type Side int64
 
@@ -56,13 +56,20 @@ func (side Side) Rotate(rotations int) Side {
 }
 
 type Connection struct {
-	a Side
-	b Side
+	A Side
+	B Side
 }
 
 func (connection Connection) Rotate(rotations int) Connection {
 	var result Connection
-	result.a = result.a.Rotate(rotations)
-	result.b = result.b.Rotate(rotations)
+	result.A = connection.A.Rotate(rotations)
+	result.B = connection.B.Rotate(rotations)
+	return result
+}
+
+func NewConnection(A Side, B Side) Connection {
+	var result Connection
+	result.A = A
+	result.B = B
 	return result
 }
