@@ -6,7 +6,7 @@ import (
 	tiles "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
-func GetStandardTiles(t *testing.T) {
+func TestSetStandardTiles(t *testing.T) {
 	var set []tiles.Tile
 	set = tiles.GetStandardTiles()
 
