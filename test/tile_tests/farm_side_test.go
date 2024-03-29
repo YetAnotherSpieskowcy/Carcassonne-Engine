@@ -42,5 +42,17 @@ func TestFarmSideRotate(t *testing.T) {
 	if farm_connection.CENTER.Rotate(1) != farm_connection.CENTER {
 		t.Fatalf(`farm_side CENTER rotate 1 -> CENTER failed`)
 	}
+}
 
+func TestFarmConnection(t *testing.T) {
+
+	var farm = farm_connection.FarmConnection{farm_connection.TOP_LEFT, farm_connection.LEFT_TOP}
+	var rotated = farm.Rotate(1)
+	var result = farm_connection.FarmConnection{farm_connection.RIGHT_TOP, farm_connection.TOP_RIGHT}
+
+	if rotated != result {
+		println("got ", rotated.ToString())
+		println("shoulde be ", result.ToString())
+		t.Fatalf(`farm connection rotation failed`)
+	}
 }

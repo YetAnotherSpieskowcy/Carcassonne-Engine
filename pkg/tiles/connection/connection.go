@@ -17,42 +17,65 @@ const (
 	BOTTOMRIGHT
 )
 
+func (side Side) ToString() string {
+
+	switch side {
+	case TOP:
+		return "TOP"
+	case RIGHT:
+		return "RIGHT"
+	case LEFT:
+		return "LEFT"
+	case BOTTOM:
+		return "BOTTOM"
+
+	case TOPLEFT:
+		return "TOPLEFT"
+	case TOPRIGHT:
+		return "TOPRIGHT"
+	case BOTTOMLEFT:
+		return "BOTTOMLEFT"
+	case BOTTOMRIGHT:
+		return "BOTTOMRIGHT"
+	case NONE:
+		return "NONE"
+	default:
+		return "ERROR"
+	}
+}
+
 /*
 Rotates side clockwise
 */
-func (side Side) Rotate(rotations int) Side {
+func (side Side) Rotate(rotations uint) Side {
 	//limit rotations
 	rotations = rotations % 4
-	//check if more rotations needed
-	if rotations > 1 {
-		return side.Rotate(rotations - 1)
-		//check if doesn't need to rotate
-	} else if rotations == 0 {
-		return side
-		//rotate once
-	} else {
+	var result = side
+	for rotations > 0 {
 		switch side {
 		case TOP:
-			return RIGHT
+			result = RIGHT
 		case RIGHT:
-			return BOTTOM
+			result = BOTTOM
 		case LEFT:
-			return TOP
+			result = TOP
 		case BOTTOM:
-			return LEFT
+			result = LEFT
 
 		case TOPLEFT:
-			return TOPRIGHT
+			result = TOPRIGHT
 		case TOPRIGHT:
-			return BOTTOMRIGHT
+			result = BOTTOMRIGHT
 		case BOTTOMLEFT:
-			return TOPLEFT
+			result = TOPLEFT
 		case BOTTOMRIGHT:
-			return BOTTOMLEFT
+			result = BOTTOMLEFT
 		default:
-			return NONE
+			result = NONE
 		}
+		rotations--
 	}
+	return result
 }
 
 type Connection struct {
@@ -60,7 +83,7 @@ type Connection struct {
 	B Side
 }
 
-func (connection Connection) Rotate(rotations int) Connection {
+func (connection Connection) Rotate(rotations uint) Connection {
 	var result Connection
 	result.A = connection.A.Rotate(rotations)
 	result.B = connection.B.Rotate(rotations)

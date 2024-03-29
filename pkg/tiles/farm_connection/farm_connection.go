@@ -21,44 +21,67 @@ const (
 	CENTER
 )
 
+func (side FarmSide) ToString() string {
+
+	switch side {
+	case TOP_LEFT:
+		return "TOP_LEFT"
+	case TOP_RIGHT:
+		return "TOP_RIGHT"
+	case RIGHT_TOP:
+		return "RIGHT_TOP"
+	case RIGHT_BOTTOM:
+		return "RIGHT_BOTTOM"
+
+	case LEFT_TOP:
+		return "LEFT_TOP"
+	case LEFT_BOTTOM:
+		return "LEFT_BOTTOM"
+	case BOTTOM_LEFT:
+		return "BOTTOM_LEFT"
+	case BOTTOM_RIGHT:
+		return "BOTTOM_RIGHT"
+	case CENTER:
+		return "CENTER"
+	default:
+		return "ERROR"
+	}
+}
+
 /*
 Rotates Farmside clockwise
 */
-func (side FarmSide) Rotate(rotations int) FarmSide {
+func (side FarmSide) Rotate(rotations uint) FarmSide {
 	//limit rotations
 	rotations = rotations % 4
-	//check if more rotations needed
-	if rotations > 1 {
-		return side.Rotate(rotations - 1)
-		//check if doesn't need to rotate
-	} else if rotations == 0 {
-		return side
-		//rotate once
-	} else {
+	var result = side
+	for rotations > 0 {
 		switch side {
 		case TOP_LEFT:
-			return RIGHT_TOP
+			result = RIGHT_TOP
 		case TOP_RIGHT:
-			return RIGHT_BOTTOM
+			result = RIGHT_BOTTOM
 		case RIGHT_TOP:
-			return BOTTOM_RIGHT
+			result = BOTTOM_RIGHT
 		case RIGHT_BOTTOM:
-			return BOTTOM_LEFT
+			result = BOTTOM_LEFT
 
 		case LEFT_TOP:
-			return TOP_RIGHT
+			result = TOP_RIGHT
 		case LEFT_BOTTOM:
-			return TOP_LEFT
+			result = TOP_LEFT
 		case BOTTOM_LEFT:
-			return LEFT_TOP
+			result = LEFT_TOP
 		case BOTTOM_RIGHT:
-			return LEFT_BOTTOM
+			result = LEFT_BOTTOM
 		case CENTER:
-			return CENTER
+			result = CENTER
 		default:
-			return CENTER
+			result = CENTER
 		}
+		rotations--
 	}
+	return result
 }
 
 type FarmConnection struct {
@@ -66,11 +89,15 @@ type FarmConnection struct {
 	B FarmSide
 }
 
-func (connection FarmConnection) Rotate(rotations int) FarmConnection {
+func (connection FarmConnection) Rotate(rotations uint) FarmConnection {
 	var result FarmConnection
-	result.A = result.A.Rotate(rotations)
-	result.B = result.B.Rotate(rotations)
+	result.A = connection.A.Rotate(rotations)
+	result.B = connection.B.Rotate(rotations)
 	return result
+}
+
+func (connection FarmConnection) ToString() string {
+	return connection.A.ToString() + " " + connection.B.ToString()
 }
 
 func NewFarmConnection(A FarmSide, B FarmSide) FarmConnection {
