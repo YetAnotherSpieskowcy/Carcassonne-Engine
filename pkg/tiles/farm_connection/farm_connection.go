@@ -62,13 +62,20 @@ func (side FarmSide) Rotate(rotations int) FarmSide {
 }
 
 type FarmConnection struct {
-	a FarmSide
-	b FarmSide
+	A FarmSide
+	B FarmSide
 }
 
 func (connection FarmConnection) Rotate(rotations int) FarmConnection {
 	var result FarmConnection
-	result.a = result.a.Rotate(rotations)
-	result.b = result.b.Rotate(rotations)
+	result.A = result.A.Rotate(rotations)
+	result.B = result.B.Rotate(rotations)
+	return result
+}
+
+func NewFarmConnection(A FarmSide, B FarmSide) FarmConnection {
+	var result FarmConnection
+	result.A = A
+	result.B = B
 	return result
 }

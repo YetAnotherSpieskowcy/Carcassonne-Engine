@@ -1,13 +1,16 @@
 package tiles
 
-import Connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/connection/connection"
+import (
+	connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
+	farm_connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/farm_connection"
+)
 
 type Tile struct {
-	cities    []Connection.Connection //<- rozdzielić na osobne klasy
-	roads     []Connection
-	fields    []FarmConnection
-	hasShield bool
-	Bulding   Bulding
+	Cities 
+	Roads  
+	Fields 
+	HasShield bool
+	Building   Bulding
 
 	//dać Building po prostu by skomponować
 
@@ -17,5 +20,25 @@ type Tile struct {
 
 func (tile *Tile) Rotate(rotations int) Tile {
 	var t Tile
-	return t
+	//rotate cities	
+	for _, cityConnection := tile.Cities{
+		append(t.cities, cityConnection.Rotate(rotations))
+	}
+
+	//rotate roads
+	for _, road := tile.roads{
+		append(t.roads, road.Rotate(rotations))
+	}
+
+	//rotate fields
+	for _, field := tile.field{
+		append(t.fields, field.Rotate(rotations))
+	}
+
+	//copy parameters
+	t.hasShield = tile.hasShield
+	t.Building = tile.Building
+	return t	
 }
+
+
