@@ -90,24 +90,22 @@ func (side FarmSide) Rotate(rotations uint) FarmSide {
 }
 
 type FarmConnection struct {
-	A FarmSide
-	B FarmSide
+	Sides []FarmSide
 }
 
 func (connection FarmConnection) Rotate(rotations uint) FarmConnection {
 	var result FarmConnection
-	result.A = connection.A.Rotate(rotations)
-	result.B = connection.B.Rotate(rotations)
+	for _, side := range connection.Sides {
+		result.Sides = append(result.Sides, side.Rotate(rotations))
+	}
+
 	return result
 }
 
 func (connection FarmConnection) ToString() string {
-	return connection.A.ToString() + " " + connection.B.ToString()
-}
-
-func NewFarmConnection(A FarmSide, B FarmSide) FarmConnection {
-	var result FarmConnection
-	result.A = A
-	result.B = B
+	var result string
+	for _, side := range connection.Sides {
+		result += side.ToString() + " "
+	}
 	return result
 }

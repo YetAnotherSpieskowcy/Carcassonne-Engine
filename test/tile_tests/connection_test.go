@@ -1,6 +1,7 @@
 package tile_tests
 
 import (
+	"reflect"
 	"testing"
 
 	connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
@@ -9,24 +10,23 @@ import (
 func TestConnectionRotate(t *testing.T) {
 
 	var connec connection.Connection
-	connec.A = connection.TOP
-	connec.B = connection.RIGHT
+	connec.Sides = []connection.Side{connection.RIGHT, connection.BOTTOM}
 
-	var rotated = connec.Rotate(1)
+	var result connection.Connection
+	result.Sides = []connection.Side{connection.RIGHT, connection.BOTTOM}
 
-	if rotated != connection.NewConnection(connection.RIGHT, connection.BOTTOM) {
-		println("conncet ", rotated.A, " ", rotated.B)
+	if !reflect.DeepEqual(connec, result) {
+		println("conncet ", connec.ToString())
 		println("should be:")
-		println("conncet ", connection.RIGHT, " ", connection.BOTTOM)
+		println("conncet ", result.ToString())
 		t.Fatalf(`Connection rotation failed`)
 	}
 }
 func TestConnectionToString(t *testing.T) {
 	var connec connection.Connection
-	connec.A = connection.TOP
-	connec.B = connection.RIGHT
+	connec.Sides = []connection.Side{connection.TOP, connection.RIGHT}
 
-	if connec.ToString() != connection.TOP.ToString()+" "+connection.RIGHT.ToString() {
+	if connec.ToString() != connection.TOP.ToString()+" "+connection.RIGHT.ToString()+" " {
 		t.Fatalf(`TestConnectionToString failed`)
 	}
 }

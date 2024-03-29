@@ -1,13 +1,17 @@
 package tiles
 
-import "strconv"
+import (
+	"strconv"
+
+	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
+)
 
 type Tile struct {
 	Cities
 	Roads
 	Fields
 	HasShield bool
-	Building  Bulding
+	Building  buildings.Bulding
 
 	//dać Building po prostu by skomponować
 

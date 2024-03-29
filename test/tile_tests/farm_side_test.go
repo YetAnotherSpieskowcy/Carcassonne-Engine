@@ -1,6 +1,7 @@
 package tile_tests
 
 import (
+	"reflect"
 	"testing"
 
 	farm_connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/farm_connection"
@@ -54,11 +55,11 @@ func TestFarmSideRotate(t *testing.T) {
 
 func TestFarmConnection(t *testing.T) {
 
-	var farm = farm_connection.FarmConnection{farm_connection.TOP_LEFT, farm_connection.LEFT_TOP}
+	var farm = farm_connection.FarmConnection{[]farm_connection.FarmSide{farm_connection.TOP_LEFT, farm_connection.LEFT_TOP}}
 	var rotated = farm.Rotate(1)
-	var result = farm_connection.FarmConnection{farm_connection.RIGHT_TOP, farm_connection.TOP_RIGHT}
+	var result = farm_connection.FarmConnection{[]farm_connection.FarmSide{farm_connection.RIGHT_TOP, farm_connection.TOP_RIGHT}}
 
-	if rotated != result {
+	if !reflect.DeepEqual(rotated, result) {
 		println("got ", rotated.ToString())
 		println("shoulde be ", result.ToString())
 		t.Fatalf(`farm connection rotation failed`)
@@ -102,15 +103,20 @@ func TestFarmSideToString(t *testing.T) {
 }
 
 func TestFarmConnectionToString(t *testing.T) {
-	var connection = farm_connection.FarmConnection{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}
-	if connection.ToString() != farm_connection.BOTTOM_LEFT.ToString()+" "+farm_connection.TOP_LEFT.ToString() {
+	var connection = farm_connection.FarmConnection{[]farm_connection.FarmSide{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}}
+	if connection.ToString() != farm_connection.BOTTOM_LEFT.ToString()+" "+farm_connection.TOP_LEFT.ToString()+" " {
+		println("got")
+		println(connection.ToString())
+		println("should be")
+		println(farm_connection.BOTTOM_LEFT.ToString() + " " + farm_connection.TOP_LEFT.ToString() + " ")
+
 		t.Fatalf(`FarmConnectionToString failed`)
 	}
 }
 
 func TestNewFarmConnection(t *testing.T) {
-	var connection = farm_connection.FarmConnection{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}
-	if connection.A != farm_connection.BOTTOM_LEFT && connection.B != farm_connection.TOP_LEFT {
+	var connection = farm_connection.FarmConnection{[]farm_connection.FarmSide{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}}
+	if !reflect.DeepEqual(connection.Sides, []farm_connection.FarmSide{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}) {
 		t.Fatalf(`NewFarmConnection failed`)
 	}
 }

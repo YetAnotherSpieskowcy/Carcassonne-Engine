@@ -40,12 +40,16 @@ func TestSideRotate(t *testing.T) {
 		t.Fatalf(`side bottomleft rotate 1 -> topleft failed`)
 	}
 
+	if connection.CENTER.Rotate(1) != connection.CENTER {
+		t.Fatalf(`side CENTER rotate 1 -> CENTER failed`)
+	}
+
 	if connection.NONE.Rotate(1) != connection.NONE {
-		t.Fatalf(`side NONE rotate 1 -> topleft failed`)
+		t.Fatalf(`side NONE rotate 1 -> NONE failed`)
 	}
 
 	if connection.Side(20).Rotate(1) != connection.NONE {
-		t.Fatalf(`side NONE rotate 1 -> topleft failed`)
+		t.Fatalf(`side ERROR rotate 1 -> NONE failed`)
 	}
 }
 
@@ -80,6 +84,10 @@ func TestSideToString(t *testing.T) {
 
 	if connection.BOTTOMRIGHT.ToString() != "BOTTOMRIGHT" {
 		t.Fatalf(`side BOTTOMRIGHT to string failed`)
+	}
+
+	if connection.CENTER.ToString() != "CENTER" {
+		t.Fatalf(`side CENTER to string failed`)
 	}
 
 	if connection.NONE.ToString() != "NONE" {

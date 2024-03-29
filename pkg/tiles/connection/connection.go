@@ -9,6 +9,7 @@ const (
 	LEFT
 	BOTTOM
 
+	CENTER
 	//for farmers
 
 	TOPLEFT
@@ -37,6 +38,8 @@ func (side Side) ToString() string {
 		return "BOTTOMLEFT"
 	case BOTTOMRIGHT:
 		return "BOTTOMRIGHT"
+	case CENTER:
+		return "CENTER"
 	case NONE:
 		return "NONE"
 	default:
@@ -70,6 +73,8 @@ func (side Side) Rotate(rotations uint) Side {
 			result = TOPLEFT
 		case BOTTOMRIGHT:
 			result = BOTTOMLEFT
+		case CENTER:
+			result = CENTER
 		default:
 			result = NONE
 		}
@@ -79,24 +84,22 @@ func (side Side) Rotate(rotations uint) Side {
 }
 
 type Connection struct {
-	A Side
-	B Side
+	Sides []Side
 }
 
 func (connection Connection) Rotate(rotations uint) Connection {
 	var result Connection
-	result.A = connection.A.Rotate(rotations)
-	result.B = connection.B.Rotate(rotations)
-	return result
-}
+	for _, side := range connection.Sides {
+		result.Sides = append(result.Sides, side.Rotate(rotations))
+	}
 
-func NewConnection(A Side, B Side) Connection {
-	var result Connection
-	result.A = A
-	result.B = B
 	return result
 }
 
 func (connection Connection) ToString() string {
-	return connection.A.ToString() + " " + connection.B.ToString()
+	var result string
+	for _, side := range connection.Sides {
+		result += side.ToString() + " "
+	}
+	return result
 }

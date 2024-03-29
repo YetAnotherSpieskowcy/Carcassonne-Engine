@@ -1,4 +1,4 @@
-package tiles
+package buildings
 
 type Bulding int64
 
