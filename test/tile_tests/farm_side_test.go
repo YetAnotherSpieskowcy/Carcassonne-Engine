@@ -65,7 +65,7 @@ func TestFarmConnection(t *testing.T) {
 	}
 }
 
-func TestFarmConnectionToString(t *testing.T) {
+func TestFarmSideToString(t *testing.T) {
 	if farm_connection.TOP_LEFT.ToString() != "TOP_LEFT" {
 		t.Fatalf(`side TOP_LEFT to string failed`)
 	}
@@ -98,5 +98,19 @@ func TestFarmConnectionToString(t *testing.T) {
 	}
 	if farm_connection.FarmSide(20).ToString() != "ERROR" {
 		t.Fatalf(`side NONE to string failed`)
+	}
+}
+
+func TestFarmConnectionToString(t *testing.T) {
+	var connection = farm_connection.FarmConnection{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}
+	if connection.ToString() != farm_connection.BOTTOM_LEFT.ToString()+" "+farm_connection.TOP_LEFT.ToString() {
+		t.Fatalf(`FarmConnectionToString failed`)
+	}
+}
+
+func TestNewFarmConnection(t *testing.T) {
+	var connection = farm_connection.FarmConnection{farm_connection.BOTTOM_LEFT, farm_connection.TOP_LEFT}
+	if connection.A != farm_connection.BOTTOM_LEFT && connection.B != farm_connection.TOP_LEFT {
+		t.Fatalf(`NewFarmConnection failed`)
 	}
 }

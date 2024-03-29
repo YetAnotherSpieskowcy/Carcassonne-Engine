@@ -96,3 +96,7 @@ func NewConnection(A Side, B Side) Connection {
 	result.B = B
 	return result
 }
+
+func (connection Connection) ToString() string {
+	return connection.A.ToString() + " " + connection.B.ToString()
+}

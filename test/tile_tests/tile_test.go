@@ -2,6 +2,7 @@ package tile_tests
 
 import (
 	"reflect"
+	"strconv"
 	"testing"
 
 	tiles "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
@@ -35,6 +36,36 @@ func TestTileRotate(t *testing.T) {
 		println(result.ToString())
 
 		t.Fatalf(`tile rotation failed`)
+	}
+}
+
+func TestTileToString(t *testing.T) {
+	var tile tiles.Tile
+	tile.Cities.Cities = append(tile.Cities.Cities, Connection.Connection{Connection.TOP, Connection.LEFT})
+	tile.Roads.Roads = append(tile.Roads.Roads, Connection.Connection{Connection.BOTTOM, Connection.RIGHT})
+	tile.Fields.Fields = append(tile.Fields.Fields, farm_connection.FarmConnection{farm_connection.BOTTOM_RIGHT, farm_connection.RIGHT_BOTTOM})
+	tile.HasShield = true
+	tile.Building = tiles.NONE_BULDING
+
+	var result string
+	result = ""
+	result += "Cities\n"
+	result += Connection.Connection{Connection.TOP, Connection.LEFT}.ToString() + "\n"
+	result += "Roads\n"
+	result += Connection.Connection{Connection.BOTTOM, Connection.RIGHT}.ToString() + "\n"
+	result += "Fields\n"
+	result += farm_connection.FarmConnection{farm_connection.BOTTOM_RIGHT, farm_connection.RIGHT_BOTTOM}.ToString() + "\n"
+	result += "Has shields: " + strconv.FormatBool(true) + "\n"
+	result += "Building: " + tiles.NONE_BULDING.ToString() + "\n"
+
+	if tile.ToString() != result {
+
+		println("got")
+		println(tile.ToString())
+		println("should be")
+		println(result)
+
+		t.Fatalf(`tile ToString failed`)
 	}
 
 }

@@ -43,21 +43,21 @@ func (tile *Tile) ToString() string {
 	result = ""
 	result += "Cities\n"
 	for _, cityConnection := range tile.Cities.Cities {
-		result += cityConnection.A.ToString() + " " + cityConnection.B.ToString() + "\n"
+		result += cityConnection.ToString() + "\n"
 	}
 
 	result += "Roads\n"
 	for _, road := range tile.Roads.Roads {
-		result += road.A.ToString() + " " + road.B.ToString() + "\n"
+		result += road.ToString() + "\n"
 	}
 
 	result += "Fields\n"
 	for _, field := range tile.Fields.Fields {
-		result += field.A.ToString() + " " + field.B.ToString() + "\n"
+		result += field.ToString() + "\n"
 	}
 
-	result += "Has shields: " + strconv.FormatBool(tile.HasShield)
-	result += "Building: " + tile.Building.ToString()
+	result += "Has shields: " + strconv.FormatBool(tile.HasShield) + "\n"
+	result += "Building: " + tile.Building.ToString() + "\n"
 
 	return result
 }
