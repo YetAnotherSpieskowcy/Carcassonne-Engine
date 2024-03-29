@@ -39,4 +39,55 @@ func TestSideRotate(t *testing.T) {
 	if connection.BOTTOMLEFT.Rotate(1) != connection.TOPLEFT {
 		t.Fatalf(`side bottomleft rotate 1 -> topleft failed`)
 	}
+
+	if connection.NONE.Rotate(1) != connection.NONE {
+		t.Fatalf(`side NONE rotate 1 -> topleft failed`)
+	}
+
+	if connection.Side(20).Rotate(1) != connection.NONE {
+		t.Fatalf(`side NONE rotate 1 -> topleft failed`)
+	}
+}
+
+func TestSideToString(t *testing.T) {
+	if connection.TOP.ToString() != "TOP" {
+		t.Fatalf(`side TOP to string failed`)
+	}
+
+	if connection.RIGHT.ToString() != "RIGHT" {
+		t.Fatalf(`side RIGHT to string failed`)
+	}
+
+	if connection.LEFT.ToString() != "LEFT" {
+		t.Fatalf(`side LEFT to string failed`)
+	}
+
+	if connection.BOTTOM.ToString() != "BOTTOM" {
+		t.Fatalf(`side BOTTOM to string failed`)
+	}
+
+	if connection.TOPLEFT.ToString() != "TOPLEFT" {
+		t.Fatalf(`side TOPLEFT to string failed`)
+	}
+
+	if connection.TOPRIGHT.ToString() != "TOPRIGHT" {
+		t.Fatalf(`side TOPRIGHT to string failed`)
+	}
+
+	if connection.BOTTOMLEFT.ToString() != "BOTTOMLEFT" {
+		t.Fatalf(`side BOTTOMLEFT to string failed`)
+	}
+
+	if connection.BOTTOMRIGHT.ToString() != "BOTTOMRIGHT" {
+		t.Fatalf(`side BOTTOMRIGHT to string failed`)
+	}
+
+	if connection.NONE.ToString() != "NONE" {
+		t.Fatalf(`side NONE to string failed`)
+	}
+
+	if connection.Side(20).ToString() != "ERROR" {
+		t.Fatalf(`side ERROR to string failed`)
+	}
+
 }

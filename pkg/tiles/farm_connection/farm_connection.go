@@ -6,7 +6,8 @@ First direction is from center, then specyfing which side of edge
 type FarmSide int64
 
 const (
-	TOP_LEFT FarmSide = iota
+	NONE FarmSide = iota
+	TOP_LEFT
 	TOP_RIGHT
 
 	RIGHT_TOP
@@ -43,6 +44,8 @@ func (side FarmSide) ToString() string {
 		return "BOTTOM_RIGHT"
 	case CENTER:
 		return "CENTER"
+	case NONE:
+		return "NONE"
 	default:
 		return "ERROR"
 	}
@@ -76,8 +79,10 @@ func (side FarmSide) Rotate(rotations uint) FarmSide {
 			result = LEFT_BOTTOM
 		case CENTER:
 			result = CENTER
+		case NONE:
+			result = NONE
 		default:
-			result = CENTER
+			result = NONE
 		}
 		rotations--
 	}

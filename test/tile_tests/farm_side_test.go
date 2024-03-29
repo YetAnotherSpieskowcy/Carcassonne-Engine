@@ -42,6 +42,14 @@ func TestFarmSideRotate(t *testing.T) {
 	if farm_connection.CENTER.Rotate(1) != farm_connection.CENTER {
 		t.Fatalf(`farm_side CENTER rotate 1 -> CENTER failed`)
 	}
+
+	if farm_connection.NONE.Rotate(1) != farm_connection.NONE {
+		t.Fatalf(`farm_side NONE rotate 1 -> CENTER failed`)
+	}
+
+	if farm_connection.FarmSide(20).Rotate(1) != farm_connection.NONE {
+		t.Fatalf(`farm_side ERROR rotate 1 -> NONE failed`)
+	}
 }
 
 func TestFarmConnection(t *testing.T) {
@@ -54,5 +62,41 @@ func TestFarmConnection(t *testing.T) {
 		println("got ", rotated.ToString())
 		println("shoulde be ", result.ToString())
 		t.Fatalf(`farm connection rotation failed`)
+	}
+}
+
+func TestFarmConnectionToString(t *testing.T) {
+	if farm_connection.TOP_LEFT.ToString() != "TOP_LEFT" {
+		t.Fatalf(`side TOP_LEFT to string failed`)
+	}
+	if farm_connection.TOP_RIGHT.ToString() != "TOP_RIGHT" {
+		t.Fatalf(`side TOP_RIGHT to string failed`)
+	}
+	if farm_connection.RIGHT_TOP.ToString() != "RIGHT_TOP" {
+		t.Fatalf(`side RIGHT_TOP to string failed`)
+	}
+	if farm_connection.RIGHT_BOTTOM.ToString() != "RIGHT_BOTTOM" {
+		t.Fatalf(`side RIGHT_BOTTOM to string failed`)
+	}
+	if farm_connection.LEFT_TOP.ToString() != "LEFT_TOP" {
+		t.Fatalf(`side LEFT_TOP to string failed`)
+	}
+	if farm_connection.LEFT_BOTTOM.ToString() != "LEFT_BOTTOM" {
+		t.Fatalf(`side LEFT_BOTTOM to string failed`)
+	}
+	if farm_connection.BOTTOM_LEFT.ToString() != "BOTTOM_LEFT" {
+		t.Fatalf(`side BOTTOM_LEFT to string failed`)
+	}
+	if farm_connection.BOTTOM_RIGHT.ToString() != "BOTTOM_RIGHT" {
+		t.Fatalf(`side BOTTOM_RIGHT to string failed`)
+	}
+	if farm_connection.CENTER.ToString() != "CENTER" {
+		t.Fatalf(`side CENTER to string failed`)
+	}
+	if farm_connection.NONE.ToString() != "NONE" {
+		t.Fatalf(`side NONE to string failed`)
+	}
+	if farm_connection.FarmSide(20).ToString() != "ERROR" {
+		t.Fatalf(`side NONE to string failed`)
 	}
 }

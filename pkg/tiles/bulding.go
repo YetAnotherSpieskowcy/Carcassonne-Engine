@@ -11,7 +11,7 @@ func (building Bulding) ToString() string {
 
 	switch building {
 	case NONE_BULDING:
-		return "NONE_BULDING"
+		return "NONE_BUILDING"
 	case MONASTERY:
 		return "MONASTERY"
 	default:
