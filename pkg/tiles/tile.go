@@ -13,13 +13,11 @@ type Tile struct {
 	HasShield bool
 	Building  buildings.Bulding
 
-	//dać Building po prostu by skomponować
-
 	//not sure how to include undefied/null?
 	//meeple    Meeple
 }
 
-func (tile *Tile) Rotate(rotations uint) Tile {
+func (tile Tile) Rotate(rotations uint) Tile {
 	var t Tile
 	//rotate cities
 	for _, cityConnection := range tile.Cities.Cities {

@@ -3,12 +3,11 @@ package tile_tests
 import (
 	"testing"
 
-	tiles "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	tile_sets "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tile_sets"
 )
 
 func TestSetStandardTiles(t *testing.T) {
-	var set []tiles.Tile
-	set = tiles.GetStandardTiles()
+	var set = tile_sets.GetStandardTiles()
 
 	if len(set) == 71 {
 

@@ -10,12 +10,25 @@ const (
 	BOTTOM
 
 	CENTER
-	//for farmers
 
-	TOPLEFT
-	TOPRIGHT
-	BOTTOMLEFT
-	BOTTOMRIGHT
+	//for farmers
+	TOP_LEFT_CORNER
+	TOP_RIGHT_CORNER
+	BOTTOM_LEFT_CORNER
+	BOTTOM_RIGHT_CORNER
+
+	//for fields
+	TOP_LEFT_EDGE
+	TOP_RIGHT_EDGE
+
+	RIGHT_TOP_EDGE
+	RIGHT_BOTTOM_EDGE
+
+	LEFT_TOP_EDGE
+	LEFT_BOTTOM_EDGE
+
+	BOTTOM_LEFT_EDGE
+	BOTTOM_RIGHT_EDGE
 )
 
 func (side Side) ToString() string {
@@ -30,16 +43,36 @@ func (side Side) ToString() string {
 	case BOTTOM:
 		return "BOTTOM"
 
-	case TOPLEFT:
-		return "TOPLEFT"
-	case TOPRIGHT:
-		return "TOPRIGHT"
-	case BOTTOMLEFT:
-		return "BOTTOMLEFT"
-	case BOTTOMRIGHT:
-		return "BOTTOMRIGHT"
+	case TOP_LEFT_CORNER:
+		return "TOP_LEFT_CORNER"
+	case TOP_RIGHT_CORNER:
+		return "TOP_RIGHT_CORNER"
+	case BOTTOM_LEFT_CORNER:
+		return "BOTTOM_LEFT_CORNER"
+	case BOTTOM_RIGHT_CORNER:
+		return "BOTTOM_RIGHT_CORNER"
+
 	case CENTER:
 		return "CENTER"
+
+	case TOP_LEFT_EDGE:
+		return "TOP_LEFT_EDGE"
+	case TOP_RIGHT_EDGE:
+		return "TOP_RIGHT_EDGE"
+	case RIGHT_TOP_EDGE:
+		return "RIGHT_TOP_EDGE"
+	case RIGHT_BOTTOM_EDGE:
+		return "RIGHT_BOTTOM_EDGE"
+
+	case LEFT_TOP_EDGE:
+		return "LEFT_TOP_EDGE"
+	case LEFT_BOTTOM_EDGE:
+		return "LEFT_BOTTOM_EDGE"
+	case BOTTOM_LEFT_EDGE:
+		return "BOTTOM_LEFT_EDGE"
+	case BOTTOM_RIGHT_EDGE:
+		return "BOTTOM_RIGHT_EDGE"
+
 	case NONE:
 		return "NONE"
 	default:
@@ -65,14 +98,33 @@ func (side Side) Rotate(rotations uint) Side {
 		case BOTTOM:
 			result = LEFT
 
-		case TOPLEFT:
-			result = TOPRIGHT
-		case TOPRIGHT:
-			result = BOTTOMRIGHT
-		case BOTTOMLEFT:
-			result = TOPLEFT
-		case BOTTOMRIGHT:
-			result = BOTTOMLEFT
+		case TOP_LEFT_CORNER:
+			result = TOP_RIGHT_CORNER
+		case TOP_RIGHT_CORNER:
+			result = BOTTOM_RIGHT_CORNER
+		case BOTTOM_LEFT_CORNER:
+			result = TOP_LEFT_CORNER
+		case BOTTOM_RIGHT_CORNER:
+			result = BOTTOM_LEFT_CORNER
+
+		case TOP_LEFT_EDGE:
+			result = RIGHT_TOP_EDGE
+		case TOP_RIGHT_EDGE:
+			result = RIGHT_BOTTOM_EDGE
+		case RIGHT_TOP_EDGE:
+			result = BOTTOM_RIGHT_EDGE
+		case RIGHT_BOTTOM_EDGE:
+			result = BOTTOM_LEFT_EDGE
+
+		case LEFT_TOP_EDGE:
+			result = TOP_RIGHT_EDGE
+		case LEFT_BOTTOM_EDGE:
+			result = TOP_LEFT_EDGE
+		case BOTTOM_LEFT_EDGE:
+			result = LEFT_TOP_EDGE
+		case BOTTOM_RIGHT_EDGE:
+			result = LEFT_BOTTOM_EDGE
+
 		case CENTER:
 			result = CENTER
 		default:

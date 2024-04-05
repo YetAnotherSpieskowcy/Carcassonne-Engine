@@ -1,7 +1,7 @@
 package tiles
 
-import "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/farm_connection"
+import connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
 
 type Fields struct {
-	Fields []farm_connection.FarmConnection
+	Fields []connection.Connection
 }
