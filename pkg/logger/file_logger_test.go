@@ -11,13 +11,11 @@ import (
 func TestLog(t *testing.T) {
 	filename := "test_file.jsonl"
 
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	log, err := NewFromFile(filename)
 	if err != nil {
 		t.Fatal("FAILED")
 	}
 	defer os.Remove(filename)
-
-	log := New(file)
 
 	if err != nil {
 		t.Fatal("FAILED")
@@ -57,8 +55,9 @@ func TestLog(t *testing.T) {
 		Scores []int
 	}
 
-	file.Close()
-	file, err = os.Open(filename)
+	log.Close()
+
+	file, err := os.Open(filename)
 	if err != nil {
 		t.Fatal("FAILED")
 	}
