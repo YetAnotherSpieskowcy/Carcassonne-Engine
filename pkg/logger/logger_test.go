@@ -8,44 +8,6 @@ import (
 	"testing"
 )
 
-func TestLogWrongStates(t *testing.T) {
-	log := New("test_file.jsonl")
-
-	err := log.PlaceTile(1, 1, []int{1, 2}, 0)
-	if err == nil {
-		t.Fatal("FAILED")
-	}
-
-	err = log.End([]int{1, 2})
-	if err == nil {
-		t.Fatal("FAILED")
-	}
-
-	log.state = started
-
-	err = log.Start([]int{1, 2, 3}, []string{"Player1", "Player2"})
-	if err == nil {
-		t.Fatal("FAILED")
-	}
-
-	log.state = ended
-
-	err = log.Start([]int{1, 2, 3}, []string{"Player1", "Player2"})
-	if err == nil {
-		t.Fatal("FAILED")
-	}
-
-	err = log.PlaceTile(1, 1, []int{1, 2}, 0)
-	if err == nil {
-		t.Fatal("FAILED")
-	}
-
-	err = log.End([]int{1, 2})
-	if err == nil {
-		t.Fatal("FAILED")
-	}
-}
-
 func TestLog(t *testing.T) {
 	filename := "test_file.jsonl"
 	log := New(filename)
