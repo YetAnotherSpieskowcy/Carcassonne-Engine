@@ -10,10 +10,17 @@ import (
 
 func TestLog(t *testing.T) {
 	filename := "test_file.jsonl"
-	log := New(filename)
-	defer os.Remove(filename)
+	log := Logger{}
 
-	err := log.Start([]int{1, 2, 3}, []string{"Player1", "Player2"})
+	err := log.Open(filename)
+	if err != nil {
+		t.Fatal("FAILED")
+	}
+
+	defer os.Remove(filename)
+	defer log.Close()
+
+	err = log.Start([]int{1, 2, 3}, []string{"Player1", "Player2"})
 	if err != nil {
 		t.Fatal("FAILED")
 	}
