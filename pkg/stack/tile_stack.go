@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"fmt"
+	"errors"
 	"math/rand"
 	"time"
 )
@@ -13,11 +13,7 @@ type Stack[T interface{}] struct {
 	order   []int32
 }
 
-type StackOutOfBoundsError struct{}
-
-func (e *StackOutOfBoundsError) Error() string {
-	return fmt.Sprint("stack: out of bounds")
-}
+var StackOutOfBoundsError = errors.New("stack: out of bounds")
 
 // New creates new Stack and shuffles it using current time as seed.
 // NODE: Input slice is not copied.
@@ -62,7 +58,7 @@ func (s Stack[T]) GetRemaining() []T {
 
 func (s Stack[T]) Get(n int32) (T, error) {
 	if n >= int32(len(s.tiles)) {
-		return *new(T), new(StackOutOfBoundsError)
+		return *new(T), StackOutOfBoundsError
 	}
 	return s.tiles[s.order[n]], nil
 }

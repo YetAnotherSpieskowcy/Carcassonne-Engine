@@ -66,11 +66,11 @@ func TestOutOfBounds(t *testing.T) {
 	if err == nil {
 		t.Fail()
 	}
-	if err == nil || !errors.Is(err, &StackOutOfBoundsError{}) {
+	if err == nil || !errors.Is(err, StackOutOfBoundsError) {
 		t.Fail()
 	}
 	_, err = stack.Next()
-	if err == nil || !errors.Is(err, &StackOutOfBoundsError{}) {
+	if err == nil || !errors.Is(err, StackOutOfBoundsError) {
 		t.Fail()
 	}
 }
