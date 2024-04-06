@@ -7,3 +7,22 @@ devenv.local.nix
 
 # pre-commit
 .pre-commit-config.yaml
+
+# User-specific stuff:
+.idea/
+*.iws
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# archives
+*.zip
+
+# built binaries
+bin/
+
+# delve's debug binaries
+**/__debug_bin*
