@@ -1,12 +1,17 @@
 package stack
 
 import (
+	"errors"
 	"testing"
 )
 
+type Tile struct {
+	id int
+}
+
 func TestStandardOrder(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
-	stack := New(tiles)
+	stack := NewOrdered(tiles)
 	for i := range len(tiles) {
 		tile, err := stack.Next()
 		if err != nil {
@@ -23,7 +28,6 @@ func TestSetSeed(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
 	expectedOrder := []int32{2, 3, 0, 1}
 	stack := NewSeeded(tiles, 42)
-	stack.Shuffle()
 	for i := range len(tiles) {
 		tile, err := stack.Next()
 		if err != nil {
@@ -38,7 +42,7 @@ func TestSetSeed(t *testing.T) {
 
 func TestPeek(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
-	stack := NewSeeded(tiles, 42)
+	stack := NewOrdered(tiles)
 	for range len(tiles) {
 		tile_a, err := stack.Peek()
 		if err != nil {
@@ -56,29 +60,32 @@ func TestPeek(t *testing.T) {
 
 func TestOutOfBounds(t *testing.T) {
 	tiles := []Tile{{0}}
-	stack := NewSeeded(tiles, 42)
+	stack := NewOrdered(tiles)
 	stack.Next()
 	_, err := stack.Peek()
 	if err == nil {
 		t.Fail()
 	}
+	if err == nil || !errors.Is(err, &StackOutOfBoundsError{}) {
+		t.Fail()
+	}
 	_, err = stack.Next()
-	if err == nil {
+	if err == nil || !errors.Is(err, &StackOutOfBoundsError{}) {
 		t.Fail()
 	}
 }
 
 func TestRemaining(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
-	stack := New(tiles)
+	stack := NewOrdered(tiles)
 	for range 2 {
 		stack.Next()
 	}
-	remainging := stack.GetRemaining()
-	if remainging[0] != tiles[2] {
+	remaining := stack.GetRemaining()
+	if remaining[0] != tiles[2] {
 		t.Fail()
 	}
-	if remainging[1] != tiles[3] {
+	if remaining[1] != tiles[3] {
 		t.Fail()
 	}
 }
