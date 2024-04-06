@@ -19,10 +19,14 @@ func (e *StackOutOfBoundsError) Error() string {
 	return fmt.Sprint("stack: out of bounds")
 }
 
+// New creates new Stack and shuffles it using current time as seed.
+// NODE: Input slice is not copied.
 func New[T interface{}](tiles []T) Stack[T] {
 	return NewSeeded(tiles, time.Now().UnixNano())
 }
 
+// NewSeeded creates new Stack and shuffles it using the provided seed.
+// NODE: Input slice is not copied.
 func NewSeeded[T interface{}](tiles []T, seed int64) Stack[T] {
 	stack := NewOrdered(tiles)
 	stack.seed = seed
@@ -33,6 +37,8 @@ func NewSeeded[T interface{}](tiles []T, seed int64) Stack[T] {
 	return stack
 }
 
+// NewOrdered creates new Stack and maintains orginal order.
+// NODE: Input slice is not copied.
 func NewOrdered[T interface{}](tiles []T) Stack[T] {
 	stack := Stack[T]{
 		seed:    0,
