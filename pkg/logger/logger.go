@@ -2,15 +2,15 @@ package logger
 
 import (
 	"encoding/json"
-	"os"
+	"io"
 )
 
 type Logger struct {
-	file *os.File
+	writer io.Writer
 }
 
-func New(file os.File) Logger {
-	return Logger{&file}
+func New(writer io.Writer) Logger {
+	return Logger{writer}
 }
 
 func (logger *Logger) logEvent(event map[string]interface{}) error {
@@ -21,23 +21,12 @@ func (logger *Logger) logEvent(event map[string]interface{}) error {
 
 	jsonData = append(jsonData, byte('\n'))
 
-	_, err = logger.file.Write(jsonData)
+	_, err = logger.writer.Write(jsonData)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (logger *Logger) Open(filename string) error {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	logger.file = file
-	return err
-}
-
-func (logger *Logger) Close() error {
-	err := logger.file.Close()
-	return err
 }
 
 func (logger *Logger) Start(deck []int, players []string) error { // todo deck type should be: []tiles.Tile
