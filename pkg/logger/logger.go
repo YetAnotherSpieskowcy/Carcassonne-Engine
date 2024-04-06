@@ -78,7 +78,7 @@ func (logger *Logger) Start(deck []int, players []string) error { // todo deck t
 	return nil
 }
 
-func (logger *Logger) PlaceTile(player string, rotation int, position []int, meeple int) error { // todo meeple type should be connection.Side
+func (logger *Logger) PlaceTile(player int, rotation int, position []int, meeple int) error { // todo meeple type should be connection.Side
 	if logger.state != started {
 		return fmt.Errorf("logger already ended or not yet started")
 	}
