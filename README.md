@@ -2,6 +2,16 @@
 
 A rule engine for the Carcassonne game.
 
+## Pre-requirements
+
+### Linux
+
+1. Install Go 1.22 either from your distro's package repositories or by following these instructions: https://go.dev/doc/install
+
+   **Tip:** If you're using Ubuntu 23.10 or lower, Go version in official repositories is going to be too old.
+   You can get the latest version by adding the PPA listed here and installing `golang` package after: https://go.dev/wiki/Ubuntu
+2. Install `gcc` toolchain from your distro's package repositories (for example, `build-essential` package on Ubuntu).
+
 ## Building sources
 
 You can either use the default make target:
