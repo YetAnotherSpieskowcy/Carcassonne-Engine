@@ -15,12 +15,12 @@ A rule engine for the Carcassonne game.
 ## Building sources
 
 You can either use the default make target:
-```bash
+```console
 make
 ```
 or run the build command manually:
-```bash
-go build ./...
+```console
+go build "./..."
 ```
 
 This will build all Go source files.
@@ -28,19 +28,19 @@ This will build all Go source files.
 ## Running the test suite
 
 You can either use the `test` make target:
-```bash
+```console
 make test
 ```
 or run the test command manually:
-```bash
-go test -race "-coverprofile=coverage.txt" ./...
+```console
+go test -race "-coverprofile=coverage.txt" "./..."
 ```
 
 To show coverage, you can either use the `show-coverage` make target:
-```bash
+```console
 make show-coverage
 ```
 or run the cover tool command manually:
-```bash
+```console
 go tool cover "-html=coverage.txt"
 ```
