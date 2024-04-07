@@ -22,39 +22,24 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal("FAILED")
 	}
 
-	err = log.Start([]int{1, 2, 3}, []string{"Player1", "Player2"})
+	err = log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
 	if err != nil {
 		t.Fatal("FAILED")
 	}
 
-	err = log.PlaceTile(0, 1, []int{1, 2}, 0)
+	err = log.LogEvent(NewPlaceTileEntry(0, 1, []int{1, 2}, 0))
 	if err != nil {
 		t.Fatal("FAILED")
 	}
 
-	err = log.End([]int{1, 2})
+	err = log.LogEvent(NewEndEntry([]int{1, 2}))
 	if err != nil {
 		t.Fatal("FAILED")
 	}
 
-	var startLine struct {
-		Event   string
-		Deck    []int
-		Players []string
-	}
-
-	var placeTileLine struct {
-		Event    string
-		Player   int
-		Rotation int
-		Position []int
-		Meeple   int
-	}
-
-	var endLine struct {
-		Event  string
-		Scores []int
-	}
+	var startLine StartEntry
+	var placeTileLine PlaceTileEntry
+	var endLine EndEntry
 
 	log.Close()
 
@@ -116,44 +101,29 @@ func TestLogger(t *testing.T) {
 
 	log := New(buffer)
 
-	err := log.Start([]int{1, 2, 3}, []string{"Player1", "Player2"})
+	err := log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
 	if err != nil {
 		t.Fatal("FAILED")
 	}
 
-	err = log.PlaceTile(0, 1, []int{1, 2}, 0)
+	err = log.LogEvent(NewPlaceTileEntry(0, 1, []int{1, 2}, 0))
 	if err != nil {
 		t.Fatal("FAILED")
 	}
 
-	err = log.End([]int{1, 2})
+	err = log.LogEvent(NewEndEntry([]int{1, 2}))
 	if err != nil {
 		t.Fatal("FAILED")
-	}
-
-	var startLine struct {
-		Event   string
-		Deck    []int
-		Players []string
-	}
-
-	var placeTileLine struct {
-		Event    string
-		Player   int
-		Rotation int
-		Position []int
-		Meeple   int
-	}
-
-	var endLine struct {
-		Event  string
-		Scores []int
 	}
 
 	line, err := buffer.ReadString(byte('\n'))
 	if err != nil {
 		t.Fatal("FAILED")
 	}
+
+	var startLine StartEntry
+	var placeTileLine PlaceTileEntry
+	var endLine EndEntry
 
 	err = json.Unmarshal([]byte(line), &startLine)
 	if err != nil {
