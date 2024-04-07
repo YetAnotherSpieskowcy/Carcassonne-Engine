@@ -7,7 +7,9 @@ import (
 
 func GetStandardTiles() []tiles.Tile {
 	var tiles []tiles.Tile
-	//from wikipedia from left to right, up to down
+	// Source: https://en.wikipedia.org/w/index.php?title=Carcassonne_(board_game)&oldid=1214139777#Tiles
+	// Code below appends the tiles sourced from the "Non-river terrain tiles" table
+	// by taking tiles from each cell, column by column.
 
 	//monastery without roads
 	for i := 0; i < 5; i++ {
