@@ -9,6 +9,10 @@ type Logger struct {
 	writer io.Writer
 }
 
+func New(writer io.Writer) Logger {
+	return Logger{writer}
+}
+
 func (logger *Logger) logEvent(event map[string]interface{}) error {
 	jsonData, err := json.Marshal(event)
 	if err != nil {
