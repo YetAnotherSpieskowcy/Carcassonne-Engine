@@ -21,7 +21,16 @@ You can either use the `test` make target:
 ```bash
 make test
 ```
-or run the binary in the **Building sources** section:
+or run the test command manually:
 ```bash
-go test ./...
+go test -race "-coverprofile=coverage.txt" ./...
+```
+
+To show coverage, you can either use the `show-coverage` make target:
+```bash
+make show-coverage
+```
+or run the cover tool command manually:
+```bash
+go tool cover "-html=coverage.txt"
 ```

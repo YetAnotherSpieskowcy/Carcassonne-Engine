@@ -23,3 +23,5 @@ devenv.local.nix
 
 # delve's debug binaries
 **/__debug_bin*
+
+coverage.txt
