@@ -13,18 +13,18 @@ import (
 func TestTileRotate(t *testing.T) {
 	var tile tiles.Tile
 	//  \/ da się to lepiej napisać? \/
-	tile.Cities.Cities = append(tile.Cities.Cities, Connection.Connection{Sides: []Connection.Side{Connection.TOP, Connection.LEFT}})
-	tile.Roads.Roads = append(tile.Roads.Roads, Connection.Connection{Sides: []Connection.Side{Connection.BOTTOM, Connection.RIGHT}})
-	tile.Fields.Fields = append(tile.Fields.Fields, Connection.Connection{Sides: []Connection.Side{Connection.BOTTOM_RIGHT_EDGE, Connection.RIGHT_BOTTOM_EDGE}})
+	tile.CitiesAppendConnection(Connection.Connection{Sides: []Connection.Side{Connection.TOP, Connection.LEFT}})
+	tile.RoadsAppendConnection(Connection.Connection{Sides: []Connection.Side{Connection.BOTTOM, Connection.RIGHT}})
+	tile.FieldsAppendConnection(Connection.Connection{Sides: []Connection.Side{Connection.BOTTOM_RIGHT_EDGE, Connection.RIGHT_BOTTOM_EDGE}})
 	tile.HasShield = true
 	tile.Building = buildings.NONE_BULDING
 
 	var rotated = tile.Rotate(1)
 
 	var expected tiles.Tile
-	expected.Cities.Cities = append(expected.Cities.Cities, Connection.Connection{Sides: []Connection.Side{Connection.RIGHT, Connection.TOP}})
-	expected.Roads.Roads = append(expected.Roads.Roads, Connection.Connection{Sides: []Connection.Side{Connection.LEFT, Connection.BOTTOM}})
-	expected.Fields.Fields = append(expected.Fields.Fields, Connection.Connection{Sides: []Connection.Side{Connection.LEFT_BOTTOM_EDGE, Connection.BOTTOM_LEFT_EDGE}})
+	expected.CitiesAppendConnection(Connection.Connection{Sides: []Connection.Side{Connection.RIGHT, Connection.TOP}})
+	expected.RoadsAppendConnection(Connection.Connection{Sides: []Connection.Side{Connection.LEFT, Connection.BOTTOM}})
+	expected.FieldsAppendConnection(Connection.Connection{Sides: []Connection.Side{Connection.LEFT_BOTTOM_EDGE, Connection.BOTTOM_LEFT_EDGE}})
 	expected.HasShield = true
 	expected.Building = buildings.NONE_BULDING
 
@@ -35,9 +35,9 @@ func TestTileRotate(t *testing.T) {
 
 func TestTileToString(t *testing.T) {
 	var tile tiles.Tile
-	tile.Cities.Cities = append(tile.Cities.Cities, Connection.Connection{[]Connection.Side{Connection.TOP, Connection.LEFT}})
-	tile.Roads.Roads = append(tile.Roads.Roads, Connection.Connection{[]Connection.Side{Connection.BOTTOM, Connection.RIGHT}})
-	tile.Fields.Fields = append(tile.Fields.Fields, Connection.Connection{[]Connection.Side{Connection.BOTTOM_RIGHT_EDGE, Connection.RIGHT_BOTTOM_EDGE}})
+	tile.CitiesAppendConnection(Connection.Connection{[]Connection.Side{Connection.TOP, Connection.LEFT}})
+	tile.RoadsAppendConnection(Connection.Connection{[]Connection.Side{Connection.BOTTOM, Connection.RIGHT}})
+	tile.FieldsAppendConnection(Connection.Connection{[]Connection.Side{Connection.BOTTOM_RIGHT_EDGE, Connection.RIGHT_BOTTOM_EDGE}})
 	tile.HasShield = true
 	tile.Building = buildings.NONE_BULDING
 

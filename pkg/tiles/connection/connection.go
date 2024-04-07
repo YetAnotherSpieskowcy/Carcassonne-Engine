@@ -18,16 +18,25 @@ const (
 	BOTTOM_RIGHT_CORNER
 
 	//for fields
+
+	/*Left side of top edge*/
 	TOP_LEFT_EDGE
+	/*Right side of top edge*/
 	TOP_RIGHT_EDGE
 
+	/*Top side of right edge*/
 	RIGHT_TOP_EDGE
+	/*Bottom side of right edge*/
 	RIGHT_BOTTOM_EDGE
 
+	/*Top side of left edge*/
 	LEFT_TOP_EDGE
+	/*Bottom side of left edge*/
 	LEFT_BOTTOM_EDGE
 
+	/*Left side of bottom edge*/
 	BOTTOM_LEFT_EDGE
+	/*Right side of bottom edge*/
 	BOTTOM_RIGHT_EDGE
 )
 
