@@ -1,10 +1,6 @@
 .PHONY: build
 build:
-	go build -o bin/ ./...
-
-.PHONY: run
-run: build
-	./bin/main
+	go build ./...
 
 .PHONY: test
 test:

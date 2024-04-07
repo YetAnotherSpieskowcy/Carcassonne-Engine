@@ -10,21 +10,10 @@ make
 ```
 or run the build command manually:
 ```bash
-go build -o bin/ ./...
+go build ./...
 ```
 
-This will build all Go source files *and* output all built binaries to the `bin/` folder.
-
-## Running the engine
-
-You can either use the `run` make target:
-```bash
-make run
-```
-or run the binary in the **Building sources** section:
-```bash
-./bin/main
-```
+This will build all Go source files.
 
 ## Running the test suite
 

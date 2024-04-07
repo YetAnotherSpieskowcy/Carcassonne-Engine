@@ -21,8 +21,5 @@ devenv.local.nix
 # archives
 *.zip
 
-# built binaries
-bin/
-
 # delve's debug binaries
 **/__debug_bin*
