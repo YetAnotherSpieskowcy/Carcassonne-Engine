@@ -15,6 +15,11 @@ Command to execute. See Cmdlet's description for more information.
 
 # I'm too dumb for PowerShell, so $script:availableCommands needs to be defined in 2 places // Jack
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+    "PSReviewUnusedParameter",
+    "",
+    Justification = "Parameter is automatically provided by PowerShell which we have no control over."
+)]
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$false)]
@@ -36,20 +41,20 @@ param (
 )
 
 function build() {
-    Write-Host "Building the project..."
+    Write-Output "Building the project..."
     & go build "./..."
     Exit $LASTEXITCODE
 }
 
 function test() {
-    Write-Host "Running the test suite..."
+    Write-Output "Running the test suite..."
     & go test -race "-coverprofile=coverage.txt" "./..."
     Exit $LASTEXITCODE
 }
 
 function open-coverage() {
     & go tool cover "-html=coverage.txt"
-    Write-Host "Coverage opened in the default browser."
+    Write-Output "Coverage opened in the default browser."
 }
 
 $script:availableCommands = @("build", "test", "open-coverage")
@@ -69,7 +74,7 @@ switch ($command) {
         break
     }
     default {
-        Write-Host (
+        Write-Output (
             """$command"" is not a valid command.",
             "To see available commands, type: ""$($MyInvocation.InvocationName) -help"""
         )
