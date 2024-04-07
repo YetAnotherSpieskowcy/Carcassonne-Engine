@@ -44,15 +44,15 @@ func TestPeek(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
 	stack := NewOrdered(tiles)
 	for range len(tiles) {
-		tile_a, err := stack.Peek()
+		tileA, err := stack.Peek()
 		if err != nil {
 			t.Fatal(err.Error())
 		}
-		tile_b, err := stack.Next()
+		tileB, err := stack.Next()
 		if err != nil {
 			t.Fatal(err.Error())
 		}
-		if tile_a != tile_b {
+		if tileA != tileB {
 			t.Fail()
 		}
 	}
@@ -61,16 +61,19 @@ func TestPeek(t *testing.T) {
 func TestOutOfBounds(t *testing.T) {
 	tiles := []Tile{{0}}
 	stack := NewOrdered(tiles)
-	stack.Next()
-	_, err := stack.Peek()
+	_, err := stack.Next()
+	if err != nil {
+		t.Fail()
+	}
+	_, err = stack.Peek()
 	if err == nil {
 		t.Fail()
 	}
-	if err == nil || !errors.Is(err, StackOutOfBoundsError) {
+	if err == nil || !errors.Is(err, ErrStackOutOfBounds) {
 		t.Fail()
 	}
 	_, err = stack.Next()
-	if err == nil || !errors.Is(err, StackOutOfBoundsError) {
+	if err == nil || !errors.Is(err, ErrStackOutOfBounds) {
 		t.Fail()
 	}
 }
@@ -79,7 +82,10 @@ func TestRemaining(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
 	stack := NewOrdered(tiles)
 	for range 2 {
-		stack.Next()
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
 	}
 	remaining := stack.GetRemaining()
 	if remaining[0] != tiles[2] {
