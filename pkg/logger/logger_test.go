@@ -96,6 +96,32 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal("FAILED")
 	}
 }
+
+func TestFileLoggerInvalidFiles(t *testing.T) {
+	filename := "test_file.jsonl"
+
+	log, err := NewFromFile(filename)
+	if err != nil {
+		t.Fatal("FAILED")
+	}
+	defer os.Remove(filename)
+
+	err = log.Close()
+	if err != nil {
+		t.Fatal("FAILED")
+	}
+
+	err = log.Close()
+	if err == nil {
+		t.Fatal("FAILED")
+	}
+
+	err = log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
+	if err == nil {
+		t.Fatal("FAILED")
+	}
+}
+
 func TestLogger(t *testing.T) {
 	buffer := bytes.NewBuffer(nil)
 
@@ -174,5 +200,4 @@ func TestLogger(t *testing.T) {
 	if !reflect.DeepEqual(endLine.Scores, []int{1, 2}) {
 		t.Fatal("FAILED")
 	}
-
 }
