@@ -12,9 +12,6 @@ type Tile struct {
 	Fields
 	HasShield bool
 	Building  buildings.Bulding
-
-	//not sure how to include undefied/null?
-	//meeple    Meeple
 }
 
 func (tile Tile) Rotate(rotations uint) Tile {
@@ -40,26 +37,26 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	return t
 }
 
-func (tile *Tile) ToString() string {
+func (tile *Tile) String() string {
 	var result string
 	result = ""
 	result += "Cities\n"
 	for _, cityConnection := range tile.Cities.Cities {
-		result += cityConnection.ToString() + "\n"
+		result += cityConnection.String() + "\n"
 	}
 
 	result += "Roads\n"
 	for _, road := range tile.Roads.Roads {
-		result += road.ToString() + "\n"
+		result += road.String() + "\n"
 	}
 
 	result += "Fields\n"
 	for _, field := range tile.Fields.Fields {
-		result += field.ToString() + "\n"
+		result += field.String() + "\n"
 	}
 
 	result += "Has shields: " + strconv.FormatBool(tile.HasShield) + "\n"
-	result += "Building: " + tile.Building.ToString() + "\n"
+	result += "Building: " + tile.Building.String() + "\n"
 
 	return result
 }

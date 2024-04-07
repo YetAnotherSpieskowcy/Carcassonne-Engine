@@ -7,7 +7,7 @@ const (
 	MONASTERY
 )
 
-func (building Bulding) ToString() string {
+func (building Bulding) String() string {
 
 	switch building {
 	case NONE_BULDING:

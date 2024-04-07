@@ -31,7 +31,7 @@ const (
 	BOTTOM_RIGHT_EDGE
 )
 
-func (side Side) ToString() string {
+func (side Side) String() string {
 
 	switch side {
 	case TOP:
@@ -148,10 +148,10 @@ func (connection Connection) Rotate(rotations uint) Connection {
 	return result
 }
 
-func (connection Connection) ToString() string {
+func (connection Connection) String() string {
 	var result string
 	for _, side := range connection.Sides {
-		result += side.ToString() + " "
+		result += side.String() + " "
 	}
 	return result
 }
