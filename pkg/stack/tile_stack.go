@@ -8,7 +8,7 @@ import (
 
 type Stack[T interface{}] struct {
 	seed    int64
-	turn_no int32
+	turnNo  int32
 	tiles   []T
 	order   []int32
 }
@@ -38,7 +38,7 @@ func NewSeeded[T interface{}](tiles []T, seed int64) Stack[T] {
 func NewOrdered[T interface{}](tiles []T) Stack[T] {
 	stack := Stack[T]{
 		seed:    0,
-		turn_no: 0,
+		turnNo:  0,
 		tiles:   tiles,
 		order:   make([]int32, len(tiles)),
 	}
@@ -50,7 +50,7 @@ func NewOrdered[T interface{}](tiles []T) Stack[T] {
 
 func (s Stack[T]) GetRemaining() []T {
 	tiles := []T{}
-	for _, i := range s.order[s.turn_no:] {
+	for _, i := range s.order[s.turnNo:] {
 		tiles = append(tiles, s.tiles[i])
 	}
 	return tiles
@@ -64,10 +64,10 @@ func (s Stack[T]) Get(n int32) (T, error) {
 }
 
 func (s *Stack[T]) Next() (T, error) {
-	defer func() { s.turn_no += 1 }()
-	return s.Get(s.turn_no)
+	defer func() { s.turnNo += 1 }()
+	return s.Get(s.turnNo)
 }
 
 func (s Stack[T]) Peek() (T, error) {
-	return s.Get(s.turn_no)
+	return s.Get(s.turnNo)
 }
