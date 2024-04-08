@@ -38,19 +38,19 @@ func (board *testBoard) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 }
 
 func getTestTile() Tile {
-	return Tile{}
+	return SingleCityEdgeNoRoads().Rotate(2)
 }
 
 func getTestPlacedTile() PlacedTile {
 	return PlacedTile{
-		LegalMove: LegalMove{Tile: getTestTile(), pos: Position{1, 1}},
-		meeple: Meeple{side: Top},
+		LegalMove: LegalMove{Tile: getTestTile(), pos: Position{0, 1}},
+		meeple: Meeple{side: Bottom},
 	}
 }
 
 func getTestPlacedTileWithMeeple(meeple Meeple) PlacedTile {
 	return PlacedTile{
-		LegalMove: LegalMove{Tile: getTestTile(), pos: Position{1, 1}},
+		LegalMove: LegalMove{Tile: getTestTile(), pos: Position{0, 1}},
 		meeple: meeple,
 	}
 }
