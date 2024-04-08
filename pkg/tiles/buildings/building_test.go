@@ -6,12 +6,12 @@ import (
 
 func TestBuildingToString(t *testing.T) {
 
-	if NONE_BULDING.String() != "NONE_BUILDING" {
-		t.Fatalf("got %#v should be %#v", NONE_BULDING.String(), "NONE_BUILDING")
+	if NoneBuilding.String() != "NONE_BUILDING" {
+		t.Fatalf("got %#v should be %#v", NoneBuilding.String(), "NONE_BUILDING")
 	}
 
-	if MONASTERY.String() != "MONASTERY" {
-		t.Fatalf("got %#v should be %#v", MONASTERY.String(), "MONASTERY")
+	if Monastery.String() != "MONASTERY" {
+		t.Fatalf("got %#v should be %#v", Monastery.String(), "MONASTERY")
 	}
 
 	if Bulding(100).String() != "ERROR" {

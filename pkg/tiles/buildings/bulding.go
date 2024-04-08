@@ -3,16 +3,16 @@ package buildings
 type Bulding int64
 
 const (
-	NONE_BULDING Bulding = iota
-	MONASTERY
+	NoneBuilding Bulding = iota
+	Monastery
 )
 
 func (building Bulding) String() string {
 
 	switch building {
-	case NONE_BULDING:
+	case NoneBuilding:
 		return "NONE_BUILDING"
-	case MONASTERY:
+	case Monastery:
 		return "MONASTERY"
 	default:
 		return "ERROR"

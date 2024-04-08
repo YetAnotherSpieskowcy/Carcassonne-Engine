@@ -16,7 +16,7 @@ func TestTileRotate(t *testing.T) {
 	tile.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.Bottom, connection.Right}})
 	tile.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.BottomRightEdge, connection.RightBottomEdge}})
 	tile.HasShield = true
-	tile.Building = buildings.NONE_BULDING
+	tile.Building = buildings.NoneBuilding
 
 	var rotated = tile.Rotate(1)
 
@@ -25,7 +25,7 @@ func TestTileRotate(t *testing.T) {
 	expected.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.Left, connection.Bottom}})
 	expected.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.LeftBottomEdge, connection.BottomLeftEdge}})
 	expected.HasShield = true
-	expected.Building = buildings.NONE_BULDING
+	expected.Building = buildings.NoneBuilding
 
 	if !reflect.DeepEqual(rotated, expected) {
 		t.Fatalf("got %#v should be %#v", rotated.String(), expected.String())
@@ -38,7 +38,7 @@ func TestTileToString(t *testing.T) {
 	tile.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.Bottom, connection.Right}})
 	tile.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.BottomRightEdge, connection.RightBottomEdge}})
 	tile.HasShield = true
-	tile.Building = buildings.NONE_BULDING
+	tile.Building = buildings.NoneBuilding
 
 	var expected string
 	expected = ""
@@ -49,7 +49,7 @@ func TestTileToString(t *testing.T) {
 	expected += "Fields\n"
 	expected += connection.Connection{Sides: []connection.Side{connection.BottomRightEdge, connection.RightBottomEdge}}.String() + "\n"
 	expected += "Has shields: " + strconv.FormatBool(true) + "\n"
-	expected += "Building: " + buildings.NONE_BULDING.String() + "\n"
+	expected += "Building: " + buildings.NoneBuilding.String() + "\n"
 
 	if tile.String() != expected {
 		t.Fatalf("got %s \nshould be\n %s", tile.String(), expected)
