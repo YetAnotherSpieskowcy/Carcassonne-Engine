@@ -3,7 +3,7 @@ package game
 import (
 	"errors"
 
-	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
 
@@ -17,19 +17,19 @@ import (
 type board struct {
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
-	tiles    []PlacedTile
+	tiles    []elements.PlacedTile
 	// tilesMap is used by the engine for faster lookups
 	// but contains the same information as the `tiles` slice.
-	tilesMap map[Position]PlacedTile
+	tilesMap map[elements.Position]elements.PlacedTile
 }
 
-func NewBoard(maxTileCount int32) Board {
-	tiles := make([]PlacedTile, 0, maxTileCount)
-	tiles = append(tiles, StartingTile)
+func NewBoard(maxTileCount int32) elements.Board {
+	tiles := make([]elements.PlacedTile, 0, maxTileCount)
+	tiles = append(tiles, elements.StartingTile)
 	return &board{
 		tiles: tiles,
-		tilesMap: map[Position]PlacedTile{
-			NewPosition(0, 0): StartingTile,
+		tilesMap: map[elements.Position]elements.PlacedTile{
+			elements.NewPosition(0, 0): elements.StartingTile,
 		},
 	}
 }
@@ -38,37 +38,37 @@ func (board *board) TileCount() int {
 	return len(board.tiles)
 }
 
-func (board *board) Tiles() []PlacedTile {
+func (board *board) Tiles() []elements.PlacedTile {
 	return board.tiles
 }
 
-func (board *board) GetTileAt(pos Position) (PlacedTile, bool) {
+func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool) {
 	elem, ok := board.tilesMap[pos]
 	return elem, ok
 }
 
-func (board *board) GetLegalMovesFor(tile Tile) []LegalMove {
+func (board *board) GetLegalMovesFor(tile elements.Tile) []elements.LegalMove {
 	// TODO for future tasks:
 	// - implement generation of legal moves
-	return []LegalMove{}
+	return []elements.LegalMove{}
 }
 
 // early return variant of above
-func (board *board) HasValidPlacement(tile Tile) bool {
+func (board *board) HasValidPlacement(tile elements.Tile) bool {
 	// TODO for future tasks:
 	// - implement generation of legal moves
 	return true
 }
 
-func (board *board) CanBePlaced(tile PlacedTile) bool {
+func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 	// TODO for future tasks:
 	// - implement a way to check if a specified move is valid
 	return true
 }
 
-func (board *board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
+func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, error) {
 	if len(board.tiles) == cap(board.tiles) {
-		return ScoreReport{}, errors.New(
+		return elements.ScoreReport{}, errors.New(
 			"Board's tiles capacity exceeded, logic error?",
 		)
 	}
@@ -81,12 +81,14 @@ func (board *board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 	return scoreReport, err
 }
 
-func (board *board) checkCompleted(tile PlacedTile) (ScoreReport, error) {
+func (board *board) checkCompleted(
+	tile elements.PlacedTile,
+) (elements.ScoreReport, error) {
 	// TODO for future tasks:
 	// - identify all completed features
 	// - resolve control of the completed features
 	// - award points
-	scoreReport := ScoreReport{
+	scoreReport := elements.ScoreReport{
 		ReceivedPoints:  map[int]uint32{},
 		ReturnedMeeples: map[int]uint8{},
 	}

@@ -1,7 +1,7 @@
 package game
 
 import (
-	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
 type player struct {
@@ -10,7 +10,7 @@ type player struct {
 	score       uint32
 }
 
-func NewPlayer(id uint8) Player {
+func NewPlayer(id uint8) elements.Player {
 	return &player{
 		id:          id,
 		meepleCount: 7,
@@ -38,15 +38,17 @@ func (player *player) SetScore(value uint32) {
 	player.score = value
 }
 
-func (player *player) PlaceTile(board Board, tile PlacedTile) (ScoreReport, error) {
-	if player.meepleCount == 0 && tile.Meeple.Side != None {
-		return ScoreReport{}, NoMeepleAvailable
+func (player *player) PlaceTile(
+	board elements.Board, tile elements.PlacedTile,
+) (elements.ScoreReport, error) {
+	if player.meepleCount == 0 && tile.Meeple.Side != elements.None {
+		return elements.ScoreReport{}, NoMeepleAvailable
 	}
 	scoreReport, err := board.PlaceTile(tile)
 	if err != nil {
 		return scoreReport, err
 	}
-	if tile.Meeple.Side != None {
+	if tile.Meeple.Side != elements.None {
 		player.meepleCount -= 1
 	}
 	return scoreReport, nil

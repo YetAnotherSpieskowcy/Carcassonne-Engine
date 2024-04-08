@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 )
 
@@ -32,20 +32,20 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 	// and then try finding legal moves of a tile filled with a city terrain
 	board := NewBoard(5)
 	_, err := board.PlaceTile(
-		PlacedTile{
-			LegalMove: LegalMove{
-				Tile: SingleCityEdgeNoRoads().Rotate(2),
-				Pos: NewPosition(0, 1),
+		elements.PlacedTile{
+			LegalMove: elements.LegalMove{
+				Tile: elements.SingleCityEdgeNoRoads().Rotate(2),
+				Pos: elements.NewPosition(0, 1),
 			},
-			Meeple: Meeple{Side: None},
+			Meeple: elements.Meeple{Side: elements.None},
 		},
 	)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	expected := []LegalMove{}
-	actual := board.GetLegalMovesFor(FourCityEdgesConnectedShield())
+	expected := []elements.LegalMove{}
+	actual := board.GetLegalMovesFor(elements.FourCityEdgesConnectedShield())
 
 	if !slices.Equal(expected, actual) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -56,7 +56,7 @@ func TestBoardHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T)
 	board := NewBoard(5)
 
 	expected := true
-	actual := board.HasValidPlacement(SingleCityEdgeNoRoads())
+	actual := board.HasValidPlacement(elements.SingleCityEdgeNoRoads())
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)

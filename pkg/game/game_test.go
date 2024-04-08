@@ -4,12 +4,12 @@ import (
 	"errors"
 	"testing"
 
-	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 )
 
 func TestFullGame(t *testing.T) {
-	tiles := []Tile{Tile{Id: 0}, Tile{Id: 1}}
+	tiles := []elements.Tile{elements.Tile{Id: 0}, elements.Tile{Id: 1}}
     deck := stack.NewOrdered(tiles)
     game, err := NewGameWithDeck(&deck, nil)
     if err != nil {
@@ -21,14 +21,18 @@ func TestFullGame(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	err = game.PlayTurn(PlacedTile{LegalMove: LegalMove{Tile: tile}})
+	err = game.PlayTurn(
+		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
+	)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
     // incorrect move - try placing tile 0 when 1 should be placed
 	tile = tiles[0]
-	err = game.PlayTurn(PlacedTile{LegalMove: LegalMove{Tile: tile}})
+	err = game.PlayTurn(
+		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
+	)
 	if err == nil {
     	t.Fatal("expected error to occur")
     }
@@ -41,13 +45,17 @@ func TestFullGame(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	err = game.PlayTurn(PlacedTile{LegalMove: LegalMove{Tile: tile}})
+	err = game.PlayTurn(
+		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
+	)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	// check if out of bounds state is detected
-	err = game.PlayTurn(PlacedTile{LegalMove: LegalMove{Tile: tiles[1]}})
+	err = game.PlayTurn(
+		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tiles[1]}},
+	)
 	if err == nil {
     	t.Fatal("expected error to occur")
     }

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
 
@@ -43,7 +43,7 @@ func TestTestBoardTiles(t *testing.T) {
 
 func TestTestBoardGetTileAt(t *testing.T) {
 	board := TestBoard{}
-	_, ok := board.GetTileAt(NewPosition(0, 0))
+	_, ok := board.GetTileAt(elements.NewPosition(0, 0))
 	if !ok {
 		t.Fatalf("expected GetTileAt() output to be ok")
 	}
@@ -68,7 +68,9 @@ func TestTestBoardHasValidPlacement(t *testing.T) {
 
 func TestTestBoardCanBePlaced(t *testing.T) {
 	board := TestBoard{}
-	actual := board.CanBePlaced(GetTestPlacedTileWithMeeple(Meeple{Side: None}))
+	actual := board.CanBePlaced(
+		GetTestPlacedTileWithMeeple(elements.Meeple{Side: elements.None}),
+	)
 	expected := true
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -89,11 +91,13 @@ func TestTestBoardPlaceTileWithoutFunc(t *testing.T) {
 
 func TestTestBoardPlaceTileWithFunc(t *testing.T) {
 	wasCalled := false
-	expected := ScoreReport{}
-	board := TestBoard{PlaceTileFunc: func(_ PlacedTile) (ScoreReport, error) {
-		wasCalled = true
-		return expected, nil
-	}}
+	expected := elements.ScoreReport{}
+	board := TestBoard{
+		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
+			wasCalled = true
+			return expected, nil
+		},
+	}
 	actual, err := board.PlaceTile(GetTestPlacedTile())
 	if err != nil {
 		t.Fatal(err.Error())

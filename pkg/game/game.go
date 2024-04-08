@@ -5,25 +5,27 @@ import (
 	"io"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
-	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 )
 
 
 type Game struct {
-	board         Board
-	deck          *stack.Stack[Tile]
-	players       []Player
+	board         elements.Board
+	deck          *stack.Stack[elements.Tile]
+	players       []elements.Player
 	currentPlayer int
 	log           *logger.Logger
 }
 
 func NewGame(log *logger.Logger) (*Game, error) {
-	deck := stack.New(BaseTileSet)
+	deck := stack.New(elements.BaseTileSet)
 	return NewGameWithDeck(&deck, log)
 }
 
-func NewGameWithDeck(deck *stack.Stack[Tile], log *logger.Logger) (*Game, error) {
+func NewGameWithDeck(
+	deck *stack.Stack[elements.Tile], log *logger.Logger,
+) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
 		log = &nullLogger
@@ -31,7 +33,7 @@ func NewGameWithDeck(deck *stack.Stack[Tile], log *logger.Logger) (*Game, error)
 	game := &Game{
 		board:         NewBoard(deck.GetTotalTileCount() + 1),
 		deck:          deck,
-		players:       []Player{NewPlayer(0), NewPlayer(1)},
+		players:       []elements.Player{NewPlayer(0), NewPlayer(1)},
 		currentPlayer: 0,
 		log:        log,
 	}
@@ -51,11 +53,11 @@ func NewGameWithDeck(deck *stack.Stack[Tile], log *logger.Logger) (*Game, error)
 	return game, nil
 }
 
-func (game *Game) GetCurrentTile() (Tile, error) {
+func (game *Game) GetCurrentTile() (elements.Tile, error) {
 	return game.deck.Peek()
 }
 
-func (game *Game) CurrentPlayer() Player {
+func (game *Game) CurrentPlayer() elements.Player {
 	return game.players[game.currentPlayer]
 }
 
@@ -91,7 +93,7 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 	return nil
 }
 
-func (game *Game) PlayTurn(placedTile PlacedTile) error {
+func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 	// Get tile that the player is supposed to place.
 	// This is guaranteed to return a tile that has at least one valid placement
 	// or `OutOfBounds` error, if there's no tiles left in the deck and this turn
