@@ -7,6 +7,7 @@ Available commands:
    build             Build all Go source files.
    test              Run the test suite.
    open-coverage     Show coverage in the browser after running the test suite.
+   lint              Lint all Go source files.
 
 .Parameter Command
 Command to execute. See Cmdlet's description for more information.
@@ -31,7 +32,7 @@ param (
             $commandAst,
             $fakeBoundParameters
         )
-        $script:availableCommands = @("build", "test", "open-coverage")
+        $script:availableCommands = @("build", "test", "open-coverage", "lint")
         return $script:availableCommands | Where-Object { $_ -like "$wordToComplete*" }
     })]
     [String]
@@ -57,7 +58,12 @@ function open-coverage() {
     Write-Output "Coverage opened in the default browser."
 }
 
-$script:availableCommands = @("build", "test", "open-coverage")
+function lint() {
+    Write-Output "Running the linter..."
+    & golangci-lint run
+}
+
+$script:availableCommands = @("build", "test", "open-coverage", "lint")
 
 if (!$command) {
     $command = "build"
