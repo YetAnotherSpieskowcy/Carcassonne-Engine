@@ -81,7 +81,7 @@ func TestTestBoardPlaceTileWithoutFunc(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	expected := ScoreReport{}
+	expected := GetTestScoreReport()
 	if !reflect.DeepEqual(actual, expected) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}

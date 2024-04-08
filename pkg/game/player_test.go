@@ -113,3 +113,28 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expectedMeepleCount, actualMeepleCount)
 	}
 }
+
+func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
+	player := NewPlayer(0)
+	actualScore := player.Score()
+	if actualScore != 0 {
+		t.Fatalf("expected %#v, got %#v instead", 0, actualScore)
+	}
+
+	player.SetScore(2)
+
+	expectedScore := uint32(2)
+	actualScore = player.Score()
+	if actualScore != expectedScore {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore, actualScore)
+	}
+}
+
+func TestPlayerNewPlayerSetsId(t *testing.T) {
+	expectedId := uint8(6)
+	player := NewPlayer(expectedId)
+	actualId := player.Id()
+	if actualId != expectedId {
+		t.Fatalf("expected %#v, got %#v instead", expectedId, actualId)
+	}
+}

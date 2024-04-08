@@ -10,6 +10,20 @@ import (
 )
 
 
+func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
+	// starting tile has a city on top, we want to close it with a single city tile
+	// and then try finding legal moves of a tile filled with a city terrain
+	board := NewBoard(15)
+	board.PlaceTile(test.GetTestPlacedTile())
+
+	expected := 2
+	actual := board.TileCount()
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain

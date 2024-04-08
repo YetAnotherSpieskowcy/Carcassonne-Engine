@@ -38,7 +38,7 @@ func (board *TestBoard) CanBePlaced(tile PlacedTile) bool {
 
 func (board *TestBoard) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 	if board.PlaceTileFunc == nil {
-		return ScoreReport{}, nil
+		return GetTestScoreReport(), nil
 	}
 	return board.PlaceTileFunc(tile)
 }

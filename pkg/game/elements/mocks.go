@@ -3,7 +3,9 @@ package elements
 // TODO: replace all of these with an import once full tile representation is defined
 
 type Side int64
-type Tile struct {}
+type Tile struct {
+	Id int
+}
 
 func (tile Tile) Rotate(rotations uint) Tile {
 	return Tile{}
@@ -16,7 +18,7 @@ const (
 
 var (
 	StartingTile = PlacedTile{}
-	BaseTileSet  = []Tile{}
+	BaseTileSet  = []Tile{SingleCityEdgeNoRoads(), FourCityEdgesConnectedShield()}
 )
 
 func SingleCityEdgeNoRoads() Tile {
