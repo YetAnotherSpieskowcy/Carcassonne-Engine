@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"fmt"
 )
 
 
@@ -39,7 +38,7 @@ type board struct {
 }
 
 func NewBoard(maxTileCount int32) Board {
-	tiles := make([]PlacedTile, maxTileCount)
+	tiles := make([]PlacedTile, 0, maxTileCount)
 	tiles = append(tiles, StartingTile)
 	return &board{
 		tiles: tiles,
@@ -65,18 +64,20 @@ func (board *board) GetTileAt(pos Position) (PlacedTile, bool) {
 func (board *board) GetLegalMovesFor(tile Tile) []LegalMove {
 	// TODO for future tasks:
 	// - implement generation of legal moves
-	panic("not implemented")
+	return []LegalMove{}
 }
 
 // early return variant of above
 func (board *board) HasValidPlacement(tile Tile) bool {
-	panic("not implemented")
+	// TODO for future tasks:
+	// - implement generation of legal moves
+	return true
 }
 
 func (board *board) CanBePlaced(tile PlacedTile) bool {
 	// TODO for future tasks:
 	// - implement a way to check if a specified move is valid
-	panic("not implemented")
+	return true
 }
 
 func (board *board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
@@ -91,10 +92,7 @@ func (board *board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 	board.tiles = append(board.tiles, tile)
 	board.tilesMap[tile.pos] = tile
 	scoreReport, err := board.checkCompleted(tile)
-	if err != nil {
-		return scoreReport, nil
-	}
-	panic("not implemented")
+	return scoreReport, err
 }
 
 func (board *board) checkCompleted(tile PlacedTile) (ScoreReport, error) {
@@ -106,6 +104,5 @@ func (board *board) checkCompleted(tile PlacedTile) (ScoreReport, error) {
 		ReceivedPoints:  map[int]uint32{},
 		ReturnedMeeples: map[int]uint8{},
 	}
-	panic("not implemented")
 	return scoreReport, nil
 }
