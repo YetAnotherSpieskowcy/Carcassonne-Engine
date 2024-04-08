@@ -4,19 +4,7 @@ import "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 
 // TODO: replace all of these with an import once full tile representation is defined
 
-type Meeple struct {
-	player   Player
-	side     any
-}
 type Tile struct {}
-type LegalMove struct {
-	Tile
-	pos  Position
-}
-type PlacedTile struct {
-	LegalMove
-	Meeple    *Meeple
-}
 
 var (
 	StartingTile = PlacedTile{}

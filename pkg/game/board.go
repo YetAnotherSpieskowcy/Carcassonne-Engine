@@ -11,24 +11,6 @@ type ScoreReport struct {
 	ReturnedMeeples map[int]uint8
 }
 
-type Position struct {
-	// int8 would be fine for base game (72 tiles) but let's be a bit more generous
-	x int16
-	y int16
-}
-
-func (pos Position) X() int16 {
-	return pos.x
-}
-
-func (pos Position) Y() int16 {
-	return pos.y
-}
-
-func (pos Position) MarshalText() ([]byte, error) {
-	return fmt.Appendf([]byte{}, "%v,%v", pos.x, pos.y), nil
-}
-
 // mutable type
 type Board struct {
 	// The information about the tile and its placement is stored sparsely
