@@ -22,7 +22,7 @@ func NewGame(logger *Logger) (*Game, error) {
 
 func NewGameWithDeck(deck *stack.Stack[Tile], logger *Logger) (*Game, error) {
 	game := &Game{
-		board:         NewBoard(),
+		board:         NewBoard(deck.GetTotalTileCount()),
 		deck:          deck,
 		players:       []*Player{NewPlayer(0), NewPlayer(1)},
 		currentPlayer: 0,

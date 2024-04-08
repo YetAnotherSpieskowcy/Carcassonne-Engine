@@ -1,6 +1,7 @@
 package game
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -30,18 +31,20 @@ func (pos Position) MarshalText() ([]byte, error) {
 
 // mutable type
 type Board struct {
-	// XXX: class diagram presented a multi-dimensional array
-	// but that would be rather large so I opted for sparse storage instead.
-	// This implementation uses a map but a sorted slice of coordinates
-	// at which some tile is placed could also work.
-	// In the end, we may need to decide if this format makes sense based on
-	// what the AI agent expects to save time on type conversions.
-	tiles map[Position]PlacedTile
+	// The information about the tile and its placement is stored sparsely
+	// in a slice of size equal to the number of tiles in the set.
+	tiles    []PlacedTile
+	// tilesMap is used by the engine for faster lookups
+	// but contains the same information as the `tiles` slice.
+	tilesMap map[Position]PlacedTile
 }
 
-func NewBoard() *Board {
+func NewBoard(maxTileCount int32) *Board {
+	tiles := make([]PlacedTile, maxTileCount)
+	tiles = append(tiles, StartingTile)
 	return &Board{
-		tiles: map[Position]PlacedTile{
+		tiles: tiles,
+		tilesMap: map[Position]PlacedTile{
 			{0, 0}: StartingTile,
 		},
 	}
@@ -71,10 +74,16 @@ func (board *Board) CanBePlaced(tile PlacedTile) bool {
 // XXX: `PlacedTile` may just become `Tile` if the meeple field does not get split out:
 // see https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pull/9#discussion_r1554723567
 func (board *Board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
+	if len(board.tiles) == cap(board.tiles) {
+		return ScoreReport{}, errors.New(
+			"Board's tiles capacity exceeded, logic error?",
+		)
+	}
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
 	//   or return InvalidMove otherwise
-	board.tiles[tile.pos] = tile
+	board.tiles = append(board.tiles, tile)
+	board.tilesMap[tile.pos] = tile
 	scoreReport, err := board.checkCompleted(tile)
 	if err != nil {
 		return scoreReport, nil
