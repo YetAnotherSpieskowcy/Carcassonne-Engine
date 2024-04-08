@@ -14,6 +14,8 @@ type ScoreReport struct {
 // mutable type
 type Board interface {
 	TileCount() int
+	Tiles() []PlacedTile
+	GetTileAt(pos Position) (PlacedTile, bool)
 	GetLegalMovesFor(tile Tile) []LegalMove
 	HasValidPlacement(tile Tile) bool
 	CanBePlaced(tile PlacedTile) bool
@@ -21,6 +23,12 @@ type Board interface {
 }
 
 // mutable type
+// Position coordinates example on the board:
+// (-1, +1)  (+0, +1)  (+1, +1)
+// (-1, +0)  (+0, +0)  (+1, +0)
+// (-1, -1)  (+0, -1)  (+1, -1)
+//
+// Starting tile is placed at (+0, +0) position.
 type board struct {
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
@@ -43,6 +51,15 @@ func NewBoard(maxTileCount int32) Board {
 
 func (board *board) TileCount() int {
 	return len(board.tiles)
+}
+
+func (board *board) Tiles() []PlacedTile {
+	return board.tiles
+}
+
+func (board *board) GetTileAt(pos Position) (PlacedTile, bool) {
+	elem, ok := board.tilesMap[pos]
+	return elem, ok
 }
 
 func (board *board) GetLegalMovesFor(tile Tile) []LegalMove {
