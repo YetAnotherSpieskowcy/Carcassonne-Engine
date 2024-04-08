@@ -90,7 +90,7 @@ func TestTestBoardPlaceTileWithoutFunc(t *testing.T) {
 func TestTestBoardPlaceTileWithFunc(t *testing.T) {
 	wasCalled := false
 	expected := ScoreReport{}
-	board := TestBoard{PlaceTileFunc: func(tile PlacedTile) (ScoreReport, error) {
+	board := TestBoard{PlaceTileFunc: func(_ PlacedTile) (ScoreReport, error) {
 		wasCalled = true
 		return expected, nil
 	}}

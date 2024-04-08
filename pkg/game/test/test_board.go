@@ -20,19 +20,19 @@ func (board *TestBoard) Tiles() []PlacedTile {
 	return []PlacedTile{}
 }
 
-func (board *TestBoard) GetTileAt(pos Position) (PlacedTile, bool) {
+func (board *TestBoard) GetTileAt(_ Position) (PlacedTile, bool) {
 	return PlacedTile{}, true
 }
 
-func (board *TestBoard) GetLegalMovesFor(tile Tile) []LegalMove {
+func (board *TestBoard) GetLegalMovesFor(_ Tile) []LegalMove {
 	return []LegalMove{}
 }
 
-func (board *TestBoard) HasValidPlacement(tile Tile) bool {
+func (board *TestBoard) HasValidPlacement(_ Tile) bool {
 	return true
 }
 
-func (board *TestBoard) CanBePlaced(tile PlacedTile) bool {
+func (board *TestBoard) CanBePlaced(_ PlacedTile) bool {
 	return true
 }
 

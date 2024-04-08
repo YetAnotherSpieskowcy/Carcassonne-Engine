@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 )
 
 func getTestDeck() *stack.Stack[elements.Tile] {
