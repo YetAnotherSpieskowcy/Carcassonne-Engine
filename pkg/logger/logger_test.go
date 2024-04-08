@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-//nolint:gosec// Cyclomatic complexity is not a problem in case of these tests
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
 func TestFileLogger(t *testing.T) {
 	filename := "test_file.jsonl"
 
@@ -123,7 +123,7 @@ func TestFileLoggerInvalidFiles(t *testing.T) {
 	}
 }
 
-//nolint:gosec// Cyclomatic complexity is not a problem in case of these tests
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
 func TestLogger(t *testing.T) {
 	buffer := bytes.NewBuffer(nil)
 
