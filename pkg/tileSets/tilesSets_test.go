@@ -1,4 +1,4 @@
-package tile_sets
+package tileSets
 
 import (
 	"testing"
