@@ -12,7 +12,16 @@ type ScoreReport struct {
 }
 
 // mutable type
-type Board struct {
+type Board interface {
+	TileCount() int
+	GetLegalMovesFor(tile Tile) []LegalMove
+	HasValidPlacement(tile Tile) bool
+	CanBePlaced(tile PlacedTile) bool
+	PlaceTile(tile PlacedTile) (ScoreReport, error)
+}
+
+// mutable type
+type board struct {
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
 	tiles    []PlacedTile
@@ -21,10 +30,10 @@ type Board struct {
 	tilesMap map[Position]PlacedTile
 }
 
-func NewBoard(maxTileCount int32) *Board {
+func NewBoard(maxTileCount int32) Board {
 	tiles := make([]PlacedTile, maxTileCount)
 	tiles = append(tiles, StartingTile)
-	return &Board{
+	return &board{
 		tiles: tiles,
 		tilesMap: map[Position]PlacedTile{
 			{0, 0}: StartingTile,
@@ -32,30 +41,28 @@ func NewBoard(maxTileCount int32) *Board {
 	}
 }
 
-func (board *Board) TileCount() int {
+func (board *board) TileCount() int {
 	return len(board.tiles)
 }
 
-func (board *Board) GetLegalMovesFor(tile Tile) []LegalMove {
+func (board *board) GetLegalMovesFor(tile Tile) []LegalMove {
 	// TODO for future tasks:
 	// - implement generation of legal moves
 	panic("not implemented")
 }
 
 // early return variant of above
-func (board *Board) HasValidPlacement(tile Tile) bool {
+func (board *board) HasValidPlacement(tile Tile) bool {
 	panic("not implemented")
 }
 
-func (board *Board) CanBePlaced(tile PlacedTile) bool {
+func (board *board) CanBePlaced(tile PlacedTile) bool {
 	// TODO for future tasks:
 	// - implement a way to check if a specified move is valid
 	panic("not implemented")
 }
 
-// XXX: `PlacedTile` may just become `Tile` if the meeple field does not get split out:
-// see https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pull/9#discussion_r1554723567
-func (board *Board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
+func (board *board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 	if len(board.tiles) == cap(board.tiles) {
 		return ScoreReport{}, errors.New(
 			"Board's tiles capacity exceeded, logic error?",
@@ -73,7 +80,7 @@ func (board *Board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 	panic("not implemented")
 }
 
-func (board *Board) checkCompleted(tile PlacedTile) (ScoreReport, error) {
+func (board *board) checkCompleted(tile PlacedTile) (ScoreReport, error) {
 	// TODO for future tasks:
 	// - identify all completed features
 	// - resolve control of the completed features

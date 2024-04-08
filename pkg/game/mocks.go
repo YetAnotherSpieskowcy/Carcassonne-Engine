@@ -9,6 +9,7 @@ type Side int64
 
 const (
 	None Side = iota
+	Top
 )
 
 var (

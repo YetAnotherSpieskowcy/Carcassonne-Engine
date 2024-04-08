@@ -81,8 +81,6 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 	return nil
 }
 
-// XXX: `PlacedTile` may just become `Tile` if the meeple field does not get split out:
-// see https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pull/9#discussion_r1554723567
 func (game *Game) PlayTurn(placedTile PlacedTile) error {
 	// Get tile that the player is supposed to place.
 	// This is guaranteed to return a tile that has at least one valid placement
