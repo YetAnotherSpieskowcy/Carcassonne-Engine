@@ -9,8 +9,8 @@ import (
 func TestSetStandardTiles(t *testing.T) {
 	var set = GetStandardTiles()
 
-	if len(set) != 72 {
-		t.Fatalf("got %#v tiles, should be %#v", len(set), 72)
+	if len(set) != 71 {
+		t.Fatalf("got %#v tiles, should be %#v", len(set), 71)
 	}
 
 }

@@ -10,30 +10,28 @@ func MonasteryWithoutRoads() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{{
-					Sides: []connection.Side{
-						connection.TopLeftEdge,
-						connection.TopRightEdge,
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.TopLeftEdge,
+					connection.TopRightEdge,
 
-						connection.RightTopEdge,
-						connection.RightBottomEdge,
+					connection.RightTopEdge,
+					connection.RightBottomEdge,
 
-						connection.LeftTopEdge,
-						connection.LeftBottomEdge,
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
 
-						connection.BottomLeftEdge,
-						connection.BottomRightEdge,
-					},
-				}},
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
+				},
 			},
 		},
 		HasShield: false,
@@ -48,37 +46,30 @@ func MonasteryWithSingleRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{Sides: []connection.Side{
-						connection.Center,
-						connection.Bottom,
-					},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Center,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.TopLeftEdge,
-							connection.TopRightEdge,
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.TopLeftEdge,
+					connection.TopRightEdge,
 
-							connection.RightTopEdge,
-							connection.RightBottomEdge,
+					connection.RightTopEdge,
+					connection.RightBottomEdge,
 
-							connection.LeftTopEdge,
-							connection.LeftBottomEdge,
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
 
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-						},
-					},
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
@@ -94,43 +85,37 @@ func StraightRoads() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{Sides: []connection.Side{
-						connection.Left,
-						connection.Right,
-					},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Right,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-							connection.RightBottomEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.TopLeftEdge,
-							connection.TopRightEdge,
-							connection.RightTopEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
+					connection.RightBottomEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.TopLeftEdge,
+					connection.TopRightEdge,
+					connection.RightTopEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -141,107 +126,100 @@ func RoadsTurn() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{Sides: []connection.Side{
-						connection.Left,
-						connection.Bottom,
-					},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.TopLeftEdge,
-							connection.TopRightEdge,
-							connection.RightTopEdge,
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+				},
+			},
+
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.TopLeftEdge,
+					connection.TopRightEdge,
+					connection.RightTopEdge,
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
 /*
-returns tiles.Tile having road from left to bottom
+returns tiles.Tile having road from left,bottom,right to center
 */
 func TCrossRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Left,
-							connection.Center,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Bottom,
-							connection.Center,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Right,
-							connection.Center,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Center,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.TopLeftEdge,
-							connection.TopRightEdge,
-							connection.RightTopEdge,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+
+					connection.Right,
+					connection.Center,
+				},
+			},
+			{
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Bottom,
+					connection.Center,
+				},
+			},
+
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.TopLeftEdge,
+					connection.TopRightEdge,
+					connection.RightTopEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -249,72 +227,69 @@ func XCrossRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Left,
-							connection.Center,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Bottom,
-							connection.Center,
-						},
-					},
-
-					{
-						Sides: []connection.Side{
-							connection.Right,
-							connection.Center,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Center,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Center,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.TopLeftEdge,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Bottom,
+					connection.Center,
+				},
+			},
+			{
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Right,
+					connection.Center,
+				},
+			},
+			{
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
 
-					{
-						Sides: []connection.Side{
-							connection.TopRightEdge,
-							connection.RightTopEdge,
-						},
-					},
+					connection.Top,
+					connection.Center,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.TopLeftEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.TopRightEdge,
+					connection.RightTopEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -325,37 +300,29 @@ func SingleCityEdgeNoRoads() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.RightTopEdge,
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.RightTopEdge,
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -366,48 +333,38 @@ func SingleCityEdgeStraightRoads() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Right,
-							connection.Left,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Right,
+					connection.Left,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.RightTopEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.RightTopEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -418,48 +375,38 @@ func SingleCityEdgeLeftRoadTurn() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Left,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-							connection.LeftTopEdge,
-							connection.RightTopEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.BottomLeftEdge,
-							connection.LeftBottomEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
+					connection.LeftTopEdge,
+					connection.RightTopEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+
+					connection.BottomLeftEdge,
+					connection.LeftBottomEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -470,48 +417,37 @@ func SingleCityEdgeRightRoadTurn() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Right,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Right,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.RightTopEdge,
-							connection.BottomLeftEdge,
-							connection.LeftBottomEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.RightTopEdge,
+					connection.BottomLeftEdge,
+					connection.LeftBottomEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -522,64 +458,56 @@ func SingleCityEdgeCrossRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Right,
-							connection.Center,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Left,
-							connection.Center,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Bottom,
-							connection.Center,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Right,
+					connection.Center,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.RightTopEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.RightBottomEdge,
-							connection.BottomRightEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.BottomLeftEdge,
-							connection.LeftBottomEdge,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Center,
+				},
+			},
+			{
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Bottom,
+					connection.Center,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.RightTopEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.RightBottomEdge,
+					connection.BottomRightEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.BottomLeftEdge,
+					connection.LeftBottomEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -590,40 +518,33 @@ func TwoCityEdgesUpAndDownNotConnected() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Bottom,
+				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.RightTopEdge,
-							connection.LeftBottomEdge,
-							connection.RightBottomEdge,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.RightTopEdge,
+					connection.LeftBottomEdge,
+					connection.RightBottomEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -634,40 +555,33 @@ func TwoCityEdgesCornerNotConnected() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.Right,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Right,
+				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -678,41 +592,34 @@ func TwoCityEdgesUpAndDownConnected() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Bottom,
-							connection.Center,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Bottom,
+					connection.Center,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.LeftBottomEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -723,41 +630,34 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Bottom,
-							connection.Center,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Bottom,
+					connection.Center,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.LeftBottomEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: true,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -768,36 +668,28 @@ func TwoCityEdgesCornerConnected() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -809,36 +701,28 @@ func TwoCityEdgesCornerConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: true,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -849,47 +733,36 @@ func TwoCityEdgesCornerConnectedRoadTurn() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Left,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -900,47 +773,36 @@ func TwoCityEdgesCornerConnectedRoadTurnShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Left,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Left,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.LeftTopEdge,
-							connection.BottomRightEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftTopEdge,
+					connection.BottomRightEdge,
 				},
 			},
 		},
 		HasShield: true,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -951,36 +813,28 @@ func ThreeCityEdgesConnected() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-							connection.Center,
-							connection.Left,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
+					connection.Center,
+					connection.Left,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -991,36 +845,28 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-							connection.Center,
-							connection.Left,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
+					connection.Center,
+					connection.Left,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-							connection.BottomLeftEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+					connection.BottomLeftEdge,
 				},
 			},
 		},
 		HasShield: true,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -1031,47 +877,36 @@ func ThreeCityEdgesConnectedRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-							connection.Center,
-							connection.Left,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
+					connection.Center,
+					connection.Left,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Center,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Center,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.BottomLeftEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.BottomLeftEdge,
 				},
 			},
 		},
 		HasShield: false,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -1082,47 +917,36 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-							connection.Center,
-							connection.Left,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
+					connection.Center,
+					connection.Left,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Center,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{
+					connection.Center,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.LeftBottomEdge,
-						},
-					},
-					{
-						Sides: []connection.Side{
-							connection.BottomLeftEdge,
-						},
-					},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.LeftBottomEdge,
+				},
+			},
+			{
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{
+					connection.BottomLeftEdge,
 				},
 			},
 		},
 		HasShield: true,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }
 
@@ -1133,29 +957,25 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []tiles.Feature{
 			{
-				FeatureType: tiles.CITIES,
-				Connections: []connection.Connection{
-					{
-						Sides: []connection.Side{
-							connection.Top,
-							connection.Right,
-							connection.Center,
-							connection.Left,
-							connection.Bottom,
-						},
-					},
+				FeatureType: tiles.CITY,
+				Connections: []connection.Side{
+					connection.Top,
+					connection.Right,
+					connection.Center,
+					connection.Left,
+					connection.Bottom,
 				},
 			},
 			{
-				FeatureType: tiles.ROADS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.ROAD,
+				Connections: []connection.Side{},
 			},
 			{
-				FeatureType: tiles.FIELDS,
-				Connections: []connection.Connection{},
+				FeatureType: tiles.FIELD,
+				Connections: []connection.Side{},
 			},
 		},
 		HasShield: true,
-		Building:  buildings.NoneBuilding,
+		Building:  buildings.None,
 	}
 }

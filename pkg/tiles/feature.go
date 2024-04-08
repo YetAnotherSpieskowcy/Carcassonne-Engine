@@ -6,12 +6,12 @@ type FeatureType int64
 
 const (
 	NONE FeatureType = iota
-	ROADS
-	CITIES
-	FIELDS
+	ROAD
+	CITY
+	FIELD
 )
 
 type Feature struct {
 	FeatureType FeatureType
-	Connections []connection.Connection
+	Connections []connection.Side
 }

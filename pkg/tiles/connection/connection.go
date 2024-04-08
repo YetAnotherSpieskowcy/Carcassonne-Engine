@@ -155,23 +155,10 @@ func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting int
 	return result
 }
 
-type Connection struct {
-	Sides []Side
-}
-
-func (connection Connection) Rotate(rotations uint) Connection {
-	var result Connection
-	for _, side := range connection.Sides {
-		result.Sides = append(result.Sides, side.Rotate(rotations))
+func RotateSideArray(sides []Side, rotations uint) []Side {
+	var rotatedSides []Side
+	for _, side := range sides {
+		rotatedSides = append(rotatedSides, side.Rotate(rotations))
 	}
-
-	return result
-}
-
-func (connection Connection) String() string {
-	var result string
-	for _, side := range connection.Sides {
-		result += side.String() + " "
-	}
-	return result
+	return rotatedSides
 }

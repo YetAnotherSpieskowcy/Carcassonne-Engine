@@ -1,8 +1,6 @@
 package tiles
 
 import (
-	"strconv"
-
 	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
 	connectionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
 )
@@ -16,124 +14,77 @@ type Tile struct {
 	Building  buildings.Bulding
 }
 
-func (tile *Tile) Cities() []connectionMod.Connection {
+func (tile *Tile) Cities() [][]connectionMod.Side {
+	var cities [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == CITIES {
-			return feature.Connections
+		if feature.FeatureType == CITY {
+			cities = append(cities, feature.Connections)
 		}
 	}
-	return []connectionMod.Connection{}
+	return cities
 }
 
-func (tile *Tile) CitiesAppendConnection(connection connectionMod.Connection) {
-	var found = false
-	for _, feature := range tile.Features {
-		if feature.FeatureType == CITIES {
-			feature.Connections = append(feature.Connections, connection)
-			found = true
-		}
-	}
-	if !found {
-		tile.Features = append(tile.Features, Feature{
-			FeatureType: CITIES,
-			Connections: []connectionMod.Connection{connection},
-		})
-	}
+func (tile *Tile) CitiesAppendConnection(connections []connectionMod.Side) {
+	tile.Features = append(tile.Features, Feature{
+		FeatureType: CITY,
+		Connections: connections,
+	})
+
 }
 
-func (tile *Tile) Roads() []connectionMod.Connection {
+func (tile *Tile) Roads() [][]connectionMod.Side {
+	var roads [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == ROADS {
-			return feature.Connections
+		if feature.FeatureType == ROAD {
+			roads = append(roads, feature.Connections)
 		}
 	}
-	return []connectionMod.Connection{}
+	return roads
 }
 
-func (tile *Tile) RoadsAppendConnection(connection connectionMod.Connection) {
-	var found = false
-	for _, feature := range tile.Features {
-		if feature.FeatureType == ROADS {
-			feature.Connections = append(feature.Connections, connection)
-			found = true
-		}
-	}
-	if !found {
-		tile.Features = append(tile.Features, Feature{
-			FeatureType: ROADS,
-			Connections: []connectionMod.Connection{connection},
-		})
-	}
+func (tile *Tile) RoadsAppendConnection(connections []connectionMod.Side) {
+	tile.Features = append(tile.Features, Feature{
+		FeatureType: ROAD,
+		Connections: connections,
+	})
 }
 
-func (tile *Tile) Fields() []connectionMod.Connection {
+func (tile *Tile) Fields() [][]connectionMod.Side {
+	var fields [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == FIELDS {
-			return feature.Connections
+		if feature.FeatureType == FIELD {
+			fields = append(fields, feature.Connections)
 		}
 	}
-	return []connectionMod.Connection{}
+	return fields
 }
 
-func (tile *Tile) FieldsAppendConnection(connection connectionMod.Connection) {
-	var found = false
-	for _, feature := range tile.Features {
-		if feature.FeatureType == FIELDS {
-			feature.Connections = append(feature.Connections, connection)
-			found = true
-		}
-	}
-	if !found {
-		tile.Features = append(tile.Features, Feature{
-			FeatureType: FIELDS,
-			Connections: []connectionMod.Connection{connection},
-		})
-	}
+func (tile *Tile) FieldsAppendConnection(connections []connectionMod.Side) {
+	tile.Features = append(tile.Features, Feature{
+		FeatureType: FIELD,
+		Connections: connections,
+	})
 }
 
 func (tile Tile) Rotate(rotations uint) Tile {
 	var t Tile
 	// rotate cities
 	for _, cityConnection := range tile.Cities() {
-		t.CitiesAppendConnection(cityConnection.Rotate(rotations))
+		t.CitiesAppendConnection(connectionMod.RotateSideArray(cityConnection, rotations))
 	}
 
 	// rotate roads
 	for _, road := range tile.Roads() {
-		t.RoadsAppendConnection(road.Rotate(rotations))
+		t.RoadsAppendConnection(connectionMod.RotateSideArray(road, rotations))
 	}
 
 	// rotate fields
 	for _, field := range tile.Fields() {
-		t.FieldsAppendConnection(field.Rotate(rotations))
+		t.FieldsAppendConnection(connectionMod.RotateSideArray(field, rotations))
 	}
 
 	// copy parameters
 	t.HasShield = tile.HasShield
 	t.Building = tile.Building
 	return t
-}
-
-func (tile *Tile) String() string {
-	var result string
-	result = ""
-	result += "Cities\n"
-	for _, cityConnection := range tile.Cities() {
-		result += cityConnection.String() + "\n"
-	}
-
-	result += "Roads\n"
-	for _, road := range tile.Roads() {
-		result += road.String() + "\n"
-	}
-
-	result += "Fields\n"
-	for _, field := range tile.Fields() {
-		result += field.String() + "\n"
-	}
-
-	result += "Has shields: " + strconv.FormatBool(tile.HasShield) + "\n"
-	result += "Building: " + tile.Building.String() + "\n"
-
-	return result
 }

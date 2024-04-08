@@ -47,7 +47,7 @@ func GetStandardTiles() []tiles.Tile { //nolint:gocyclo // shallow loops for add
 	}
 
 	// 1 city edge straight road
-	for range 4 {
+	for range 3 {
 		tiles = append(tiles, tiletemplates.SingleCityEdgeStraightRoads())
 	}
 
