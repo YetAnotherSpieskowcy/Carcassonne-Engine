@@ -18,6 +18,14 @@ func (board *testBoard) TileCount() int {
 	return board.tileCount()
 }
 
+func (board *testBoard) Tiles() []PlacedTile {
+	return []PlacedTile{}
+}
+
+func (board *testBoard) GetTileAt(pos Position) (PlacedTile, bool) {
+	return PlacedTile{}, true
+}
+
 func (board *testBoard) GetLegalMovesFor(tile Tile) []LegalMove {
 	return []LegalMove{}
 }
