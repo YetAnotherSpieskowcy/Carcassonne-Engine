@@ -9,6 +9,10 @@ type Position struct {
 	y int16
 }
 
+func NewPosition(x int16, y int16) Position {
+	return Position{x, y}
+}
+
 func (pos Position) X() int16 {
 	return pos.x
 }
