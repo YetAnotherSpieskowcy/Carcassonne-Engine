@@ -29,14 +29,14 @@ func (player Player) Score() uint32 {
 // XXX: `PlacedTile` may just become `Tile` if the meeple field does not get split out:
 // see https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pull/9#discussion_r1554723567
 func (player *Player) PlaceTile(board *Board, tile PlacedTile) (ScoreReport, error) {
-	if player.meepleCount == 0 && tile.Meeple == nil {
+	if player.meepleCount == 0 && tile.meeple.side == None {
 		return ScoreReport{}, NoMeepleAvailable
 	}
 	scoreReport, err := board.PlaceTile(tile)
 	if err != nil {
 		return scoreReport, err
 	}
-	if tile.Meeple != nil {
+	if tile.meeple.side != None {
 		player.meepleCount -= 1
 	}
 	return scoreReport, nil

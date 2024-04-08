@@ -5,6 +5,11 @@ import "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 // TODO: replace all of these with an import once full tile representation is defined
 
 type Tile struct {}
+type Side int64
+
+const (
+	None Side = iota
+)
 
 var (
 	StartingTile = PlacedTile{}

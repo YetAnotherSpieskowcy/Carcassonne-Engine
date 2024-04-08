@@ -27,7 +27,7 @@ func (pos Position) MarshalText() ([]byte, error) {
 
 type Meeple struct {
 	player Player
-	side   any
+	side   Side
 }
 
 type LegalMove struct {
@@ -37,5 +37,7 @@ type LegalMove struct {
 
 type PlacedTile struct {
 	LegalMove
-	Meeple    Meeple
+	// PlacedTile always has a `Meeple`. Whether it is actually placed is determined by
+	// `Meeple.side` which will be `None`, if it isn't.
+	meeple    Meeple
 }
