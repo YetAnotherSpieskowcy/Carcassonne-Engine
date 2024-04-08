@@ -6,147 +6,147 @@ import (
 
 func TestSideRotate(t *testing.T) {
 
-	if TOP.Rotate(1) != RIGHT {
-		t.Fatalf("got %#v should be %#v after rotation", TOP.Rotate(1), RIGHT)
+	if Top.Rotate(1) != Right {
+		t.Fatalf("got %#v should be %#v after rotation", Top.Rotate(1), Right)
 	}
 
-	if RIGHT.Rotate(1) != BOTTOM {
-		t.Fatalf("got %#v should be %#v after rotation", RIGHT.Rotate(1), BOTTOM)
+	if Right.Rotate(1) != Bottom {
+		t.Fatalf("got %#v should be %#v after rotation", Right.Rotate(1), Bottom)
 	}
 
-	if BOTTOM.Rotate(1) != LEFT {
-		t.Fatalf("got %#v should be %#v after rotation", BOTTOM.Rotate(1), LEFT)
+	if Bottom.Rotate(1) != Left {
+		t.Fatalf("got %#v should be %#v after rotation", Bottom.Rotate(1), Left)
 	}
 
-	if LEFT.Rotate(1) != TOP {
-		t.Fatalf("got %#v should be %#v after rotation", LEFT.Rotate(1), TOP)
+	if Left.Rotate(1) != Top {
+		t.Fatalf("got %#v should be %#v after rotation", Left.Rotate(1), Top)
 	}
 	// corners
-	if TOP_LEFT_CORNER.Rotate(1) != TOP_RIGHT_CORNER {
-		t.Fatalf("got %#v should be %#v after rotation", TOP_LEFT_CORNER.Rotate(1), TOP_RIGHT_CORNER)
+	if TopLeftCorner.Rotate(1) != TopRightCorner {
+		t.Fatalf("got %#v should be %#v after rotation", TopLeftCorner.Rotate(1), TopRightCorner)
 	}
 
-	if TOP_RIGHT_CORNER.Rotate(1) != BOTTOM_RIGHT_CORNER {
-		t.Fatalf("got %#v should be %#v after rotation", TOP_RIGHT_CORNER.Rotate(1), BOTTOM_RIGHT_CORNER)
+	if TopRightCorner.Rotate(1) != BottomRightCorner {
+		t.Fatalf("got %#v should be %#v after rotation", TopRightCorner.Rotate(1), BottomRightCorner)
 	}
 
-	if BOTTOM_RIGHT_CORNER.Rotate(1) != BOTTOM_LEFT_CORNER {
-		t.Fatalf("got %#v should be %#v after rotation", BOTTOM_RIGHT_CORNER.Rotate(1), BOTTOM_LEFT_CORNER)
+	if BottomRightCorner.Rotate(1) != BottomLeftCorner {
+		t.Fatalf("got %#v should be %#v after rotation", BottomRightCorner.Rotate(1), BottomLeftCorner)
 	}
 
-	if BOTTOM_LEFT_CORNER.Rotate(1) != TOP_LEFT_CORNER {
-		t.Fatalf("got %#v should be %#v after rotation", BOTTOM_LEFT_CORNER.Rotate(1), TOP_LEFT_CORNER)
+	if BottomLeftCorner.Rotate(1) != TopLeftCorner {
+		t.Fatalf("got %#v should be %#v after rotation", BottomLeftCorner.Rotate(1), TopLeftCorner)
 	}
 
-	if CENTER.Rotate(1) != CENTER {
-		t.Fatalf("got %#v should be %#v after rotation", CENTER.Rotate(1), CENTER)
+	if Center.Rotate(1) != Center {
+		t.Fatalf("got %#v should be %#v after rotation", Center.Rotate(1), Center)
 	}
 
-	if TOP_LEFT_EDGE.Rotate(1) != RIGHT_TOP_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", TOP_LEFT_EDGE.Rotate(1), RIGHT_TOP_EDGE)
+	if TopLeftEdge.Rotate(1) != RightTopEdge {
+		t.Fatalf("got %#v should be %#v after rotation", TopLeftEdge.Rotate(1), RightTopEdge)
 	}
 
-	if TOP_RIGHT_EDGE.Rotate(1) != RIGHT_BOTTOM_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", TOP_RIGHT_EDGE.Rotate(1), RIGHT_BOTTOM_EDGE)
+	if TopRightEdge.Rotate(1) != RightBottomEdge {
+		t.Fatalf("got %#v should be %#v after rotation", TopRightEdge.Rotate(1), RightBottomEdge)
 	}
 
-	if RIGHT_TOP_EDGE.Rotate(1) != BOTTOM_RIGHT_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", RIGHT_TOP_EDGE.Rotate(1), BOTTOM_RIGHT_EDGE)
+	if RightTopEdge.Rotate(1) != BottomRightEdge {
+		t.Fatalf("got %#v should be %#v after rotation", RightTopEdge.Rotate(1), BottomRightEdge)
 	}
 
-	if RIGHT_BOTTOM_EDGE.Rotate(1) != BOTTOM_LEFT_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", RIGHT_BOTTOM_EDGE.Rotate(1), BOTTOM_LEFT_EDGE)
+	if RightBottomEdge.Rotate(1) != BottomLeftEdge {
+		t.Fatalf("got %#v should be %#v after rotation", RightBottomEdge.Rotate(1), BottomLeftEdge)
 	}
 
-	if BOTTOM_RIGHT_EDGE.Rotate(1) != LEFT_BOTTOM_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", BOTTOM_RIGHT_EDGE.Rotate(1), LEFT_BOTTOM_EDGE)
+	if BottomRightEdge.Rotate(1) != LeftBottomEdge {
+		t.Fatalf("got %#v should be %#v after rotation", BottomRightEdge.Rotate(1), LeftBottomEdge)
 	}
 
-	if BOTTOM_LEFT_EDGE.Rotate(1) != LEFT_TOP_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", BOTTOM_LEFT_EDGE.Rotate(1), LEFT_TOP_EDGE)
+	if BottomLeftEdge.Rotate(1) != LeftTopEdge {
+		t.Fatalf("got %#v should be %#v after rotation", BottomLeftEdge.Rotate(1), LeftTopEdge)
 	}
 
-	if LEFT_BOTTOM_EDGE.Rotate(1) != TOP_LEFT_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", LEFT_BOTTOM_EDGE.Rotate(1), TOP_LEFT_EDGE)
+	if LeftBottomEdge.Rotate(1) != TopLeftEdge {
+		t.Fatalf("got %#v should be %#v after rotation", LeftBottomEdge.Rotate(1), TopLeftEdge)
 	}
 
-	if LEFT_TOP_EDGE.Rotate(1) != TOP_RIGHT_EDGE {
-		t.Fatalf("got %#v should be %#v after rotation", LEFT_TOP_EDGE.Rotate(1), TOP_RIGHT_EDGE)
+	if LeftTopEdge.Rotate(1) != TopRightEdge {
+		t.Fatalf("got %#v should be %#v after rotation", LeftTopEdge.Rotate(1), TopRightEdge)
 	}
 
-	if NONE.Rotate(1) != NONE {
-		t.Fatalf("got %#v should be %#v after rotation", NONE.Rotate(1), NONE)
+	if None.Rotate(1) != None {
+		t.Fatalf("got %#v should be %#v after rotation", None.Rotate(1), None)
 	}
 
-	if Side(80).Rotate(1) != NONE {
-		t.Fatalf("got %#v should be %#v after rotation", Side(80).Rotate(1), NONE)
+	if Side(80).Rotate(1) != None {
+		t.Fatalf("got %#v should be %#v after rotation", Side(80).Rotate(1), None)
 	}
 }
 
 func TestSideToString(t *testing.T) {
-	if TOP.String() != "TOP" {
-		t.Fatalf("got %#v should be %#v", TOP.String(), "TOP")
+	if Top.String() != "TOP" {
+		t.Fatalf("got %#v should be %#v", Top.String(), "TOP")
 	}
 
-	if RIGHT.String() != "RIGHT" {
-		t.Fatalf("got %#v should be %#v", RIGHT.String(), "RIGHT")
+	if Right.String() != "RIGHT" {
+		t.Fatalf("got %#v should be %#v", Right.String(), "RIGHT")
 	}
 
-	if LEFT.String() != "LEFT" {
-		t.Fatalf("got %#v should be %#v", LEFT.String(), "LEFT")
+	if Left.String() != "LEFT" {
+		t.Fatalf("got %#v should be %#v", Left.String(), "LEFT")
 	}
 
-	if BOTTOM.String() != "BOTTOM" {
-		t.Fatalf("got %#v should be %#v", BOTTOM.String(), "BOTTOM")
+	if Bottom.String() != "BOTTOM" {
+		t.Fatalf("got %#v should be %#v", Bottom.String(), "BOTTOM")
 	}
 
-	if TOP_LEFT_CORNER.String() != "TOP_LEFT_CORNER" {
-		t.Fatalf("got %#v should be %#v", TOP_LEFT_CORNER.String(), "TOP_LEFT_CORNER")
+	if TopLeftCorner.String() != "TOP_LEFT_CORNER" {
+		t.Fatalf("got %#v should be %#v", TopLeftCorner.String(), "TOP_LEFT_CORNER")
 	}
 
-	if TOP_RIGHT_CORNER.String() != "TOP_RIGHT_CORNER" {
-		t.Fatalf("got %#v should be %#v", TOP_RIGHT_CORNER.String(), "TOP_RIGHT_CORNER")
+	if TopRightCorner.String() != "TOP_RIGHT_CORNER" {
+		t.Fatalf("got %#v should be %#v", TopRightCorner.String(), "TOP_RIGHT_CORNER")
 	}
 
-	if BOTTOM_LEFT_CORNER.String() != "BOTTOM_LEFT_CORNER" {
-		t.Fatalf("got %#v should be %#v", BOTTOM_LEFT_CORNER.String(), "BOTTOM_LEFT_CORNER")
+	if BottomLeftCorner.String() != "BOTTOM_LEFT_CORNER" {
+		t.Fatalf("got %#v should be %#v", BottomLeftCorner.String(), "BOTTOM_LEFT_CORNER")
 	}
 
-	if BOTTOM_RIGHT_CORNER.String() != "BOTTOM_RIGHT_CORNER" {
-		t.Fatalf("got %#v should be %#v", BOTTOM_RIGHT_CORNER.String(), "BOTTOM_RIGHT_CORNER")
+	if BottomRightCorner.String() != "BOTTOM_RIGHT_CORNER" {
+		t.Fatalf("got %#v should be %#v", BottomRightCorner.String(), "BOTTOM_RIGHT_CORNER")
 	}
 
-	if CENTER.String() != "CENTER" {
-		t.Fatalf("got %#v should be %#v", CENTER.String(), "CENTER")
+	if Center.String() != "CENTER" {
+		t.Fatalf("got %#v should be %#v", Center.String(), "CENTER")
 	}
 
-	if TOP_LEFT_EDGE.String() != "TOP_LEFT_EDGE" {
-		t.Fatalf("got %#v should be %#v", TOP_LEFT_EDGE.String(), "TOP_LEFT_EDGE")
+	if TopLeftEdge.String() != "TOP_LEFT_EDGE" {
+		t.Fatalf("got %#v should be %#v", TopLeftEdge.String(), "TOP_LEFT_EDGE")
 	}
-	if TOP_RIGHT_EDGE.String() != "TOP_RIGHT_EDGE" {
-		t.Fatalf("got %#v should be %#v", TOP_RIGHT_EDGE.String(), "TOP_RIGHT_EDGE")
+	if TopRightEdge.String() != "TOP_RIGHT_EDGE" {
+		t.Fatalf("got %#v should be %#v", TopRightEdge.String(), "TOP_RIGHT_EDGE")
 	}
-	if RIGHT_TOP_EDGE.String() != "RIGHT_TOP_EDGE" {
-		t.Fatalf("got %#v should be %#v", RIGHT_TOP_EDGE.String(), "RIGHT_TOP_EDGE")
+	if RightTopEdge.String() != "RIGHT_TOP_EDGE" {
+		t.Fatalf("got %#v should be %#v", RightTopEdge.String(), "RIGHT_TOP_EDGE")
 	}
-	if RIGHT_BOTTOM_EDGE.String() != "RIGHT_BOTTOM_EDGE" {
-		t.Fatalf("got %#v should be %#v", RIGHT_BOTTOM_EDGE.String(), "RIGHT_BOTTOM_EDGE")
+	if RightBottomEdge.String() != "RIGHT_BOTTOM_EDGE" {
+		t.Fatalf("got %#v should be %#v", RightBottomEdge.String(), "RIGHT_BOTTOM_EDGE")
 	}
-	if LEFT_TOP_EDGE.String() != "LEFT_TOP_EDGE" {
-		t.Fatalf("got %#v should be %#v", LEFT_TOP_EDGE.String(), "LEFT_TOP_EDGE")
+	if LeftTopEdge.String() != "LEFT_TOP_EDGE" {
+		t.Fatalf("got %#v should be %#v", LeftTopEdge.String(), "LEFT_TOP_EDGE")
 	}
-	if LEFT_BOTTOM_EDGE.String() != "LEFT_BOTTOM_EDGE" {
-		t.Fatalf("got %#v should be %#v", LEFT_BOTTOM_EDGE.String(), "LEFT_BOTTOM_EDGE")
+	if LeftBottomEdge.String() != "LEFT_BOTTOM_EDGE" {
+		t.Fatalf("got %#v should be %#v", LeftBottomEdge.String(), "LEFT_BOTTOM_EDGE")
 	}
-	if BOTTOM_LEFT_EDGE.String() != "BOTTOM_LEFT_EDGE" {
-		t.Fatalf("got %#v should be %#v", BOTTOM_LEFT_EDGE.String(), "BOTTOM_LEFT_EDGE")
+	if BottomLeftEdge.String() != "BOTTOM_LEFT_EDGE" {
+		t.Fatalf("got %#v should be %#v", BottomLeftEdge.String(), "BOTTOM_LEFT_EDGE")
 	}
-	if BOTTOM_RIGHT_EDGE.String() != "BOTTOM_RIGHT_EDGE" {
-		t.Fatalf("got %#v should be %#v", BOTTOM_RIGHT_EDGE.String(), "BOTTOM_RIGHT_EDGE")
+	if BottomRightEdge.String() != "BOTTOM_RIGHT_EDGE" {
+		t.Fatalf("got %#v should be %#v", BottomRightEdge.String(), "BOTTOM_RIGHT_EDGE")
 	}
 
-	if NONE.String() != "NONE" {
-		t.Fatalf("got %#v should be %#v", NONE.String(), "NONE")
+	if None.String() != "NONE" {
+		t.Fatalf("got %#v should be %#v", None.String(), "NONE")
 	}
 
 	if Side(20).String() != "ERROR" {

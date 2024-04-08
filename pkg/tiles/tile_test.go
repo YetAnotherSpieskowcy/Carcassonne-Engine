@@ -12,18 +12,18 @@ import (
 func TestTileRotate(t *testing.T) {
 	var tile Tile
 	//  \/ da się to lepiej napisać? \/
-	tile.CitiesAppendConnection(connection.Connection{Sides: []connection.Side{connection.TOP, connection.LEFT}})
-	tile.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.BOTTOM, connection.RIGHT}})
-	tile.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.BOTTOM_RIGHT_EDGE, connection.RIGHT_BOTTOM_EDGE}})
+	tile.CitiesAppendConnection(connection.Connection{Sides: []connection.Side{connection.Top, connection.Left}})
+	tile.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.Bottom, connection.Right}})
+	tile.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.BottomRightEdge, connection.RightBottomEdge}})
 	tile.HasShield = true
 	tile.Building = buildings.NONE_BULDING
 
 	var rotated = tile.Rotate(1)
 
 	var expected Tile
-	expected.CitiesAppendConnection(connection.Connection{Sides: []connection.Side{connection.RIGHT, connection.TOP}})
-	expected.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.LEFT, connection.BOTTOM}})
-	expected.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.LEFT_BOTTOM_EDGE, connection.BOTTOM_LEFT_EDGE}})
+	expected.CitiesAppendConnection(connection.Connection{Sides: []connection.Side{connection.Right, connection.Top}})
+	expected.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.Left, connection.Bottom}})
+	expected.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.LeftBottomEdge, connection.BottomLeftEdge}})
 	expected.HasShield = true
 	expected.Building = buildings.NONE_BULDING
 
@@ -34,20 +34,20 @@ func TestTileRotate(t *testing.T) {
 
 func TestTileToString(t *testing.T) {
 	var tile Tile
-	tile.CitiesAppendConnection(connection.Connection{[]connection.Side{connection.TOP, connection.LEFT}})
-	tile.RoadsAppendConnection(connection.Connection{[]connection.Side{connection.BOTTOM, connection.RIGHT}})
-	tile.FieldsAppendConnection(connection.Connection{[]connection.Side{connection.BOTTOM_RIGHT_EDGE, connection.RIGHT_BOTTOM_EDGE}})
+	tile.CitiesAppendConnection(connection.Connection{Sides: []connection.Side{connection.Top, connection.Left}})
+	tile.RoadsAppendConnection(connection.Connection{Sides: []connection.Side{connection.Bottom, connection.Right}})
+	tile.FieldsAppendConnection(connection.Connection{Sides: []connection.Side{connection.BottomRightEdge, connection.RightBottomEdge}})
 	tile.HasShield = true
 	tile.Building = buildings.NONE_BULDING
 
 	var expected string
 	expected = ""
 	expected += "Cities\n"
-	expected += connection.Connection{[]connection.Side{connection.TOP, connection.LEFT}}.String() + "\n"
+	expected += connection.Connection{Sides: []connection.Side{connection.Top, connection.Left}}.String() + "\n"
 	expected += "Roads\n"
-	expected += connection.Connection{[]connection.Side{connection.BOTTOM, connection.RIGHT}}.String() + "\n"
+	expected += connection.Connection{Sides: []connection.Side{connection.Bottom, connection.Right}}.String() + "\n"
 	expected += "Fields\n"
-	expected += connection.Connection{[]connection.Side{connection.BOTTOM_RIGHT_EDGE, connection.RIGHT_BOTTOM_EDGE}}.String() + "\n"
+	expected += connection.Connection{Sides: []connection.Side{connection.BottomRightEdge, connection.RightBottomEdge}}.String() + "\n"
 	expected += "Has shields: " + strconv.FormatBool(true) + "\n"
 	expected += "Building: " + buildings.NONE_BULDING.String() + "\n"
 

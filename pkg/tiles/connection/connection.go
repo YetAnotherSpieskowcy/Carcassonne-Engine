@@ -3,86 +3,97 @@ package connection
 type Side int64
 
 const (
-	NONE Side = iota
-	TOP
-	RIGHT
-	LEFT
-	BOTTOM
+	None Side = iota
+	Top
+	Right
+	Left
+	Bottom
 
-	CENTER
+	Center
 
 	//for farmers
-	TOP_LEFT_CORNER
-	TOP_RIGHT_CORNER
-	BOTTOM_LEFT_CORNER
-	BOTTOM_RIGHT_CORNER
+	TopLeftCorner
+	TopRightCorner
+	BottomLeftCorner
+	BottomRightCorner
 
 	//for fields
 
 	/*Left side of top edge*/
-	TOP_LEFT_EDGE
+	TopLeftEdge
 	/*Right side of top edge*/
-	TOP_RIGHT_EDGE
+	TopRightEdge
 
 	/*Top side of right edge*/
-	RIGHT_TOP_EDGE
+	RightTopEdge
 	/*Bottom side of right edge*/
-	RIGHT_BOTTOM_EDGE
+	RightBottomEdge
 
 	/*Top side of left edge*/
-	LEFT_TOP_EDGE
+	LeftTopEdge
 	/*Bottom side of left edge*/
-	LEFT_BOTTOM_EDGE
+	LeftBottomEdge
 
 	/*Left side of bottom edge*/
-	BOTTOM_LEFT_EDGE
+	BottomLeftEdge
 	/*Right side of bottom edge*/
-	BOTTOM_RIGHT_EDGE
+	BottomRightEdge
 )
 
 func (side Side) String() string {
 
 	switch side {
-	case TOP:
+	case Top:
 		return "TOP"
-	case RIGHT:
+	case Right:
 		return "RIGHT"
-	case LEFT:
+	case Left:
 		return "LEFT"
-	case BOTTOM:
+	case Bottom:
 		return "BOTTOM"
 
-	case TOP_LEFT_CORNER:
+	case TopLeftCorner:
 		return "TOP_LEFT_CORNER"
-	case TOP_RIGHT_CORNER:
+	case TopRightCorner:
 		return "TOP_RIGHT_CORNER"
-	case BOTTOM_LEFT_CORNER:
+	case BottomLeftCorner:
 		return "BOTTOM_LEFT_CORNER"
-	case BOTTOM_RIGHT_CORNER:
+	case BottomRightCorner:
 		return "BOTTOM_RIGHT_CORNER"
 
-	case CENTER:
+	case Center:
 		return "CENTER"
 
-	case TOP_LEFT_EDGE:
+		/*
+			First direction indicates the main edge of square, the second tells which side of the edge.
+			Example:"
+			TopLeftEdge
+			 <______
+					|
+					|
+					|
+				tile center
+		*/
+
+	case TopLeftEdge:
 		return "TOP_LEFT_EDGE"
-	case TOP_RIGHT_EDGE:
+	case TopRightEdge:
 		return "TOP_RIGHT_EDGE"
-	case RIGHT_TOP_EDGE:
+	case RightTopEdge:
 		return "RIGHT_TOP_EDGE"
-	case RIGHT_BOTTOM_EDGE:
+	case RightBottomEdge:
 		return "RIGHT_BOTTOM_EDGE"
 
-	case LEFT_TOP_EDGE:
+	case LeftTopEdge:
 		return "LEFT_TOP_EDGE"
-	case LEFT_BOTTOM_EDGE:
+	case LeftBottomEdge:
 		return "LEFT_BOTTOM_EDGE"
-	case BOTTOM_LEFT_EDGE:
+	case BottomLeftEdge:
 		return "BOTTOM_LEFT_EDGE"
-	case BOTTOM_RIGHT_EDGE:
+	case BottomRightEdge:
 		return "BOTTOM_RIGHT_EDGE"
 
-	case NONE:
+	case None:
 		return "NONE"
 	default:
 		return "ERROR"
@@ -93,51 +104,51 @@ func (side Side) String() string {
 Rotates side clockwise
 */
 func (side Side) Rotate(rotations uint) Side {
-	//limit rotations
-	rotations = rotations % 4
+	// limit rotations
+	rotations %= 4
 	var result = side
 	for rotations > 0 {
 		switch side {
-		case TOP:
-			result = RIGHT
-		case RIGHT:
-			result = BOTTOM
-		case LEFT:
-			result = TOP
-		case BOTTOM:
-			result = LEFT
+		case Top:
+			result = Right
+		case Right:
+			result = Bottom
+		case Left:
+			result = Top
+		case Bottom:
+			result = Left
 
-		case TOP_LEFT_CORNER:
-			result = TOP_RIGHT_CORNER
-		case TOP_RIGHT_CORNER:
-			result = BOTTOM_RIGHT_CORNER
-		case BOTTOM_LEFT_CORNER:
-			result = TOP_LEFT_CORNER
-		case BOTTOM_RIGHT_CORNER:
-			result = BOTTOM_LEFT_CORNER
+		case TopLeftCorner:
+			result = TopRightCorner
+		case TopRightCorner:
+			result = BottomRightCorner
+		case BottomLeftCorner:
+			result = TopLeftCorner
+		case BottomRightCorner:
+			result = BottomLeftCorner
 
-		case TOP_LEFT_EDGE:
-			result = RIGHT_TOP_EDGE
-		case TOP_RIGHT_EDGE:
-			result = RIGHT_BOTTOM_EDGE
-		case RIGHT_TOP_EDGE:
-			result = BOTTOM_RIGHT_EDGE
-		case RIGHT_BOTTOM_EDGE:
-			result = BOTTOM_LEFT_EDGE
+		case TopLeftEdge:
+			result = RightTopEdge
+		case TopRightEdge:
+			result = RightBottomEdge
+		case RightTopEdge:
+			result = BottomRightEdge
+		case RightBottomEdge:
+			result = BottomLeftEdge
 
-		case LEFT_TOP_EDGE:
-			result = TOP_RIGHT_EDGE
-		case LEFT_BOTTOM_EDGE:
-			result = TOP_LEFT_EDGE
-		case BOTTOM_LEFT_EDGE:
-			result = LEFT_TOP_EDGE
-		case BOTTOM_RIGHT_EDGE:
-			result = LEFT_BOTTOM_EDGE
+		case LeftTopEdge:
+			result = TopRightEdge
+		case LeftBottomEdge:
+			result = TopLeftEdge
+		case BottomLeftEdge:
+			result = LeftTopEdge
+		case BottomRightEdge:
+			result = LeftBottomEdge
 
-		case CENTER:
-			result = CENTER
+		case Center:
+			result = Center
 		default:
-			result = NONE
+			result = None
 		}
 		rotations--
 	}

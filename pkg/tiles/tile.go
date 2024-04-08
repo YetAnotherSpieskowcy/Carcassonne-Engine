@@ -93,22 +93,22 @@ func (tile *Tile) FieldsAppendConnection(connection connectionMod.Connection) {
 
 func (tile Tile) Rotate(rotations uint) Tile {
 	var t Tile
-	//rotate cities
+	// rotate cities
 	for _, cityConnection := range tile.Cities() {
 		t.CitiesAppendConnection(cityConnection.Rotate(rotations))
 	}
 
-	//rotate roads
+	// rotate roads
 	for _, road := range tile.Roads() {
 		t.RoadsAppendConnection(road.Rotate(rotations))
 	}
 
-	//rotate fields
+	// rotate fields
 	for _, field := range tile.Fields() {
 		t.FieldsAppendConnection(field.Rotate(rotations))
 	}
 
-	//copy parameters
+	// copy parameters
 	t.HasShield = tile.HasShield
 	t.Building = tile.Building
 	return t
