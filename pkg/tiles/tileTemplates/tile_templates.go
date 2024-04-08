@@ -1,4 +1,4 @@
-package tileTemplates
+package tiletemplates
 
 import (
 	tiles "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"

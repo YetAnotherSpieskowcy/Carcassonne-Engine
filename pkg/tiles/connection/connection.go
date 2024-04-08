@@ -11,36 +11,36 @@ const (
 
 	Center
 
-	//for farmers
+	// for farmers
 	TopLeftCorner
 	TopRightCorner
 	BottomLeftCorner
 	BottomRightCorner
 
-	//for fields
+	// for fields
 
-	/*Left side of top edge*/
+	/* Left side of top edge */
 	TopLeftEdge
-	/*Right side of top edge*/
+	/* Right side of top edge */
 	TopRightEdge
 
-	/*Top side of right edge*/
+	/* Top side of right edge */
 	RightTopEdge
-	/*Bottom side of right edge*/
+	/* Bottom side of right edge */
 	RightBottomEdge
 
-	/*Top side of left edge*/
+	/* Top side of left edge */
 	LeftTopEdge
-	/*Bottom side of left edge*/
+	/* Bottom side of left edge */
 	LeftBottomEdge
 
-	/*Left side of bottom edge*/
+	/* Left side of bottom edge */
 	BottomLeftEdge
-	/*Right side of bottom edge*/
+	/* Right side of bottom edge */
 	BottomRightEdge
 )
 
-func (side Side) String() string {
+func (side Side) String() string { //nolint:gocyclo // splitting into multiple switches would be obscure
 
 	switch side {
 	case Top:
@@ -103,7 +103,7 @@ func (side Side) String() string {
 /*
 Rotates side clockwise
 */
-func (side Side) Rotate(rotations uint) Side {
+func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting into multiple switches would be obscure
 	// limit rotations
 	rotations %= 4
 	var result = side

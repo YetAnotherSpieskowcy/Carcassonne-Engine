@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestSideRotate(t *testing.T) {
+func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all states
 
 	if Top.Rotate(1) != Right {
 		t.Fatalf("got %#v should be %#v after rotation", Top.Rotate(1), Right)
@@ -83,7 +83,7 @@ func TestSideRotate(t *testing.T) {
 	}
 }
 
-func TestSideToString(t *testing.T) {
+func TestSideToString(t *testing.T) { //nolint:gocyclo // simply testing all states
 	if Top.String() != "TOP" {
 		t.Fatalf("got %#v should be %#v", Top.String(), "TOP")
 	}
