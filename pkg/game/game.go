@@ -8,7 +8,7 @@ import (
 
 
 type Game struct {
-	board         *Board
+	board         Board
 	deck          *stack.Stack[Tile]
 	players       []*Player
 	currentPlayer int
