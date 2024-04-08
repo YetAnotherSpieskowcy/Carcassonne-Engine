@@ -10,6 +10,13 @@ import (
 )
 
 
+func getTestScoreReport() ScoreReport {
+	return ScoreReport{
+		ReceivedPoints: map[int]uint32{0: 5},
+		ReturnedMeeples: map[int]uint8{},
+	}
+}
+
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	player := NewPlayer(0)
 	player.SetMeepleCount(0)
@@ -25,7 +32,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 	player := NewPlayer(0)
 
-	expectedScoreReport := test.GetTestScoreReport()
+	expectedScoreReport := getTestScoreReport()
 	callCount := 0
 	board := &test.TestBoard{PlaceTileFunc: func(tile PlacedTile) (ScoreReport, error) {
 		callCount++

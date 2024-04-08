@@ -8,8 +8,6 @@ import (
 )
 
 func TestFullGame(t *testing.T) {
-	return  // skipped due to missing implementation
-
 	tiles := []Tile{Tile{}, Tile{}}
     deck := stack.NewOrdered(tiles)
     game, err := NewGameWithDeck(&deck, nil)
@@ -17,14 +15,17 @@ func TestFullGame(t *testing.T) {
     	t.Fatal(err.Error())
     }
 
-    for {
+    for range 2 {
 		tile, err := game.GetCurrentTile()
 		if err != nil {
 			t.Fatal(err.Error())
 		}
-		// TODO: define move sequence for this test
-		game.PlayTurn(PlacedTile{LegalMove: LegalMove{Tile: tile}})
-    }
+		err = game.PlayTurn(PlacedTile{LegalMove: LegalMove{Tile: tile}})
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+	}
+
     actualScores, err := game.Finalize()
     if err != nil {
     	t.Fatal(err)
