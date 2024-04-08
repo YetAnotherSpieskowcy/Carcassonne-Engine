@@ -2,7 +2,10 @@ package game
 
 import (
 	"errors"
+	"io"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
+	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 )
 
@@ -10,32 +13,36 @@ import (
 type Game struct {
 	board         Board
 	deck          *stack.Stack[Tile]
-	players       []*Player
+	players       []Player
 	currentPlayer int
-	logger        *Logger
+	log           *logger.Logger
 }
 
-func NewGame(logger *Logger) (*Game, error) {
+func NewGame(log *logger.Logger) (*Game, error) {
 	deck := stack.New(BaseTileSet)
-	return NewGameWithDeck(&deck, logger)
+	return NewGameWithDeck(&deck, log)
 }
 
-func NewGameWithDeck(deck *stack.Stack[Tile], logger *Logger) (*Game, error) {
+func NewGameWithDeck(deck *stack.Stack[Tile], log *logger.Logger) (*Game, error) {
+	if log == nil {
+		nullLogger := logger.New(io.Discard)
+		log = &nullLogger
+	}
 	game := &Game{
 		board:         NewBoard(deck.GetTotalTileCount()),
 		deck:          deck,
-		players:       []*Player{NewPlayer(0), NewPlayer(1)},
+		players:       []Player{NewPlayer(0), NewPlayer(1)},
 		currentPlayer: 0,
-		logger:        logger,
+		log:        log,
 	}
 
 	// All tiles in base game can be placed on the first move but let's just check this
 	// in case this isn't true for tiles from all of the expansions.
 	game.ensureCurrentTileHasValidPlacement()
-	if logger != nil {
-		if err := logger.Start(game.deck, len(game.players)); err != nil {
-			return nil, err
-		}
+	if err := log.LogEvent(
+		logger.NewStartEntry(game.deck, len(game.players)),
+	); err != nil {
+		return nil, err
 	}
 
 	return game, nil
@@ -45,7 +52,7 @@ func (game *Game) GetCurrentTile() (Tile, error) {
 	return game.deck.Peek()
 }
 
-func (game *Game) CurrentPlayer() *Player {
+func (game *Game) CurrentPlayer() Player {
 	return game.players[game.currentPlayer]
 }
 
@@ -59,7 +66,7 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 		// to see, if it can actually placed anywhere.
 		nextTile, err := game.deck.Peek()
 		if err != nil {
-			if errors.Is(err, stack.StackOutOfBoundsError) {
+			if errors.Is(err, stack.ErrStackOutOfBounds) {
 				// out of bounds - not our concern at the end of a turn
 				return nil
 			}
@@ -106,18 +113,20 @@ func (game *Game) PlayTurn(placedTile PlacedTile) error {
 	if err != nil {
 		return err
 	}
-	if game.logger != nil {
-		if err := game.logger.PlaceTile(game.currentPlayer, placedTile); err != nil {
-			return err
-		}
+	if err := game.log.LogEvent(
+		logger.NewPlaceTileEntry(game.currentPlayer, placedTile),
+	); err != nil {
+		return err
 	}
 
 	// Score features and update meeple counts
 	for playerId, receivedPoints := range scoreReport.ReceivedPoints {
-		game.players[playerId].score += receivedPoints
+		player := game.players[playerId]
+		player.SetScore(player.Score() + receivedPoints)
 	}
 	for playerId, returnedMeeples := range scoreReport.ReturnedMeeples {
-		game.players[playerId].meepleCount += returnedMeeples
+		player := game.players[playerId]
+		player.SetMeepleCount(player.MeepleCount() + returnedMeeples)
 	}
 
 	// Pop from the stack after the move.
@@ -133,17 +142,15 @@ func (game *Game) PlayTurn(placedTile PlacedTile) error {
 func (game *Game) Finalize() ([]uint32, error) {
 	playerScores := make([]uint32, len(game.players))
 
-	if _, err := game.GetCurrentTile(); !errors.Is(err, stack.StackOutOfBoundsError) {
+	if _, err := game.GetCurrentTile(); !errors.Is(err, stack.ErrStackOutOfBounds) {
 		return playerScores, GameIsNotFinished
 	}
 
 	for i, player := range game.players {
 		playerScores[i] = player.Score()
 	}
-	if game.logger != nil {
-		if err := game.logger.End(playerScores); err != nil {
-			return playerScores, err
-		}
+	if err := game.log.LogEvent(logger.NewEndEntry(playerScores)); err != nil {
+		return playerScores, err
 	}
 
 	return playerScores, nil

@@ -4,6 +4,9 @@ import (
 	"reflect"
 	"slices"
 	"testing"
+
+	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 )
 
 
@@ -15,9 +18,9 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 		PlacedTile{
 			LegalMove: LegalMove{
 				Tile: SingleCityEdgeNoRoads().Rotate(2),
-				pos: Position{0, 1},
+				Pos: NewPosition(0, 1),
 			},
-			meeple: Meeple{side: None},
+			Meeple: Meeple{Side: None},
 		},
 	)
 	expected := []LegalMove{}
@@ -44,7 +47,7 @@ func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 	board := NewBoard(5)
 
 	expected := true
-	actual := board.CanBePlaced(getTestPlacedTile())
+	actual := board.CanBePlaced(test.GetTestPlacedTile())
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -54,7 +57,7 @@ func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
 	board := NewBoard(1)
 
-	_, err := board.PlaceTile(getTestPlacedTile())
+	_, err := board.PlaceTile(test.GetTestPlacedTile())
 	if err == nil {
 		t.Fatal("expected capacity exceeded error to be returned")
 	}
@@ -62,7 +65,7 @@ func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
 
 func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
 	board := NewBoard(5)
-	expected := getTestPlacedTile()
+	expected := test.GetTestPlacedTile()
 
 	_, err := board.PlaceTile(expected)
 	if err != nil {
@@ -74,7 +77,7 @@ func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 
-	actual, ok := board.GetTileAt(expected.pos)
+	actual, ok := board.GetTileAt(expected.Pos)
 	if !ok || !reflect.DeepEqual(expected, actual) {
 		t.Fatalf("expected %#v, got %#v instead (ok = %#v)", expected, actual, ok)
 	}

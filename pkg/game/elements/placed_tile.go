@@ -1,4 +1,4 @@
-package game
+package elements
 
 import "fmt"
 
@@ -25,19 +25,24 @@ func (pos Position) MarshalText() ([]byte, error) {
 	return fmt.Appendf([]byte{}, "%v,%v", pos.x, pos.y), nil
 }
 
+func (pos *Position) UnmarshalText(text []byte) error {
+	_, err := fmt.Sscanf(string(text), "%v,%v", &pos.x, &pos.y)
+	return err
+}
+
 type Meeple struct {
-	player Player
-	side   Side
+	Player Player
+	Side   Side
 }
 
 type LegalMove struct {
 	Tile
-	pos  Position
+	Pos  Position
 }
 
 type PlacedTile struct {
 	LegalMove
 	// PlacedTile always has a `Meeple`. Whether it is actually placed is determined by
 	// `Meeple.side` which will be `None`, if it isn't.
-	meeple    Meeple
+	Meeple    Meeple
 }

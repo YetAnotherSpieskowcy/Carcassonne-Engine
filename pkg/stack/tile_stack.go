@@ -57,7 +57,7 @@ func (s Stack[T]) GetRemaining() []T {
 }
 
 func (s Stack[T]) GetRemainingTileCount() int32 {
-	return int32(len(s.tiles)) - s.turn_no
+	return int32(len(s.tiles)) - s.turnNo
 }
 
 func (s Stack[T]) GetTotalTileCount() int32 {

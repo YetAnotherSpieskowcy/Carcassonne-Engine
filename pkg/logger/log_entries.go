@@ -1,32 +1,36 @@
 package logger
 
+import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+)
+
 type StartEntry struct {
-	Event   string   `json:"event"`
-	Deck    []int    `json:"deck"`
-	Players []string `json:"players"`
+	Event       string          `json:"event"`
+	Deck        []elements.Tile `json:"deck"`
+	PlayerCount int             `json:"playerCount"`
 }
 
-func NewStartEntry(deck []int, players []string) StartEntry {
-	return StartEntry{"start", deck, players}
+// TODO: replace with real tile implementation
+func NewStartEntry(deck *stack.Stack[elements.Tile], playerCount int) StartEntry {
+	return StartEntry{"start", deck.GetRemaining(), playerCount}
 }
 
 type PlaceTileEntry struct {
-	Event    string `json:"event"`
-	Player   int    `json:"player"`
-	Rotation int    `json:"rotation"`
-	Position []int  `json:"position"`
-	Meeple   int    `json:"meeple"`
+	Event    string              `json:"event"`
+	PlayerId int                 `json:"playerId"`
+	Tile     elements.PlacedTile `json:"tile"`
 }
 
-func NewPlaceTileEntry(player int, rotation int, position []int, meeple int) PlaceTileEntry {
-	return PlaceTileEntry{"place", player, rotation, position, meeple}
+func NewPlaceTileEntry(playerId int, tile elements.PlacedTile) PlaceTileEntry {
+	return PlaceTileEntry{"place", playerId, tile}
 }
 
 type EndEntry struct {
-	Event  string `json:"event"`
-	Scores []int  `json:"scores"`
+	Event  string   `json:"event"`
+	Scores []uint32 `json:"scores"`
 }
 
-func NewEndEntry(scores []int) EndEntry {
+func NewEndEntry(scores []uint32) EndEntry {
 	return EndEntry{"end", scores}
 }

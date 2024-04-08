@@ -3,6 +3,7 @@ package game
 import (
 	"testing"
 
+	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 )
 

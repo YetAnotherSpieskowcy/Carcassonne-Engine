@@ -2,24 +2,10 @@ package game
 
 import (
 	"errors"
+
+	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
-
-type ScoreReport struct {
-	ReceivedPoints  map[int]uint32
-	ReturnedMeeples map[int]uint8
-}
-
-// mutable type
-type Board interface {
-	TileCount() int
-	Tiles() []PlacedTile
-	GetTileAt(pos Position) (PlacedTile, bool)
-	GetLegalMovesFor(tile Tile) []LegalMove
-	HasValidPlacement(tile Tile) bool
-	CanBePlaced(tile PlacedTile) bool
-	PlaceTile(tile PlacedTile) (ScoreReport, error)
-}
 
 // mutable type
 // Position coordinates example on the board:
@@ -43,7 +29,7 @@ func NewBoard(maxTileCount int32) Board {
 	return &board{
 		tiles: tiles,
 		tilesMap: map[Position]PlacedTile{
-			{0, 0}: StartingTile,
+			NewPosition(0, 0): StartingTile,
 		},
 	}
 }
@@ -90,7 +76,7 @@ func (board *board) PlaceTile(tile PlacedTile) (ScoreReport, error) {
 	// - determine if the tile can placed at a given position,
 	//   or return InvalidMove otherwise
 	board.tiles = append(board.tiles, tile)
-	board.tilesMap[tile.pos] = tile
+	board.tilesMap[tile.Pos] = tile
 	scoreReport, err := board.checkCompleted(tile)
 	return scoreReport, err
 }
