@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
-	connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
+	connectionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
 )
 
 /*
@@ -16,54 +16,78 @@ type Tile struct {
 	Building  buildings.Bulding
 }
 
-func (tile *Tile) Cities() []connection.Connection {
+func (tile *Tile) Cities() []connectionMod.Connection {
 	for _, feature := range tile.Features {
 		if feature.FeatureType == CITIES {
 			return feature.Connections
 		}
 	}
-	return []connection.Connection{}
+	return []connectionMod.Connection{}
 }
 
-func (tile *Tile) CitiesAppendConnection(connection connection.Connection) {
+func (tile *Tile) CitiesAppendConnection(connection connectionMod.Connection) {
+	var found = false
 	for _, feature := range tile.Features {
 		if feature.FeatureType == CITIES {
 			feature.Connections = append(feature.Connections, connection)
+			found = true
 		}
+	}
+	if !found {
+		tile.Features = append(tile.Features, Feature{
+			FeatureType: CITIES,
+			Connections: []connectionMod.Connection{connection},
+		})
 	}
 }
 
-func (tile *Tile) Roads() []connection.Connection {
+func (tile *Tile) Roads() []connectionMod.Connection {
 	for _, feature := range tile.Features {
 		if feature.FeatureType == ROADS {
 			return feature.Connections
 		}
 	}
-	return []connection.Connection{}
+	return []connectionMod.Connection{}
 }
 
-func (tile *Tile) RoadsAppendConnection(connection connection.Connection) {
+func (tile *Tile) RoadsAppendConnection(connection connectionMod.Connection) {
+	var found = false
 	for _, feature := range tile.Features {
 		if feature.FeatureType == ROADS {
 			feature.Connections = append(feature.Connections, connection)
+			found = true
 		}
+	}
+	if !found {
+		tile.Features = append(tile.Features, Feature{
+			FeatureType: ROADS,
+			Connections: []connectionMod.Connection{connection},
+		})
 	}
 }
 
-func (tile *Tile) Fields() []connection.Connection {
+func (tile *Tile) Fields() []connectionMod.Connection {
 	for _, feature := range tile.Features {
 		if feature.FeatureType == FIELDS {
 			return feature.Connections
 		}
 	}
-	return []connection.Connection{}
+	return []connectionMod.Connection{}
 }
 
-func (tile *Tile) FieldsAppendConnection(connection connection.Connection) {
+func (tile *Tile) FieldsAppendConnection(connection connectionMod.Connection) {
+	var found = false
 	for _, feature := range tile.Features {
 		if feature.FeatureType == FIELDS {
 			feature.Connections = append(feature.Connections, connection)
+			found = true
 		}
+	}
+	if !found {
+		tile.Features = append(tile.Features, Feature{
+			FeatureType: FIELDS,
+			Connections: []connectionMod.Connection{connection},
+		})
 	}
 }
 
