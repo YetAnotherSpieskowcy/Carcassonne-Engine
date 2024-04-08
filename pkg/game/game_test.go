@@ -9,7 +9,7 @@ import (
 )
 
 func TestFullGame(t *testing.T) {
-	tiles := []Tile{Tile{0}, Tile{1}}
+	tiles := []Tile{Tile{Id: 0}, Tile{Id: 1}}
     deck := stack.NewOrdered(tiles)
     game, err := NewGameWithDeck(&deck, nil)
     if err != nil {

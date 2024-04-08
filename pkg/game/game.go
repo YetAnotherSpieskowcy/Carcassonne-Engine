@@ -38,7 +38,10 @@ func NewGameWithDeck(deck *stack.Stack[Tile], log *logger.Logger) (*Game, error)
 
 	// All tiles in base game can be placed on the first move but let's just check this
 	// in case this isn't true for tiles from all of the expansions.
-	game.ensureCurrentTileHasValidPlacement()
+	err := game.ensureCurrentTileHasValidPlacement()
+	if err != nil {
+		return nil, err
+	}
 	if err := log.LogEvent(
 		logger.NewStartEntry(game.deck, len(game.players)),
 	); err != nil {
@@ -134,7 +137,10 @@ func (game *Game) PlayTurn(placedTile PlacedTile) error {
 		return err
 	}
 
-	game.ensureCurrentTileHasValidPlacement()
+	err = game.ensureCurrentTileHasValidPlacement()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

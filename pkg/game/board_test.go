@@ -14,7 +14,10 @@ func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
 	board := NewBoard(15)
-	board.PlaceTile(test.GetTestPlacedTile())
+	_, err := board.PlaceTile(test.GetTestPlacedTile())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	expected := 2
 	actual := board.TileCount()
@@ -28,7 +31,7 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
 	board := NewBoard(5)
-	board.PlaceTile(
+	_, err := board.PlaceTile(
 		PlacedTile{
 			LegalMove: LegalMove{
 				Tile: SingleCityEdgeNoRoads().Rotate(2),
@@ -37,8 +40,11 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 			Meeple: Meeple{Side: None},
 		},
 	)
-	expected := []LegalMove{}
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
+	expected := []LegalMove{}
 	actual := board.GetLegalMovesFor(FourCityEdgesConnectedShield())
 
 	if !slices.Equal(expected, actual) {

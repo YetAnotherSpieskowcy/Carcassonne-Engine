@@ -104,7 +104,10 @@ func TestTotalTileCount(t *testing.T) {
 		t.Fail()
 	}
 	for range 2 {
-		stack.Next()
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
 	}
 	if stack.GetTotalTileCount() != tileCount {
 		t.Fail()
@@ -119,7 +122,10 @@ func TestRemainingTileCount(t *testing.T) {
 		t.Fail()
 	}
 	for range 2 {
-		stack.Next()
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
 	}
 	if stack.GetRemainingTileCount() != tileCount - 2 {
 		t.Fail()

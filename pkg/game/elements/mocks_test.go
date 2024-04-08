@@ -14,9 +14,17 @@ func TestTileRotate(t *testing.T) {
 }
 
 func TestSingleCityEdgeNoRoads(t *testing.T) {
-	SingleCityEdgeNoRoads()
+	expected := Tile{}
+	actual := SingleCityEdgeNoRoads()
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
 }
 
 func TestFourCityEdgesConnectedShield(t *testing.T) {
-	FourCityEdgesConnectedShield()
+	expected := Tile{}
+	actual := FourCityEdgesConnectedShield()
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
 }
