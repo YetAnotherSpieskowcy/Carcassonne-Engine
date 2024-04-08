@@ -14,27 +14,27 @@ func TestFileLogger(t *testing.T) {
 
 	log, err := NewFromFile(filename)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	defer os.Remove(filename)
 
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	err = log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	err = log.LogEvent(NewPlaceTileEntry(0, 1, []int{1, 2}, 0))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	err = log.LogEvent(NewEndEntry([]int{1, 2}))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	var startLine StartEntry
@@ -45,7 +45,7 @@ func TestFileLogger(t *testing.T) {
 
 	file, err := os.Open(filename)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	defer file.Close()
 
@@ -54,7 +54,7 @@ func TestFileLogger(t *testing.T) {
 	scanner.Scan()
 	err = json.Unmarshal([]byte(scanner.Text()), &startLine)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	if startLine.Event != "start" {
 		t.Fatal("FAILED")
@@ -69,7 +69,7 @@ func TestFileLogger(t *testing.T) {
 	scanner.Scan()
 	err = json.Unmarshal([]byte(scanner.Text()), &placeTileLine)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	if placeTileLine.Event != "place" {
 		t.Fatal("FAILED")
@@ -87,7 +87,7 @@ func TestFileLogger(t *testing.T) {
 	scanner.Scan()
 	err = json.Unmarshal([]byte(scanner.Text()), &endLine)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	if endLine.Event != "end" {
 		t.Fatal("FAILED")
@@ -102,13 +102,13 @@ func TestFileLoggerInvalidFiles(t *testing.T) {
 
 	log, err := NewFromFile(filename)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	defer os.Remove(filename)
 
 	err = log.Close()
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	err = log.Close()
@@ -129,22 +129,22 @@ func TestLogger(t *testing.T) {
 
 	err := log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	err = log.LogEvent(NewPlaceTileEntry(0, 1, []int{1, 2}, 0))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	err = log.LogEvent(NewEndEntry([]int{1, 2}))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	line, err := buffer.ReadString(byte('\n'))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 
 	var startLine StartEntry
@@ -153,7 +153,7 @@ func TestLogger(t *testing.T) {
 
 	err = json.Unmarshal([]byte(line), &startLine)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	if startLine.Event != "start" {
 		t.Fatal("FAILED")
@@ -167,11 +167,11 @@ func TestLogger(t *testing.T) {
 
 	line, err = buffer.ReadString(byte('\n'))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	err = json.Unmarshal([]byte(line), &placeTileLine)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	if placeTileLine.Event != "place" {
 		t.Fatal("FAILED")
@@ -188,11 +188,11 @@ func TestLogger(t *testing.T) {
 
 	line, err = buffer.ReadString(byte('\n'))
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	err = json.Unmarshal([]byte(line), &endLine)
 	if err != nil {
-		t.Fatal("FAILED")
+		t.Fatal(err.Error())
 	}
 	if endLine.Event != "end" {
 		t.Fatal("FAILED")
