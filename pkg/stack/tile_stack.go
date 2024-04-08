@@ -56,6 +56,14 @@ func (s Stack[T]) GetRemaining() []T {
 	return tiles
 }
 
+func (s Stack[T]) GetRemainingTileCount() int32 {
+	return int32(len(s.tiles)) - s.turn_no
+}
+
+func (s Stack[T]) GetTotalTileCount() int32 {
+	return int32(len(s.tiles))
+}
+
 func (s Stack[T]) Get(n int32) (T, error) {
 	if n >= int32(len(s.tiles)) {
 		return *new(T), ErrStackOutOfBounds

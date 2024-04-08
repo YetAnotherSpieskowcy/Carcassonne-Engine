@@ -95,3 +95,33 @@ func TestRemaining(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestTotalTileCount(t *testing.T) {
+	tiles := []Tile{{0}, {1}, {2}, {3}}
+	tileCount := int32(len(tiles))
+	stack := NewOrdered(tiles)
+	if stack.GetTotalTileCount() != tileCount {
+		t.Fail()
+	}
+	for range 2 {
+		stack.Next()
+	}
+	if stack.GetTotalTileCount() != tileCount {
+		t.Fail()
+	}
+}
+
+func TestRemainingTileCount(t *testing.T) {
+	tiles := []Tile{{0}, {1}, {2}, {3}}
+	tileCount := int32(len(tiles))
+	stack := NewOrdered(tiles)
+	if stack.GetTotalTileCount() != tileCount {
+		t.Fail()
+	}
+	for range 2 {
+		stack.Next()
+	}
+	if stack.GetTotalTileCount() != tileCount - 2 {
+		t.Fail()
+	}
+}
