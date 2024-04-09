@@ -5,6 +5,10 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
+func GetStandardStartingTile() tiles.Tile {
+	return tiletemplates.SingleCityEdgeStraightRoads()
+}
+
 func GetStandardTiles() []tiles.Tile { //nolint:gocyclo // shallow loops for adding tiles
 	var tiles []tiles.Tile
 	// Source: https://en.wikipedia.org/w/index.php?title=Carcassonne_(board_game)&oldid=1214139777#Tiles
