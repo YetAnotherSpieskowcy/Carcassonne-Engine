@@ -67,7 +67,7 @@ func (tile *Tile) FieldsAppendConnection(connections []connectionMod.Side) {
 	})
 }
 
-func (tile *Tile) Rotate(rotations uint) {
+func (tile Tile) Rotate(rotations uint) Tile {
 
 	var newFeatures []featureMod.Feature
 
@@ -81,4 +81,5 @@ func (tile *Tile) Rotate(rotations uint) {
 	}
 
 	tile.Features = newFeatures
+	return tile
 }

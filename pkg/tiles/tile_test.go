@@ -17,8 +17,7 @@ func TestTileRotate(t *testing.T) {
 	tile.HasShield = true
 	tile.Building = buildings.None
 
-	//var rotated = tile.Rotate(1)
-	tile.Rotate(1)
+	var rotated = tile.Rotate(1)
 
 	var expected Tile
 	expected.CitiesAppendConnection([]connection.Side{connection.Right, connection.Top})
@@ -27,7 +26,7 @@ func TestTileRotate(t *testing.T) {
 	expected.HasShield = true
 	expected.Building = buildings.None
 
-	if !reflect.DeepEqual(tile, expected) {
-		t.Fatalf("got\n %#v \nshould be \n%#v", tile, expected)
+	if !reflect.DeepEqual(rotated, expected) {
+		t.Fatalf("got\n %#v \nshould be \n%#v", rotated, expected)
 	}
 }
