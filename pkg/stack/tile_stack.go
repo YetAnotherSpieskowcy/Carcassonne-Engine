@@ -64,6 +64,11 @@ func (s Stack[T]) GetTotalTileCount() int32 {
 	return int32(len(s.tiles))
 }
 
+// returns the original tile set, not the shuffled set
+func (s Stack[T]) GetTileSet() []T {
+	return s.tiles
+}
+
 func (s Stack[T]) Get(n int32) (T, error) {
 	if n >= int32(len(s.tiles)) {
 		return *new(T), ErrStackOutOfBounds

@@ -2,6 +2,7 @@ package stack
 
 import (
 	"errors"
+	"slices"
 	"testing"
 )
 
@@ -92,6 +93,21 @@ func TestRemaining(t *testing.T) {
 		t.Fail()
 	}
 	if remaining[1] != tiles[3] {
+		t.Fail()
+	}
+}
+
+func TestGetTileSet(t *testing.T) {
+	expected := []Tile{{0}, {1}, {2}, {3}}
+	stack := NewOrdered(expected)
+	for range 2 {
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
+	}
+	actual := stack.GetTileSet()
+	if !slices.Equal(actual, expected) {
 		t.Fail()
 	}
 }
