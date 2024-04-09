@@ -30,7 +30,7 @@ func NewGameWithDeck(
 		log = &nullLogger
 	}
 	game := &Game{
-		board:         NewBoard(deck.GetTotalTileCount() + 1),
+		board:         NewBoard(deck.GetTileSet()),
 		deck:          deck,
 		players:       []elements.Player{NewPlayer(0), NewPlayer(1)},
 		currentPlayer: 0,

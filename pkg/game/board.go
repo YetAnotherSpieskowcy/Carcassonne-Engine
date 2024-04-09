@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
@@ -14,19 +15,23 @@ import (
 //
 // Starting tile is placed at (+0, +0) position.
 type board struct {
+	tileSet []elements.Tile
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
+	// `tiles[0]` is always the starting tile.
+	// Indexes in `tiles[1:]` correspond to positions of equivalent tiles in `tileSet`.
 	tiles []elements.PlacedTile
 	// tilesMap is used by the engine for faster lookups
 	// but contains the same information as the `tiles` slice.
 	tilesMap map[elements.Position]elements.PlacedTile
 }
 
-func NewBoard(maxTileCount int32) elements.Board {
-	tiles := make([]elements.PlacedTile, 0, maxTileCount)
-	tiles = append(tiles, elements.StartingTile)
+func NewBoard(tileSet []elements.Tile) elements.Board {
+	tiles := make([]elements.PlacedTile, len(tileSet)+1)
+	tiles[0] = elements.StartingTile
 	return &board{
-		tiles: tiles,
+		tileSet: tileSet,
+		tiles:   tiles,
 		tilesMap: map[elements.Position]elements.PlacedTile{
 			elements.NewPosition(0, 0): elements.StartingTile,
 		},
@@ -70,7 +75,7 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 }
 
 func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, error) {
-	if len(board.tiles) == cap(board.tiles) {
+	if board.TileCount() == cap(board.tiles) {
 		return elements.ScoreReport{}, errors.New(
 			"Board's tiles capacity exceeded, logic error?",
 		)
@@ -78,7 +83,26 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
 	//   or return InvalidMove otherwise
-	board.tiles = append(board.tiles, tile)
+	tileSet := board.tileSet
+	actualIndex := 1
+	for {
+		index := slices.IndexFunc(tileSet, func(candidate elements.Tile) bool {
+			return tile.Tile == candidate
+		})
+		if index == -1 {
+			return elements.ScoreReport{}, errors.New(
+				"Placed tile not found in the tile set, logic error?",
+			)
+		}
+		actualIndex += index
+		if board.tiles[actualIndex].Tile != tile.Tile {
+			break
+		}
+		// position already taken, gotta find another next matching tile
+		actualIndex++
+		tileSet = tileSet[index+1:]
+	}
+	board.tiles[actualIndex] = tile
 	board.tilesMap[tile.Pos] = tile
 	scoreReport, err := board.checkCompleted(tile)
 	return scoreReport, err
