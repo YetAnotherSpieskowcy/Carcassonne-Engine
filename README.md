@@ -25,7 +25,7 @@ We provide you with 2 ways of installing pre-requirements - manual installation 
 2. Install [MinGW-w64](https://github.com/niXman/mingw-builds-binaries)
 
    You will have to add following path to PATH in your **User** Environment Variables after installation:
-   ```
+   ```console
    %USERPROFILE%\mingw64\bin
    ```
 3. Install [Docker Desktop (or Engine)](https://docs.docker.com/desktop/install/windows-install/)
