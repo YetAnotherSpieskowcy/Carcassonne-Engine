@@ -18,7 +18,7 @@ type Tile struct {
 func (tile *Tile) Cities() [][]connectionMod.Side {
 	var cities [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == featureMod.CITY {
+		if feature.FeatureType == featureMod.City {
 			cities = append(cities, feature.Connections)
 		}
 	}
@@ -27,7 +27,7 @@ func (tile *Tile) Cities() [][]connectionMod.Side {
 
 func (tile *Tile) CitiesAppendConnection(connections []connectionMod.Side) {
 	tile.Features = append(tile.Features, featureMod.Feature{
-		FeatureType: featureMod.CITY,
+		FeatureType: featureMod.City,
 		Connections: connections,
 	})
 
@@ -36,7 +36,7 @@ func (tile *Tile) CitiesAppendConnection(connections []connectionMod.Side) {
 func (tile *Tile) Roads() [][]connectionMod.Side {
 	var roads [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == featureMod.ROAD {
+		if feature.FeatureType == featureMod.Road {
 			roads = append(roads, feature.Connections)
 		}
 	}
@@ -45,7 +45,7 @@ func (tile *Tile) Roads() [][]connectionMod.Side {
 
 func (tile *Tile) RoadsAppendConnection(connections []connectionMod.Side) {
 	tile.Features = append(tile.Features, featureMod.Feature{
-		FeatureType: featureMod.ROAD,
+		FeatureType: featureMod.Road,
 		Connections: connections,
 	})
 }
@@ -53,7 +53,7 @@ func (tile *Tile) RoadsAppendConnection(connections []connectionMod.Side) {
 func (tile *Tile) Fields() [][]connectionMod.Side {
 	var fields [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == featureMod.FIELD {
+		if feature.FeatureType == featureMod.Field {
 			fields = append(fields, feature.Connections)
 		}
 	}
@@ -62,7 +62,7 @@ func (tile *Tile) Fields() [][]connectionMod.Side {
 
 func (tile *Tile) FieldsAppendConnection(connections []connectionMod.Side) {
 	tile.Features = append(tile.Features, featureMod.Feature{
-		FeatureType: featureMod.FIELD,
+		FeatureType: featureMod.Field,
 		Connections: connections,
 	})
 }

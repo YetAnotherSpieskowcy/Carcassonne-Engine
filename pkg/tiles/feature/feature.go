@@ -5,10 +5,10 @@ import connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/
 type FeatureType int64
 
 const (
-	NONE FeatureType = iota
-	ROAD
-	CITY
-	FIELD
+	None FeatureType = iota
+	Road
+	City
+	Field
 )
 
 type Feature struct {
