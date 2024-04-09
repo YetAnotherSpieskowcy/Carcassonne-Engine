@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-
 func TestInvalidMoveErrorReturnsMsgField(t *testing.T) {
 	expected := InvalidPosition.msg
 	actual := InvalidPosition.Error()

@@ -127,7 +127,7 @@ func TestRemainingTileCount(t *testing.T) {
 			t.Fail()
 		}
 	}
-	if stack.GetRemainingTileCount() != tileCount - 2 {
+	if stack.GetRemainingTileCount() != tileCount-2 {
 		t.Fail()
 	}
 }

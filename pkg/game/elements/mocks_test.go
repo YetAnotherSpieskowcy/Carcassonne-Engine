@@ -4,7 +4,6 @@ import "testing"
 
 // coverage on mocks go brrrr
 
-
 func TestTileRotate(t *testing.T) {
 	tile := Tile{}
 	actual := tile.Rotate(4)

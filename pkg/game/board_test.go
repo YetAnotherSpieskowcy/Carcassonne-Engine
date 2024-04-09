@@ -9,7 +9,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 )
 
-
 func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
@@ -35,7 +34,7 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 		elements.PlacedTile{
 			LegalMove: elements.LegalMove{
 				Tile: elements.SingleCityEdgeNoRoads().Rotate(2),
-				Pos: elements.NewPosition(0, 1),
+				Pos:  elements.NewPosition(0, 1),
 			},
 			Meeple: elements.Meeple{Side: elements.None},
 		},

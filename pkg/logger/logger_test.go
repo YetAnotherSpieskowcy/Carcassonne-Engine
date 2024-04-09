@@ -40,9 +40,9 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	expectedPlayerId := 0
+	expectedPlayerID := 0
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(expectedPlayerId, expectedTile))
+	err = log.LogEvent(NewPlaceTileEntry(expectedPlayerID, expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -90,8 +90,8 @@ func TestFileLogger(t *testing.T) {
 	if placeTileLine.Event != "place" {
 		t.Fatalf("expected %#v, got %#v instead", "place", placeTileLine.Event)
 	}
-	if placeTileLine.PlayerId != expectedPlayerId {
-		t.Fatalf("expected %#v, got %#v instead", expectedPlayerId, placeTileLine.PlayerId)
+	if placeTileLine.PlayerID != expectedPlayerID {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayerID, placeTileLine.PlayerID)
 	}
 	if !reflect.DeepEqual(placeTileLine.Tile, expectedTile) {
 		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileLine.Tile)
@@ -149,9 +149,9 @@ func TestLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	expectedPlayerId := 0
+	expectedPlayerID := 0
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(expectedPlayerId, expectedTile))
+	err = log.LogEvent(NewPlaceTileEntry(expectedPlayerID, expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -193,8 +193,8 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if placeTileLine.PlayerId != expectedPlayerId {
-		t.Fatalf("expected %#v, got %#v instead", expectedPlayerId, placeTileLine.PlayerId)
+	if placeTileLine.PlayerID != expectedPlayerID {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayerID, placeTileLine.PlayerID)
 	}
 	if !reflect.DeepEqual(placeTileLine.Tile, expectedTile) {
 		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileLine.Tile)

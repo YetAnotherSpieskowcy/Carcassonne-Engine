@@ -6,7 +6,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
-
 // mutable type
 // Position coordinates example on the board:
 // (-1, +1)  (+0, +1)  (+1, +1)
@@ -17,7 +16,7 @@ import (
 type board struct {
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
-	tiles    []elements.PlacedTile
+	tiles []elements.PlacedTile
 	// tilesMap is used by the engine for faster lookups
 	// but contains the same information as the `tiles` slice.
 	tilesMap map[elements.Position]elements.PlacedTile
@@ -47,6 +46,7 @@ func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool)
 	return elem, ok
 }
 
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) GetLegalMovesFor(tile elements.Tile) []elements.LegalMove {
 	// TODO for future tasks:
 	// - implement generation of legal moves
@@ -54,12 +54,15 @@ func (board *board) GetLegalMovesFor(tile elements.Tile) []elements.LegalMove {
 }
 
 // early return variant of above
+//
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) HasValidPlacement(tile elements.Tile) bool {
 	// TODO for future tasks:
 	// - implement generation of legal moves
 	return true
 }
 
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 	// TODO for future tasks:
 	// - implement a way to check if a specified move is valid
@@ -82,6 +85,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 }
 
 func (board *board) checkCompleted(
+	//revive:disable-next-line:unused-parameter Until the TODO is finished.
 	tile elements.PlacedTile,
 ) (elements.ScoreReport, error) {
 	// TODO for future tasks:

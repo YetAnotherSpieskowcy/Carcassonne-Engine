@@ -9,10 +9,9 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 )
 
-
 func getTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{
-		ReceivedPoints: map[int]uint32{0: 5},
+		ReceivedPoints:  map[int]uint32{0: 5},
 		ReturnedMeeples: map[int]uint8{},
 	}
 }
@@ -34,8 +33,8 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 
 	expectedScoreReport := getTestScoreReport()
 	callCount := 0
-	board := &test.TestBoard{
-		PlaceTileFunc: func(tile elements.PlacedTile) (elements.ScoreReport, error) {
+	board := &test.BoardMock{
+		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
 			callCount++
 			return expectedScoreReport, nil
 		},
@@ -62,7 +61,7 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 	player.SetMeepleCount(2)
 	expectedMeepleCount := uint8(1)
 
-	board := &test.TestBoard{}
+	board := &test.BoardMock{}
 	tile := test.GetTestPlacedTile()
 
 	_, err := player.PlaceTile(board, tile)
@@ -81,7 +80,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 	player.SetMeepleCount(2)
 	expectedMeepleCount := uint8(2)
 
-	board := &test.TestBoard{}
+	board := &test.BoardMock{}
 	tile := test.GetTestPlacedTileWithMeeple(elements.Meeple{Side: elements.None})
 
 	_, err := player.PlaceTile(board, tile)
@@ -100,8 +99,8 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 	player.SetMeepleCount(2)
 	expectedMeepleCount := uint8(2)
 
-	board := &test.TestBoard{
-		PlaceTileFunc: func(tile elements.PlacedTile) (elements.ScoreReport, error) {
+	board := &test.BoardMock{
+		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
 			return elements.ScoreReport{}, InvalidPosition
 		},
 	}
@@ -135,10 +134,10 @@ func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
 }
 
 func TestPlayerNewPlayerSetsId(t *testing.T) {
-	expectedId := uint8(6)
-	player := NewPlayer(expectedId)
-	actualId := player.Id()
-	if actualId != expectedId {
-		t.Fatalf("expected %#v, got %#v instead", expectedId, actualId)
+	expectedID := uint8(6)
+	player := NewPlayer(expectedID)
+	actualID := player.ID()
+	if actualID != expectedID {
+		t.Fatalf("expected %#v, got %#v instead", expectedID, actualID)
 	}
 }

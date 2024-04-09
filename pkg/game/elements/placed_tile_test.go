@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestPositionMarshalTextWithPositiveCoords(t *testing.T) {
 	pos := NewPosition(1, 3)
 	expected := []byte("1,3")

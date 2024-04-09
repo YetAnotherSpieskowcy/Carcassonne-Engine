@@ -18,12 +18,12 @@ func NewStartEntry(deck *stack.Stack[elements.Tile], playerCount int) StartEntry
 
 type PlaceTileEntry struct {
 	Event    string              `json:"event"`
-	PlayerId int                 `json:"playerId"`
+	PlayerID int                 `json:"playerID"`
 	Tile     elements.PlacedTile `json:"tile"`
 }
 
-func NewPlaceTileEntry(playerId int, tile elements.PlacedTile) PlaceTileEntry {
-	return PlaceTileEntry{"place", playerId, tile}
+func NewPlaceTileEntry(playerID int, tile elements.PlacedTile) PlaceTileEntry {
+	return PlaceTileEntry{"place", playerID, tile}
 }
 
 type EndEntry struct {

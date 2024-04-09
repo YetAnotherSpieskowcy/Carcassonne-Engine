@@ -4,10 +4,10 @@ package elements
 
 type Side int64
 type Tile struct {
-	Id int
+	ID int
 }
 
-func (tile Tile) Rotate(rotations uint) Tile {
+func (tile Tile) Rotate(_ uint) Tile {
 	return Tile{}
 }
 

@@ -18,7 +18,7 @@ func NewPlayer(id uint8) elements.Player {
 	}
 }
 
-func (player player) Id() uint8 {
+func (player player) ID() uint8 {
 	return player.id
 }
 
@@ -49,7 +49,7 @@ func (player *player) PlaceTile(
 		return scoreReport, err
 	}
 	if tile.Meeple.Side != elements.None {
-		player.meepleCount -= 1
+		player.meepleCount--
 	}
 	return scoreReport, nil
 }

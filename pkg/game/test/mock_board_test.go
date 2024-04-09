@@ -7,9 +7,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
-
-func TestTestBoardTileCountWithoutFunc(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockTileCountWithoutFunc(t *testing.T) {
+	board := BoardMock{}
 	actual := board.TileCount()
 	expected := 0
 	if actual != expected {
@@ -17,10 +16,10 @@ func TestTestBoardTileCountWithoutFunc(t *testing.T) {
 	}
 }
 
-func TestTestBoardTileCountWithFunc(t *testing.T) {
+func TestBoardMockTileCountWithFunc(t *testing.T) {
 	wasCalled := false
 	expected := 2
-	board := TestBoard{TileCountFunc: func() int {
+	board := BoardMock{TileCountFunc: func() int {
 		wasCalled = true
 		return expected
 	}}
@@ -33,32 +32,32 @@ func TestTestBoardTileCountWithFunc(t *testing.T) {
 	}
 }
 
-func TestTestBoardTiles(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockTiles(t *testing.T) {
+	board := BoardMock{}
 	actual := board.Tiles()
 	if len(actual) != 0 {
 		t.Fatalf("expected Tiles() output to be empty, got %#v instead", actual)
 	}
 }
 
-func TestTestBoardGetTileAt(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockGetTileAt(t *testing.T) {
+	board := BoardMock{}
 	_, ok := board.GetTileAt(elements.NewPosition(0, 0))
 	if !ok {
 		t.Fatalf("expected GetTileAt() output to be ok")
 	}
 }
 
-func TestTestBoardGetLegalMovesFor(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockGetLegalMovesFor(t *testing.T) {
+	board := BoardMock{}
 	actual := board.GetLegalMovesFor(GetTestTile())
 	if len(actual) != 0 {
 		t.Fatalf("expected GetLegalMovesFor() output to be empty, got %#v instead", actual)
 	}
 }
 
-func TestTestBoardHasValidPlacement(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockHasValidPlacement(t *testing.T) {
+	board := BoardMock{}
 	actual := board.HasValidPlacement(GetTestTile())
 	expected := true
 	if actual != expected {
@@ -66,8 +65,8 @@ func TestTestBoardHasValidPlacement(t *testing.T) {
 	}
 }
 
-func TestTestBoardCanBePlaced(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockCanBePlaced(t *testing.T) {
+	board := BoardMock{}
 	actual := board.CanBePlaced(
 		GetTestPlacedTileWithMeeple(elements.Meeple{Side: elements.None}),
 	)
@@ -77,8 +76,8 @@ func TestTestBoardCanBePlaced(t *testing.T) {
 	}
 }
 
-func TestTestBoardPlaceTileWithoutFunc(t *testing.T) {
-	board := TestBoard{}
+func TestBoardMockPlaceTileWithoutFunc(t *testing.T) {
+	board := BoardMock{}
 	actual, err := board.PlaceTile(GetTestPlacedTile())
 	if err != nil {
 		t.Fatal(err.Error())
@@ -89,10 +88,10 @@ func TestTestBoardPlaceTileWithoutFunc(t *testing.T) {
 	}
 }
 
-func TestTestBoardPlaceTileWithFunc(t *testing.T) {
+func TestBoardMockPlaceTileWithFunc(t *testing.T) {
 	wasCalled := false
 	expected := elements.ScoreReport{}
-	board := TestBoard{
+	board := BoardMock{
 		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
 			wasCalled = true
 			return expected, nil

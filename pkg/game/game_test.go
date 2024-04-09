@@ -9,14 +9,14 @@ import (
 )
 
 func TestFullGame(t *testing.T) {
-	tiles := []elements.Tile{elements.Tile{Id: 0}, elements.Tile{Id: 1}}
-    deck := stack.NewOrdered(tiles)
-    game, err := NewGameWithDeck(&deck, nil)
-    if err != nil {
-    	t.Fatal(err.Error())
-    }
+	tiles := []elements.Tile{{ID: 0}, {ID: 1}}
+	deck := stack.NewOrdered(tiles)
+	game, err := NewGameWithDeck(&deck, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
-    // correct move with tile 0
+	// correct move with tile 0
 	tile, err := game.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -28,19 +28,19 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-    // incorrect move - try placing tile 0 when 1 should be placed
+	// incorrect move - try placing tile 0 when 1 should be placed
 	tile = tiles[0]
 	err = game.PlayTurn(
 		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
 	)
 	if err == nil {
-    	t.Fatal("expected error to occur")
-    }
+		t.Fatal("expected error to occur")
+	}
 	if !errors.Is(err, WrongTile) {
 		t.Fatal(err.Error())
 	}
 
-    // correct move with tile 1
+	// correct move with tile 1
 	tile, err = game.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -57,24 +57,24 @@ func TestFullGame(t *testing.T) {
 		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tiles[1]}},
 	)
 	if err == nil {
-    	t.Fatal("expected error to occur")
-    }
+		t.Fatal("expected error to occur")
+	}
 	if !errors.Is(err, stack.ErrStackOutOfBounds) {
 		t.Fatal(err.Error())
 	}
 
-    actualScores, err := game.Finalize()
-    if err != nil {
-    	t.Fatal(err.Error())
-    }
+	actualScores, err := game.Finalize()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
-    expectedScores := []uint32{0, 0}
-    for playerId, actual := range actualScores {
-    	expected := expectedScores[playerId]
-    	if actual != expected {
-    		t.Fatalf("expected %v, got %v for player %v instead", expected, actual, playerId)
-    	}
-    }
+	expectedScores := []uint32{0, 0}
+	for playerID, actual := range actualScores {
+		expected := expectedScores[playerID]
+		if actual != expected {
+			t.Fatalf("expected %v, got %v for player %v instead", expected, actual, playerID)
+		}
+	}
 }
 
 func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
@@ -84,11 +84,11 @@ func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
 	}
 
 	// try finalizing before the game is finished
-    _, err = game.Finalize()
-    if err == nil {
-    	t.Fatal("expected error to occur")
-    }
-    if !errors.Is(err, GameIsNotFinished) {
-    	t.Fatal(err.Error())
-    }
+	_, err = game.Finalize()
+	if err == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(err, ErrGameIsNotFinished) {
+		t.Fatal(err.Error())
+	}
 }

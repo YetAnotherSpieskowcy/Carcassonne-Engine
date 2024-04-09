@@ -1,6 +1,5 @@
 package elements
 
-
 // mutable type
 type Board interface {
 	TileCount() int

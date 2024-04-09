@@ -4,11 +4,10 @@ import (
 	"errors"
 	"io"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 )
-
 
 type Game struct {
 	board         elements.Board
@@ -35,7 +34,7 @@ func NewGameWithDeck(
 		deck:          deck,
 		players:       []elements.Player{NewPlayer(0), NewPlayer(1)},
 		currentPlayer: 0,
-		log:        log,
+		log:           log,
 	}
 
 	// All tiles in base game can be placed on the first move but let's just check this
@@ -118,24 +117,24 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 	if err != nil {
 		return err
 	}
-	if err := game.log.LogEvent(
+	if err = game.log.LogEvent(
 		logger.NewPlaceTileEntry(game.currentPlayer, placedTile),
 	); err != nil {
 		return err
 	}
 
 	// Score features and update meeple counts
-	for playerId, receivedPoints := range scoreReport.ReceivedPoints {
-		player := game.players[playerId]
+	for playerID, receivedPoints := range scoreReport.ReceivedPoints {
+		player := game.players[playerID]
 		player.SetScore(player.Score() + receivedPoints)
 	}
-	for playerId, returnedMeeples := range scoreReport.ReturnedMeeples {
-		player := game.players[playerId]
+	for playerID, returnedMeeples := range scoreReport.ReturnedMeeples {
+		player := game.players[playerID]
 		player.SetMeepleCount(player.MeepleCount() + returnedMeeples)
 	}
 
 	// Pop from the stack after the move.
-	if _, err := game.deck.Next(); err != nil {
+	if _, err = game.deck.Next(); err != nil {
 		return err
 	}
 
@@ -151,7 +150,7 @@ func (game *Game) Finalize() ([]uint32, error) {
 	playerScores := make([]uint32, len(game.players))
 
 	if _, err := game.GetCurrentTile(); !errors.Is(err, stack.ErrStackOutOfBounds) {
-		return playerScores, GameIsNotFinished
+		return playerScores, ErrGameIsNotFinished
 	}
 
 	for i, player := range game.players {

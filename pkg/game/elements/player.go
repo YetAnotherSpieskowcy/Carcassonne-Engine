@@ -1,8 +1,7 @@
 package elements
 
-
 type Player interface {
-	Id() uint8
+	ID() uint8
 	MeepleCount() uint8
 	SetMeepleCount(value uint8)
 	Score() uint32
