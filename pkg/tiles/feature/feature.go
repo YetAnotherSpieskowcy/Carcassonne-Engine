@@ -2,16 +2,16 @@ package feature
 
 import connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
 
-type FeatureType int64 //nolint:revive // name type would be too ambigous
+type Type int64
 
 const (
-	None FeatureType = iota
+	None Type = iota
 	Road
 	City
 	Field
 )
 
 type Feature struct {
-	FeatureType FeatureType
+	FeatureType Type
 	Connections []connection.Side
 }

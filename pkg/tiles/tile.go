@@ -67,25 +67,18 @@ func (tile *Tile) FieldsAppendConnection(connections []connectionMod.Side) {
 	})
 }
 
-func (tile Tile) Rotate(rotations uint) Tile {
-	var t Tile
-	// rotate cities
-	for _, cityConnection := range tile.Cities() {
-		t.CitiesAppendConnection(connectionMod.RotateSideArray(cityConnection, rotations))
+func (tile *Tile) Rotate(rotations uint) *Tile {
+
+	var newFeature []featureMod.Feature
+
+	for _, feature := range tile.Features {
+		var newConnections []connectionMod.Side
+		for _, connection := range feature.Connections {
+			newConnections = append(newConnections, connection.Rotate(rotations))
+		}
+
+		newFeature = append(newFeature, featureMod.Feature{FeatureType: feature.FeatureType, Connections: newConnections})
 	}
 
-	// rotate roads
-	for _, road := range tile.Roads() {
-		t.RoadsAppendConnection(connectionMod.RotateSideArray(road, rotations))
-	}
-
-	// rotate fields
-	for _, field := range tile.Fields() {
-		t.FieldsAppendConnection(connectionMod.RotateSideArray(field, rotations))
-	}
-
-	// copy parameters
-	t.HasShield = tile.HasShield
-	t.Building = tile.Building
-	return t
+	return tile
 }
