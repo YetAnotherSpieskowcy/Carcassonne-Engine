@@ -12,13 +12,13 @@ import (
 func getTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{
 		ReceivedPoints:  map[int]uint32{0: 5},
-		ReturnedMeeples: map[int]uint8{},
+		ReturnedMeeples: map[int][]uint8{},
 	}
 }
 
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	player := NewPlayer(0)
-	player.SetMeepleCount(0)
+	player.SetMeepleCount(elements.NormalMeeple, 0)
 
 	board := NewBoard(5)
 	tile := test.GetTestPlacedTile()
@@ -58,7 +58,7 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 
 func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 	player := NewPlayer(0)
-	player.SetMeepleCount(2)
+	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
 
 	board := &test.BoardMock{}
@@ -69,7 +69,7 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	actualMeepleCount := player.MeepleCount()
+	actualMeepleCount := player.MeepleCount(elements.NormalMeeple)
 	if actualMeepleCount != expectedMeepleCount {
 		t.Fatalf("expected %#v, got %#v instead", expectedMeepleCount, actualMeepleCount)
 	}
@@ -77,7 +77,7 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 	player := NewPlayer(0)
-	player.SetMeepleCount(2)
+	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
 	board := &test.BoardMock{}
@@ -88,7 +88,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	actualMeepleCount := player.MeepleCount()
+	actualMeepleCount := player.MeepleCount(elements.NormalMeeple)
 	if actualMeepleCount != expectedMeepleCount {
 		t.Fatalf("expected %#v, got %#v instead", expectedMeepleCount, actualMeepleCount)
 	}
@@ -96,7 +96,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 	player := NewPlayer(0)
-	player.SetMeepleCount(2)
+	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
 	board := &test.BoardMock{
@@ -111,7 +111,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 		t.Fatal("expected error to occur")
 	}
 
-	actualMeepleCount := player.MeepleCount()
+	actualMeepleCount := player.MeepleCount(elements.NormalMeeple)
 	if actualMeepleCount != expectedMeepleCount {
 		t.Fatalf("expected %#v, got %#v instead", expectedMeepleCount, actualMeepleCount)
 	}

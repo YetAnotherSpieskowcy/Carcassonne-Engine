@@ -130,7 +130,13 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 	}
 	for playerID, returnedMeeples := range scoreReport.ReturnedMeeples {
 		player := game.players[playerID]
-		player.SetMeepleCount(player.MeepleCount() + returnedMeeples)
+		for i, returnedMeepleCount := range returnedMeeples {
+			meepleType := elements.MeepleType(i)
+			player.SetMeepleCount(
+				meepleType,
+				player.MeepleCount(meepleType)-returnedMeepleCount,
+			)
+		}
 	}
 
 	// Pop from the stack after the move.

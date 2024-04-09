@@ -34,7 +34,7 @@ func NewBoard(maxTileCount int32) elements.Board {
 }
 
 func (board *board) TileCount() int {
-	return len(board.tiles)
+	return len(board.tilesMap)
 }
 
 func (board *board) Tiles() []elements.PlacedTile {
@@ -94,7 +94,7 @@ func (board *board) checkCompleted(
 	// - award points
 	scoreReport := elements.ScoreReport{
 		ReceivedPoints:  map[int]uint32{},
-		ReturnedMeeples: map[int]uint8{},
+		ReturnedMeeples: map[int][]uint8{},
 	}
 	return scoreReport, nil
 }

@@ -5,16 +5,19 @@ import (
 )
 
 type player struct {
-	id          uint8
-	meepleCount uint8
-	score       uint32
+	id uint8
+	// indexed by meeple's enum value
+	meepleCounts []uint8
+	score        uint32
 }
 
 func NewPlayer(id uint8) elements.Player {
+	meepleCounts := make([]uint8, elements.MeepleTypeCount)
+	meepleCounts[elements.NormalMeeple] = 7
 	return &player{
-		id:          id,
-		meepleCount: 7,
-		score:       0,
+		id:           id,
+		meepleCounts: meepleCounts,
+		score:        0,
 	}
 }
 
@@ -22,12 +25,12 @@ func (player player) ID() uint8 {
 	return player.id
 }
 
-func (player player) MeepleCount() uint8 {
-	return player.meepleCount
+func (player player) MeepleCount(meepleType elements.MeepleType) uint8 {
+	return player.meepleCounts[meepleType]
 }
 
-func (player *player) SetMeepleCount(value uint8) {
-	player.meepleCount = value
+func (player *player) SetMeepleCount(meepleType elements.MeepleType, value uint8) {
+	player.meepleCounts[meepleType] = value
 }
 
 func (player player) Score() uint32 {
@@ -41,7 +44,8 @@ func (player *player) SetScore(value uint32) {
 func (player *player) PlaceTile(
 	board elements.Board, tile elements.PlacedTile,
 ) (elements.ScoreReport, error) {
-	if player.meepleCount == 0 && tile.Meeple.Side != elements.None {
+	meepleCount := player.MeepleCount(tile.Meeple.Type)
+	if meepleCount == 0 && tile.Meeple.Side != elements.None {
 		return elements.ScoreReport{}, NoMeepleAvailable
 	}
 	scoreReport, err := board.PlaceTile(tile)
@@ -49,7 +53,7 @@ func (player *player) PlaceTile(
 		return scoreReport, err
 	}
 	if tile.Meeple.Side != elements.None {
-		player.meepleCount--
+		player.SetMeepleCount(tile.Meeple.Type, meepleCount-1)
 	}
 	return scoreReport, nil
 }

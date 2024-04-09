@@ -31,8 +31,11 @@ func (pos *Position) UnmarshalText(text []byte) error {
 
 // https://wikicarpedia.com/car/Game_Figures
 type MeepleType uint8
+
 const (
-	Normal MeepleType = iota
+	NormalMeeple MeepleType = iota
+
+	MeepleTypeCount int = iota
 )
 
 type Meeple struct {

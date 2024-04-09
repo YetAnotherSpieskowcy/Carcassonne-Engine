@@ -31,6 +31,6 @@ func GetTestPlacedTileWithMeeple(meeple elements.Meeple) elements.PlacedTile {
 func GetTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{
 		ReceivedPoints:  map[int]uint32{0: 5},
-		ReturnedMeeples: map[int]uint8{},
+		ReturnedMeeples: map[int][]uint8{},
 	}
 }
