@@ -50,6 +50,7 @@ make
 ```
 - Windows
 ```console
+Set-ExecutionPolicy Bypass -Scope Process -Force
 ./make.ps1
 ```
 or run the build command manually:
@@ -68,6 +69,7 @@ make test
 ```
 - Windows
 ```console
+Set-ExecutionPolicy Bypass -Scope Process -Force
 ./make.ps1 test
 ```
 or run the test command manually:
@@ -75,14 +77,15 @@ or run the test command manually:
 go test -race "-coverprofile=coverage.txt" "./..."
 ```
 
-To show coverage, you can either use the `show-coverage` make target:
+To show coverage, you can either use the `open-coverage` make target:
 - Linux
 ```console
-make show-coverage
+make open-coverage
 ```
 - Windows
 ```console
-./make.ps1 show-coverage
+Set-ExecutionPolicy Bypass -Scope Process -Force
+./make.ps1 open-coverage
 ```
 or run the cover tool command manually:
 ```console
@@ -98,6 +101,7 @@ make lint
 ```
 - Windows
 ```console
+Set-ExecutionPolicy Bypass -Scope Process -Force
 ./make.ps1 lint
 ```
 or run the lint command manually:
