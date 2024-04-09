@@ -15,7 +15,8 @@ A rule engine for the Carcassonne game.
 
 ### Windows
 
-**NOTE:** Windows support is maintained on best-effort basis - we may drop it once it becomes a burden.
+> [!NOTE]
+> Windows support is maintained on best-effort basis - we may drop it once it becomes a burden.
 
 We provide you with 2 ways of installing pre-requirements - manual installation or automated installation with Chocolatey:
 
@@ -30,13 +31,15 @@ We provide you with 2 ways of installing pre-requirements - manual installation 
    ```
 3. Install [Docker Desktop (or Engine)](https://docs.docker.com/desktop/install/windows-install/)
 
-   **NOTE:** This will require enabling optional Windows features (such as Hyper-V) and may require a reboot.
+> [!NOTE]
+> This will require enabling optional Windows features (such as Hyper-V) and may require a reboot.
 
 #### Installing pre-requirements with Chocolatey
 
 *These instructions assume that you already have Chocolatey installed. If not, you can install it by following [its install documentation](https://chocolatey.org/install).*
 
-**NOTE:** The instructions below will enable the Hyper-V feature on your system.
+> [!NOTE]
+> The instructions below will enable the Hyper-V feature on your system.
 
 Run PowerShell as Administrator and execute the following command:
 ```console
