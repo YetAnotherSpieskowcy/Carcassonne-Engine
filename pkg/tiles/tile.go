@@ -3,13 +3,14 @@ package tiles
 import (
 	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
 	connectionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
+	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
 /*
 Immutable object
 */
 type Tile struct {
-	Features  []Feature
+	Features  []featureMod.Feature
 	HasShield bool
 	Building  buildings.Bulding
 }
@@ -17,7 +18,7 @@ type Tile struct {
 func (tile *Tile) Cities() [][]connectionMod.Side {
 	var cities [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == CITY {
+		if feature.FeatureType == featureMod.CITY {
 			cities = append(cities, feature.Connections)
 		}
 	}
@@ -25,8 +26,8 @@ func (tile *Tile) Cities() [][]connectionMod.Side {
 }
 
 func (tile *Tile) CitiesAppendConnection(connections []connectionMod.Side) {
-	tile.Features = append(tile.Features, Feature{
-		FeatureType: CITY,
+	tile.Features = append(tile.Features, featureMod.Feature{
+		FeatureType: featureMod.CITY,
 		Connections: connections,
 	})
 
@@ -35,7 +36,7 @@ func (tile *Tile) CitiesAppendConnection(connections []connectionMod.Side) {
 func (tile *Tile) Roads() [][]connectionMod.Side {
 	var roads [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == ROAD {
+		if feature.FeatureType == featureMod.ROAD {
 			roads = append(roads, feature.Connections)
 		}
 	}
@@ -43,8 +44,8 @@ func (tile *Tile) Roads() [][]connectionMod.Side {
 }
 
 func (tile *Tile) RoadsAppendConnection(connections []connectionMod.Side) {
-	tile.Features = append(tile.Features, Feature{
-		FeatureType: ROAD,
+	tile.Features = append(tile.Features, featureMod.Feature{
+		FeatureType: featureMod.ROAD,
 		Connections: connections,
 	})
 }
@@ -52,7 +53,7 @@ func (tile *Tile) RoadsAppendConnection(connections []connectionMod.Side) {
 func (tile *Tile) Fields() [][]connectionMod.Side {
 	var fields [][]connectionMod.Side
 	for _, feature := range tile.Features {
-		if feature.FeatureType == FIELD {
+		if feature.FeatureType == featureMod.FIELD {
 			fields = append(fields, feature.Connections)
 		}
 	}
@@ -60,8 +61,8 @@ func (tile *Tile) Fields() [][]connectionMod.Side {
 }
 
 func (tile *Tile) FieldsAppendConnection(connections []connectionMod.Side) {
-	tile.Features = append(tile.Features, Feature{
-		FeatureType: FIELD,
+	tile.Features = append(tile.Features, featureMod.Feature{
+		FeatureType: featureMod.FIELD,
 		Connections: connections,
 	})
 }

@@ -1,4 +1,4 @@
-package tiles
+package feature
 
 import connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
 
