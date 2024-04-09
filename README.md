@@ -23,6 +23,11 @@ We provide you with 2 ways of installing pre-requirements - manual installation 
 
 1. Install [Go for Windows x86-64](https://go.dev/dl/)
 2. Install [MinGW-w64](https://github.com/niXman/mingw-builds-binaries)
+
+   You will have to add following path to PATH in your **User** Environment Variables after installation:
+   ```
+   %USERPROFILE%\mingw64\bin
+   ```
 3. Install [Docker Desktop (or Engine)](https://docs.docker.com/desktop/install/windows-install/)
 
    **NOTE:** This will require enabling optional Windows features (such as Hyper-V) and may require a reboot.
