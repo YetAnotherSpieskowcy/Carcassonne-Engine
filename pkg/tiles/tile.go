@@ -67,9 +67,9 @@ func (tile *Tile) FieldsAppendConnection(connections []connectionMod.Side) {
 	})
 }
 
-func (tile *Tile) Rotate(rotations uint) *Tile {
+func (tile *Tile) Rotate(rotations uint) {
 
-	var newFeature []featureMod.Feature
+	var newFeatures []featureMod.Feature
 
 	for _, feature := range tile.Features {
 		var newConnections []connectionMod.Side
@@ -77,8 +77,8 @@ func (tile *Tile) Rotate(rotations uint) *Tile {
 			newConnections = append(newConnections, connection.Rotate(rotations))
 		}
 
-		newFeature = append(newFeature, featureMod.Feature{FeatureType: feature.FeatureType, Connections: newConnections})
+		newFeatures = append(newFeatures, featureMod.Feature{FeatureType: feature.FeatureType, Connections: newConnections})
 	}
 
-	return tile
+	tile.Features = newFeatures
 }
