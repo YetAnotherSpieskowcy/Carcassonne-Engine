@@ -1,6 +1,6 @@
 package feature
 
-import connection "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/connection"
+import "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 
 type Type int64
 
@@ -13,5 +13,5 @@ const (
 
 type Feature struct {
 	FeatureType Type
-	Connections []connection.Side
+	Sides       []side.Side
 }

@@ -1,4 +1,4 @@
-package connection
+package side
 
 type Side int64
 
