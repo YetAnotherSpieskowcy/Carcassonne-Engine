@@ -1,6 +1,12 @@
 package elements
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
+)
 
 type Position struct {
 	// int8 would be fine for base game (72 tiles) but let's be a bit more generous
@@ -40,12 +46,12 @@ const (
 
 type Meeple struct {
 	Player Player
-	Side   Side
+	Side   side.Side
 	Type   MeepleType
 }
 
 type LegalMove struct {
-	Tile
+	tiles.Tile
 	Pos Position
 }
 
@@ -54,4 +60,13 @@ type PlacedTile struct {
 	// PlacedTile always has a `Meeple`. Whether it is actually placed is determined by
 	// `Meeple.side` which will be `None`, if it isn't.
 	Meeple Meeple
+}
+
+func GetStandardStartingPlacedTile() PlacedTile {
+	return PlacedTile{
+		LegalMove: LegalMove{
+			Tile: tilesets.GetStandardStartingTile(),
+			Pos:  NewPosition(0, 0),
+		},
+	}
 }

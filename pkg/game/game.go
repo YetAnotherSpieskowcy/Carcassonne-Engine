@@ -7,23 +7,25 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 type Game struct {
 	board         elements.Board
-	deck          *stack.Stack[elements.Tile]
+	deck          *stack.Stack[tiles.Tile]
 	players       []elements.Player
 	currentPlayer int
 	log           *logger.Logger
 }
 
 func NewGame(log *logger.Logger) (*Game, error) {
-	deck := stack.New(elements.BaseTileSet)
+	deck := stack.New(tilesets.GetStandardTiles())
 	return NewGameWithDeck(&deck, log)
 }
 
 func NewGameWithDeck(
-	deck *stack.Stack[elements.Tile], log *logger.Logger,
+	deck *stack.Stack[tiles.Tile], log *logger.Logger,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
@@ -52,7 +54,7 @@ func NewGameWithDeck(
 	return game, nil
 }
 
-func (game *Game) GetCurrentTile() (elements.Tile, error) {
+func (game *Game) GetCurrentTile() (tiles.Tile, error) {
 	return game.deck.Peek()
 }
 
@@ -104,7 +106,7 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 
 	// TODO: This equality test needs to work with rotations, inner slices, etc.
 	// How to do this depends on the final implementation of `Tile` (and `PlacedTile`)
-	if currentTile != placedTile.Tile {
+	if !currentTile.Equals(placedTile.Tile) {
 		return WrongTile
 	}
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 func TestBoardMockTileCountWithoutFunc(t *testing.T) {
@@ -68,7 +69,7 @@ func TestBoardMockHasValidPlacement(t *testing.T) {
 func TestBoardMockCanBePlaced(t *testing.T) {
 	board := BoardMock{}
 	actual := board.CanBePlaced(
-		GetTestPlacedTileWithMeeple(elements.Meeple{Side: elements.None}),
+		GetTestPlacedTileWithMeeple(elements.Meeple{Side: side.None}),
 	)
 	expected := true
 	if actual != expected {

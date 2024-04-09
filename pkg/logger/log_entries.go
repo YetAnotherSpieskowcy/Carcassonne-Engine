@@ -3,16 +3,17 @@ package logger
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
 type StartEntry struct {
-	Event       string          `json:"event"`
-	Deck        []elements.Tile `json:"deck"`
-	PlayerCount int             `json:"playerCount"`
+	Event       string       `json:"event"`
+	Deck        []tiles.Tile `json:"deck"`
+	PlayerCount int          `json:"playerCount"`
 }
 
 // TODO: replace with real tile implementation
-func NewStartEntry(deck *stack.Stack[elements.Tile], playerCount int) StartEntry {
+func NewStartEntry(deck *stack.Stack[tiles.Tile], playerCount int) StartEntry {
 	return StartEntry{"start", deck.GetRemaining(), playerCount}
 }
 

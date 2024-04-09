@@ -8,13 +8,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
-func getTestDeck() *stack.Stack[elements.Tile] {
-	deck := stack.NewOrdered([]elements.Tile{test.GetTestTile(), test.GetTestTile()})
+func getTestDeck() *stack.Stack[tiles.Tile] {
+	deck := stack.NewOrdered([]tiles.Tile{test.GetTestTile(), test.GetTestTile()})
 	return &deck
 }
 

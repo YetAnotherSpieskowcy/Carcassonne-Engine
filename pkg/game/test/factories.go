@@ -2,10 +2,13 @@ package test
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
-func GetTestTile() elements.Tile {
-	return elements.SingleCityEdgeNoRoads().Rotate(2)
+func GetTestTile() tiles.Tile {
+	return tiletemplates.SingleCityEdgeNoRoads().Rotate(2)
 }
 
 func GetTestPlacedTile() elements.PlacedTile {
@@ -14,7 +17,7 @@ func GetTestPlacedTile() elements.PlacedTile {
 			Tile: GetTestTile(),
 			Pos:  elements.NewPosition(0, 1),
 		},
-		Meeple: elements.Meeple{Side: elements.Bottom},
+		Meeple: elements.Meeple{Side: side.Bottom},
 	}
 }
 

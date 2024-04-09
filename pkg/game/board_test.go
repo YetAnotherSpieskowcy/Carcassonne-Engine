@@ -2,17 +2,20 @@ package game
 
 import (
 	"reflect"
-	"slices"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
-	board := NewBoard(elements.GetStandardTiles())
+	board := NewBoard(tilesets.GetStandardTiles())
 	_, err := board.PlaceTile(test.GetTestPlacedTile())
 	if err != nil {
 		t.Fatal(err.Error())
@@ -29,14 +32,14 @@ func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
-	board := NewBoard(elements.GetStandardTiles())
+	board := NewBoard(tilesets.GetStandardTiles())
 	_, err := board.PlaceTile(
 		elements.PlacedTile{
 			LegalMove: elements.LegalMove{
-				Tile: elements.SingleCityEdgeNoRoads().Rotate(2),
+				Tile: tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
 				Pos:  elements.NewPosition(0, 1),
 			},
-			Meeple: elements.Meeple{Side: elements.None},
+			Meeple: elements.Meeple{Side: side.None},
 		},
 	)
 	if err != nil {
@@ -44,18 +47,18 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 	}
 
 	expected := []elements.LegalMove{}
-	actual := board.GetLegalMovesFor(elements.FourCityEdgesConnectedShield())
+	actual := board.GetLegalMovesFor(tiletemplates.FourCityEdgesConnectedShield())
 
-	if !slices.Equal(expected, actual) {
+	if !reflect.DeepEqual(expected, actual) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
 
 func TestBoardHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T) {
-	board := NewBoard(elements.GetStandardTiles())
+	board := NewBoard(tilesets.GetStandardTiles())
 
 	expected := true
-	actual := board.HasValidPlacement(elements.SingleCityEdgeNoRoads())
+	actual := board.HasValidPlacement(tiletemplates.SingleCityEdgeNoRoads())
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -63,7 +66,7 @@ func TestBoardHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T)
 }
 
 func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
-	board := NewBoard(elements.GetStandardTiles())
+	board := NewBoard(tilesets.GetStandardTiles())
 
 	expected := true
 	actual := board.CanBePlaced(test.GetTestPlacedTile())
@@ -74,7 +77,7 @@ func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 }
 
 func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
-	board := NewBoard([]elements.Tile{})
+	board := NewBoard([]tiles.Tile{})
 
 	_, err := board.PlaceTile(test.GetTestPlacedTile())
 	if err == nil {
@@ -83,7 +86,9 @@ func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
 }
 
 func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
-	tileSet := []elements.Tile{test.GetTestTile(), {ID: 2}}
+	tileSet := []tiles.Tile{
+		test.GetTestTile(), tiletemplates.FourCityEdgesConnectedShield(),
+	}
 	board := NewBoard(tileSet)
 	expected := test.GetTestPlacedTile()
 
@@ -104,10 +109,14 @@ func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
 }
 
 func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
-	tileSet := []elements.Tile{test.GetTestTile(), {ID: 2}, test.GetTestTile()}
+	tileSet := []tiles.Tile{
+		test.GetTestTile(),
+		tiletemplates.FourCityEdgesConnectedShield(),
+		test.GetTestTile(),
+	}
 	board := NewBoard(tileSet)
 	expected := []elements.PlacedTile{
-		elements.StartingTile,
+		elements.GetStandardStartingPlacedTile(),
 		test.GetTestPlacedTile(),
 		{},
 		test.GetTestPlacedTile(),
@@ -127,7 +136,7 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 	}
 
 	actual := board.Tiles()
-	if !slices.Equal(expected, actual) {
+	if !reflect.DeepEqual(expected, actual) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
 // mutable type
@@ -15,7 +16,7 @@ import (
 //
 // Starting tile is placed at (+0, +0) position.
 type board struct {
-	tileSet []elements.Tile
+	tileSet []tiles.Tile
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
 	// `tiles[0]` is always the starting tile.
@@ -26,14 +27,15 @@ type board struct {
 	tilesMap map[elements.Position]elements.PlacedTile
 }
 
-func NewBoard(tileSet []elements.Tile) elements.Board {
+func NewBoard(tileSet []tiles.Tile) elements.Board {
 	tiles := make([]elements.PlacedTile, len(tileSet)+1)
-	tiles[0] = elements.StartingTile
+	startingTile := elements.GetStandardStartingPlacedTile()
+	tiles[0] = startingTile
 	return &board{
 		tileSet: tileSet,
 		tiles:   tiles,
 		tilesMap: map[elements.Position]elements.PlacedTile{
-			elements.NewPosition(0, 0): elements.StartingTile,
+			elements.NewPosition(0, 0): startingTile,
 		},
 	}
 }
@@ -52,7 +54,7 @@ func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool)
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile elements.Tile) []elements.LegalMove {
+func (board *board) GetLegalMovesFor(tile tiles.Tile) []elements.LegalMove {
 	// TODO for future tasks:
 	// - implement generation of legal moves
 	return []elements.LegalMove{}
@@ -61,7 +63,7 @@ func (board *board) GetLegalMovesFor(tile elements.Tile) []elements.LegalMove {
 // early return variant of above
 //
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) HasValidPlacement(tile elements.Tile) bool {
+func (board *board) HasValidPlacement(tile tiles.Tile) bool {
 	// TODO for future tasks:
 	// - implement generation of legal moves
 	return true
@@ -86,8 +88,8 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	tileSet := board.tileSet
 	actualIndex := 1
 	for {
-		index := slices.IndexFunc(tileSet, func(candidate elements.Tile) bool {
-			return tile.Tile == candidate
+		index := slices.IndexFunc(tileSet, func(candidate tiles.Tile) bool {
+			return tile.Tile.Equals(candidate)
 		})
 		if index == -1 {
 			return elements.ScoreReport{}, errors.New(
@@ -95,7 +97,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			)
 		}
 		actualIndex += index
-		if board.tiles[actualIndex].Tile != tile.Tile {
+		if !board.tiles[actualIndex].Tile.Equals(tile.Tile) {
 			break
 		}
 		// position already taken, gotta find another next matching tile

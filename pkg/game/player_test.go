@@ -7,6 +7,8 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func getTestScoreReport() elements.ScoreReport {
@@ -20,7 +22,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	player := NewPlayer(0)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
 
-	board := NewBoard(elements.GetStandardTiles())
+	board := NewBoard(tilesets.GetStandardTiles())
 	tile := test.GetTestPlacedTile()
 	_, err := player.PlaceTile(board, tile)
 	if !errors.Is(err, NoMeepleAvailable) {
@@ -81,7 +83,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 	expectedMeepleCount := uint8(2)
 
 	board := &test.BoardMock{}
-	tile := test.GetTestPlacedTileWithMeeple(elements.Meeple{Side: elements.None})
+	tile := test.GetTestPlacedTileWithMeeple(elements.Meeple{Side: side.None})
 
 	_, err := player.PlaceTile(board, tile)
 	if err != nil {

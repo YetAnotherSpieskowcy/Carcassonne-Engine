@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
 type BoardMock struct {
@@ -24,11 +25,11 @@ func (board *BoardMock) GetTileAt(_ elements.Position) (elements.PlacedTile, boo
 	return elements.PlacedTile{}, true
 }
 
-func (board *BoardMock) GetLegalMovesFor(_ elements.Tile) []elements.LegalMove {
+func (board *BoardMock) GetLegalMovesFor(_ tiles.Tile) []elements.LegalMove {
 	return []elements.LegalMove{}
 }
 
-func (board *BoardMock) HasValidPlacement(_ elements.Tile) bool {
+func (board *BoardMock) HasValidPlacement(_ tiles.Tile) bool {
 	return true
 }
 

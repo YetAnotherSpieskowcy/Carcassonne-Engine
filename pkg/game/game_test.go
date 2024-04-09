@@ -6,10 +6,15 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
 func TestFullGame(t *testing.T) {
-	tiles := []elements.Tile{{ID: 1}, {ID: 2}}
+	tiles := []tiles.Tile{
+		tiletemplates.SingleCityEdgeNoRoads(),
+		tiletemplates.FourCityEdgesConnectedShield(),
+	}
 	deck := stack.NewOrdered(tiles)
 	game, err := NewGameWithDeck(&deck, nil)
 	if err != nil {

@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 type player struct {
@@ -45,14 +46,14 @@ func (player *player) PlaceTile(
 	board elements.Board, tile elements.PlacedTile,
 ) (elements.ScoreReport, error) {
 	meepleCount := player.MeepleCount(tile.Meeple.Type)
-	if meepleCount == 0 && tile.Meeple.Side != elements.None {
+	if meepleCount == 0 && tile.Meeple.Side != side.None {
 		return elements.ScoreReport{}, NoMeepleAvailable
 	}
 	scoreReport, err := board.PlaceTile(tile)
 	if err != nil {
 		return scoreReport, err
 	}
-	if tile.Meeple.Side != elements.None {
+	if tile.Meeple.Side != side.None {
 		player.SetMeepleCount(tile.Meeple.Type, meepleCount-1)
 	}
 	return scoreReport, nil
