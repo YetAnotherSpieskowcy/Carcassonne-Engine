@@ -1,13 +1,72 @@
-package tiles
+package tiles_test
 
 import (
 	"reflect"
 	"testing"
 
+	//revive:disable-next-line:dot-imports Dot imports for package under test are fine.
+	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
+
+func TestTileEqualsReturnsFalseWhenOnlyOneHasShield(t *testing.T) {
+	a := tiletemplates.TwoCityEdgesUpAndDownConnectedShield()
+	b := tiletemplates.TwoCityEdgesUpAndDownConnected()
+	if a.Equals(b) {
+		t.Fail()
+	}
+}
+
+func TestTileEqualsReturnsFalseWhenOnlyOneHasBuilding(t *testing.T) {
+	a := tiletemplates.MonasteryWithSingleRoad()
+	b := tiletemplates.StraightRoads()
+	if a.Equals(b) {
+		t.Fail()
+	}
+}
+
+func TestTileEqualsReturnsFalseWhenFeatureCountDiffers(t *testing.T) {
+	a := tiletemplates.StraightRoads()
+	b := tiletemplates.TCrossRoad()
+	if a.Equals(b) {
+		t.Fail()
+	}
+}
+
+func TestTileEqualsReturnsFalseWhenFeatureSidesDiffer(t *testing.T) {
+	a := tiletemplates.TwoCityEdgesUpAndDownNotConnected()
+	b := tiletemplates.TwoCityEdgesCornerNotConnected()
+	if a.Equals(b) {
+		t.Fail()
+	}
+}
+
+func TestTileEqualsReturnsTrueWhenEqual(t *testing.T) {
+	a := tiletemplates.MonasteryWithoutRoads()
+	b := tiletemplates.MonasteryWithoutRoads()
+	if !a.Equals(b) {
+		t.Fail()
+	}
+}
+
+func TestTileEqualsReturnsTrueWhenEqualButRotated(t *testing.T) {
+	a := tiletemplates.MonasteryWithoutRoads()
+	b := tiletemplates.MonasteryWithoutRoads().Rotate(1)
+	c := tiletemplates.MonasteryWithoutRoads().Rotate(2)
+	d := tiletemplates.MonasteryWithoutRoads().Rotate(3)
+	if !a.Equals(b) {
+		t.Fatalf("a != b")
+	}
+	if !a.Equals(c) {
+		t.Fatalf("a != c")
+	}
+	if !a.Equals(d) {
+		t.Fatalf("a != d")
+	}
+}
 
 func TestTileRotate(t *testing.T) {
 	var tile Tile
