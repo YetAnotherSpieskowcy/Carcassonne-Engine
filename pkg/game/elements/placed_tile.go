@@ -29,9 +29,16 @@ func (pos *Position) UnmarshalText(text []byte) error {
 	return err
 }
 
+// https://wikicarpedia.com/car/Game_Figures
+type MeepleType uint8
+const (
+	Normal MeepleType = iota
+)
+
 type Meeple struct {
 	Player Player
 	Side   Side
+	Type   MeepleType
 }
 
 type LegalMove struct {
