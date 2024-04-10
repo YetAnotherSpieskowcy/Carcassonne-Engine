@@ -83,6 +83,14 @@ func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all state
 	}
 }
 
+func TestSideRotateReturnsSideRotatedTwice(t *testing.T) {
+	expected := Bottom
+	actual := Top.Rotate(2)
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestSideToString(t *testing.T) { //nolint:gocyclo // simply testing all states
 	if Top.String() != "TOP" {
 		t.Fatalf("got %#v should be %#v", Top.String(), "TOP")
