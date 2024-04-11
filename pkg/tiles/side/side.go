@@ -108,7 +108,7 @@ func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting int
 	rotations %= 4
 	var result = side
 	for rotations > 0 {
-		switch side {
+		switch result {
 		case Top:
 			result = Right
 		case Right:
