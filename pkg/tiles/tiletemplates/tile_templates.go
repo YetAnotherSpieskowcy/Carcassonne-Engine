@@ -11,14 +11,6 @@ func MonasteryWithoutRoads() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
-				Sides:       []side.Side{},
-			},
-			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Field,
 				Sides: []side.Side{
 					side.TopLeftEdge,
@@ -46,10 +38,6 @@ returns tiles.Tile having monastery and road going bottom
 func MonasteryWithSingleRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
-			{
-				FeatureType: feature.City,
-				Sides:       []side.Side{},
-			},
 			{
 				FeatureType: feature.Road,
 				Sides: []side.Side{
@@ -85,10 +73,6 @@ returns tiles.Tile having road from left to right
 func StraightRoads() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
-			{
-				FeatureType: feature.City,
-				Sides:       []side.Side{},
-			},
 			{
 				FeatureType: feature.Road,
 				Sides: []side.Side{
@@ -127,10 +111,6 @@ func RoadsTurn() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Road,
 				Sides: []side.Side{
 					side.Left,
@@ -168,10 +148,6 @@ returns tiles.Tile having road from left,bottom,right to center
 func TCrossRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
-			{
-				FeatureType: feature.City,
-				Sides:       []side.Side{},
-			},
 			{
 				FeatureType: feature.Road,
 				Sides: []side.Side{
@@ -227,10 +203,6 @@ func TCrossRoad() tiles.Tile {
 func XCrossRoad() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
-			{
-				FeatureType: feature.City,
-				Sides:       []side.Side{},
-			},
 			{
 				FeatureType: feature.Road,
 				Sides: []side.Side{
@@ -305,10 +277,6 @@ func SingleCityEdgeNoRoads() tiles.Tile {
 				Sides: []side.Side{
 					side.Top,
 				},
-			},
-			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
 			},
 			{
 				FeatureType: feature.Field,
@@ -531,10 +499,6 @@ func TwoCityEdgesUpAndDownNotConnected() tiles.Tile {
 				},
 			},
 			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Field,
 				Sides: []side.Side{
 					side.LeftTopEdge,
@@ -568,10 +532,6 @@ func TwoCityEdgesCornerNotConnected() tiles.Tile {
 				},
 			},
 			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Field,
 				Sides: []side.Side{
 					side.LeftTopEdge,
@@ -599,10 +559,6 @@ func TwoCityEdgesUpAndDownConnected() tiles.Tile {
 					side.Bottom,
 					side.Center,
 				},
-			},
-			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
 			},
 			{
 				FeatureType: feature.Field,
@@ -639,10 +595,6 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 				},
 			},
 			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Field,
 				Sides: []side.Side{
 					side.LeftTopEdge,
@@ -676,10 +628,6 @@ func TwoCityEdgesCornerConnected() tiles.Tile {
 				},
 			},
 			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Field,
 				Sides: []side.Side{
 					side.LeftTopEdge,
@@ -707,10 +655,6 @@ func TwoCityEdgesCornerConnectedShield() tiles.Tile {
 					side.Top,
 					side.Right,
 				},
-			},
-			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
 			},
 			{
 				FeatureType: feature.Field,
@@ -823,10 +767,6 @@ func ThreeCityEdgesConnected() tiles.Tile {
 				},
 			},
 			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
 				FeatureType: feature.Field,
 				Sides: []side.Side{
 					side.LeftBottomEdge,
@@ -853,10 +793,6 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 					side.Center,
 					side.Left,
 				},
-			},
-			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
 			},
 			{
 				FeatureType: feature.Field,
@@ -966,14 +902,6 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 					side.Left,
 					side.Bottom,
 				},
-			},
-			{
-				FeatureType: feature.Road,
-				Sides:       []side.Side{},
-			},
-			{
-				FeatureType: feature.Field,
-				Sides:       []side.Side{},
 			},
 		},
 		HasShield: true,
