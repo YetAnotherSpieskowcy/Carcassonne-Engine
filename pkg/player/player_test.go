@@ -1,12 +1,14 @@
-package game
+package player_test
 
 import (
 	"errors"
 	"reflect"
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -19,19 +21,19 @@ func getTestScoreReport() elements.ScoreReport {
 }
 
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
-	player := NewPlayer(0)
+	player := player.New(0)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
 
-	board := NewBoard(tilesets.GetStandardTiles())
+	board := game.NewBoard(tilesets.GetStandardTiles())
 	tile := test.GetTestPlacedTile()
 	_, err := player.PlaceTile(board, tile)
-	if !errors.Is(err, ErrNoMeepleAvailable) {
+	if !errors.Is(err, elements.ErrNoMeepleAvailable) {
 		t.Fatalf("expected NoMeepleAvailable error type, got %#v instead", err)
 	}
 }
 
 func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
-	player := NewPlayer(0)
+	player := player.New(0)
 
 	expectedScoreReport := getTestScoreReport()
 	callCount := 0
@@ -59,7 +61,7 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 }
 
 func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
-	player := NewPlayer(0)
+	player := player.New(0)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
 
@@ -78,7 +80,7 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 }
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
-	player := NewPlayer(0)
+	player := player.New(0)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
@@ -97,13 +99,13 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 }
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
-	player := NewPlayer(0)
+	player := player.New(0)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
 	board := &test.BoardMock{
 		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
-			return elements.ScoreReport{}, ErrInvalidPosition
+			return elements.ScoreReport{}, elements.ErrInvalidPosition
 		},
 	}
 	tile := test.GetTestPlacedTile()
@@ -120,7 +122,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 }
 
 func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
-	player := NewPlayer(0)
+	player := player.New(0)
 	actualScore := player.Score()
 	if actualScore != 0 {
 		t.Fatalf("expected %#v, got %#v instead", 0, actualScore)
@@ -137,7 +139,7 @@ func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
 
 func TestPlayerNewPlayerSetsId(t *testing.T) {
 	expectedID := uint8(6)
-	player := NewPlayer(expectedID)
+	player := player.New(expectedID)
 	actualID := player.ID()
 	if actualID != expectedID {
 		t.Fatalf("expected %#v, got %#v instead", expectedID, actualID)

@@ -1,4 +1,4 @@
-package game
+package elements
 
 import "errors"
 
