@@ -25,7 +25,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	board := NewBoard(tilesets.GetStandardTiles())
 	tile := test.GetTestPlacedTile()
 	_, err := player.PlaceTile(board, tile)
-	if !errors.Is(err, NoMeepleAvailable) {
+	if !errors.Is(err, ErrNoMeepleAvailable) {
 		t.Fatalf("expected NoMeepleAvailable error type, got %#v instead", err)
 	}
 }
@@ -103,7 +103,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 
 	board := &test.BoardMock{
 		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
-			return elements.ScoreReport{}, InvalidPosition
+			return elements.ScoreReport{}, ErrInvalidPosition
 		},
 	}
 	tile := test.GetTestPlacedTile()

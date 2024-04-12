@@ -107,7 +107,7 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 	// TODO: This equality test needs to work with rotations, inner slices, etc.
 	// How to do this depends on the final implementation of `Tile` (and `PlacedTile`)
 	if !currentTile.Equals(placedTile.Tile) {
-		return WrongTile
+		return ErrWrongTile
 	}
 
 	player := game.CurrentPlayer()

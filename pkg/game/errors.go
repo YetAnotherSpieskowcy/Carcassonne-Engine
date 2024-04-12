@@ -11,8 +11,8 @@ func (err *InvalidMove) Error() string {
 }
 
 var (
-	InvalidPosition      = &InvalidMove{"the tile cannot be placed at given position"}
-	NoMeepleAvailable    = &InvalidMove{"the player does not have any meeples available"}
-	WrongTile            = &InvalidMove{"the played tile is not the one that was drawn"}
+	ErrInvalidPosition   = &InvalidMove{"the tile cannot be placed at given position"}
+	ErrNoMeepleAvailable = &InvalidMove{"the player does not have any meeples available"}
+	ErrWrongTile         = &InvalidMove{"the played tile is not the one that was drawn"}
 	ErrGameIsNotFinished = errors.New("the game is not finished yet")
 )

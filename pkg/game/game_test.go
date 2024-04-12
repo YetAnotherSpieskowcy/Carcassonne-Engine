@@ -41,7 +41,7 @@ func TestFullGame(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error to occur")
 	}
-	if !errors.Is(err, WrongTile) {
+	if !errors.Is(err, ErrWrongTile) {
 		t.Fatal(err.Error())
 	}
 

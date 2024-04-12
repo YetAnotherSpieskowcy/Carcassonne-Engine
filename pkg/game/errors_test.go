@@ -5,8 +5,8 @@ import (
 )
 
 func TestInvalidMoveErrorReturnsMsgField(t *testing.T) {
-	expected := InvalidPosition.msg
-	actual := InvalidPosition.Error()
+	expected := ErrInvalidPosition.msg
+	actual := ErrInvalidPosition.Error()
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}

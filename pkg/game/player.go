@@ -47,7 +47,7 @@ func (player *player) PlaceTile(
 ) (elements.ScoreReport, error) {
 	meepleCount := player.MeepleCount(tile.Meeple.Type)
 	if meepleCount == 0 && tile.Meeple.Side != side.None {
-		return elements.ScoreReport{}, NoMeepleAvailable
+		return elements.ScoreReport{}, ErrNoMeepleAvailable
 	}
 	scoreReport, err := board.PlaceTile(tile)
 	if err != nil {
