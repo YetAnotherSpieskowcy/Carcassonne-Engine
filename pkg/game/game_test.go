@@ -16,7 +16,7 @@ func TestFullGame(t *testing.T) {
 		tiletemplates.FourCityEdgesConnectedShield(),
 	}
 	deck := stack.NewOrdered(tiles)
-	game, err := NewGameWithDeck(&deck, nil)
+	game, err := NewWithDeck(&deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -83,7 +83,7 @@ func TestFullGame(t *testing.T) {
 }
 
 func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
-	game, err := NewGame(nil)
+	game, err := New(nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

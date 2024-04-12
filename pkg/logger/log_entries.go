@@ -12,7 +12,6 @@ type StartEntry struct {
 	PlayerCount int          `json:"playerCount"`
 }
 
-// TODO: replace with real tile implementation
 func NewStartEntry(deck *stack.Stack[tiles.Tile], playerCount int) StartEntry {
 	return StartEntry{"start", deck.GetRemaining(), playerCount}
 }

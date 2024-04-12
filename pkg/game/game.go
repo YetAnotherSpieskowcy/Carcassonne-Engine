@@ -19,12 +19,12 @@ type Game struct {
 	log           *logger.Logger
 }
 
-func NewGame(log *logger.Logger) (*Game, error) {
+func New(log *logger.Logger) (*Game, error) {
 	deck := stack.New(tilesets.GetStandardTiles())
-	return NewGameWithDeck(&deck, log)
+	return NewWithDeck(&deck, log)
 }
 
-func NewGameWithDeck(
+func NewWithDeck(
 	deck *stack.Stack[tiles.Tile], log *logger.Logger,
 ) (*Game, error) {
 	if log == nil {
@@ -69,7 +69,7 @@ func (game *Game) PlayerCount() int {
 func (game *Game) ensureCurrentTileHasValidPlacement() error {
 	for {
 		// Peek at the tile that will be returned by GetCurrentTile() next time
-		// to see, if it can actually placed anywhere.
+		// to see, if it can actually be placed anywhere.
 		nextTile, err := game.deck.Peek()
 		if err != nil {
 			if errors.Is(err, stack.ErrStackOutOfBounds) {
