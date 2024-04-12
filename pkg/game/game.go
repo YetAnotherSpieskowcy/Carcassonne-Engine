@@ -77,8 +77,7 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 				return nil
 			}
 
-			// unexpected error?
-			return err
+			panic("Stack.Peek() returned error that we do not know how to handle")
 		}
 
 		if game.board.HasValidPlacement(nextTile) {
