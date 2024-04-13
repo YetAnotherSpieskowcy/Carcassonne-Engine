@@ -1,5 +1,9 @@
 package side
 
+import (
+	"errors"
+)
+
 type Side int64
 
 const (
@@ -153,6 +157,51 @@ func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting int
 		rotations--
 	}
 	return result
+}
+
+func (side Side) ConnectedOpposite() (Side, error) {
+	switch side {
+	case Top:
+		return Bottom, nil
+	case Right:
+		return Left, nil
+	case Left:
+		return Right, nil
+	case Bottom:
+		return Top, nil
+
+	case TopLeftCorner:
+		return BottomLeftCorner, nil
+	case TopRightCorner:
+		return BottomRightCorner, nil
+	case BottomLeftCorner:
+		return TopLeftCorner, nil
+	case BottomRightCorner:
+		return TopRightCorner, nil
+
+	case TopLeftEdge:
+		return BottomLeftEdge, nil
+	case TopRightEdge:
+		return BottomRightEdge, nil
+	case RightTopEdge:
+		return LeftTopEdge, nil
+	case RightBottomEdge:
+		return LeftBottomEdge, nil
+
+	case LeftTopEdge:
+		return RightTopEdge, nil
+	case LeftBottomEdge:
+		return RightBottomEdge, nil
+	case BottomLeftEdge:
+		return TopLeftEdge, nil
+	case BottomRightEdge:
+		return TopRightEdge, nil
+
+	case Center:
+		return None, errors.New("side Center is not connected to anything")
+	default:
+		return None, errors.New("side None side has not opposite")
+	}
 }
 
 func RotateSideArray(sides []Side, rotations uint) []Side {

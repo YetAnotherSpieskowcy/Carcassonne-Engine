@@ -5,6 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -24,6 +25,53 @@ func (pos Position) X() int16 {
 
 func (pos Position) Y() int16 {
 	return pos.y
+}
+
+func (a Position) Add(b Position) Position {
+	return NewPosition(a.x+b.x, a.y+b.y)
+}
+
+func PositionFromSide(side sideMod.Side) Position {
+	switch side {
+	case sideMod.Top:
+		return NewPosition(0, 1)
+	case sideMod.Right:
+		return NewPosition(1, 0)
+	case sideMod.Left:
+		return NewPosition(-1, 0)
+	case sideMod.Bottom:
+		return NewPosition(0, -1)
+
+	case sideMod.TopLeftCorner:
+		return NewPosition(0, 1)
+	case sideMod.TopRightCorner:
+		return NewPosition(0, 1)
+	case sideMod.BottomLeftCorner:
+		return NewPosition(0, -1)
+	case sideMod.BottomRightCorner:
+		return NewPosition(0, -1)
+
+	case sideMod.TopLeftEdge:
+		return NewPosition(0, 1)
+	case sideMod.TopRightEdge:
+		return NewPosition(0, 1)
+	case sideMod.RightTopEdge:
+		return NewPosition(1, 0)
+	case sideMod.RightBottomEdge:
+		return NewPosition(1, 0)
+
+	case sideMod.LeftTopEdge:
+		return NewPosition(-1, 0)
+	case sideMod.LeftBottomEdge:
+		return NewPosition(-1, 0)
+	case sideMod.BottomLeftEdge:
+		return NewPosition(0, -1)
+	case sideMod.BottomRightEdge:
+		return NewPosition(0, -1)
+
+	default:
+		return NewPosition(0, 0)
+	}
 }
 
 func (pos Position) MarshalText() ([]byte, error) {
