@@ -5,7 +5,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 type Position struct {
@@ -60,13 +59,4 @@ type PlacedTile struct {
 	// PlacedTile always has a `Meeple`. Whether it is actually placed is determined by
 	// `Meeple.side` which will be `None`, if it isn't.
 	Meeple Meeple
-}
-
-func GetStandardStartingPlacedTile() PlacedTile {
-	return PlacedTile{
-		LegalMove: LegalMove{
-			Tile: tilesets.GetStandardStartingTile(),
-			Pos:  NewPosition(0, 0),
-		},
-	}
 }

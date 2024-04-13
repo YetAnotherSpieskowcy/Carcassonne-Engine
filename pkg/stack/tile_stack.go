@@ -33,7 +33,7 @@ func NewSeeded[T interface{}](tiles []T, seed int64) Stack[T] {
 	return stack
 }
 
-// NewOrdered creates new Stack and maintains orginal order.
+// NewOrdered creates new Stack and maintains original order.
 // NODE: Input slice is not copied.
 func NewOrdered[T interface{}](tiles []T) Stack[T] {
 	stack := Stack[T]{
@@ -64,8 +64,8 @@ func (s Stack[T]) GetTotalTileCount() int32 {
 	return int32(len(s.tiles))
 }
 
-// returns the original tile set, not the shuffled set
-func (s Stack[T]) GetTileSet() []T {
+// returns the original tiles slice (input to constructor), not a shuffled slice
+func (s Stack[T]) GetTiles() []T {
 	return s.tiles
 }
 

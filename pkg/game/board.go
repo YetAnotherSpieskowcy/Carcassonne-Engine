@@ -6,6 +6,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 // mutable type
@@ -16,7 +17,7 @@ import (
 //
 // Starting tile is placed at (+0, +0) position.
 type board struct {
-	tileSet []tiles.Tile
+	tileSet tilesets.TileSet
 	// The information about the tile and its placement is stored sparsely
 	// in a slice of size equal to the number of tiles in the set.
 	// `tiles[0]` is always the starting tile.
@@ -27,9 +28,14 @@ type board struct {
 	tilesMap map[elements.Position]elements.PlacedTile
 }
 
-func NewBoard(tileSet []tiles.Tile) elements.Board {
-	tiles := make([]elements.PlacedTile, len(tileSet)+1)
-	startingTile := elements.GetStandardStartingPlacedTile()
+func NewBoard(tileSet tilesets.TileSet) elements.Board {
+	tiles := make([]elements.PlacedTile, len(tileSet.Tiles)+1)
+	startingTile := elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			Tile: tileSet.StartingTile,
+			Pos:  elements.NewPosition(0, 0),
+		},
+	}
 	tiles[0] = startingTile
 	return &board{
 		tileSet: tileSet,
@@ -85,10 +91,10 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
 	//   or return InvalidMove otherwise
-	tileSet := board.tileSet
+	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
-		index := slices.IndexFunc(tileSet, func(candidate tiles.Tile) bool {
+		index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
 			return tile.Tile.Equals(candidate)
 		})
 		if index == -1 {
@@ -102,7 +108,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 		}
 		// position already taken, gotta find another next matching tile
 		actualIndex++
-		tileSet = tileSet[index+1:]
+		setTiles = setTiles[index+1:]
 	}
 	board.tiles[actualIndex] = tile
 	board.tilesMap[tile.Pos] = tile

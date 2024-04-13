@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
@@ -14,26 +15,30 @@ import (
 
 type Game struct {
 	board         elements.Board
-	deck          *stack.Stack[tiles.Tile]
+	deck          deck.Deck
 	players       []elements.Player
 	currentPlayer int
 	log           *logger.Logger
 }
 
-func New(log *logger.Logger) (*Game, error) {
-	deck := stack.New(tilesets.GetStandardTiles())
-	return NewWithDeck(&deck, log)
+func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error) {
+	deckStack := stack.New(tileSet.Tiles)
+	deck := deck.Deck{
+		Stack:   &deckStack,
+		TileSet: tileSet,
+	}
+	return NewFromDeck(deck, log)
 }
 
-func NewWithDeck(
-	deck *stack.Stack[tiles.Tile], log *logger.Logger,
+func NewFromDeck(
+	deck deck.Deck, log *logger.Logger,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
 		log = &nullLogger
 	}
 	game := &Game{
-		board:         NewBoard(deck.GetTileSet()),
+		board:         NewBoard(deck.TileSet),
 		deck:          deck,
 		players:       []elements.Player{player.New(0), player.New(1)},
 		currentPlayer: 0,

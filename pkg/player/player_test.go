@@ -24,7 +24,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	player := player.New(0)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
 
-	board := game.NewBoard(tilesets.GetStandardTiles())
+	board := game.NewBoard(tilesets.StandardTileSet())
 	tile := test.GetTestPlacedTile()
 	_, err := player.PlaceTile(board, tile)
 	if !errors.Is(err, elements.ErrNoMeepleAvailable) {

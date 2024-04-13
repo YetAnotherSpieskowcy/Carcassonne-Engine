@@ -8,14 +8,21 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func getTestDeck() *stack.Stack[tiles.Tile] {
-	deck := stack.NewOrdered([]tiles.Tile{test.GetTestTile(), test.GetTestTile()})
-	return &deck
+func getTestDeck() deck.Deck {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{test.GetTestTile(), test.GetTestTile()}
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	return deck.Deck{
+		TileSet: tileSet,
+		Stack:   &deckStack,
+	}
 }
 
 //nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
@@ -33,7 +40,8 @@ func TestFileLogger(t *testing.T) {
 	}
 
 	deck := getTestDeck()
-	expectedDeck := deck.GetRemaining()
+	expectedStartingTile := deck.StartingTile
+	expectedStack := deck.GetRemaining()
 	expectedPlayerCount := 2
 	err = log.LogEvent(NewStartEntry(deck, expectedPlayerCount))
 	if err != nil {
@@ -75,8 +83,11 @@ func TestFileLogger(t *testing.T) {
 	if startLine.Event != "start" {
 		t.Fatalf("expected %#v, got %#v instead", "start", startLine.Event)
 	}
-	if !reflect.DeepEqual(startLine.Deck, expectedDeck) {
-		t.Fatalf("expected %#v, got %#v instead", expectedDeck, startLine.Deck)
+	if !reflect.DeepEqual(startLine.StartingTile, expectedStartingTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startLine.StartingTile)
+	}
+	if !reflect.DeepEqual(startLine.Stack, expectedStack) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStack, startLine.Stack)
 	}
 	if !reflect.DeepEqual(startLine.PlayerCount, expectedPlayerCount) {
 		t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startLine.PlayerCount)
@@ -142,7 +153,8 @@ func TestLogger(t *testing.T) {
 	log := New(buffer)
 
 	deck := getTestDeck()
-	expectedDeck := deck.GetRemaining()
+	expectedStack := deck.GetRemaining()
+	expectedStartingTile := deck.StartingTile
 	expectedPlayerCount := 2
 	err := log.LogEvent(NewStartEntry(deck, expectedPlayerCount))
 	if err != nil {
@@ -178,8 +190,11 @@ func TestLogger(t *testing.T) {
 	if startLine.Event != "start" {
 		t.Fatalf("expected %#v, got %#v instead", "start", startLine.Event)
 	}
-	if !reflect.DeepEqual(startLine.Deck, expectedDeck) {
-		t.Fatalf("expected %#v, got %#v instead", expectedDeck, startLine.Deck)
+	if !reflect.DeepEqual(startLine.StartingTile, expectedStartingTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startLine.StartingTile)
+	}
+	if !reflect.DeepEqual(startLine.Stack, expectedStack) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStack, startLine.Stack)
 	}
 	if !reflect.DeepEqual(startLine.PlayerCount, expectedPlayerCount) {
 		t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startLine.PlayerCount)

@@ -1,19 +1,25 @@
 package logger
 
 import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
 type StartEntry struct {
-	Event       string       `json:"event"`
-	Deck        []tiles.Tile `json:"deck"`
-	PlayerCount int          `json:"playerCount"`
+	Event        string       `json:"event"`
+	StartingTile tiles.Tile   `json:"startingTile"`
+	Stack        []tiles.Tile `json:"stack"`
+	PlayerCount  int          `json:"playerCount"`
 }
 
-func NewStartEntry(deck *stack.Stack[tiles.Tile], playerCount int) StartEntry {
-	return StartEntry{"start", deck.GetRemaining(), playerCount}
+func NewStartEntry(deck deck.Deck, playerCount int) StartEntry {
+	return StartEntry{
+		Event:        "start",
+		StartingTile: deck.StartingTile,
+		Stack:        deck.GetRemaining(),
+		PlayerCount:  playerCount,
+	}
 }
 
 type PlaceTileEntry struct {

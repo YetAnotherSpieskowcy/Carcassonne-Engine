@@ -97,7 +97,7 @@ func TestRemaining(t *testing.T) {
 	}
 }
 
-func TestGetTileSet(t *testing.T) {
+func TestGetTiles(t *testing.T) {
 	expected := []Tile{{0}, {1}, {2}, {3}}
 	stack := NewOrdered(expected)
 	for range 2 {
@@ -106,7 +106,7 @@ func TestGetTileSet(t *testing.T) {
 			t.Fail()
 		}
 	}
-	actual := stack.GetTileSet()
+	actual := stack.GetTiles()
 	if !slices.Equal(actual, expected) {
 		t.Fail()
 	}

@@ -15,7 +15,7 @@ import (
 func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
-	board := NewBoard(tilesets.GetStandardTiles())
+	board := NewBoard(tilesets.StandardTileSet())
 	_, err := board.PlaceTile(test.GetTestPlacedTile())
 	if err != nil {
 		t.Fatal(err.Error())
@@ -32,7 +32,7 @@ func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
-	board := NewBoard(tilesets.GetStandardTiles())
+	board := NewBoard(tilesets.StandardTileSet())
 	_, err := board.PlaceTile(
 		elements.PlacedTile{
 			LegalMove: elements.LegalMove{
@@ -55,7 +55,7 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 }
 
 func TestBoardHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T) {
-	board := NewBoard(tilesets.GetStandardTiles())
+	board := NewBoard(tilesets.StandardTileSet())
 
 	expected := true
 	actual := board.HasValidPlacement(tiletemplates.SingleCityEdgeNoRoads())
@@ -66,7 +66,7 @@ func TestBoardHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T)
 }
 
 func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
-	board := NewBoard(tilesets.GetStandardTiles())
+	board := NewBoard(tilesets.StandardTileSet())
 
 	expected := true
 	actual := board.CanBePlaced(test.GetTestPlacedTile())
@@ -77,7 +77,9 @@ func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 }
 
 func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
-	board := NewBoard([]tiles.Tile{})
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{}
+	board := NewBoard(tileSet)
 
 	_, err := board.PlaceTile(test.GetTestPlacedTile())
 	if err == nil {
@@ -86,7 +88,8 @@ func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
 }
 
 func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
-	tileSet := []tiles.Tile{
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{
 		test.GetTestTile(), tiletemplates.FourCityEdgesConnectedShield(),
 	}
 	board := NewBoard(tileSet)
@@ -109,14 +112,21 @@ func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
 }
 
 func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
-	tileSet := []tiles.Tile{
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{
 		test.GetTestTile(),
 		tiletemplates.FourCityEdgesConnectedShield(),
 		test.GetTestTile(),
 	}
 	board := NewBoard(tileSet)
+	startingPlacedTile := elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			Tile: tilesets.StandardTileSet().StartingTile,
+			Pos:  elements.NewPosition(0, 0),
+		},
+	}
 	expected := []elements.PlacedTile{
-		elements.GetStandardStartingPlacedTile(),
+		startingPlacedTile,
 		test.GetTestPlacedTile(),
 		{},
 		test.GetTestPlacedTile(),
