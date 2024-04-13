@@ -41,7 +41,7 @@ func TestFullGame(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error to occur")
 	}
-	if !errors.Is(err, ErrWrongTile) {
+	if !errors.Is(err, elements.ErrWrongTile) {
 		t.Fatal(err.Error())
 	}
 
@@ -93,7 +93,7 @@ func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error to occur")
 	}
-	if !errors.Is(err, ErrGameIsNotFinished) {
+	if !errors.Is(err, elements.ErrGameIsNotFinished) {
 		t.Fatal(err.Error())
 	}
 }

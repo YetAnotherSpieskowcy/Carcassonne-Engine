@@ -1,4 +1,4 @@
-package game
+package player
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -12,7 +12,7 @@ type player struct {
 	score        uint32
 }
 
-func NewPlayer(id uint8) elements.Player {
+func New(id uint8) elements.Player {
 	meepleCounts := make([]uint8, elements.MeepleTypeCount)
 	meepleCounts[elements.NormalMeeple] = 7
 	return &player{
@@ -47,7 +47,7 @@ func (player *player) PlaceTile(
 ) (elements.ScoreReport, error) {
 	meepleCount := player.MeepleCount(tile.Meeple.Type)
 	if meepleCount == 0 && tile.Meeple.Side != side.None {
-		return elements.ScoreReport{}, ErrNoMeepleAvailable
+		return elements.ScoreReport{}, elements.ErrNoMeepleAvailable
 	}
 	scoreReport, err := board.PlaceTile(tile)
 	if err != nil {

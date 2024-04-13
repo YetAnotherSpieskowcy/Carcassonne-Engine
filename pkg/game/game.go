@@ -6,6 +6,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
@@ -34,7 +35,7 @@ func NewWithDeck(
 	game := &Game{
 		board:         NewBoard(deck.GetTileSet()),
 		deck:          deck,
-		players:       []elements.Player{NewPlayer(0), NewPlayer(1)},
+		players:       []elements.Player{player.New(0), player.New(1)},
 		currentPlayer: 0,
 		log:           log,
 	}
@@ -106,7 +107,7 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 	// TODO: This equality test needs to work with rotations, inner slices, etc.
 	// How to do this depends on the final implementation of `Tile` (and `PlacedTile`)
 	if !currentTile.Equals(placedTile.Tile) {
-		return ErrWrongTile
+		return elements.ErrWrongTile
 	}
 
 	player := game.CurrentPlayer()
@@ -157,7 +158,7 @@ func (game *Game) Finalize() ([]uint32, error) {
 	playerScores := make([]uint32, len(game.players))
 
 	if _, err := game.GetCurrentTile(); !errors.Is(err, stack.ErrStackOutOfBounds) {
-		return playerScores, ErrGameIsNotFinished
+		return playerScores, elements.ErrGameIsNotFinished
 	}
 
 	for i, player := range game.players {
