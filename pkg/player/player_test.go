@@ -20,6 +20,41 @@ func getTestScoreReport() elements.ScoreReport {
 	}
 }
 
+func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testing.T) {
+	player := player.New(1)
+	input := []elements.LegalMove{
+		test.GetTestPlacedTile().LegalMove,
+		test.GetTestPlacedTileWithMeeple(
+			elements.MeeplePlacement{Side: side.None},
+		).LegalMove,
+	}
+	expected := input
+
+	actual := player.GetEligibleMovesFrom(input)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestPlayerGetEligibleMovesFromReturnsMovesWithoutMeepleWhenPlayerHasNoMeeples(t *testing.T) {
+	player := player.New(1)
+	player.SetMeepleCount(elements.NormalMeeple, 0)
+	input := []elements.LegalMove{
+		test.GetTestPlacedTile().LegalMove,
+		test.GetTestPlacedTileWithMeeple(
+			elements.MeeplePlacement{Side: side.None},
+		).LegalMove,
+	}
+	expected := []elements.LegalMove{input[1]}
+
+	actual := player.GetEligibleMovesFrom(input)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	board := game.NewBoard(tilesets.StandardTileSet())
 	tile := test.GetTestPlacedTile()

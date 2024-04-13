@@ -8,6 +8,12 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
+func TestBoardMockImplementsBoardInterface(_ *testing.T) {
+	// compile-time check
+	var board elements.Board = &BoardMock{}
+	_ = board
+}
+
 func TestBoardMockTileCountWithoutFunc(t *testing.T) {
 	board := BoardMock{}
 	actual := board.TileCount()
@@ -63,6 +69,14 @@ func TestBoardMockTileHasValidPlacement(t *testing.T) {
 	expected := true
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestBoardMockGetLegalMovesFor(t *testing.T) {
+	board := BoardMock{}
+	actual := board.GetLegalMovesFor(GetTestTilePlacement())
+	if len(actual) != 0 {
+		t.Fatalf("expected GetLegalMovesFor() output to be empty, got %#v instead", actual)
 	}
 }
 
