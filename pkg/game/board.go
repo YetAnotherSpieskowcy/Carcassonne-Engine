@@ -136,120 +136,94 @@ func (board *board) checkCompleted(
 }
 
 /*
-Calculates score for road completion.
-If argument forceScore is false, it won't force scoring if road is unfinished.
-ForceScore is supposed to be true while counting unfinished roads.
+it doesn't analyze starting tile
 
-returns: what should it return?
+returns: road_finished, score, [meeples on road] ,loop
 */
-func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature, forceScore bool) {
+func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile, forceScore bool) (bool, int, []elements.MeepleTilePlacement, bool) {
+	var meeples = []elements.MeepleTilePlacement{}
+	var tile = startTile
+	var tileExists bool
+	var score = 0
+	var road feature.Feature
+	var finished bool
 
-	// tuple type for saving meeples and their positions
-	type MeepleTilePlacement struct {
-		elements.MeeplePlacement
-		elements.PlacedTile
-	}
+	// check finished on way
+	for roadSide != side.Center {
 
-	var meeples = []MeepleTilePlacement{}
-	var leftTile, rightTile elements.PlacedTile
-	var leftRoad, rightRoad feature.Feature
-	var leftSide, rightSide side.Side
-	var score = 1
-	var tileExists = false
-	leftSide = road.Sides[0]
-	rightSide = road.Sides[1]
-
-	//check meeples on start tile
-	if tile.Meeple.Side == leftSide || tile.Meeple.Side == rightSide {
-		meeples = append(meeples, MeepleTilePlacement{tile.Meeple, tile})
-	}
-
-	// check if one end is already road end
-	if leftSide == side.Center {
-		leftTile = tile
-		leftSide = side.Center
-	} else if rightSide == side.Center {
-		rightTile = tile
-		rightSide = side.Center
-	}
-
-	// check finished on "left" way
-	for leftSide != side.Center /* and check for loop */ {
-
-		leftTile, tileExists = board.GetTileAt(leftTile.Pos.Add(elements.PositionFromSide(leftSide)))
-		// check if tile exists
-		if !tileExists {
+		tile, tileExists = board.GetTileAt(tile.Pos.Add(elements.PositionFromSide(roadSide)))
+		// check if tile exists or loop
+		if !tileExists || tile.Pos == startTile.Pos {
 			// tile does not exist
 			// finish
 			break
 		}
 
 		score++
-		leftSide, _ = leftSide.ConnectedOpposite()
+		roadSide, _ = roadSide.ConnectedOpposite()
 		// check error
 
 		//check for meeple1
-		if leftTile.Meeple.Side == leftSide {
-			meeples = append(meeples, MeepleTilePlacement{leftTile.Meeple, leftTile})
+		if tile.Meeple.Side == roadSide {
+			meeples = append(meeples, elements.MeepleTilePlacement{tile.Meeple, tile})
 		}
 
 		// get road feature
-		leftRoad = *leftTile.GetFeatureAtSide(leftSide) //check isn't needed because it was already checked at legalmoves
+		road = *tile.GetFeatureAtSide(roadSide) //check isn't needed because it was already checked at legalmoves
 
 		// swap to other end of tile
-		if leftRoad.Sides[0] == leftSide {
-			leftSide = leftRoad.Sides[1]
+		if road.Sides[0] == roadSide {
+			roadSide = road.Sides[1]
 		} else {
-			leftSide = leftRoad.Sides[0]
+			roadSide = road.Sides[0]
 		}
 
 		//check for meeple2 (other end of road)
-		if leftTile.Meeple.Side == leftSide {
-			meeples = append(meeples, MeepleTilePlacement{leftTile.Meeple, leftTile})
+		if tile.Meeple.Side == roadSide {
+			meeples = append(meeples, elements.MeepleTilePlacement{tile.Meeple, tile})
 		}
-
 	}
 
-	// check if loop
-	if leftTile.Pos != tile.Pos {
-		// no loop found, so check other side
+	finished = (roadSide == side.Center) || (tile.Pos == startTile.Pos)
 
-		// check if leftRoad was finished (if the end is center), or check right side, because the end of game
-		if leftSide == side.Center || forceScore {
+	return finished, score, meeples, tile.Pos == startTile.Pos
+}
 
-			// check finished on "right" way
-			for rightSide != side.Center /* and check for loop */ {
-				rightTile, tileExists = board.GetTileAt(rightTile.Pos.Add(elements.PositionFromSide(rightSide)))
-				// check if tile exists
-				if !tileExists {
-					// tile does not exist
-					// finish
-					break
-				}
+/*
+Calculates score for road completion.
+If argument forceScore is false, it won't force scoring if road is unfinished.
+ForceScore is supposed to be true while counting unfinished roads.
 
-				rightSide, _ = rightSide.ConnectedOpposite()
-				//check error
+returns: road_finished, score, [scoring players], [meeples to remove]
+*/
+func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature, forceScore bool) {
+	var meeples = []elements.MeepleTilePlacement{}
+	var leftSide, rightSide side.Side
+	var score = 1
+	leftSide = road.Sides[0]
+	rightSide = road.Sides[1]
+	var roadFinished = true
 
-				//check for meeple1
-				if rightTile.Meeple.Side == rightSide {
-					meeples = append(meeples, MeepleTilePlacement{rightTile.Meeple, rightTile})
-				}
+	var roadFinishedResult bool
+	var scoreResult int
+	var meeplesResult = []elements.MeepleTilePlacement{}
+	var loopResult bool
 
-				//get road feature
-				rightRoad = *rightTile.GetFeatureAtSide(rightSide) //check isn't needed because it was already checked at legalmoves
-				//swap to other end of tile
-				if rightRoad.Sides[0] == rightSide {
-					rightSide = rightRoad.Sides[1]
-				} else {
-					rightSide = rightRoad.Sides[0]
-				}
+	//check meeples on start tile
+	if tile.Meeple.Side == leftSide || tile.Meeple.Side == rightSide {
+		meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+	}
 
-				//check for meeple2 (other end of road)
-				if rightTile.Meeple.Side == rightSide {
-					meeples = append(meeples, MeepleTilePlacement{rightTile.Meeple, rightTile})
-				}
-			}
-		}
+	roadFinishedResult, scoreResult, meeplesResult, loopResult = board.CheckRoadInDirection(leftSide, tile, forceScore)
+	score += scoreResult
+	roadFinished = roadFinished && roadFinishedResult
+	meeples = append(meeples, meeplesResult...)
+
+	if !loopResult {
+		roadFinishedResult, scoreResult, meeplesResult, loopResult = board.CheckRoadInDirection(rightSide, tile, forceScore)
+		score += scoreResult
+		roadFinished = roadFinished && roadFinishedResult
+		meeples = append(meeples, meeplesResult...)
 	}
 
 	// -------- start counting -------------
@@ -262,5 +236,4 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 			// add score to player	with most meeples
 		}
 	}
-
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -109,7 +108,7 @@ func (placement TilePlacement) Rotate(rotations uint) TilePlacement {
 
 // represents a legal position of a meeple on the tile
 type MeeplePlacement struct {
-	Side side.Side
+	Side sideMod.Side
 	Type MeepleType
 }
 
