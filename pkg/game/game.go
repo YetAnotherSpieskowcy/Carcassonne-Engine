@@ -87,7 +87,7 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 			panic("Stack.Peek() returned error that we do not know how to handle")
 		}
 
-		if game.board.HasValidPlacement(nextTile) {
+		if game.board.TileHasValidPlacement(nextTile) {
 			break
 		}
 
@@ -100,7 +100,7 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 	return nil
 }
 
-func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
+func (game *Game) PlayTurn(move elements.LegalMove) error {
 	// Get tile that the player is supposed to place.
 	// This is guaranteed to return a tile that has at least one valid placement
 	// or `OutOfBounds` error, if there's no tiles left in the deck and this turn
@@ -110,9 +110,7 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 		return err
 	}
 
-	// TODO: This equality test needs to work with rotations, inner slices, etc.
-	// How to do this depends on the final implementation of `Tile` (and `PlacedTile`)
-	if !currentTile.Equals(placedTile.Tile) {
+	if !currentTile.Equals(move.Tile) {
 		return elements.ErrWrongTile
 	}
 
@@ -121,12 +119,12 @@ func (game *Game) PlayTurn(placedTile elements.PlacedTile) error {
 
 	// In the class diagram, the `scoreReport` would be returned by
 	// separate `CheckCompleted()` method but it's been abstracted by PlaceTile instead.
-	scoreReport, err := player.PlaceTile(game.board, placedTile)
+	scoreReport, err := player.PlaceTile(game.board, move)
 	if err != nil {
 		return err
 	}
 	if err = game.log.LogEvent(
-		logger.NewPlaceTileEntry(game.currentPlayer, placedTile),
+		logger.NewPlaceTileEntry(player, move),
 	); err != nil {
 		return err
 	}

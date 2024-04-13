@@ -6,5 +6,9 @@ type Player interface {
 	SetMeepleCount(meepleType MeepleType, value uint8)
 	Score() uint32
 	SetScore(value uint32)
-	PlaceTile(board Board, tile PlacedTile) (ScoreReport, error)
+	// how am I supposed to name this sensibly...
+	GetEligibleMovesFrom(moves []LegalMove) []LegalMove
+	// how am I supposed to name this sensibly...
+	IsEligibleFor(move LegalMove) bool
+	PlaceTile(board Board, move LegalMove) (ScoreReport, error)
 }

@@ -42,19 +42,42 @@ func (player *player) SetScore(value uint32) {
 	player.score = value
 }
 
+// how am I supposed to name this sensibly...
+func (player *player) GetEligibleMovesFrom(moves []elements.LegalMove) []elements.LegalMove {
+	result := []elements.LegalMove{}
+	for _, move := range moves {
+		if player.IsEligibleFor(move) {
+			result = append(result, move)
+		}
+	}
+	return result
+}
+
+// how am I supposed to name this sensibly...
+func (player *player) IsEligibleFor(move elements.LegalMove) bool {
+	if move.Meeple.Side == side.None {
+		return true
+	}
+	return player.MeepleCount(move.Meeple.Type) != 0
+}
+
 func (player *player) PlaceTile(
-	board elements.Board, tile elements.PlacedTile,
+	board elements.Board, move elements.LegalMove,
 ) (elements.ScoreReport, error) {
-	meepleCount := player.MeepleCount(tile.Meeple.Type)
-	if meepleCount == 0 && tile.Meeple.Side != side.None {
+	if !player.IsEligibleFor(move) {
 		return elements.ScoreReport{}, elements.ErrNoMeepleAvailable
 	}
+
+	tile := elements.PlacedTile{LegalMove: move, Player: player}
 	scoreReport, err := board.PlaceTile(tile)
 	if err != nil {
 		return scoreReport, err
 	}
-	if tile.Meeple.Side != side.None {
-		player.SetMeepleCount(tile.Meeple.Type, meepleCount-1)
+
+	if move.Meeple.Side != side.None {
+		meepleCount := player.MeepleCount(move.Meeple.Type)
+		player.SetMeepleCount(move.Meeple.Type, meepleCount-1)
 	}
+
 	return scoreReport, nil
 }

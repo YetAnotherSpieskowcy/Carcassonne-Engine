@@ -55,19 +55,26 @@ func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool)
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile tiles.Tile) []elements.LegalMove {
+func (board *board) GetLegalTilePlacementsFor(tile tiles.Tile) []elements.TilePlacement {
 	// TODO for future tasks:
-	// - implement generation of legal moves
-	return []elements.LegalMove{}
+	// - implement generation of legal tile placements
+	return []elements.TilePlacement{}
 }
 
 // early return variant of above
 //
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) HasValidPlacement(tile tiles.Tile) bool {
+func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
+	// TODO for future tasks:
+	// - implement generation of legal tile placements
+	return true
+}
+
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
+func (board *board) GetLegalMovesFor(tile elements.TilePlacement) []elements.LegalMove {
 	// TODO for future tasks:
 	// - implement generation of legal moves
-	return true
+	return []elements.LegalMove{}
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
@@ -85,7 +92,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	}
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
-	//   or return InvalidMove otherwise
+	//   or return ErrInvalidMove otherwise
 	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
