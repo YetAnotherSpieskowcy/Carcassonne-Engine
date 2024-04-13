@@ -8,5 +8,12 @@ import (
 
 type Deck struct {
 	*stack.Stack[tiles.Tile]
-	tilesets.TileSet
+	StartingTile tiles.Tile
+}
+
+func (deck Deck) TileSet() tilesets.TileSet {
+	return tilesets.TileSet{
+		Tiles:        deck.GetTiles(),
+		StartingTile: deck.StartingTile,
+	}
 }

@@ -19,7 +19,7 @@ func TestFullGame(t *testing.T) {
 		tiletemplates.FourCityEdgesConnectedShield(),
 	}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
-	deck := deck.Deck{Stack: &deckStack, TileSet: tileSet}
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
 	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())

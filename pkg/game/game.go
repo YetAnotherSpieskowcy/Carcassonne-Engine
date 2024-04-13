@@ -25,8 +25,8 @@ type Game struct {
 func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error) {
 	deckStack := stack.New(tileSet.Tiles)
 	deck := deck.Deck{
-		Stack:   &deckStack,
-		TileSet: tileSet,
+		Stack:        &deckStack,
+		StartingTile: tileSet.StartingTile,
 	}
 	return NewFromDeck(deck, log)
 }
@@ -39,7 +39,7 @@ func NewFromDeck(
 		log = &nullLogger
 	}
 	game := &Game{
-		board:         NewBoard(deck.TileSet),
+		board:         NewBoard(deck.TileSet()),
 		deck:          deck,
 		players:       []elements.Player{player.New(1), player.New(2)},
 		currentPlayer: 0,

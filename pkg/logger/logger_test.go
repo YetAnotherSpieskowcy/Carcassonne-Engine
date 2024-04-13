@@ -20,8 +20,8 @@ func getTestDeck() deck.Deck {
 	tileSet.Tiles = []tiles.Tile{test.GetTestTile(), test.GetTestTile()}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	return deck.Deck{
-		TileSet: tileSet,
-		Stack:   &deckStack,
+		Stack:        &deckStack,
+		StartingTile: tileSet.StartingTile,
 	}
 }
 
