@@ -50,13 +50,8 @@ type TilePlacement struct {
 	Pos Position
 }
 
-// note: this is implemented to avoid inheriting Tile's implementation
-// but is just a simple passthrough and its output may not be a legal placement.
-func (placement TilePlacement) Rotate(rotations uint) TilePlacement {
-	return TilePlacement{
-		Tile: placement.Tile.Rotate(rotations),
-		Pos:  placement.Pos,
-	}
+func (placement TilePlacement) Rotate(_ uint) TilePlacement {
+	panic("Rotate() not supported on TilePlacement")
 }
 
 // represents a legal position of a meeple on the tile
@@ -65,30 +60,12 @@ type MeeplePlacement struct {
 	Type MeepleType
 }
 
-// note: this is implemented to aid with LegalMove.Rotate() implementation
-// but is just a simple passthrough and its output may not be a legal placement.
-func (placement MeeplePlacement) Rotate(rotations uint) MeeplePlacement {
-	return MeeplePlacement{
-		Side: placement.Side.Rotate(rotations),
-		Type: placement.Type,
-	}
-}
-
 // represents a legal move (tile placement and meeple placement) on the board
 type LegalMove struct {
 	TilePlacement
 	// LegalMove always has a `Meeple`. Whether it is actually placed
 	// is determined by `MeeplePlacement.Side` which will be `None`, if it isn't.
 	Meeple MeeplePlacement
-}
-
-// note: this is implemented to avoid inheriting the implementation
-// but is just a simple passthrough and its output may not be a legal move.
-func (move LegalMove) Rotate(rotations uint) LegalMove {
-	return LegalMove{
-		TilePlacement: move.TilePlacement.Rotate(rotations),
-		Meeple:        move.Meeple.Rotate(rotations),
-	}
 }
 
 // represents a tile placed on the board, including the player who placed it
