@@ -7,7 +7,7 @@ type Board interface {
 	TileCount() int
 	Tiles() []PlacedTile
 	GetTileAt(pos Position) (PlacedTile, bool)
-	GetLegalTilePlacementsFor(tile tiles.Tile) []TilePlacement
+	GetTilePlacementsFor(tile tiles.Tile) []TilePlacement
 	TileHasValidPlacement(tile tiles.Tile) bool
 	GetLegalMovesFor(tile TilePlacement) []LegalMove
 	CanBePlaced(tile PlacedTile) bool

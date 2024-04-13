@@ -55,7 +55,7 @@ func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool)
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalTilePlacementsFor(tile tiles.Tile) []elements.TilePlacement {
+func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.TilePlacement {
 	// TODO for future tasks:
 	// - implement generation of legal tile placements
 	return []elements.TilePlacement{}
