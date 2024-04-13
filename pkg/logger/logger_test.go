@@ -48,9 +48,8 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	expectedPlayerID := 0
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(expectedPlayerID, expectedTile))
+	err = log.LogEvent(NewPlaceTileEntry(expectedTile.Player, expectedTile.LegalMove))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -101,11 +100,11 @@ func TestFileLogger(t *testing.T) {
 	if placeTileLine.Event != "place" {
 		t.Fatalf("expected %#v, got %#v instead", "place", placeTileLine.Event)
 	}
-	if placeTileLine.PlayerID != expectedPlayerID {
-		t.Fatalf("expected %#v, got %#v instead", expectedPlayerID, placeTileLine.PlayerID)
+	if placeTileLine.PlayerID != expectedTile.Player.ID() {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.Player.ID(), placeTileLine.PlayerID)
 	}
-	if !reflect.DeepEqual(placeTileLine.Tile, expectedTile) {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileLine.Tile)
+	if !reflect.DeepEqual(placeTileLine.Move, expectedTile.LegalMove) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.LegalMove, placeTileLine.Move)
 	}
 
 	scanner.Scan()
@@ -161,9 +160,8 @@ func TestLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	expectedPlayerID := 0
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(expectedPlayerID, expectedTile))
+	err = log.LogEvent(NewPlaceTileEntry(expectedTile.Player, expectedTile.LegalMove))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -208,11 +206,11 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if placeTileLine.PlayerID != expectedPlayerID {
-		t.Fatalf("expected %#v, got %#v instead", expectedPlayerID, placeTileLine.PlayerID)
+	if placeTileLine.PlayerID != expectedTile.Player.ID() {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.Player.ID(), placeTileLine.PlayerID)
 	}
-	if !reflect.DeepEqual(placeTileLine.Tile, expectedTile) {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileLine.Tile)
+	if !reflect.DeepEqual(placeTileLine.Move, expectedTile.LegalMove) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.LegalMove, placeTileLine.Move)
 	}
 
 	line, err = buffer.ReadString(byte('\n'))

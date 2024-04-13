@@ -21,20 +21,18 @@ func getTestScoreReport() elements.ScoreReport {
 }
 
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
-	player := player.New(1)
-	player.SetMeepleCount(elements.NormalMeeple, 0)
-
 	board := game.NewBoard(tilesets.StandardTileSet())
 	tile := test.GetTestPlacedTile()
-	_, err := player.PlaceTile(board, tile)
+	player := tile.Player
+	player.SetMeepleCount(elements.NormalMeeple, 0)
+
+	_, err := player.PlaceTile(board, tile.LegalMove)
 	if !errors.Is(err, elements.ErrNoMeepleAvailable) {
 		t.Fatalf("expected NoMeepleAvailable error type, got %#v instead", err)
 	}
 }
 
 func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
-	player := player.New(1)
-
 	expectedScoreReport := getTestScoreReport()
 	callCount := 0
 	board := &test.BoardMock{
@@ -45,8 +43,9 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 	}
 
 	tile := test.GetTestPlacedTile()
+	player := tile.Player
 
-	actualScoreReport, err := player.PlaceTile(board, tile)
+	actualScoreReport, err := player.PlaceTile(board, tile.LegalMove)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -61,14 +60,13 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 }
 
 func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
-	player := player.New(1)
+	board := &test.BoardMock{}
+	tile := test.GetTestPlacedTile()
+	player := tile.Player
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
 
-	board := &test.BoardMock{}
-	tile := test.GetTestPlacedTile()
-
-	_, err := player.PlaceTile(board, tile)
+	_, err := player.PlaceTile(board, tile.LegalMove)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -80,14 +78,13 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 }
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
-	player := player.New(1)
+	board := &test.BoardMock{}
+	tile := test.GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None})
+	player := tile.Player
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
-	board := &test.BoardMock{}
-	tile := test.GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None})
-
-	_, err := player.PlaceTile(board, tile)
+	_, err := player.PlaceTile(board, tile.LegalMove)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -99,18 +96,17 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 }
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
-	player := player.New(1)
-	player.SetMeepleCount(elements.NormalMeeple, 2)
-	expectedMeepleCount := uint8(2)
-
 	board := &test.BoardMock{
 		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
 			return elements.ScoreReport{}, elements.ErrInvalidPosition
 		},
 	}
 	tile := test.GetTestPlacedTile()
+	player := tile.Player
+	player.SetMeepleCount(elements.NormalMeeple, 2)
+	expectedMeepleCount := uint8(2)
 
-	_, err := player.PlaceTile(board, tile)
+	_, err := player.PlaceTile(board, tile.LegalMove)
 	if err == nil {
 		t.Fatal("expected error to occur")
 	}

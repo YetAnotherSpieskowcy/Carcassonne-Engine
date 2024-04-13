@@ -25,12 +25,16 @@ func (board *BoardMock) GetTileAt(_ elements.Position) (elements.PlacedTile, boo
 	return elements.PlacedTile{}, true
 }
 
-func (board *BoardMock) GetLegalMovesFor(_ tiles.Tile) []elements.LegalMove {
-	return []elements.LegalMove{}
+func (board *BoardMock) GetTilePlacementsFor(_ tiles.Tile) []elements.TilePlacement {
+	return []elements.TilePlacement{}
 }
 
-func (board *BoardMock) HasValidPlacement(_ tiles.Tile) bool {
+func (board *BoardMock) TileHasValidPlacement(_ tiles.Tile) bool {
 	return true
+}
+
+func (board *BoardMock) GetLegalMovesFor(_ elements.TilePlacement) []elements.LegalMove {
+	return []elements.LegalMove{}
 }
 
 func (board *BoardMock) CanBePlaced(_ elements.PlacedTile) bool {

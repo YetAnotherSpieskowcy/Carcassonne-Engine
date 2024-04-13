@@ -29,7 +29,7 @@ func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 	}
 }
 
-func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing.T) {
+func TestBoardGetTilePlacementsForReturnsEmptySliceWhenCityCannotBePlaced(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
 	board := NewBoard(tilesets.StandardTileSet())
@@ -48,19 +48,19 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 		t.Fatal(err.Error())
 	}
 
-	expected := []elements.LegalMove{}
-	actual := board.GetLegalMovesFor(tiletemplates.FourCityEdgesConnectedShield())
+	expected := []elements.TilePlacement{}
+	actual := board.GetTilePlacementsFor(tiletemplates.FourCityEdgesConnectedShield())
 
 	if !reflect.DeepEqual(expected, actual) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
 
-func TestBoardHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T) {
+func TestBoardTileHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testing.T) {
 	board := NewBoard(tilesets.StandardTileSet())
 
 	expected := true
-	actual := board.HasValidPlacement(tiletemplates.SingleCityEdgeNoRoads())
+	actual := board.TileHasValidPlacement(tiletemplates.SingleCityEdgeNoRoads())
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)

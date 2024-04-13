@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -24,6 +25,7 @@ func GetTestPlacedTile() elements.PlacedTile {
 			TilePlacement: GetTestTilePlacement(),
 			Meeple:        elements.MeeplePlacement{Side: side.Bottom},
 		},
+		Player: player.New(1),
 	}
 }
 
@@ -33,6 +35,7 @@ func GetTestPlacedTileWithMeeple(meeple elements.MeeplePlacement) elements.Place
 			TilePlacement: GetTestTilePlacement(),
 			Meeple:        meeple,
 		},
+		Player: player.New(1),
 	}
 }
 

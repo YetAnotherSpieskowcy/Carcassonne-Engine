@@ -49,17 +49,17 @@ func TestBoardMockGetTileAt(t *testing.T) {
 	}
 }
 
-func TestBoardMockGetLegalMovesFor(t *testing.T) {
+func TestBoardMockGetTilePlacementsFor(t *testing.T) {
 	board := BoardMock{}
-	actual := board.GetLegalMovesFor(GetTestTile())
+	actual := board.GetTilePlacementsFor(GetTestTile())
 	if len(actual) != 0 {
-		t.Fatalf("expected GetLegalMovesFor() output to be empty, got %#v instead", actual)
+		t.Fatalf("expected GetTilePlacementsFor() output to be empty, got %#v instead", actual)
 	}
 }
 
-func TestBoardMockHasValidPlacement(t *testing.T) {
+func TestBoardMockTileHasValidPlacement(t *testing.T) {
 	board := BoardMock{}
-	actual := board.HasValidPlacement(GetTestTile())
+	actual := board.TileHasValidPlacement(GetTestTile())
 	expected := true
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
