@@ -3,6 +3,10 @@ package elements
 import (
 	"slices"
 	"testing"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestPositionMarshalTextWithPositiveCoords(t *testing.T) {
@@ -62,5 +66,61 @@ func TestPositionUnmarshalTextWithNegativeCoords(t *testing.T) {
 	}
 	if actual.Y() != expectedY {
 		t.Fatalf("expected %#v, got %#v instead", expectedY, actual)
+	}
+}
+
+func TestLegalMoveRotate(t *testing.T) {
+	tile := tiletemplates.SingleCityEdgeNoRoads()
+	side := side.Bottom
+	rotations := uint(2)
+
+	expectedTile := tile.Rotate(rotations)
+	expectedPos := NewPosition(0, 1)
+	expectedMeeple := MeeplePlacement{
+		Side: side.Rotate(rotations),
+		Type: NormalMeeple,
+	}
+
+	move := LegalMove{
+		TilePlacement: TilePlacement{
+			Tile: tile,
+			Pos:  expectedPos,
+		},
+		Meeple: MeeplePlacement{
+			Side: side,
+			Type: expectedMeeple.Type,
+		},
+	}
+	actual := move.Rotate(rotations)
+
+	if !actual.Tile.Equals(expectedTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile, actual.Tile)
+	}
+
+	if actual.Pos != expectedPos {
+		t.Fatalf("expected %#v, got %#v instead", expectedPos, actual.Pos)
+	}
+
+	if actual.Meeple.Side != expectedMeeple.Side {
+		t.Fatalf("expected %#v, got %#v instead", expectedMeeple.Side, actual.Meeple.Side)
+	}
+
+	if actual.Meeple.Type != expectedMeeple.Type {
+		t.Fatalf("expected %#v, got %#v instead", expectedMeeple.Type, actual.Meeple.Type)
+	}
+}
+
+func TestNewStartingTile(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	actual := NewStartingTile(tileSet)
+
+	expectedTile := tileSet.StartingTile
+	if !actual.Tile.Equals(expectedTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile, actual.Tile)
+	}
+
+	expectedPos := NewPosition(0, 0)
+	if actual.Pos != expectedPos {
+		t.Fatalf("expected %#v, got %#v instead", expectedPos, actual.Pos)
 	}
 }

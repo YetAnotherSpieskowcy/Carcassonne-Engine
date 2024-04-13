@@ -31,7 +31,11 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	err = game.PlayTurn(
-		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
+		elements.PlacedTile{
+			LegalMove: elements.LegalMove{
+				TilePlacement: elements.TilePlacement{Tile: tile},
+			},
+		},
 	)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -40,7 +44,11 @@ func TestFullGame(t *testing.T) {
 	// incorrect move - try placing tile 0 when 1 should be placed
 	tile = tileSet.Tiles[0]
 	err = game.PlayTurn(
-		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
+		elements.PlacedTile{
+			LegalMove: elements.LegalMove{
+				TilePlacement: elements.TilePlacement{Tile: tile},
+			},
+		},
 	)
 	if err == nil {
 		t.Fatal("expected error to occur")
@@ -55,7 +63,11 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	err = game.PlayTurn(
-		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tile}},
+		elements.PlacedTile{
+			LegalMove: elements.LegalMove{
+				TilePlacement: elements.TilePlacement{Tile: tile},
+			},
+		},
 	)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -63,7 +75,11 @@ func TestFullGame(t *testing.T) {
 
 	// check if out of bounds state is detected
 	err = game.PlayTurn(
-		elements.PlacedTile{LegalMove: elements.LegalMove{Tile: tileSet.Tiles[1]}},
+		elements.PlacedTile{
+			LegalMove: elements.LegalMove{
+				TilePlacement: elements.TilePlacement{Tile: tileSet.Tiles[1]},
+			},
+		},
 	)
 	if err == nil {
 		t.Fatal("expected error to occur")

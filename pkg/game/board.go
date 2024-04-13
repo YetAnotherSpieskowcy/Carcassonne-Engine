@@ -30,12 +30,7 @@ type board struct {
 
 func NewBoard(tileSet tilesets.TileSet) elements.Board {
 	tiles := make([]elements.PlacedTile, len(tileSet.Tiles)+1)
-	startingTile := elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			Tile: tileSet.StartingTile,
-			Pos:  elements.NewPosition(0, 0),
-		},
-	}
+	startingTile := elements.NewStartingTile(tileSet)
 	tiles[0] = startingTile
 	return &board{
 		tileSet: tileSet,

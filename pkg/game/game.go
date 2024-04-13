@@ -14,9 +14,10 @@ import (
 )
 
 type Game struct {
-	board         elements.Board
-	deck          deck.Deck
-	players       []elements.Player
+	board   elements.Board
+	deck    deck.Deck
+	players []elements.Player
+	// index in the `players` field, not the Player ID
 	currentPlayer int
 	log           *logger.Logger
 }
@@ -40,7 +41,7 @@ func NewFromDeck(
 	game := &Game{
 		board:         NewBoard(deck.TileSet),
 		deck:          deck,
-		players:       []elements.Player{player.New(0), player.New(1)},
+		players:       []elements.Player{player.New(1), player.New(2)},
 		currentPlayer: 0,
 		log:           log,
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 type Position struct {
@@ -43,20 +44,69 @@ const (
 	MeepleTypeCount int = iota
 )
 
-type Meeple struct {
-	Player Player
-	Side   side.Side
-	Type   MeepleType
-}
-
-type LegalMove struct {
+// represents a legal position (and rotation) of a tile on the board
+type TilePlacement struct {
 	tiles.Tile
 	Pos Position
 }
 
+// note: this is implemented to avoid inheriting Tile's implementation
+// but is just a simple passthrough and its output may not be a legal placement.
+func (placement TilePlacement) Rotate(rotations uint) TilePlacement {
+	return TilePlacement{
+		Tile: placement.Tile.Rotate(rotations),
+		Pos:  placement.Pos,
+	}
+}
+
+// represents a legal position of a meeple on the tile
+type MeeplePlacement struct {
+	Side side.Side
+	Type MeepleType
+}
+
+// note: this is implemented to aid with LegalMove.Rotate() implementation
+// but is just a simple passthrough and its output may not be a legal placement.
+func (placement MeeplePlacement) Rotate(rotations uint) MeeplePlacement {
+	return MeeplePlacement{
+		Side: placement.Side.Rotate(rotations),
+		Type: placement.Type,
+	}
+}
+
+// represents a legal move (tile placement and meeple placement) on the board
+type LegalMove struct {
+	TilePlacement
+	// LegalMove always has a `Meeple`. Whether it is actually placed
+	// is determined by `MeeplePlacement.Side` which will be `None`, if it isn't.
+	Meeple MeeplePlacement
+}
+
+// note: this is implemented to avoid inheriting the implementation
+// but is just a simple passthrough and its output may not be a legal move.
+func (move LegalMove) Rotate(rotations uint) LegalMove {
+	return LegalMove{
+		TilePlacement: move.TilePlacement.Rotate(rotations),
+		Meeple:        move.Meeple.Rotate(rotations),
+	}
+}
+
+// represents a tile placed on the board, including the player who placed it
 type PlacedTile struct {
 	LegalMove
-	// PlacedTile always has a `Meeple`. Whether it is actually placed is determined by
-	// `Meeple.side` which will be `None`, if it isn't.
-	Meeple Meeple
+	// Although the player field is always set, it technically is only crucial to
+	// the game state *if* a meeple was placed.
+	// For starting tile, Player with ID 0 is used.
+	Player Player
+}
+
+func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
+	return PlacedTile{
+		LegalMove: LegalMove{
+			TilePlacement: TilePlacement{
+				Tile: tileSet.StartingTile,
+				Pos:  NewPosition(0, 0),
+			},
+		},
+	}
 }

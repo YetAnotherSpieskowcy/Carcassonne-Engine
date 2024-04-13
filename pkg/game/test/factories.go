@@ -11,23 +11,28 @@ func GetTestTile() tiles.Tile {
 	return tiletemplates.SingleCityEdgeNoRoads().Rotate(2)
 }
 
-func GetTestPlacedTile() elements.PlacedTile {
-	return elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			Tile: GetTestTile(),
-			Pos:  elements.NewPosition(0, 1),
-		},
-		Meeple: elements.Meeple{Side: side.Bottom},
+func GetTestTilePlacement() elements.TilePlacement {
+	return elements.TilePlacement{
+		Tile: GetTestTile(),
+		Pos:  elements.NewPosition(0, 1),
 	}
 }
 
-func GetTestPlacedTileWithMeeple(meeple elements.Meeple) elements.PlacedTile {
+func GetTestPlacedTile() elements.PlacedTile {
 	return elements.PlacedTile{
 		LegalMove: elements.LegalMove{
-			Tile: GetTestTile(),
-			Pos:  elements.NewPosition(0, 1),
+			TilePlacement: GetTestTilePlacement(),
+			Meeple:        elements.MeeplePlacement{Side: side.Bottom},
 		},
-		Meeple: meeple,
+	}
+}
+
+func GetTestPlacedTileWithMeeple(meeple elements.MeeplePlacement) elements.PlacedTile {
+	return elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			TilePlacement: GetTestTilePlacement(),
+			Meeple:        meeple,
+		},
 	}
 }
 

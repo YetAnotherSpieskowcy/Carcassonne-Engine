@@ -36,10 +36,12 @@ func TestBoardGetLegalMovesForReturnsEmptySliceWhenCityCannotBePlaced(t *testing
 	_, err := board.PlaceTile(
 		elements.PlacedTile{
 			LegalMove: elements.LegalMove{
-				Tile: tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
-				Pos:  elements.NewPosition(0, 1),
+				TilePlacement: elements.TilePlacement{
+					Tile: tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
+					Pos:  elements.NewPosition(0, 1),
+				},
+				Meeple: elements.MeeplePlacement{Side: side.None},
 			},
-			Meeple: elements.Meeple{Side: side.None},
 		},
 	)
 	if err != nil {
@@ -119,12 +121,7 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 		test.GetTestTile(),
 	}
 	board := NewBoard(tileSet)
-	startingPlacedTile := elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			Tile: tilesets.StandardTileSet().StartingTile,
-			Pos:  elements.NewPosition(0, 0),
-		},
-	}
+	startingPlacedTile := elements.NewStartingTile(tileSet)
 	expected := []elements.PlacedTile{
 		startingPlacedTile,
 		test.GetTestPlacedTile(),

@@ -21,7 +21,7 @@ func getTestScoreReport() elements.ScoreReport {
 }
 
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
-	player := player.New(0)
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
 
 	board := game.NewBoard(tilesets.StandardTileSet())
@@ -33,7 +33,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 }
 
 func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
-	player := player.New(0)
+	player := player.New(1)
 
 	expectedScoreReport := getTestScoreReport()
 	callCount := 0
@@ -61,7 +61,7 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 }
 
 func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
-	player := player.New(0)
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
 
@@ -80,12 +80,12 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 }
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
-	player := player.New(0)
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
 	board := &test.BoardMock{}
-	tile := test.GetTestPlacedTileWithMeeple(elements.Meeple{Side: side.None})
+	tile := test.GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None})
 
 	_, err := player.PlaceTile(board, tile)
 	if err != nil {
@@ -99,7 +99,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 }
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
-	player := player.New(0)
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
@@ -122,7 +122,7 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 }
 
 func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
-	player := player.New(0)
+	player := player.New(1)
 	actualScore := player.Score()
 	if actualScore != 0 {
 		t.Fatalf("expected %#v, got %#v instead", 0, actualScore)

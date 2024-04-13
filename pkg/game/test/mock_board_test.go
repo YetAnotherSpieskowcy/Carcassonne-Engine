@@ -69,7 +69,7 @@ func TestBoardMockHasValidPlacement(t *testing.T) {
 func TestBoardMockCanBePlaced(t *testing.T) {
 	board := BoardMock{}
 	actual := board.CanBePlaced(
-		GetTestPlacedTileWithMeeple(elements.Meeple{Side: side.None}),
+		GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None}),
 	)
 	expected := true
 	if actual != expected {
