@@ -5,7 +5,12 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
-func GetStandardTiles() []tiles.Tile { //nolint:gocyclo // shallow loops for adding tiles
+type TileSet struct {
+	StartingTile tiles.Tile
+	Tiles        []tiles.Tile
+}
+
+func StandardTileSet() TileSet { //nolint:gocyclo // shallow loops for adding tiles
 	var tiles []tiles.Tile
 	// Source: https://en.wikipedia.org/w/index.php?title=Carcassonne_(board_game)&oldid=1214139777#Tiles
 	// Code below appends the tiles sourced from the "Non-river terrain tiles" table
@@ -130,5 +135,9 @@ func GetStandardTiles() []tiles.Tile { //nolint:gocyclo // shallow loops for add
 	for range 1 {
 		tiles = append(tiles, tiletemplates.FourCityEdgesConnectedShield())
 	}
-	return tiles
+
+	return TileSet{
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+		Tiles:        tiles,
+	}
 }

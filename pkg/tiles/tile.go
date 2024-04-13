@@ -15,6 +15,29 @@ type Tile struct {
 	Building  buildings.Bulding
 }
 
+func (tile Tile) Equals(other Tile) bool {
+outer:
+	for rotations := range uint(4) {
+		rotated := other.Rotate(rotations)
+		if tile.HasShield != rotated.HasShield {
+			continue
+		}
+		if tile.Building != rotated.Building {
+			continue
+		}
+		if len(tile.Features) != len(rotated.Features) {
+			continue
+		}
+		for i, feature := range tile.Features {
+			if !feature.Equals(rotated.Features[i]) {
+				continue outer
+			}
+		}
+		return true
+	}
+	return false
+}
+
 func (tile *Tile) Cities() []featureMod.Feature {
 	var cities []featureMod.Feature
 	for _, feature := range tile.Features {
@@ -46,6 +69,10 @@ func (tile *Tile) Fields() []featureMod.Feature {
 }
 
 func (tile Tile) Rotate(rotations uint) Tile {
+	rotations %= 4
+	if rotations == 0 {
+		return tile
+	}
 
 	var newFeatures []featureMod.Feature
 

@@ -7,7 +7,23 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
+
+func getTestDeck() deck.Deck {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{test.GetTestTile(), test.GetTestTile()}
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	return deck.Deck{
+		Stack:        &deckStack,
+		StartingTile: tileSet.StartingTile,
+	}
+}
 
 //nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
 func TestFileLogger(t *testing.T) {
@@ -23,17 +39,23 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	err = log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
+	deck := getTestDeck()
+	expectedStartingTile := deck.StartingTile
+	expectedStack := deck.GetRemaining()
+	expectedPlayerCount := 2
+	err = log.LogEvent(NewStartEntry(deck, expectedPlayerCount))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	err = log.LogEvent(NewPlaceTileEntry(0, 1, []int{1, 2}, 0))
+	expectedTile := test.GetTestPlacedTile()
+	err = log.LogEvent(NewPlaceTileEntry(expectedTile.Player, expectedTile.LegalMove))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	err = log.LogEvent(NewEndEntry([]int{1, 2}))
+	expectedScores := []uint32{1, 2}
+	err = log.LogEvent(NewEndEntry(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -58,13 +80,16 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	if startLine.Event != "start" {
-		t.Fatal("FAILED")
+		t.Fatalf("expected %#v, got %#v instead", "start", startLine.Event)
 	}
-	if !reflect.DeepEqual(startLine.Deck, []int{1, 2, 3}) {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(startLine.StartingTile, expectedStartingTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startLine.StartingTile)
 	}
-	if !reflect.DeepEqual(startLine.Players, []string{"Player1", "Player2"}) {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(startLine.Stack, expectedStack) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStack, startLine.Stack)
+	}
+	if !reflect.DeepEqual(startLine.PlayerCount, expectedPlayerCount) {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startLine.PlayerCount)
 	}
 
 	scanner.Scan()
@@ -73,16 +98,13 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	if placeTileLine.Event != "place" {
-		t.Fatal("FAILED")
+		t.Fatalf("expected %#v, got %#v instead", "place", placeTileLine.Event)
 	}
-	if placeTileLine.Rotation != 1 {
-		t.Fatal("FAILED")
+	if placeTileLine.PlayerID != expectedTile.Player.ID() {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.Player.ID(), placeTileLine.PlayerID)
 	}
-	if !reflect.DeepEqual(placeTileLine.Position, []int{1, 2}) {
-		t.Fatal("FAILED")
-	}
-	if placeTileLine.Meeple != 0 {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(placeTileLine.Move, expectedTile.LegalMove) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.LegalMove, placeTileLine.Move)
 	}
 
 	scanner.Scan()
@@ -91,10 +113,10 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	if endLine.Event != "end" {
-		t.Fatal("FAILED")
+		t.Fatalf("expected %#v, got %#v instead", "end", endLine.Event)
 	}
-	if !reflect.DeepEqual(endLine.Scores, []int{1, 2}) {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(endLine.Scores, expectedScores) {
+		t.Fatalf("expected %#v, got %#v instead", expectedScores, endLine.Scores)
 	}
 }
 
@@ -117,7 +139,7 @@ func TestFileLoggerInvalidFiles(t *testing.T) {
 		t.Fatal("FAILED")
 	}
 
-	err = log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
+	err = log.LogEvent(NewStartEntry(getTestDeck(), 2))
 	if err == nil {
 		t.Fatal("FAILED")
 	}
@@ -129,17 +151,23 @@ func TestLogger(t *testing.T) {
 
 	log := New(buffer)
 
-	err := log.LogEvent(NewStartEntry([]int{1, 2, 3}, []string{"Player1", "Player2"}))
+	deck := getTestDeck()
+	expectedStack := deck.GetRemaining()
+	expectedStartingTile := deck.StartingTile
+	expectedPlayerCount := 2
+	err := log.LogEvent(NewStartEntry(deck, expectedPlayerCount))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	err = log.LogEvent(NewPlaceTileEntry(0, 1, []int{1, 2}, 0))
+	expectedTile := test.GetTestPlacedTile()
+	err = log.LogEvent(NewPlaceTileEntry(expectedTile.Player, expectedTile.LegalMove))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	err = log.LogEvent(NewEndEntry([]int{1, 2}))
+	expectedScores := []uint32{1, 2}
+	err = log.LogEvent(NewEndEntry(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -158,13 +186,16 @@ func TestLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	if startLine.Event != "start" {
-		t.Fatal("FAILED")
+		t.Fatalf("expected %#v, got %#v instead", "start", startLine.Event)
 	}
-	if !reflect.DeepEqual(startLine.Deck, []int{1, 2, 3}) {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(startLine.StartingTile, expectedStartingTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startLine.StartingTile)
 	}
-	if !reflect.DeepEqual(startLine.Players, []string{"Player1", "Player2"}) {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(startLine.Stack, expectedStack) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStack, startLine.Stack)
+	}
+	if !reflect.DeepEqual(startLine.PlayerCount, expectedPlayerCount) {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startLine.PlayerCount)
 	}
 
 	line, err = buffer.ReadString(byte('\n'))
@@ -175,17 +206,11 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if placeTileLine.Event != "place" {
-		t.Fatal("FAILED")
+	if placeTileLine.PlayerID != expectedTile.Player.ID() {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.Player.ID(), placeTileLine.PlayerID)
 	}
-	if placeTileLine.Rotation != 1 {
-		t.Fatal("FAILED")
-	}
-	if !reflect.DeepEqual(placeTileLine.Position, []int{1, 2}) {
-		t.Fatal("FAILED")
-	}
-	if placeTileLine.Meeple != 0 {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(placeTileLine.Move, expectedTile.LegalMove) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile.LegalMove, placeTileLine.Move)
 	}
 
 	line, err = buffer.ReadString(byte('\n'))
@@ -197,9 +222,9 @@ func TestLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	if endLine.Event != "end" {
-		t.Fatal("FAILED")
+		t.Fatalf("expected %#v, got %#v instead", "end", endLine.Event)
 	}
-	if !reflect.DeepEqual(endLine.Scores, []int{1, 2}) {
-		t.Fatal("FAILED")
+	if !reflect.DeepEqual(endLine.Scores, expectedScores) {
+		t.Fatalf("expected %#v, got %#v instead", expectedScores, endLine.Scores)
 	}
 }

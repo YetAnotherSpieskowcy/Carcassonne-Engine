@@ -2,6 +2,7 @@ package stack
 
 import (
 	"errors"
+	"slices"
 	"testing"
 )
 
@@ -92,6 +93,57 @@ func TestRemaining(t *testing.T) {
 		t.Fail()
 	}
 	if remaining[1] != tiles[3] {
+		t.Fail()
+	}
+}
+
+func TestGetTiles(t *testing.T) {
+	expected := []Tile{{0}, {1}, {2}, {3}}
+	stack := NewOrdered(expected)
+	for range 2 {
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
+	}
+	actual := stack.GetTiles()
+	if !slices.Equal(actual, expected) {
+		t.Fail()
+	}
+}
+
+func TestTotalTileCount(t *testing.T) {
+	tiles := []Tile{{0}, {1}, {2}, {3}}
+	tileCount := int32(len(tiles))
+	stack := NewOrdered(tiles)
+	if stack.GetTotalTileCount() != tileCount {
+		t.Fail()
+	}
+	for range 2 {
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
+	}
+	if stack.GetTotalTileCount() != tileCount {
+		t.Fail()
+	}
+}
+
+func TestRemainingTileCount(t *testing.T) {
+	tiles := []Tile{{0}, {1}, {2}, {3}}
+	tileCount := int32(len(tiles))
+	stack := NewOrdered(tiles)
+	if stack.GetRemainingTileCount() != tileCount {
+		t.Fail()
+	}
+	for range 2 {
+		_, err := stack.Next()
+		if err != nil {
+			t.Fail()
+		}
+	}
+	if stack.GetRemainingTileCount() != tileCount-2 {
 		t.Fail()
 	}
 }
