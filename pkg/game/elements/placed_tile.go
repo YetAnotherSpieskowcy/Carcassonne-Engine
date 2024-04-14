@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -56,15 +56,16 @@ func (placement TilePlacement) Rotate(_ uint) TilePlacement {
 
 // represents a legal position of a meeple on the tile
 type MeeplePlacement struct {
-	Side side.Side
-	Type MeepleType
+	Feature feature.Feature
+	Type    MeepleType
 }
 
 // represents a legal move (tile placement and meeple placement) on the board
 type LegalMove struct {
 	TilePlacement
 	// LegalMove always has a `Meeple`. Whether it is actually placed
-	// is determined by `MeeplePlacement.Side` which will be `None`, if it isn't.
+	// is determined by `MeeplePlacement.Feature.FeatureType` which will be `None`,
+	// if it isn't.
 	Meeple MeeplePlacement
 }
 

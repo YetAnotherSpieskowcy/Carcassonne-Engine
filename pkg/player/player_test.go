@@ -9,7 +9,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -25,7 +25,11 @@ func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testin
 	input := []elements.LegalMove{
 		test.GetTestPlacedTile().LegalMove,
 		test.GetTestPlacedTileWithMeeple(
-			elements.MeeplePlacement{Side: side.None},
+			elements.MeeplePlacement{
+				Feature: feature.Feature{
+					FeatureType: feature.None,
+				},
+			},
 		).LegalMove,
 	}
 	expected := input
@@ -43,7 +47,11 @@ func TestPlayerGetEligibleMovesFromReturnsMovesWithoutMeepleWhenPlayerHasNoMeepl
 	input := []elements.LegalMove{
 		test.GetTestPlacedTile().LegalMove,
 		test.GetTestPlacedTileWithMeeple(
-			elements.MeeplePlacement{Side: side.None},
+			elements.MeeplePlacement{
+				Feature: feature.Feature{
+					FeatureType: feature.None,
+				},
+			},
 		).LegalMove,
 	}
 	expected := []elements.LegalMove{input[1]}
@@ -114,7 +122,11 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 	board := &test.BoardMock{}
-	tile := test.GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None})
+	tile := test.GetTestPlacedTileWithMeeple(
+		elements.MeeplePlacement{
+			Feature: feature.Feature{FeatureType: feature.None},
+		},
+	)
 	player := tile.Player
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)

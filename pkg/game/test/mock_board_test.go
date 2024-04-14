@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
 func TestBoardMockImplementsBoardInterface(_ *testing.T) {
@@ -83,7 +83,11 @@ func TestBoardMockGetLegalMovesFor(t *testing.T) {
 func TestBoardMockCanBePlaced(t *testing.T) {
 	board := BoardMock{}
 	actual := board.CanBePlaced(
-		GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None}),
+		GetTestPlacedTileWithMeeple(
+			elements.MeeplePlacement{
+				Feature: feature.Feature{FeatureType: feature.None},
+			},
+		),
 	)
 	expected := true
 	if actual != expected {

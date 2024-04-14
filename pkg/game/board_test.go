@@ -7,7 +7,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -40,7 +40,9 @@ func TestBoardGetTilePlacementsForReturnsEmptySliceWhenCityCannotBePlaced(t *tes
 					Tile: tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
 					Pos:  elements.NewPosition(0, 1),
 				},
-				Meeple: elements.MeeplePlacement{Side: side.None},
+				Meeple: elements.MeeplePlacement{
+					Feature: feature.Feature{FeatureType: feature.None},
+				},
 			},
 		},
 	)

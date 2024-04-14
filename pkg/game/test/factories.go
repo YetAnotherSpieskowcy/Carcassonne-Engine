@@ -4,6 +4,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
@@ -23,7 +24,19 @@ func GetTestPlacedTile() elements.PlacedTile {
 	return elements.PlacedTile{
 		LegalMove: elements.LegalMove{
 			TilePlacement: GetTestTilePlacement(),
-			Meeple:        elements.MeeplePlacement{Side: side.Bottom},
+			Meeple: elements.MeeplePlacement{
+				Feature: feature.Feature{
+					FeatureType: feature.Field,
+					Sides: []side.Side{
+						side.LeftTopEdge,
+						side.RightTopEdge,
+						side.RightBottomEdge,
+						side.BottomRightEdge,
+						side.LeftBottomEdge,
+						side.BottomLeftEdge,
+					},
+				},
+			},
 		},
 		Player: player.New(1),
 	}

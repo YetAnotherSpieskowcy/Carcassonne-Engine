@@ -2,7 +2,7 @@ package player
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
 type player struct {
@@ -55,7 +55,7 @@ func (player *player) GetEligibleMovesFrom(moves []elements.LegalMove) []element
 
 // how am I supposed to name this sensibly...
 func (player *player) IsEligibleFor(move elements.LegalMove) bool {
-	if move.Meeple.Side == side.None {
+	if move.Meeple.Feature.FeatureType == feature.None {
 		return true
 	}
 	return player.MeepleCount(move.Meeple.Type) != 0
@@ -74,7 +74,7 @@ func (player *player) PlaceTile(
 		return scoreReport, err
 	}
 
-	if move.Meeple.Side != side.None {
+	if move.Meeple.Feature.FeatureType != feature.None {
 		meepleCount := player.MeepleCount(move.Meeple.Type)
 		player.SetMeepleCount(move.Meeple.Type, meepleCount-1)
 	}
