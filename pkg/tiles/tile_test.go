@@ -52,6 +52,24 @@ func TestTileEqualsReturnsTrueWhenEqual(t *testing.T) {
 	}
 }
 
+func TestGetTileRotationsStraightRoad(t *testing.T) {
+	tile := tiletemplates.StraightRoads()
+	actual := len(tile.GetTileRotations())
+	expected := 2
+	if actual != expected {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestGetTileRotationsStartingTile(t *testing.T) {
+	tile := tiletemplates.SingleCityEdgeStraightRoads()
+	actual := len(tile.GetTileRotations())
+	expected := 4
+	if actual != expected {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestTileEqualsReturnsTrueWhenEqualButRotated(t *testing.T) {
 	a := tiletemplates.MonasteryWithoutRoads()
 	b := tiletemplates.MonasteryWithoutRoads().Rotate(1)
