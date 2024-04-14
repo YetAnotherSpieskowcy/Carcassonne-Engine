@@ -6,6 +6,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -131,4 +132,50 @@ func (board *board) checkCompleted(
 		ReturnedMeeples: map[int][]uint8{},
 	}
 	return scoreReport, nil
+}
+
+/*
+Calculates score for a single monastery.
+If the monastery is finished and has a meeple, adds points to the player's score and removes the meeple. (todo)
+
+'forceScore' can be set to true to score unfinished monasteries at the end of the game.
+In other cases, 'forceScore' should be false
+
+returns: ?? //todo
+*/
+func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) {
+	if tile.Building != buildings.Monastery {
+		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
+	}
+
+	var score = 0
+	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
+		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
+			_, ok := board.GetTileAt(elements.NewPosition(x, y))
+			if ok {
+				score += 1
+			}
+		}
+	}
+
+	if score == 9 || forceScore {
+		// todo remove meeple, add points
+	}
+}
+
+/*
+Finds all tiles with monasteries adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
+This function should be called after the placement of each tile, in case it neighbours a monastery
+
+returns: ?? //todo
+*/
+func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) {
+	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
+		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
+			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
+			if ok && adjacentTile.Building == buildings.Monastery {
+				board.ScoreSingleMonastery(adjacentTile, forceScore)
+			}
+		}
+	}
 }
