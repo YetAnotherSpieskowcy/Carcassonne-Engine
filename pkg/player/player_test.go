@@ -15,8 +15,8 @@ import (
 
 func getTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{
-		ReceivedPoints:  map[int]uint32{0: 5},
-		ReturnedMeeples: map[int][]uint8{},
+		ReceivedPoints:  map[uint8]uint32{0: 5},
+		ReturnedMeeples: map[uint8][]uint8{},
 	}
 }
 
