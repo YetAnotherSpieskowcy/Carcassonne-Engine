@@ -1,13 +1,13 @@
-package buildings
+package building
 
-type Bulding int64
+type Building int64
 
 const (
-	None Bulding = iota
+	None Building = iota
 	Monastery
 )
 
-func (building Bulding) String() string {
+func (building Building) String() string {
 
 	switch building {
 	case None:
