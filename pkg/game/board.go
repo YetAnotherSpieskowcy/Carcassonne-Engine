@@ -153,7 +153,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
 			_, ok := board.GetTileAt(elements.NewPosition(x, y))
 			if ok {
-				score += 1
+				score++
 			}
 		}
 	}
