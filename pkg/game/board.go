@@ -141,9 +141,9 @@ If the monastery is finished and has a meeple, adds points to the player's score
 'forceScore' can be set to true to score unfinished monasteries at the end of the game.
 In other cases, 'forceScore' should be false
 
-returns: ?? //todo
+returns: ScoreReport (with one player at most)
 */
-func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) {
+func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
 	if tile.Building != buildings.Monastery {
 		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
 	}
@@ -159,23 +159,40 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	}
 
 	if score == 9 || forceScore {
-		// todo remove meeple, add points
+		return elements.ScoreReport{
+			ReceivedPoints: map[int]uint32{
+				int(tile.Player.ID()): uint32(score),
+			},
+			ReturnedMeeples: map[int][]uint8{
+				// todo not sure what should go here
+			},
+		}
 	}
+
+	return elements.ScoreReport{}
 }
 
 /*
 Finds all tiles with monasteries adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
 This function should be called after the placement of each tile, in case it neighbours a monastery
 
-returns: ?? //todo
+returns: ScoreReport
 */
-func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) {
+func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
+	var finalReport = elements.ScoreReport{}
+
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
 		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
 			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
 			if ok && adjacentTile.Building == buildings.Monastery {
-				board.ScoreSingleMonastery(adjacentTile, forceScore)
+				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
+
+				for key, value := range report.ReceivedPoints {
+					finalReport.ReceivedPoints[key] += value
+				}
+				// todo: do something similar for meeples
 			}
 		}
 	}
+	return finalReport
 }
