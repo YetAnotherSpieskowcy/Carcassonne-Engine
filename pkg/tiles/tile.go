@@ -1,7 +1,7 @@
 package tiles
 
 import (
-	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
@@ -12,7 +12,7 @@ Immutable object
 type Tile struct {
 	Features  []featureMod.Feature
 	HasShield bool
-	Building  buildings.Bulding
+	Building  building.Building
 }
 
 func (tile Tile) Equals(other Tile) bool {

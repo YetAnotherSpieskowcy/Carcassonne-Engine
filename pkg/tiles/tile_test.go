@@ -6,7 +6,7 @@ import (
 
 	//revive:disable-next-line:dot-imports Dot imports for package under test are fine.
 	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	buildings "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -74,7 +74,7 @@ func TestTileRotate(t *testing.T) {
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: []side.Side{side.Bottom, side.Right}})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: []side.Side{side.BottomRightEdge, side.RightBottomEdge}})
 	tile.HasShield = true
-	tile.Building = buildings.None
+	tile.Building = building.None
 
 	var rotated = tile.Rotate(1)
 
@@ -83,7 +83,7 @@ func TestTileRotate(t *testing.T) {
 	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Road, Sides: []side.Side{side.Left, side.Bottom}})
 	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Field, Sides: []side.Side{side.LeftBottomEdge, side.BottomLeftEdge}})
 	expected.HasShield = true
-	expected.Building = buildings.None
+	expected.Building = building.None
 
 	if !reflect.DeepEqual(rotated, expected) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", rotated, expected)
@@ -96,7 +96,7 @@ func TestTileFeatureGet(t *testing.T) {
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: []side.Side{side.Bottom, side.Right}})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: []side.Side{side.BottomRightEdge, side.RightBottomEdge}})
 	tile.HasShield = true
-	tile.Building = buildings.None
+	tile.Building = building.None
 
 	var expectedCities = []feature.Feature{
 		{

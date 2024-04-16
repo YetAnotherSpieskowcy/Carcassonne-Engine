@@ -2,7 +2,7 @@ package tiletemplates
 
 import (
 	tiles "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
@@ -28,7 +28,7 @@ func MonasteryWithoutRoads() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.Monastery,
+		Building:  building.Monastery,
 	}
 }
 
@@ -63,7 +63,7 @@ func MonasteryWithSingleRoad() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.Monastery,
+		Building:  building.Monastery,
 	}
 }
 
@@ -100,7 +100,7 @@ func StraightRoads() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -138,7 +138,7 @@ func RoadsTurn() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -196,7 +196,7 @@ func TCrossRoad() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -262,7 +262,7 @@ func XCrossRoad() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -291,7 +291,7 @@ func SingleCityEdgeNoRoads() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -333,7 +333,7 @@ func SingleCityEdgeStraightRoads() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -375,7 +375,7 @@ func SingleCityEdgeLeftRoadTurn() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -416,7 +416,7 @@ func SingleCityEdgeRightRoadTurn() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -476,7 +476,7 @@ func SingleCityEdgeCrossRoad() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -509,7 +509,7 @@ func TwoCityEdgesUpAndDownNotConnected() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -542,7 +542,7 @@ func TwoCityEdgesCornerNotConnected() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -576,7 +576,7 @@ func TwoCityEdgesUpAndDownConnected() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -610,7 +610,7 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 			},
 		},
 		HasShield: true,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -638,7 +638,7 @@ func TwoCityEdgesCornerConnected() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -667,7 +667,7 @@ func TwoCityEdgesCornerConnectedShield() tiles.Tile {
 			},
 		},
 		HasShield: true,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -707,7 +707,7 @@ func TwoCityEdgesCornerConnectedRoadTurn() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -747,7 +747,7 @@ func TwoCityEdgesCornerConnectedRoadTurnShield() tiles.Tile {
 			},
 		},
 		HasShield: true,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -775,7 +775,7 @@ func ThreeCityEdgesConnected() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -803,7 +803,7 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 			},
 		},
 		HasShield: true,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -843,7 +843,7 @@ func ThreeCityEdgesConnectedRoad() tiles.Tile {
 			},
 		},
 		HasShield: false,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -883,7 +883,7 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 			},
 		},
 		HasShield: true,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }
 
@@ -905,6 +905,6 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 			},
 		},
 		HasShield: true,
-		Building:  buildings.None,
+		Building:  building.None,
 	}
 }

@@ -1,4 +1,4 @@
-package buildings
+package building
 
 import (
 	"testing"
@@ -14,7 +14,7 @@ func TestBuildingToString(t *testing.T) {
 		t.Fatalf("got %#v should be %#v", Monastery.String(), "MONASTERY")
 	}
 
-	if Bulding(100).String() != "ERROR" {
-		t.Fatalf("got %#v should be %#v", Bulding(100).String(), "ERROR")
+	if Building(100).String() != "ERROR" {
+		t.Fatalf("got %#v should be %#v", Building(100).String(), "ERROR")
 	}
 }
