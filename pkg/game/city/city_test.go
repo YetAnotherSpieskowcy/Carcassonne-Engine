@@ -41,12 +41,12 @@ func TestNewAndGetFeaturesFromTile(t *testing.T) {
 func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	a := tiletemplates.SingleCityEdgeNoRoads()
 	b := tiletemplates.SingleCityEdgeNoRoads()
-	b.Rotate(2)
+	bRotated := b.Rotate(2)
 	pos := elements.NewPosition(1, 2)
 	city := New(elements.NewPosition(1, 1), a.Cities())
-	city.AddTile(pos, b.Cities())
+	city.AddTile(pos, bRotated.Cities())
 
-	expectedFeatures := b.Cities()
+	expectedFeatures := bRotated.Cities()
 	features, ok := city.GetFeaturesFromTile(pos)
 
 	if !ok {
@@ -60,4 +60,38 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", true, featureEqual)
 	}
 
+}
+
+func TestCheckCompletedWhenClosed(t *testing.T) {
+	a := tiletemplates.SingleCityEdgeNoRoads()
+
+	b := tiletemplates.SingleCityEdgeNoRoads()
+	bRotated := b.Rotate(2)
+
+	city := New(elements.NewPosition(1, 1), a.Cities())
+	city.AddTile(elements.NewPosition(1, 2), bRotated.Cities())
+
+	var expected bool = true
+	var actual bool = city.GetCompleted()
+
+	if actual != expected {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestCheckCompletedWhenOpen(t *testing.T) {
+	a := tiletemplates.SingleCityEdgeNoRoads()
+
+	b := tiletemplates.TwoCityEdgesCornerConnected()
+	bRotated := b.Rotate(2)
+
+	city := New(elements.NewPosition(1, 1), a.Cities())
+	city.AddTile(elements.NewPosition(1, 2), bRotated.Cities())
+
+	var expected bool = false
+	var actual bool = city.GetCompleted()
+
+	if actual != expected {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
 }
