@@ -136,7 +136,8 @@ func (board *board) checkCompleted(
 
 /*
 Calculates score for a single monastery.
-If the monastery is finished and has a meeple, adds points to the player's score and removes the meeple. (todo)
+If the monastery is finished and has a meeple, returns a ScoreReport with 9 points and the meeple that was in the monastery.
+Otherwise, returns an empty ScoreReport.
 
 'forceScore' can be set to true to score unfinished monasteries at the end of the game.
 In other cases, 'forceScore' should be false
@@ -147,6 +148,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	if tile.Building != building.Monastery {
 		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
 	}
+	var meepleType elements.MeepleType = elements.NormalMeeple // todo get the meeple that actually is in the monastery
 
 	var score uint32 = 0
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
@@ -159,12 +161,15 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	}
 
 	if score == 9 || forceScore {
+		var returnedMeeples = make([]uint8, elements.MeepleTypeCount)
+		returnedMeeples[meepleType] = 1
+
 		return elements.ScoreReport{
 			ReceivedPoints: map[uint8]uint32{
 				tile.Player.ID(): score,
 			},
-			ReturnedMeeples: map[int][]uint8{
-				// todo not sure what should go here
+			ReturnedMeeples: map[uint8][]uint8{
+				tile.Player.ID(): returnedMeeples,
 			},
 		}
 	}
@@ -174,7 +179,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 
 /*
 Finds all tiles with monasteries adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
-This function should be called after the placement of each tile, in case it neighbours a monastery
+This function should be called after the placement of each tile, in case it neighbours a monastery.
 
 returns: ScoreReport
 */
@@ -187,10 +192,20 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 			if ok && adjacentTile.Building == building.Monastery {
 				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
 
-				for key, value := range report.ReceivedPoints {
-					finalReport.ReceivedPoints[key] += value
+				// update finalReport with report
+				for playerID, score := range report.ReceivedPoints {
+					finalReport.ReceivedPoints[playerID] += score
 				}
-				// todo: do something similar for meeples
+
+				for playerID, meeples := range report.ReturnedMeeples {
+					if _, ok := finalReport.ReturnedMeeples[playerID]; ok {
+						for meepleType, count := range meeples {
+							finalReport.ReturnedMeeples[playerID][meepleType] += count
+						}
+					} else {
+						finalReport.ReturnedMeeples[playerID] = append(finalReport.ReturnedMeeples[playerID], meeples...)
+					}
+				}
 			}
 		}
 	}
