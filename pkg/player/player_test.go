@@ -13,13 +13,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func getTestScoreReport() elements.ScoreReport {
-	return elements.ScoreReport{
-		ReceivedPoints:  map[int]uint32{0: 5},
-		ReturnedMeeples: map[int][]uint8{},
-	}
-}
-
 func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testing.T) {
 	player := player.New(1)
 	input := []elements.LegalMove{
@@ -68,7 +61,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 }
 
 func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
-	expectedScoreReport := getTestScoreReport()
+	expectedScoreReport := test.GetTestScoreReport()
 	callCount := 0
 	board := &test.BoardMock{
 		PlaceTileFunc: func(_ elements.PlacedTile) (elements.ScoreReport, error) {
