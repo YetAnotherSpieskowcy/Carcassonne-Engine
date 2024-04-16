@@ -6,7 +6,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/buildings"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -144,11 +144,11 @@ In other cases, 'forceScore' should be false
 returns: ScoreReport (with one player at most)
 */
 func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
-	if tile.Building != buildings.Monastery {
+	if tile.Building != building.Monastery {
 		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
 	}
 
-	var score = 0
+	var score uint32 = 0
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
 		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
 			_, ok := board.GetTileAt(elements.NewPosition(x, y))
@@ -160,8 +160,8 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 
 	if score == 9 || forceScore {
 		return elements.ScoreReport{
-			ReceivedPoints: map[int]uint32{
-				int(tile.Player.ID()): uint32(score),
+			ReceivedPoints: map[uint8]uint32{
+				tile.Player.ID(): score,
 			},
 			ReturnedMeeples: map[int][]uint8{
 				// todo not sure what should go here
@@ -184,7 +184,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
 		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
 			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
-			if ok && adjacentTile.Building == buildings.Monastery {
+			if ok && adjacentTile.Building == building.Monastery {
 				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
 
 				for key, value := range report.ReceivedPoints {
