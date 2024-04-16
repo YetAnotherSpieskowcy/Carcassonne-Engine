@@ -150,7 +150,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	}
 	var meepleType elements.MeepleType = elements.NormalMeeple // todo get the meeple that actually is in the monastery
 
-	var score uint32 = 0
+	var score uint32
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
 		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
 			_, ok := board.GetTileAt(elements.NewPosition(x, y))
