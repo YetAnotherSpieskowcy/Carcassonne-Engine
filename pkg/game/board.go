@@ -129,8 +129,8 @@ func (board *board) checkCompleted(
 	// - resolve control of the completed features
 	// - award points
 	scoreReport := elements.ScoreReport{
-		ReceivedPoints:  map[int]uint32{},
-		ReturnedMeeples: map[int][]uint8{},
+		ReceivedPoints:  map[uint8]uint32{},
+		ReturnedMeeples: map[uint8][]uint8{},
 	}
 	return scoreReport, nil
 }
