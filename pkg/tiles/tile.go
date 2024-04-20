@@ -68,6 +68,9 @@ func (tile *Tile) Fields() []featureMod.Feature {
 	return fields
 }
 
+/*
+Rotate tile clockwise
+*/
 func (tile Tile) Rotate(rotations uint) Tile {
 	rotations %= 4
 	if rotations == 0 {

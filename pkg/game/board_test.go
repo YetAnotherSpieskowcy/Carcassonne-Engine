@@ -147,3 +147,56 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
+
+/*
+*
+Test creating simple loop with starting tile
+using straight roads and road turns
+*/
+func TestBoardScoreRoad(t *testing.T) {
+	var report elements.ScoreReport
+	var boardInterface interface{} = NewBoard(tilesets.StandardTileSet())
+	board := boardInterface.(*board)
+
+	tiles := []elements.PlacedTile{
+		test.GetTestRoadTurnPlacedTile(),
+		test.GetTestRoadTurnPlacedTile(),
+		test.GetTestStraightRoadPlacedTile(),
+		test.GetTestRoadTurnPlacedTile(),
+		test.GetTestRoadTurnPlacedTile(),
+	}
+
+	//add meeple to first road
+	tiles[0].Meeple.Side = side.Right
+	tiles[0].Meeple.Type = 0
+
+	// set positions
+	tiles[0].Pos = elements.NewPosition(-1, 0)
+	tiles[1].Pos = elements.NewPosition(-1, -1)
+	tiles[2].Pos = elements.NewPosition(0, -1)
+	tiles[3].Pos = elements.NewPosition(1, -1)
+	tiles[4].Pos = elements.NewPosition(1, 0)
+
+	// rotate tiles
+	tiles[0].TilePlacement.Tile = tiles[0].TilePlacement.Tile.Rotate(3)
+	tiles[1].TilePlacement.Tile = tiles[1].TilePlacement.Tile.Rotate(2)
+	tiles[3].TilePlacement.Tile = tiles[3].TilePlacement.Tile.Rotate(1)
+
+	expectedScores := []uint32{2, 3, 4, 5, 6}
+	expectedMeeples := []uint8{1}
+
+	// --------------- Placing tile ----------------------
+
+	for i := range 5 {
+
+		board.PlaceTile(tiles[i])
+		report = board.ScoreRoadCompletion(tiles[i], tiles[i].Tile.Roads()[0])
+		if report.ReceivedPoints[1] != expectedScores[i] {
+			t.Fatalf("placing tile number: %#v failed. expected %#v, got %#v instead", i, expectedScores[i], report.ReceivedPoints[1])
+		}
+
+		if !reflect.DeepEqual(report.ReturnedMeeples[1], expectedMeeples) {
+			t.Fatalf("placing tile number: %#v failed. expected %#v meeples, got %#v instead", i, report.ReturnedMeeples[1], expectedMeeples)
+		}
+	}
+}

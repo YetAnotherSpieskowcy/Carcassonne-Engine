@@ -140,14 +140,13 @@ it doesn't analyze starting tile
 
 returns: road_finished, score, [meeples on road] ,loop
 */
-func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile, forceScore bool) (bool, int, []elements.MeepleTilePlacement, bool) {
+func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.MeepleTilePlacement, bool) {
 	var meeples = []elements.MeepleTilePlacement{}
 	var tile = startTile
 	var tileExists bool
 	var score = 0
 	var road feature.Feature
 	var finished bool
-
 	// check finished on way
 	for roadSide != side.Center {
 
@@ -165,7 +164,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 
 		//check for meeple1
 		if tile.Meeple.Side == roadSide {
-			meeples = append(meeples, elements.MeepleTilePlacement{tile.Meeple, tile})
+			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 		}
 
 		// get road feature
@@ -180,7 +179,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 
 		//check for meeple2 (other end of road)
 		if tile.Meeple.Side == roadSide {
-			meeples = append(meeples, elements.MeepleTilePlacement{tile.Meeple, tile})
+			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 		}
 	}
 
@@ -190,13 +189,11 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 }
 
 /*
-Calculates score for road completion.
-If argument forceScore is false, it won't force scoring if road is unfinished.
-ForceScore is supposed to be true while counting unfinished roads.
+Calculates score for road.
 
-returns: road_finished, score, [scoring players], [meeples to remove]
+returns: ScoreReport
 */
-func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature, forceScore bool) {
+func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature) elements.ScoreReport {
 	var meeples = []elements.MeepleTilePlacement{}
 	var leftSide, rightSide side.Side
 	var score = 1
@@ -209,31 +206,58 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	var meeplesResult = []elements.MeepleTilePlacement{}
 	var loopResult bool
 
-	//check meeples on start tile
+	// check meeples on start tile
 	if tile.Meeple.Side == leftSide || tile.Meeple.Side == rightSide {
 		meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 	}
 
-	roadFinishedResult, scoreResult, meeplesResult, loopResult = board.CheckRoadInDirection(leftSide, tile, forceScore)
+	roadFinishedResult, scoreResult, meeplesResult, loopResult = board.CheckRoadInDirection(leftSide, tile)
 	score += scoreResult
 	roadFinished = roadFinished && roadFinishedResult
 	meeples = append(meeples, meeplesResult...)
 
 	if !loopResult {
-		roadFinishedResult, scoreResult, meeplesResult, loopResult = board.CheckRoadInDirection(rightSide, tile, forceScore)
+		roadFinishedResult, scoreResult, meeplesResult, _ = board.CheckRoadInDirection(rightSide, tile)
 		score += scoreResult
 		roadFinished = roadFinished && roadFinishedResult
 		meeples = append(meeples, meeplesResult...)
 	}
 
 	// -------- start counting -------------
+	var mostMeeples = 0
+	var scoredPlayers = []uint8{}
 
-	//check if both ends are in center, or loop, or forces counting
-	if (leftSide == side.Center && rightSide == side.Center) || leftTile.Pos == tile.Pos || forceScore {
-		for _, meeple := range meeples {
-			// remove meeples from tile
-			// return meeples to player
-			// add score to player	with most meeples
+	// check who has most meeples naively
+	for _, meepleA := range meeples {
+		var counter = 0
+		for _, meepleB := range meeples {
+			if meepleA.Player.ID() == meepleB.Player.ID() {
+				counter++
+			}
+		}
+
+		if counter > mostMeeples {
+			scoredPlayers = []uint8{meepleA.Player.ID()}
+		} else if counter == mostMeeples {
+			scoredPlayers = append(scoredPlayers, meepleA.Player.ID())
 		}
 	}
+
+	// -------- create report -------------
+	scoreReport := elements.MakeScoreReport()
+
+	for _, playerID := range scoredPlayers {
+		scoreReport.ReceivedPoints[playerID] = uint32(score)
+	}
+
+	for _, meeple := range meeples {
+		_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
+		if !ok {
+			scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
+		}
+		scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
+
+	}
+
+	return scoreReport
 }

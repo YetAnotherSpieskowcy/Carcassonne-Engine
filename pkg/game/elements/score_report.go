@@ -7,3 +7,11 @@ type ScoreReport struct {
 	// for reference, see also: player.meepleCounts
 	ReturnedMeeples map[uint8][]uint8
 }
+
+func MakeScoreReport() ScoreReport {
+	report := ScoreReport{}
+
+	report.ReceivedPoints = make(map[uint8]uint32)
+	report.ReturnedMeeples = make(map[uint8][]uint8)
+	return report
+}

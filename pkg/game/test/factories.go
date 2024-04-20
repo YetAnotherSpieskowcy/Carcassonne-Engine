@@ -45,3 +45,35 @@ func GetTestScoreReport() elements.ScoreReport {
 		ReturnedMeeples: map[uint8][]uint8{},
 	}
 }
+
+/*
+road from left to right
+*/
+func GetTestStraightRoadPlacedTile() elements.PlacedTile {
+	return elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			TilePlacement: elements.TilePlacement{
+				Tile: tiletemplates.StraightRoads(),
+				Pos:  elements.NewPosition(0, 0),
+			},
+			Meeple: elements.MeeplePlacement{},
+		},
+		Player: player.New(1),
+	}
+}
+
+/*
+turn from left to bottom
+*/
+func GetTestRoadTurnPlacedTile() elements.PlacedTile {
+	return elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			TilePlacement: elements.TilePlacement{
+				Tile: tiletemplates.RoadsTurn(),
+				Pos:  elements.NewPosition(0, 0),
+			},
+			Meeple: elements.MeeplePlacement{},
+		},
+		Player: player.New(1),
+	}
+}
