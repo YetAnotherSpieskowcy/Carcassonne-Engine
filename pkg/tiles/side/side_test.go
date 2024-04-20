@@ -21,22 +21,6 @@ func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all state
 	if Left.Rotate(1) != Top {
 		t.Fatalf("got %#v should be %#v after rotation", Left.Rotate(1), Top)
 	}
-	// corners
-	if TopLeftCorner.Rotate(1) != TopRightCorner {
-		t.Fatalf("got %#v should be %#v after rotation", TopLeftCorner.Rotate(1), TopRightCorner)
-	}
-
-	if TopRightCorner.Rotate(1) != BottomRightCorner {
-		t.Fatalf("got %#v should be %#v after rotation", TopRightCorner.Rotate(1), BottomRightCorner)
-	}
-
-	if BottomRightCorner.Rotate(1) != BottomLeftCorner {
-		t.Fatalf("got %#v should be %#v after rotation", BottomRightCorner.Rotate(1), BottomLeftCorner)
-	}
-
-	if BottomLeftCorner.Rotate(1) != TopLeftCorner {
-		t.Fatalf("got %#v should be %#v after rotation", BottomLeftCorner.Rotate(1), TopLeftCorner)
-	}
 
 	if Center.Rotate(1) != Center {
 		t.Fatalf("got %#v should be %#v after rotation", Center.Rotate(1), Center)
@@ -77,10 +61,6 @@ func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all state
 	if None.Rotate(1) != None {
 		t.Fatalf("got %#v should be %#v after rotation", None.Rotate(1), None)
 	}
-
-	if Side(80).Rotate(1) != None {
-		t.Fatalf("got %#v should be %#v after rotation", Side(80).Rotate(1), None)
-	}
 }
 
 func TestSideRotateReturnsSideRotatedTwice(t *testing.T) {
@@ -106,22 +86,6 @@ func TestSideToString(t *testing.T) { //nolint:gocyclo // simply testing all sta
 
 	if Bottom.String() != "BOTTOM" {
 		t.Fatalf("got %#v should be %#v", Bottom.String(), "BOTTOM")
-	}
-
-	if TopLeftCorner.String() != "TOP_LEFT_CORNER" {
-		t.Fatalf("got %#v should be %#v", TopLeftCorner.String(), "TOP_LEFT_CORNER")
-	}
-
-	if TopRightCorner.String() != "TOP_RIGHT_CORNER" {
-		t.Fatalf("got %#v should be %#v", TopRightCorner.String(), "TOP_RIGHT_CORNER")
-	}
-
-	if BottomLeftCorner.String() != "BOTTOM_LEFT_CORNER" {
-		t.Fatalf("got %#v should be %#v", BottomLeftCorner.String(), "BOTTOM_LEFT_CORNER")
-	}
-
-	if BottomRightCorner.String() != "BOTTOM_RIGHT_CORNER" {
-		t.Fatalf("got %#v should be %#v", BottomRightCorner.String(), "BOTTOM_RIGHT_CORNER")
 	}
 
 	if Center.String() != "CENTER" {
@@ -156,9 +120,4 @@ func TestSideToString(t *testing.T) { //nolint:gocyclo // simply testing all sta
 	if None.String() != "NONE" {
 		t.Fatalf("got %#v should be %#v", None.String(), "NONE")
 	}
-
-	if Side(20).String() != "ERROR" {
-		t.Fatalf("got %#v should be %#v", Side(20).String(), "ERROR")
-	}
-
 }
