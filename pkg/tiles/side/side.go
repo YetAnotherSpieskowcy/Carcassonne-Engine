@@ -83,7 +83,7 @@ func (side Side) String() string { //nolint:gocyclo // splitting into multiple s
 /*
 Rotates side clockwise
 */
-func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting into multiple switches would be obscure
+func (side Side) Rotate(rotations uint) Side {
 	/*
 		Top             0b0000000000000001
 		Right           0b0000000000000010
@@ -115,7 +115,7 @@ func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting int
 	result := side & ^Center
 
 	for rotations > 0 {
-		result = result << 1
+		result <<= 1
 
 		// loop the last 4 bits (rotated Left goes back into Top)
 		if result&0b1_0000 != 0 {
