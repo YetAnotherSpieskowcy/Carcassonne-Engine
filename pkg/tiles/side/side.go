@@ -36,19 +36,45 @@ const (
 )
 
 func (side Side) String() string {
-	sideNames := map[Side]string{
-		Top:             "TOP",
-		Right:           "RIGHT",
-		Bottom:          "BOTTOM",
-		Left:            "LEFT",
-		TopLeftEdge:     "TOP_LEFT_EDGE",
-		RightTopEdge:    "RIGHT_TOP_EDGE",
-		BottomRightEdge: "BOTTOM_RIGHT_EDGE",
-		LeftBottomEdge:  "LEFT_BOTTOM_EDGE",
-		LeftTopEdge:     "LEFT_TOP_EDGE",
-		TopRightEdge:    "TOP_RIGHT_EDGE",
-		RightBottomEdge: "RIGHT_BOTTOM_EDGE",
-		BottomLeftEdge:  "BOTTOM_LEFT_EDGE",
+	type sideNamesStruct struct {
+		primary     Side
+		primaryName string
+		secondary   map[Side]string
+	}
+
+	sideNames := []sideNamesStruct{
+		{
+			primary:     Top,
+			primaryName: "TOP",
+			secondary: map[Side]string{
+				TopLeftEdge:  "TOP_LEFT_EDGE",
+				TopRightEdge: "TOP_RIGHT_EDGE",
+			},
+		},
+		{
+			primary:     Right,
+			primaryName: "RIGHT",
+			secondary: map[Side]string{
+				RightTopEdge:    "RIGHT_TOP_EDGE",
+				RightBottomEdge: "RIGHT_BOTTOM_EDGE",
+			},
+		},
+		{
+			primary:     Bottom,
+			primaryName: "BOTTOM",
+			secondary: map[Side]string{
+				BottomRightEdge: "BOTTOM_RIGHT_EDGE",
+				BottomLeftEdge:  "BOTTOM_LEFT_EDGE",
+			},
+		},
+		{
+			primary:     Left,
+			primaryName: "LEFT",
+			secondary: map[Side]string{
+				LeftBottomEdge: "LEFT_BOTTOM_EDGE",
+				LeftTopEdge:    "LEFT_TOP_EDGE",
+			},
+		},
 	}
 	/*
 		First direction indicates the main edge of square, the second tells which side of the edge.
@@ -61,9 +87,16 @@ func (side Side) String() string {
 			tile center
 	*/
 	output := ""
-	for key, value := range sideNames {
-		if side&key != 0 {
-			output += value
+
+	for _, names := range sideNames {
+		if side&names.primary == names.primary {
+			output += names.primaryName
+		} else {
+			for key, value := range names.secondary {
+				if side&key == key {
+					output += value
+				}
+			}
 		}
 	}
 
@@ -99,7 +132,6 @@ func (side Side) Rotate(rotations uint) Side {
 		None            0b00000000
 	*/
 
-	// limit rotations
 	rotations %= 4
 	if rotations == 0 {
 		return side
