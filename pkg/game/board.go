@@ -148,7 +148,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	if tile.Building != building.Monastery {
 		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
 	}
-	var meepleType elements.MeepleType = elements.NormalMeeple // todo get the meeple that actually is in the monastery
+	var meepleType = tile.Meeple.Type
 
 	var score uint32
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
@@ -192,20 +192,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 			if ok && adjacentTile.Building == building.Monastery {
 				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
 
-				// update finalReport with report
-				for playerID, score := range report.ReceivedPoints {
-					finalReport.ReceivedPoints[playerID] += score
-				}
-
-				for playerID, meeples := range report.ReturnedMeeples {
-					if _, ok := finalReport.ReturnedMeeples[playerID]; ok {
-						for meepleType, count := range meeples {
-							finalReport.ReturnedMeeples[playerID][meepleType] += count
-						}
-					} else {
-						finalReport.ReturnedMeeples[playerID] = append(finalReport.ReturnedMeeples[playerID], meeples...)
-					}
-				}
+				finalReport.Update(report)
 			}
 		}
 	}
