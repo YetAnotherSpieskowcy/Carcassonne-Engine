@@ -908,3 +908,31 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 		Building:  building.None,
 	}
 }
+
+/*
+returns tiles.Tile consisting of only a single field. (Unused in game, useful in testing)
+*/
+func OnlyField() tiles.Tile {
+	return tiles.Tile{
+		Features: []feature.Feature{
+			{
+				FeatureType: feature.Field,
+				Sides: []side.Side{
+					side.TopLeftEdge,
+					side.TopRightEdge,
+
+					side.RightTopEdge,
+					side.RightBottomEdge,
+
+					side.LeftTopEdge,
+					side.LeftBottomEdge,
+
+					side.BottomLeftEdge,
+					side.BottomRightEdge,
+				},
+			},
+		},
+		HasShield: false,
+		Building:  building.None,
+	}
+}

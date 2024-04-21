@@ -7,6 +7,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -174,22 +175,22 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		}
 	}
 
-	return elements.ScoreReport{}
+	return elements.NewScoreReport()
 }
 
 /*
-Finds all tiles with monasteries adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
+Finds all tiles with a monastery and a meeple in it adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
 This function should be called after the placement of each tile, in case it neighbours a monastery.
 
 returns: ScoreReport
 */
 func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
-	var finalReport = elements.ScoreReport{}
+	var finalReport = elements.NewScoreReport()
 
 	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
 		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
 			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
-			if ok && adjacentTile.Building == building.Monastery {
+			if ok && adjacentTile.Building == building.Monastery && adjacentTile.Meeple.Side == side.Center {
 				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
 
 				finalReport.Update(report)

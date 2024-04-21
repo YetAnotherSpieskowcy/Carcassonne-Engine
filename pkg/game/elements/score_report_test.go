@@ -47,3 +47,23 @@ func TestUpdateScoreReport(t *testing.T) {
 		t.Fatalf("expected %#v,\ngot %#v instead", expected, report)
 	}
 }
+
+func TestUpdateEmptyScoreReport(t *testing.T) {
+	report := NewScoreReport()
+	otherReport := ScoreReport{
+		ReceivedPoints: map[uint8]uint32{
+			1: 10,
+			3: 7,
+		},
+		ReturnedMeeples: map[uint8][]uint8{
+			1: {1, 0, 0},
+			2: {0, 0, 1},
+			3: {1, 1, 1},
+		},
+	}
+	report.Update(otherReport)
+
+	if !reflect.DeepEqual(report, otherReport) {
+		t.Fatalf("expected %#v,\ngot %#v instead", otherReport, report)
+	}
+}

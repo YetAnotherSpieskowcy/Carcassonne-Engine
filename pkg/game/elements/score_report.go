@@ -8,6 +8,13 @@ type ScoreReport struct {
 	ReturnedMeeples map[uint8][]uint8
 }
 
+func NewScoreReport() ScoreReport {
+	return ScoreReport{
+		ReceivedPoints:  map[uint8]uint32{},
+		ReturnedMeeples: map[uint8][]uint8{},
+	}
+}
+
 // Adds the contents of otherReport to the contents of this score report
 func (report *ScoreReport) Update(otherReport ScoreReport) {
 	for playerID, score := range otherReport.ReceivedPoints {

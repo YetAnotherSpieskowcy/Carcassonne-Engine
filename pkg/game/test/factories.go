@@ -45,3 +45,29 @@ func GetTestScoreReport() elements.ScoreReport {
 		ReturnedMeeples: map[uint8][]uint8{},
 	}
 }
+
+func GetTestTileOnlyField() elements.PlacedTile {
+	return elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			TilePlacement: elements.TilePlacement{
+				Tile: tiletemplates.OnlyField(),
+				Pos:  elements.NewPosition(0, 0),
+			},
+			Meeple: elements.MeeplePlacement{},
+		},
+		Player: player.New(1),
+	}
+}
+
+func GetTestTileMonasteryWithoutRoads() elements.PlacedTile {
+	return elements.PlacedTile{
+		LegalMove: elements.LegalMove{
+			TilePlacement: elements.TilePlacement{
+				Tile: tiletemplates.MonasteryWithoutRoads(),
+				Pos:  elements.NewPosition(0, 0),
+			},
+			Meeple: elements.MeeplePlacement{},
+		},
+		Player: player.New(1),
+	}
+}
