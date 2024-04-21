@@ -182,8 +182,8 @@ func TestBoardScoreRoad(t *testing.T) {
 	tiles[1].TilePlacement.Tile = tiles[1].TilePlacement.Tile.Rotate(2)
 	tiles[3].TilePlacement.Tile = tiles[3].TilePlacement.Tile.Rotate(1)
 
-	expectedScores := []uint32{2, 3, 4, 5, 6}
-	expectedMeeples := []uint8{1}
+	expectedScores := []uint32{0, 0, 0, 0, 6}
+	expectedMeeples := [][]uint8{nil, nil, nil, nil, {1}}
 
 	// --------------- Placing tile ----------------------
 
@@ -195,8 +195,8 @@ func TestBoardScoreRoad(t *testing.T) {
 			t.Fatalf("placing tile number: %#v failed. expected %#v, got %#v instead", i, expectedScores[i], report.ReceivedPoints[1])
 		}
 
-		if !reflect.DeepEqual(report.ReturnedMeeples[1], expectedMeeples) {
-			t.Fatalf("placing tile number: %#v failed. expected %#v meeples, got %#v instead", i, report.ReturnedMeeples[1], expectedMeeples)
+		if !reflect.DeepEqual(report.ReturnedMeeples[1], expectedMeeples[i]) {
+			t.Fatalf("placing tile number: %#v failed. expected %#v meeples, got %#v instead", i, report.ReturnedMeeples[1], expectedMeeples[i])
 		}
 	}
 }

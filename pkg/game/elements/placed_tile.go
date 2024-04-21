@@ -26,11 +26,11 @@ func (pos Position) Y() int16 {
 	return pos.y
 }
 
-func (a Position) Add(b Position) Position {
-	return NewPosition(a.x+b.x, a.y+b.y)
+func (pos Position) Add(other Position) Position {
+	return NewPosition(pos.x+other.x, pos.y+other.y)
 }
 
-func PositionFromSide(side sideMod.Side) Position {
+func PositionFromSide(side sideMod.Side) Position { //nolint:gocyclo // similar problem to sides
 	switch side {
 	case sideMod.Top:
 		return NewPosition(0, 1)

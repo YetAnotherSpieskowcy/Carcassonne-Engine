@@ -159,7 +159,7 @@ func (side Side) Rotate(rotations uint) Side { //nolint:gocyclo // splitting int
 	return result
 }
 
-func (side Side) ConnectedOpposite() (Side, error) {
+func (side Side) ConnectedOpposite() (Side, error) { //nolint:gocyclo // splitting into multiple switches would be obscure
 	switch side {
 	case Top:
 		return Bottom, nil

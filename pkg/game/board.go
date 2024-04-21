@@ -162,7 +162,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		roadSide, _ = roadSide.ConnectedOpposite()
 		// check error
 
-		//check for meeple1
+		// check for meeple1
 		if tile.Meeple.Side == roadSide {
 			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 		}
@@ -177,7 +177,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 			roadSide = road.Sides[0]
 		}
 
-		//check for meeple2 (other end of road)
+		// check for meeple2 (other end of road)
 		if tile.Meeple.Side == roadSide {
 			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 		}
@@ -203,7 +203,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	var roadFinishedResult bool
 	var scoreResult int
-	var meeplesResult = []elements.MeepleTilePlacement{}
+	var meeplesResult []elements.MeepleTilePlacement
 	var loopResult bool
 
 	// check meeples on start tile
@@ -224,40 +224,45 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	}
 
 	// -------- start counting -------------
-	var mostMeeples = 0
-	var scoredPlayers = []uint8{}
+	if roadFinished {
+		var mostMeeples = 0
+		var scoredPlayers = []uint8{}
 
-	// check who has most meeples naively
-	for _, meepleA := range meeples {
-		var counter = 0
-		for _, meepleB := range meeples {
-			if meepleA.Player.ID() == meepleB.Player.ID() {
-				counter++
+		// check who has most meeples naively
+		for _, meepleA := range meeples {
+			var counter = 0
+			for _, meepleB := range meeples {
+				if meepleA.Player.ID() == meepleB.Player.ID() {
+					counter++
+				}
+			}
+
+			if counter > mostMeeples {
+				scoredPlayers = []uint8{meepleA.Player.ID()}
+			} else if counter == mostMeeples {
+				scoredPlayers = append(scoredPlayers, meepleA.Player.ID())
 			}
 		}
 
-		if counter > mostMeeples {
-			scoredPlayers = []uint8{meepleA.Player.ID()}
-		} else if counter == mostMeeples {
-			scoredPlayers = append(scoredPlayers, meepleA.Player.ID())
+		// -------- create report -------------
+		scoreReport := elements.MakeScoreReport()
+
+		for _, playerID := range scoredPlayers {
+			scoreReport.ReceivedPoints[playerID] = uint32(score)
 		}
-	}
 
-	// -------- create report -------------
-	scoreReport := elements.MakeScoreReport()
+		for _, meeple := range meeples {
+			_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
+			if !ok {
+				scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
+			}
+			scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
 
-	for _, playerID := range scoredPlayers {
-		scoreReport.ReceivedPoints[playerID] = uint32(score)
-	}
-
-	for _, meeple := range meeples {
-		_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
-		if !ok {
-			scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
 		}
-		scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
 
+		return scoreReport
+	} else {
+		// return empty report
+		return elements.MakeScoreReport()
 	}
-
-	return scoreReport
 }
