@@ -40,7 +40,7 @@ const (
 	None Side = 0
 )
 
-func (side Side) String() string { //nolint:gocyclo // splitting into multiple switches would be obscure
+func (side Side) String() string {
 	sideNames := map[Side]string{
 		Top:             "TOP",
 		Right:           "RIGHT",
