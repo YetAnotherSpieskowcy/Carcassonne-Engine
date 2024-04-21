@@ -38,8 +38,7 @@ func MonasteryWithSingleRoad() tiles.Tile {
 		Features: []feature.Feature{
 			{
 				FeatureType: feature.Road,
-				Sides: side.Center |
-					side.Bottom,
+				Sides:       side.Bottom,
 			},
 			{
 				FeatureType: feature.Field,
@@ -132,18 +131,15 @@ func TCrossRoad() tiles.Tile {
 		Features: []feature.Feature{
 			{
 				FeatureType: feature.Road,
-				Sides: side.Left |
-					side.Center,
+				Sides:       side.Left,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Right |
-					side.Center,
+				Sides:       side.Right,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Bottom |
-					side.Center,
+				Sides:       side.Bottom,
 			},
 
 			{
@@ -174,23 +170,19 @@ func XCrossRoad() tiles.Tile {
 		Features: []feature.Feature{
 			{
 				FeatureType: feature.Road,
-				Sides: side.Left |
-					side.Center,
+				Sides:       side.Left,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Bottom |
-					side.Center,
+				Sides:       side.Bottom,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Right |
-					side.Center,
+				Sides:       side.Right,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Top |
-					side.Center,
+				Sides:       side.Top,
 			},
 			{
 				FeatureType: feature.Field,
@@ -354,18 +346,15 @@ func SingleCityEdgeCrossRoad() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Right |
-					side.Center,
+				Sides:       side.Right,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Left |
-					side.Center,
+				Sides:       side.Left,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Bottom |
-					side.Center,
+				Sides:       side.Bottom,
 			},
 			{
 				FeatureType: feature.Field,
@@ -451,8 +440,7 @@ func TwoCityEdgesUpAndDownConnected() tiles.Tile {
 			{
 				FeatureType: feature.City,
 				Sides: side.Top |
-					side.Bottom |
-					side.Center,
+					side.Bottom,
 			},
 			{
 				FeatureType: feature.Field,
@@ -479,8 +467,7 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 			{
 				FeatureType: feature.City,
 				Sides: side.Top |
-					side.Bottom |
-					side.Center,
+					side.Bottom,
 			},
 			{
 				FeatureType: feature.Field,
@@ -621,7 +608,6 @@ func ThreeCityEdgesConnected() tiles.Tile {
 				FeatureType: feature.City,
 				Sides: side.Top |
 					side.Right |
-					side.Center |
 					side.Left,
 			},
 			{
@@ -645,7 +631,6 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 				FeatureType: feature.City,
 				Sides: side.Top |
 					side.Right |
-					side.Center |
 					side.Left,
 			},
 			{
@@ -669,13 +654,11 @@ func ThreeCityEdgesConnectedRoad() tiles.Tile {
 				FeatureType: feature.City,
 				Sides: side.Top |
 					side.Right |
-					side.Center |
 					side.Left,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Center |
-					side.Bottom,
+				Sides:       side.Bottom,
 			},
 			{
 				FeatureType: feature.Field,
@@ -701,13 +684,11 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 				FeatureType: feature.City,
 				Sides: side.Top |
 					side.Right |
-					side.Center |
 					side.Left,
 			},
 			{
 				FeatureType: feature.Road,
-				Sides: side.Center |
-					side.Bottom,
+				Sides:       side.Bottom,
 			},
 			{
 				FeatureType: feature.Field,
@@ -733,7 +714,6 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 				FeatureType: feature.City,
 				Sides: side.Top |
 					side.Right |
-					side.Center |
 					side.Left |
 					side.Bottom,
 			},
