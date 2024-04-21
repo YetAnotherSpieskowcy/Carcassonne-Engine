@@ -147,8 +147,9 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	var score = 0
 	var road feature.Feature
 	var finished bool
+	var err error
 	// check finished on way
-	for roadSide != side.Center {
+	for roadSide != side.Center && err == nil {
 
 		tile, tileExists = board.GetTileAt(tile.Pos.Add(elements.PositionFromSide(roadSide)))
 		// check if tile exists or loop
@@ -159,31 +160,34 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		}
 
 		score++
-		roadSide, _ = roadSide.ConnectedOpposite()
+		roadSide, err = roadSide.ConnectedOpposite()
 		// check error
+		if err == nil {
 
-		// check for meeple1
-		if tile.Meeple.Side == roadSide {
-			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
-		}
+			// check for meeple1
+			if tile.Meeple.Side == roadSide {
+				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+			}
 
-		// get road feature
-		road = *tile.GetFeatureAtSide(roadSide) //check isn't needed because it was already checked at legalmoves
+			// get road feature
+			road = *tile.GetFeatureAtSide(roadSide) // check isn't needed because it was already checked at legalmoves
 
-		// swap to other end of tile
-		if road.Sides[0] == roadSide {
-			roadSide = road.Sides[1]
-		} else {
-			roadSide = road.Sides[0]
-		}
+			// swap to other end of tile
+			if road.Sides[0] == roadSide {
+				roadSide = road.Sides[1]
+			} else {
+				roadSide = road.Sides[0]
+			}
 
-		// check for meeple2 (other end of road)
-		if tile.Meeple.Side == roadSide {
-			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+			// check for meeple2 (other end of road)
+			if tile.Meeple.Side == roadSide {
+				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+			}
 		}
 	}
 
 	finished = (roadSide == side.Center) || (tile.Pos == startTile.Pos)
+	finished = finished && err == nil
 
 	return finished, score, meeples, tile.Pos == startTile.Pos
 }
@@ -261,8 +265,9 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 		}
 
 		return scoreReport
-	} else {
-		// return empty report
-		return elements.MakeScoreReport()
 	}
+
+	// return empty report
+	return elements.MakeScoreReport()
+
 }

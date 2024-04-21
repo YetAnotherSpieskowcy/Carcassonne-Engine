@@ -166,7 +166,7 @@ func TestBoardScoreRoad(t *testing.T) {
 		test.GetTestRoadTurnPlacedTile(),
 	}
 
-	//add meeple to first road
+	// add meeple to first road
 	tiles[0].Meeple.Side = side.Right
 	tiles[0].Meeple.Type = 0
 
@@ -189,7 +189,10 @@ func TestBoardScoreRoad(t *testing.T) {
 
 	for i := range 5 {
 
-		board.PlaceTile(tiles[i])
+		_, err := board.PlaceTile(tiles[i])
+		if err != nil {
+			t.Fatalf("error placing tile number: %#v ", i)
+		}
 		report = board.ScoreRoadCompletion(tiles[i], tiles[i].Tile.Roads()[0])
 		if report.ReceivedPoints[1] != expectedScores[i] {
 			t.Fatalf("placing tile number: %#v failed. expected %#v, got %#v instead", i, expectedScores[i], report.ReceivedPoints[1])
