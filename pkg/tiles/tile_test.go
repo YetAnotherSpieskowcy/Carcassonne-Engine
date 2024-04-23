@@ -70,18 +70,18 @@ func TestTileEqualsReturnsTrueWhenEqualButRotated(t *testing.T) {
 
 func TestTileRotate(t *testing.T) {
 	var tile Tile
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, Sides: []side.Side{side.Top, side.Left}})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: []side.Side{side.Bottom, side.Right}})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: []side.Side{side.BottomRightEdge, side.RightBottomEdge}})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, Sides: side.Top | side.Left})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
 	tile.HasShield = true
 	tile.Building = building.None
 
 	var rotated = tile.Rotate(1)
 
 	var expected Tile
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.City, Sides: []side.Side{side.Right, side.Top}})
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Road, Sides: []side.Side{side.Left, side.Bottom}})
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Field, Sides: []side.Side{side.LeftBottomEdge, side.BottomLeftEdge}})
+	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.City, Sides: side.Right | side.Top})
+	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Left | side.Bottom})
+	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Field, Sides: side.LeftBottomEdge | side.BottomLeftEdge})
 	expected.HasShield = true
 	expected.Building = building.None
 
@@ -92,27 +92,27 @@ func TestTileRotate(t *testing.T) {
 
 func TestTileFeatureGet(t *testing.T) {
 	var tile Tile
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, Sides: []side.Side{side.Top, side.Left}})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: []side.Side{side.Bottom, side.Right}})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: []side.Side{side.BottomRightEdge, side.RightBottomEdge}})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, Sides: side.Top | side.Left})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
 	tile.HasShield = true
 	tile.Building = building.None
 
 	var expectedCities = []feature.Feature{
 		{
-			FeatureType: feature.City, Sides: []side.Side{side.Top, side.Left},
+			FeatureType: feature.City, Sides: side.Top | side.Left,
 		},
 	}
 
 	var expectedRoads = []feature.Feature{
 		{
-			FeatureType: feature.Road, Sides: []side.Side{side.Bottom, side.Right},
+			FeatureType: feature.Road, Sides: side.Bottom | side.Right,
 		},
 	}
 
 	var expectedFields = []feature.Feature{
 		{
-			FeatureType: feature.Field, Sides: []side.Side{side.BottomRightEdge, side.RightBottomEdge},
+			FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge,
 		},
 	}
 
