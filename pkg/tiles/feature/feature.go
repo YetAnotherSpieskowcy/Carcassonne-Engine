@@ -1,8 +1,6 @@
 package feature
 
 import (
-	"slices"
-
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -17,12 +15,5 @@ const (
 
 type Feature struct {
 	FeatureType Type
-	Sides       []side.Side
-}
-
-func (feature Feature) Equals(other Feature) bool {
-	if feature.FeatureType != other.FeatureType {
-		return false
-	}
-	return slices.Equal(feature.Sides, other.Sides)
+	Sides       side.Side
 }
