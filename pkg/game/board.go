@@ -136,9 +136,9 @@ func (board *board) checkCompleted(
 }
 
 /*
-it doesn't analyze starting tile
-
-returns: road_finished, score, [meeples on road] ,loop
+Tt doesn't analyze starting tile.
+It analyzes road directed by roadSide parameter.
+returns: road_finished, score, [meeples on road], loop
 */
 func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.MeepleTilePlacement, bool) {
 	var meeples = []elements.MeepleTilePlacement{}
@@ -148,8 +148,10 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	var road feature.Feature
 	var finished bool
 	var err error
+	var singleIterationMade = false // to prevent ending before entering loop (f.e.: placed tile is a monastery with a road, so one side is Center from the beginning but it's not loop)
 	// check finished on way
 	for roadSide != side.Center && err == nil {
+		singleIterationMade = true
 
 		tile, tileExists = board.GetTileAt(tile.Pos.Add(elements.PositionFromSide(roadSide)))
 		// check if tile exists or loop
@@ -189,7 +191,9 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	finished = (roadSide == side.Center) || (tile.Pos == startTile.Pos)
 	finished = finished && err == nil
 
-	return finished, score, meeples, tile.Pos == startTile.Pos
+	looped := (tile.Pos == startTile.Pos) && singleIterationMade
+
+	return finished, score, meeples, looped
 }
 
 /*
@@ -249,7 +253,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 		}
 
 		// -------- create report -------------
-		scoreReport := elements.MakeScoreReport()
+		scoreReport := elements.NewScoreReport()
 
 		for _, playerID := range scoredPlayers {
 			scoreReport.ReceivedPoints[playerID] = uint32(score)
@@ -261,13 +265,23 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 				scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
 			}
 			scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
-
 		}
-
 		return scoreReport
 	}
 
 	// return empty report
-	return elements.MakeScoreReport()
+	return elements.NewScoreReport()
 
+}
+
+/*
+Calculates summary score report from all roads on a tile
+*/
+func (board *board) ScoreRoads(tile elements.PlacedTile) elements.ScoreReport {
+	scoreReport := elements.NewScoreReport()
+	for _, road := range tile.Roads() {
+		scoreReportTemp := board.ScoreRoadCompletion(tile, road)
+		scoreReport.JoinReport(scoreReportTemp)
+	}
+	return scoreReport
 }
