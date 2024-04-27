@@ -108,7 +108,7 @@ func (side Side) String() string {
 }
 
 /*
-Rotates side clockwise
+Rotates the side clockwise
 */
 func (side Side) Rotate(rotations uint) Side {
 	/*
@@ -139,4 +139,17 @@ func (side Side) Rotate(rotations uint) Side {
 
 	var shift = rotations * 2
 	return (side >> shift) | (side << (8 - shift)) // circular bitshift (bitwise rotate) side to the right by {2*rotations} bits
+}
+
+/*
+Mirrors the side:
+TopLeftEdge     <->  BottomLeftEdge
+TopRightEdge    <->  BottomRightEdge
+
+RightTopEdge    <->  LeftTopEdge
+RightBottomEdge <->  LeftBottomEdge
+*/
+func (side Side) Mirror() Side {
+	side = side.Rotate(2)
+	return ((side & 0b10101010) >> 1) | ((side & 0b01010101) << 1) // swap bits in each pair (abcdefgh -> badcfehg)
 }

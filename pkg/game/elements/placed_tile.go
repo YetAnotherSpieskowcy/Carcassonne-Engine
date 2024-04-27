@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -35,6 +35,31 @@ func (pos *Position) UnmarshalText(text []byte) error {
 	return err
 }
 
+// Returns the position neighbouring (0,0) from the given side
+// Secondary sides return the same thing as their respective primary sides (e.g.: TopRight, TopLeft, Top behave exactly the same)
+func PositionFromSide(side sideMod.Side) Position {
+	switch {
+	case side&sideMod.Top != 0:
+		return NewPosition(0, 1)
+	case side&sideMod.Right != 0:
+		return NewPosition(1, 0)
+	case side&sideMod.Left != 0:
+		return NewPosition(-1, 0)
+	case side&sideMod.Bottom != 0:
+		return NewPosition(0, -1)
+
+	default:
+		return NewPosition(0, 0)
+	}
+}
+
+func AddPositions(pos1 Position, pos2 Position) Position {
+	return Position{
+		x: pos1.x + pos2.x,
+		y: pos1.y + pos2.y,
+	}
+}
+
 // https://wikicarpedia.com/car/Game_Figures
 type MeepleType uint8
 
@@ -56,7 +81,7 @@ func (placement TilePlacement) Rotate(_ uint) TilePlacement {
 
 // represents a legal position of a meeple on the tile
 type MeeplePlacement struct {
-	Side side.Side
+	Side sideMod.Side
 	Type MeepleType
 }
 
