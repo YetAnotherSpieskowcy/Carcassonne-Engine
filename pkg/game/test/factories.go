@@ -46,7 +46,7 @@ func GetTestScoreReport() elements.ScoreReport {
 	}
 }
 
-func GetTestTestPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
+func GetTestTestPlacedTile(tileTemplate tiles.Tile, playerID uint8) elements.PlacedTile {
 	return elements.PlacedTile{
 		LegalMove: elements.LegalMove{
 			TilePlacement: elements.TilePlacement{
@@ -55,6 +55,6 @@ func GetTestTestPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
 			},
 			Meeple: elements.MeeplePlacement{},
 		},
-		Player: player.New(1),
+		Player: player.New(playerID),
 	}
 }

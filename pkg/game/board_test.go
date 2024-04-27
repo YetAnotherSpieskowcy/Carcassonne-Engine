@@ -150,7 +150,7 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 
 /*
 Test creating simple loop with starting tile
-using straight roads and road turns
+using straight roads and road turns, also tests two scoring players
 */
 func TestBoardScoreRoadLoop(t *testing.T) {
 	var report elements.ScoreReport
@@ -158,27 +158,31 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn()),
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn()),
-		test.GetTestTestPlacedTile(tiletemplates.StraightRoads()),
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn()),
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn()),
+		test.GetTestTestPlacedTile(tiletemplates.StraightRoads(), 1),
+		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 2),
+		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),
+
+		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),
+		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),
 	}
 
 	// add meeple to first road
 	tiles[0].Meeple.Side = side.Right
 	tiles[0].Meeple.Type = 0
 
+	tiles[1].Meeple.Side = side.Right
+	tiles[1].Meeple.Type = 0
+
 	// set positions
-	tiles[0].Pos = elements.NewPosition(-1, 0)
-	tiles[1].Pos = elements.NewPosition(-1, -1)
-	tiles[2].Pos = elements.NewPosition(0, -1)
+	tiles[0].Pos = elements.NewPosition(0, -1)
+	tiles[1].Pos = elements.NewPosition(-1, 0)
+	tiles[2].Pos = elements.NewPosition(-1, -1)
 	tiles[3].Pos = elements.NewPosition(1, -1)
 	tiles[4].Pos = elements.NewPosition(1, 0)
 
 	// rotate tiles
-	tiles[0].TilePlacement.Tile = tiles[0].TilePlacement.Tile.Rotate(3)
-	tiles[1].TilePlacement.Tile = tiles[1].TilePlacement.Tile.Rotate(2)
+	tiles[1].TilePlacement.Tile = tiles[1].TilePlacement.Tile.Rotate(3)
+	tiles[2].TilePlacement.Tile = tiles[2].TilePlacement.Tile.Rotate(2)
 	tiles[3].TilePlacement.Tile = tiles[3].TilePlacement.Tile.Rotate(1)
 
 	expectedScores := []uint32{0, 0, 0, 0, 6}
@@ -193,12 +197,14 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 		report = board.ScoreRoads(tiles[i])
-		if report.ReceivedPoints[1] != expectedScores[i] {
-			t.Fatalf("placing tile number: %#v failed. expected %#v, got %#v instead", i, expectedScores[i], report.ReceivedPoints[1])
-		}
+		for _, playerID := range []uint8{1, 2} {
+			if report.ReceivedPoints[playerID] != expectedScores[i] {
+				t.Fatalf("placing tile number: %#v failed. expected %+v for player %v, got %+v instead", i, expectedScores[i], playerID, report.ReceivedPoints[playerID])
+			}
 
-		if !reflect.DeepEqual(report.ReturnedMeeples[1], expectedMeeples[i]) {
-			t.Fatalf("placing tile number: %#v failed. expected %#v meeples, got %#v instead", i, report.ReturnedMeeples[1], expectedMeeples[i])
+			if !reflect.DeepEqual(report.ReturnedMeeples[playerID], expectedMeeples[i]) {
+				t.Fatalf("placing tile number: %#v failed. expected %+v meeples for player %v, got %+v instead", i, expectedMeeples[i], playerID, report.ReturnedMeeples[playerID])
+			}
 		}
 	}
 }
@@ -212,8 +218,8 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad()),
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad()),
+		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1),
+		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1),
 	}
 
 	// rotate tiles
@@ -258,10 +264,10 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad()), //on the right
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad()), //below
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn()),               //on the left bottom
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn()),               //on the left
+		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1), // on the right
+		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1), // below
+		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),               // on the left bottom
+		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),               // on the left
 	}
 
 	// rotate tiles

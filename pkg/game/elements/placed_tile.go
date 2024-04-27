@@ -91,10 +91,7 @@ type TilePlacement struct {
 // note: this is implemented to avoid inheriting Tile's implementation
 // but is just a simple passthrough and its output may not be a legal placement.
 func (placement TilePlacement) Rotate(rotations uint) TilePlacement {
-	return TilePlacement{
-		Tile: placement.Tile.Rotate(rotations),
-		Pos:  placement.Pos,
-	}
+	panic("Rotate() not supported on TilePlacement")
 }
 
 // represents a legal position of a meeple on the tile

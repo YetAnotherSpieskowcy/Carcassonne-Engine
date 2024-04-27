@@ -150,15 +150,15 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	var err error
 	var singleIterationMade = false // to prevent ending before entering loop (f.e.: placed tile is a monastery with a road, so one side is Center from the beginning but it's not loop)
 	// check finished on way
-	//do while loop
+	// do while loop
 	for {
 		singleIterationMade = true
-
 		tile, tileExists = board.GetTileAt(tile.Pos.Add(elements.PositionFromSide(roadSide)))
 		// check if tile exists or loop
 		if !tileExists || tile.Pos == startTile.Pos {
 			// tile does not exist
 			// finish
+
 			break
 		}
 
@@ -198,7 +198,6 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	finished = finished && (err == nil) && tileExists
 
 	looped := (tile.Pos == startTile.Pos) && singleIterationMade
-
 	return finished, score, meeples, looped
 }
 
@@ -229,6 +228,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	score += scoreResult
 	roadFinished = roadFinished && roadFinishedResult
 	meeples = append(meeples, meeplesResult...)
+
 	if !loopResult && rightSide != side.None {
 		roadFinishedResult, scoreResult, meeplesResult, _ = board.CheckRoadInDirection(rightSide, tile)
 		score += scoreResult
@@ -238,22 +238,25 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	// -------- start counting -------------
 	if roadFinished {
-		var mostMeeples = 0
+		var mostMeeples = uint8(0)
 		var scoredPlayers = []uint8{}
-
-		// check who has most meeples naively
-		for _, meepleA := range meeples {
-			var counter = 0
-			for _, meepleB := range meeples {
-				if meepleA.Player.ID() == meepleB.Player.ID() {
-					counter++
-				}
+		playerMeeples := make(map[uint8]uint8)
+		// count meeples, and find max
+		for _, meeple := range meeples {
+			_, existKey := playerMeeples[meeple.Player.ID()]
+			if !existKey {
+				playerMeeples[meeple.Player.ID()] = 0
 			}
+			playerMeeples[meeple.Player.ID()]++
+			if playerMeeples[meeple.Player.ID()] > mostMeeples {
+				mostMeeples = playerMeeples[meeple.Player.ID()]
+			}
+		}
 
-			if counter > mostMeeples {
-				scoredPlayers = []uint8{meepleA.Player.ID()}
-			} else if counter == mostMeeples {
-				scoredPlayers = append(scoredPlayers, meepleA.Player.ID())
+		// find players with max
+		for playerID, count := range playerMeeples {
+			if count == mostMeeples {
+				scoredPlayers = append(scoredPlayers, playerID)
 			}
 		}
 
