@@ -3,7 +3,6 @@ package tiles
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 /*
@@ -29,7 +28,7 @@ outer:
 			continue
 		}
 		for i, feature := range tile.Features {
-			if !feature.Equals(rotated.Features[i]) {
+			if feature != rotated.Features[i] {
 				continue outer
 			}
 		}
@@ -77,12 +76,13 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	var newFeatures []featureMod.Feature
 
 	for _, feature := range tile.Features {
-		var newSides []sideMod.Side
-		for _, side := range feature.Sides {
-			newSides = append(newSides, side.Rotate(rotations))
-		}
-
-		newFeatures = append(newFeatures, featureMod.Feature{FeatureType: feature.FeatureType, Sides: newSides})
+		newFeatures = append(
+			newFeatures,
+			featureMod.Feature{
+				FeatureType: feature.FeatureType,
+				Sides:       feature.Sides.Rotate(rotations),
+			},
+		)
 	}
 
 	tile.Features = newFeatures
