@@ -78,6 +78,9 @@ func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.TilePlaceme
 	return valid
 }
 
+// Verifies if a certain side of a adjacent tile on the board matches an expected feature type.
+// The method takes a board, a position, the expected side, and the expected feature type.
+// Returns a boolean indicating whether the tile has an expected feature on specified side.
 func (board *board) testSide(position elements.Position, expectedSide side.Side, expectedFeatureType feature.Type) bool {
 	var tile elements.PlacedTile
 	var ok bool

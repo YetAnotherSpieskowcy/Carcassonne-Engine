@@ -91,6 +91,8 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	return tile
 }
 
+// Returns all possible rotations of the input tile,
+// while ensuring that no duplicates are included in the result.
 func (tile Tile) GetTileRotations() []Tile {
 	rotations := []Tile{tile}
 outer:
@@ -106,8 +108,6 @@ outer:
 			break outer
 		}
 		rotations = append(rotations, tile)
-
 	}
 	return rotations
-
 }
