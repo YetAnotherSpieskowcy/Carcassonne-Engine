@@ -41,15 +41,6 @@ func PositionFromSide(side sideMod.Side) Position { //nolint:gocyclo // similar 
 	case sideMod.Bottom:
 		return NewPosition(0, -1)
 
-	case sideMod.TopLeftCorner:
-		return NewPosition(0, 1)
-	case sideMod.TopRightCorner:
-		return NewPosition(0, 1)
-	case sideMod.BottomLeftCorner:
-		return NewPosition(0, -1)
-	case sideMod.BottomRightCorner:
-		return NewPosition(0, -1)
-
 	case sideMod.TopLeftEdge:
 		return NewPosition(0, 1)
 	case sideMod.TopRightEdge:

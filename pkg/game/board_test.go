@@ -247,7 +247,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(report.ReturnedMeeples[1], expectedMeeples[i]) {
-			t.Fatalf("placing tile number: %#v failed. expected %#v meeples, got %#v instead", i, expectedMeeples[i], report.ReturnedMeeples[1])
+			t.Fatalf("placing tile number: %#v failed. expected %+v meeples, got %+v instead", i, expectedMeeples[i], report.ReturnedMeeples[1])
 		}
 	}
 }

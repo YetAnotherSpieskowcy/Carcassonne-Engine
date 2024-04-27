@@ -150,7 +150,8 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	var err error
 	var singleIterationMade = false // to prevent ending before entering loop (f.e.: placed tile is a monastery with a road, so one side is Center from the beginning but it's not loop)
 	// check finished on way
-	for roadSide != side.Center && err == nil {
+	//do while loop
+	for {
 		singleIterationMade = true
 
 		tile, tileExists = board.GetTileAt(tile.Pos.Add(elements.PositionFromSide(roadSide)))
@@ -175,10 +176,10 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 			road = *tile.GetFeatureAtSide(roadSide) // check isn't needed because it was already checked at legalmoves
 
 			// swap to other end of tile
-			if road.Sides[0] == roadSide {
-				roadSide = road.Sides[1]
+			if road.Sides.GetNthCardinalDirection(0) == roadSide {
+				roadSide = road.Sides.GetNthCardinalDirection(1)
 			} else {
-				roadSide = road.Sides[0]
+				roadSide = road.Sides.GetNthCardinalDirection(0)
 			}
 
 			// check for meeple2 (other end of road)
@@ -186,10 +187,15 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 			}
 		}
+
+		if road.Sides.GetCardinalDirectionsLength() == 1 || err != nil {
+
+			break
+		}
 	}
 
-	finished = (roadSide == side.Center) || (tile.Pos == startTile.Pos)
-	finished = finished && err == nil
+	finished = (road.Sides.GetCardinalDirectionsLength() == 1) || (tile.Pos == startTile.Pos)
+	finished = finished && (err == nil) && tileExists
 
 	looped := (tile.Pos == startTile.Pos) && singleIterationMade
 
@@ -205,8 +211,8 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	var meeples = []elements.MeepleTilePlacement{}
 	var leftSide, rightSide side.Side
 	var score = 1
-	leftSide = road.Sides[0]
-	rightSide = road.Sides[1]
+	leftSide = road.Sides.GetNthCardinalDirection(0)
+	rightSide = road.Sides.GetNthCardinalDirection(1)
 	var roadFinished = true
 
 	var roadFinishedResult bool
@@ -215,7 +221,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	var loopResult bool
 
 	// check meeples on start tile
-	if tile.Meeple.Side == leftSide || tile.Meeple.Side == rightSide {
+	if tile.Meeple.Side&leftSide == leftSide || (tile.Meeple.Side&rightSide == rightSide && rightSide != side.None) {
 		meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 	}
 
@@ -223,8 +229,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	score += scoreResult
 	roadFinished = roadFinished && roadFinishedResult
 	meeples = append(meeples, meeplesResult...)
-
-	if !loopResult {
+	if !loopResult && rightSide != side.None {
 		roadFinishedResult, scoreResult, meeplesResult, _ = board.CheckRoadInDirection(rightSide, tile)
 		score += scoreResult
 		roadFinished = roadFinished && roadFinishedResult

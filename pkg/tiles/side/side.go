@@ -154,15 +154,6 @@ func (side Side) ConnectedOpposite() (Side, error) { //nolint:gocyclo // splitti
 	case Bottom:
 		return Top, nil
 
-	case TopLeftCorner:
-		return BottomLeftCorner, nil
-	case TopRightCorner:
-		return BottomRightCorner, nil
-	case BottomLeftCorner:
-		return TopLeftCorner, nil
-	case BottomRightCorner:
-		return TopRightCorner, nil
-
 	case TopLeftEdge:
 		return BottomLeftEdge, nil
 	case TopRightEdge:
@@ -181,8 +172,6 @@ func (side Side) ConnectedOpposite() (Side, error) { //nolint:gocyclo // splitti
 	case BottomRightEdge:
 		return TopRightEdge, nil
 
-	case Center:
-		return None, errors.New("side Center is not connected to anything")
 	default:
 		return None, errors.New("side None side has not opposite")
 	}
@@ -194,4 +183,29 @@ func RotateSideArray(sides []Side, rotations uint) []Side {
 		rotatedSides = append(rotatedSides, side.Rotate(rotations))
 	}
 	return rotatedSides
+}
+
+func (side Side) GetNthCardinalDirection(n uint8) Side {
+	cardinals := []Side{Top, Left, Right, Bottom}
+	found := uint8(0)
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal {
+			found++
+		}
+		if found > n {
+			return cardinal
+		}
+	}
+	return None
+}
+
+func (side Side) GetCardinalDirectionsLength() int {
+	cardinals := []Side{Top, Left, Right, Bottom}
+	found := int(0)
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal {
+			found++
+		}
+	}
+	return found
 }
