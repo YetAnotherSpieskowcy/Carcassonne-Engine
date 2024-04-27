@@ -151,5 +151,19 @@ RightBottomEdge <->  LeftBottomEdge
 */
 func (side Side) Mirror() Side {
 	side = side.Rotate(2)
-	return ((side & 0b10101010) >> 1) | ((side & 0b01010101) << 1) // swap bits in each pair (abcdefgh -> badcfehg)
+	// swap bits in each pair (abcdefgh -> badcfehg)
+	return ((side & 0b10101010) >> 1) | ((side & 0b01010101) << 1)
+}
+
+/*
+Flips each part of the side by the adjacent corner
+TopLeftEdge     <->  LeftTopEdge
+TopRightEdge    <->  RightTopEdge
+
+BottomLeftEdge     <->  LeftBottomEdge
+BottomRightEdge    <->  RightBottomEdge
+*/
+func (side Side) FlipCorner() Side {
+	// swap bits in each pair, but offset by one (abcdefgh -> hcbedgfa)
+	return ((side & 0b01010100) >> 1) | ((side & 0b00101010) << 1) | ((side & 0b10000000) >> 7) | ((side & 0b00000001) << 7)
 }
