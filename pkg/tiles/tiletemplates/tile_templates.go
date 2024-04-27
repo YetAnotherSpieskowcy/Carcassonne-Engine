@@ -731,19 +731,10 @@ func OnlyField() tiles.Tile {
 		Features: []feature.Feature{
 			{
 				FeatureType: feature.Field,
-				Sides: []side.Side{
-					side.TopLeftEdge,
-					side.TopRightEdge,
-
-					side.RightTopEdge,
-					side.RightBottomEdge,
-
-					side.LeftTopEdge,
-					side.LeftBottomEdge,
-
-					side.BottomLeftEdge,
-					side.BottomRightEdge,
-				},
+				Sides: side.Top |
+					side.Right |
+					side.Left |
+					side.Bottom,
 			},
 		},
 		HasShield: false,
