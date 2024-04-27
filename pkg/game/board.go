@@ -201,6 +201,46 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	return finished, score, meeples, looped
 }
 
+func CreateScoreRoadReport(score int, meeples []elements.MeepleTilePlacement) elements.ScoreReport {
+	var mostMeeples = uint8(0)
+	var scoredPlayers = []uint8{}
+	playerMeeples := make(map[uint8]uint8)
+	// count meeples, and find max
+	for _, meeple := range meeples {
+		_, existKey := playerMeeples[meeple.Player.ID()]
+		if !existKey {
+			playerMeeples[meeple.Player.ID()] = 0
+		}
+		playerMeeples[meeple.Player.ID()]++
+		if playerMeeples[meeple.Player.ID()] > mostMeeples {
+			mostMeeples = playerMeeples[meeple.Player.ID()]
+		}
+	}
+
+	// find players with max
+	for playerID, count := range playerMeeples {
+		if count == mostMeeples {
+			scoredPlayers = append(scoredPlayers, playerID)
+		}
+	}
+
+	// -------- create report -------------
+	scoreReport := elements.NewScoreReport()
+
+	for _, playerID := range scoredPlayers {
+		scoreReport.ReceivedPoints[playerID] = uint32(score)
+	}
+
+	for _, meeple := range meeples {
+		_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
+		if !ok {
+			scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
+		}
+		scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
+	}
+	return scoreReport
+}
+
 /*
 Calculates score for road.
 
@@ -238,43 +278,8 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	// -------- start counting -------------
 	if roadFinished {
-		var mostMeeples = uint8(0)
-		var scoredPlayers = []uint8{}
-		playerMeeples := make(map[uint8]uint8)
-		// count meeples, and find max
-		for _, meeple := range meeples {
-			_, existKey := playerMeeples[meeple.Player.ID()]
-			if !existKey {
-				playerMeeples[meeple.Player.ID()] = 0
-			}
-			playerMeeples[meeple.Player.ID()]++
-			if playerMeeples[meeple.Player.ID()] > mostMeeples {
-				mostMeeples = playerMeeples[meeple.Player.ID()]
-			}
-		}
 
-		// find players with max
-		for playerID, count := range playerMeeples {
-			if count == mostMeeples {
-				scoredPlayers = append(scoredPlayers, playerID)
-			}
-		}
-
-		// -------- create report -------------
-		scoreReport := elements.NewScoreReport()
-
-		for _, playerID := range scoredPlayers {
-			scoreReport.ReceivedPoints[playerID] = uint32(score)
-		}
-
-		for _, meeple := range meeples {
-			_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
-			if !ok {
-				scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
-			}
-			scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
-		}
-		return scoreReport
+		return CreateScoreRoadReport(score, meeples)
 	}
 
 	// return empty report

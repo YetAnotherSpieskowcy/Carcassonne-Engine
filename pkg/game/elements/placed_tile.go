@@ -90,7 +90,7 @@ type TilePlacement struct {
 
 // note: this is implemented to avoid inheriting Tile's implementation
 // but is just a simple passthrough and its output may not be a legal placement.
-func (placement TilePlacement) Rotate(rotations uint) TilePlacement {
+func (placement TilePlacement) Rotate(_ uint) TilePlacement {
 	panic("Rotate() not supported on TilePlacement")
 }
 
