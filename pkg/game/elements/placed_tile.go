@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -24,6 +24,44 @@ func (pos Position) X() int16 {
 
 func (pos Position) Y() int16 {
 	return pos.y
+}
+
+func (pos Position) Add(other Position) Position {
+	return NewPosition(pos.x+other.x, pos.y+other.y)
+}
+
+func PositionFromSide(side sideMod.Side) Position { //nolint:gocyclo // similar problem to sides
+	switch side {
+	case sideMod.Top:
+		return NewPosition(0, 1)
+	case sideMod.Right:
+		return NewPosition(1, 0)
+	case sideMod.Left:
+		return NewPosition(-1, 0)
+	case sideMod.Bottom:
+		return NewPosition(0, -1)
+
+	case sideMod.TopLeftEdge:
+		return NewPosition(0, 1)
+	case sideMod.TopRightEdge:
+		return NewPosition(0, 1)
+	case sideMod.RightTopEdge:
+		return NewPosition(1, 0)
+	case sideMod.RightBottomEdge:
+		return NewPosition(1, 0)
+
+	case sideMod.LeftTopEdge:
+		return NewPosition(-1, 0)
+	case sideMod.LeftBottomEdge:
+		return NewPosition(-1, 0)
+	case sideMod.BottomLeftEdge:
+		return NewPosition(0, -1)
+	case sideMod.BottomRightEdge:
+		return NewPosition(0, -1)
+
+	default:
+		return NewPosition(0, 0)
+	}
 }
 
 func (pos Position) MarshalText() ([]byte, error) {
@@ -56,7 +94,7 @@ func (placement TilePlacement) Rotate(_ uint) TilePlacement {
 
 // represents a legal position of a meeple on the tile
 type MeeplePlacement struct {
-	Side side.Side
+	Side sideMod.Side
 	Type MeepleType
 }
 

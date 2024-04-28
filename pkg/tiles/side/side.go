@@ -1,5 +1,7 @@
 package side
 
+import "errors"
+
 type Side uint8
 
 const (
@@ -139,4 +141,74 @@ func (side Side) Rotate(rotations uint) Side {
 
 	var shift = rotations * 2
 	return (side >> shift) | (side << (8 - shift)) // circular bitshift (bitwise rotate) side to the right by {2*rotations} bits
+}
+
+/*
+argument indicates only ONE cardinal or edge, otherwise it's ambigous
+*/
+func (side Side) ConnectedOpposite() (Side, error) { //nolint:gocyclo // splitting into multiple switches would be obscure
+	switch side {
+	case Top:
+		return Bottom, nil
+	case Right:
+		return Left, nil
+	case Left:
+		return Right, nil
+	case Bottom:
+		return Top, nil
+
+	case TopLeftEdge:
+		return BottomLeftEdge, nil
+	case TopRightEdge:
+		return BottomRightEdge, nil
+	case RightTopEdge:
+		return LeftTopEdge, nil
+	case RightBottomEdge:
+		return LeftBottomEdge, nil
+
+	case LeftTopEdge:
+		return RightTopEdge, nil
+	case LeftBottomEdge:
+		return RightBottomEdge, nil
+	case BottomLeftEdge:
+		return TopLeftEdge, nil
+	case BottomRightEdge:
+		return TopRightEdge, nil
+
+	default:
+		return None, errors.New("side None side has not opposite")
+	}
+}
+
+func RotateSideArray(sides []Side, rotations uint) []Side {
+	var rotatedSides []Side
+	for _, side := range sides {
+		rotatedSides = append(rotatedSides, side.Rotate(rotations))
+	}
+	return rotatedSides
+}
+
+func (side Side) GetNthCardinalDirection(n uint8) Side {
+	cardinals := []Side{Top, Left, Right, Bottom}
+	found := uint8(0)
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal {
+			found++
+		}
+		if found > n {
+			return cardinal
+		}
+	}
+	return None
+}
+
+func (side Side) GetCardinalDirectionsLength() int {
+	cardinals := []Side{Top, Left, Right, Bottom}
+	found := int(0)
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal {
+			found++
+		}
+	}
+	return found
 }

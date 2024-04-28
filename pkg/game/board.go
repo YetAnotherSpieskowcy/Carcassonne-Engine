@@ -6,6 +6,8 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -131,4 +133,168 @@ func (board *board) checkCompleted(
 		ReturnedMeeples: map[uint8][]uint8{},
 	}
 	return scoreReport, nil
+}
+
+/*
+Tt doesn't analyze starting tile.
+It analyzes road directed by roadSide parameter.
+returns: road_finished, score, [meeples on road], loop
+*/
+func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.MeepleTilePlacement, bool) {
+	var meeples = []elements.MeepleTilePlacement{}
+	var tile = startTile
+	var tileExists bool
+	var score = 0
+	var road feature.Feature
+	var finished bool
+	var err error
+	var singleIterationMade = false // to prevent ending before entering loop (f.e.: placed tile is a monastery with a road, so one side is Center from the beginning but it's not loop)
+	// check finished on way
+	// do while loop
+	for {
+		singleIterationMade = true
+		tile, tileExists = board.GetTileAt(tile.Pos.Add(elements.PositionFromSide(roadSide)))
+		// check if tile exists or loop
+		if !tileExists || tile.Pos == startTile.Pos {
+			// tile does not exist
+			// finish
+
+			break
+		}
+
+		score++
+		roadSide, err = roadSide.ConnectedOpposite()
+		// check error
+		if err == nil {
+
+			// check for meeple1
+			if tile.Meeple.Side == roadSide {
+				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+			}
+
+			// get road feature
+			road = *tile.GetFeatureAtSide(roadSide) // check isn't needed because it was already checked at legalmoves
+
+			// swap to other end of tile
+			if road.Sides.GetNthCardinalDirection(0) == roadSide {
+				roadSide = road.Sides.GetNthCardinalDirection(1)
+			} else {
+				roadSide = road.Sides.GetNthCardinalDirection(0)
+			}
+
+			// check for meeple2 (other end of road)
+			if tile.Meeple.Side == roadSide {
+				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+			}
+		}
+
+		if road.Sides.GetCardinalDirectionsLength() == 1 || err != nil {
+
+			break
+		}
+	}
+
+	finished = (road.Sides.GetCardinalDirectionsLength() == 1) || (tile.Pos == startTile.Pos)
+	finished = finished && (err == nil) && tileExists
+
+	looped := (tile.Pos == startTile.Pos) && singleIterationMade
+	return finished, score, meeples, looped
+}
+
+func CreateScoreRoadReport(score int, meeples []elements.MeepleTilePlacement) elements.ScoreReport {
+	var mostMeeples = uint8(0)
+	var scoredPlayers = []uint8{}
+	playerMeeples := make(map[uint8]uint8)
+	// count meeples, and find max
+	for _, meeple := range meeples {
+		_, existKey := playerMeeples[meeple.Player.ID()]
+		if !existKey {
+			playerMeeples[meeple.Player.ID()] = 0
+		}
+		playerMeeples[meeple.Player.ID()]++
+		if playerMeeples[meeple.Player.ID()] > mostMeeples {
+			mostMeeples = playerMeeples[meeple.Player.ID()]
+		}
+	}
+
+	// find players with max
+	for playerID, count := range playerMeeples {
+		if count == mostMeeples {
+			scoredPlayers = append(scoredPlayers, playerID)
+		}
+	}
+
+	// -------- create report -------------
+	scoreReport := elements.NewScoreReport()
+
+	for _, playerID := range scoredPlayers {
+		scoreReport.ReceivedPoints[playerID] = uint32(score)
+	}
+
+	for _, meeple := range meeples {
+		_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
+		if !ok {
+			scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
+		}
+		scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
+	}
+	return scoreReport
+}
+
+/*
+Calculates score for road.
+
+returns: ScoreReport
+*/
+func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature) elements.ScoreReport {
+	var meeples = []elements.MeepleTilePlacement{}
+	var leftSide, rightSide side.Side
+	var score = 1
+	leftSide = road.Sides.GetNthCardinalDirection(0)
+	rightSide = road.Sides.GetNthCardinalDirection(1)
+	var roadFinished = true
+
+	var roadFinishedResult bool
+	var scoreResult int
+	var meeplesResult []elements.MeepleTilePlacement
+	var loopResult bool
+
+	// check meeples on start tile
+	if tile.Meeple.Side&leftSide == leftSide || (tile.Meeple.Side&rightSide == rightSide && rightSide != side.None) {
+		meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+	}
+
+	roadFinishedResult, scoreResult, meeplesResult, loopResult = board.CheckRoadInDirection(leftSide, tile)
+	score += scoreResult
+	roadFinished = roadFinished && roadFinishedResult
+	meeples = append(meeples, meeplesResult...)
+
+	if !loopResult && rightSide != side.None {
+		roadFinishedResult, scoreResult, meeplesResult, _ = board.CheckRoadInDirection(rightSide, tile)
+		score += scoreResult
+		roadFinished = roadFinished && roadFinishedResult
+		meeples = append(meeples, meeplesResult...)
+	}
+
+	// -------- start counting -------------
+	if roadFinished {
+
+		return CreateScoreRoadReport(score, meeples)
+	}
+
+	// return empty report
+	return elements.NewScoreReport()
+
+}
+
+/*
+Calculates summary score report from all roads on a tile
+*/
+func (board *board) ScoreRoads(tile elements.PlacedTile) elements.ScoreReport {
+	scoreReport := elements.NewScoreReport()
+	for _, road := range tile.Roads() {
+		scoreReportTemp := board.ScoreRoadCompletion(tile, road)
+		scoreReport.JoinReport(scoreReportTemp)
+	}
+	return scoreReport
 }
