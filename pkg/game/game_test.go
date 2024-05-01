@@ -16,7 +16,7 @@ func TestFullGame(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{
 		tiletemplates.SingleCityEdgeNoRoads(),
-		tiletemplates.FourCityEdgesConnectedShield(),
+		tiletemplates.StraightRoads(),
 	}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
@@ -32,7 +32,7 @@ func TestFullGame(t *testing.T) {
 	}
 	err = game.PlayTurn(
 		elements.LegalMove{
-			TilePlacement: elements.TilePlacement{Tile: tile},
+			TilePlacement: elements.TilePlacement{Tile: tile, Pos: elements.NewPosition(0, -1)},
 		},
 	)
 	if err != nil {
@@ -43,7 +43,7 @@ func TestFullGame(t *testing.T) {
 	tile = tileSet.Tiles[0]
 	err = game.PlayTurn(
 		elements.LegalMove{
-			TilePlacement: elements.TilePlacement{Tile: tile},
+			TilePlacement: elements.TilePlacement{Tile: tile, Pos: elements.NewPosition(0, 1)},
 		},
 	)
 	if err == nil {
@@ -60,7 +60,7 @@ func TestFullGame(t *testing.T) {
 	}
 	err = game.PlayTurn(
 		elements.LegalMove{
-			TilePlacement: elements.TilePlacement{Tile: tile},
+			TilePlacement: elements.TilePlacement{Tile: tile, Pos: elements.NewPosition(0, 1)},
 		},
 	)
 	if err != nil {

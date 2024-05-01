@@ -1,6 +1,8 @@
 package tiles
 
 import (
+	"slices"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
@@ -87,4 +89,25 @@ func (tile Tile) Rotate(rotations uint) Tile {
 
 	tile.Features = newFeatures
 	return tile
+}
+
+// Returns all possible rotations of the input tile,
+// while ensuring that no duplicates are included in the result.
+func (tile Tile) GetTileRotations() []Tile {
+	rotations := []Tile{tile}
+outer:
+	for range 3 {
+		tile = tile.Rotate(1)
+	inner:
+		for _, t := range rotations {
+			for _, feature := range tile.Features {
+				if !slices.Contains(t.Features, feature) {
+					break inner
+				}
+			}
+			break outer
+		}
+		rotations = append(rotations, tile)
+	}
+	return rotations
 }
