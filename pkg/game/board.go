@@ -158,7 +158,6 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		if !tileExists || tile.Pos == startTile.Pos {
 			// tile does not exist
 			// finish
-
 			break
 		}
 
