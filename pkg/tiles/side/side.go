@@ -180,14 +180,6 @@ func (side Side) ConnectedOpposite() (Side, error) { //nolint:gocyclo // splitti
 	}
 }
 
-func RotateSideArray(sides []Side, rotations uint) []Side {
-	var rotatedSides []Side
-	for _, side := range sides {
-		rotatedSides = append(rotatedSides, side.Rotate(rotations))
-	}
-	return rotatedSides
-}
-
 func (side Side) GetNthCardinalDirection(n uint8) Side {
 	cardinals := []Side{Top, Left, Right, Bottom}
 	found := uint8(0)

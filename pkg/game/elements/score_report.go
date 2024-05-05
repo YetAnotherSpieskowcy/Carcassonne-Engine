@@ -49,3 +49,47 @@ func NewScoreReport() ScoreReport {
 	report.ReturnedMeeples = make(map[uint8][]uint8)
 	return report
 }
+
+/*
+Create score report by checking meeples control on the same feature, getting rid of not scoring meeples.
+Returns a score report
+*/
+func CalculateScoreReportOnMeeples(score int, meeples []MeepleTilePlacement) ScoreReport {
+	var mostMeeples = uint8(0)
+	var scoredPlayers = []uint8{}
+	playerMeeples := make(map[uint8]uint8)
+	// count meeples, and find max
+	for _, meeple := range meeples {
+		_, existKey := playerMeeples[meeple.Player.ID()]
+		if !existKey {
+			playerMeeples[meeple.Player.ID()] = 0
+		}
+		playerMeeples[meeple.Player.ID()]++
+		if playerMeeples[meeple.Player.ID()] > mostMeeples {
+			mostMeeples = playerMeeples[meeple.Player.ID()]
+		}
+	}
+
+	// find players with max
+	for playerID, count := range playerMeeples {
+		if count == mostMeeples {
+			scoredPlayers = append(scoredPlayers, playerID)
+		}
+	}
+
+	// -------- create report -------------
+	scoreReport := NewScoreReport()
+
+	for _, playerID := range scoredPlayers {
+		scoreReport.ReceivedPoints[playerID] = uint32(score)
+	}
+
+	for _, meeple := range meeples {
+		_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
+		if !ok {
+			scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
+		}
+		scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
+	}
+	return scoreReport
+}

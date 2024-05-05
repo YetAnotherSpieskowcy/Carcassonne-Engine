@@ -158,12 +158,12 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTestPlacedTile(tiletemplates.StraightRoads(), 1),
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 2),
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),
+		test.GetTestCustomPlacedTile(tiletemplates.StraightRoads(), 1),
+		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn(), 2),
+		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn(), 1),
 
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),
+		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn(), 1),
+		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn(), 1),
 	}
 
 	// add meeple to first road
@@ -218,8 +218,8 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1),
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1),
 	}
 
 	// rotate tiles
@@ -264,10 +264,10 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1), // on the right
-		test.GetTestTestPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1), // below
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),               // on the left bottom
-		test.GetTestTestPlacedTile(tiletemplates.RoadsTurn(), 1),               // on the left
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1), // on the right
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad(), 1), // below
+		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn(), 1),               // on the left bottom
+		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn(), 1),               // on the left
 	}
 
 	// rotate tiles
