@@ -188,7 +188,6 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		}
 
 		if road.Sides.GetCardinalDirectionsLength() == 1 || err != nil {
-
 			break
 		}
 	}
