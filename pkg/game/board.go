@@ -238,7 +238,6 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	// -------- start counting -------------
 	if roadFinished {
-
 		return elements.CalculateScoreReportOnMeeples(score, meeples)
 	}
 
