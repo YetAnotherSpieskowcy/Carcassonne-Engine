@@ -1,7 +1,5 @@
 package side
 
-import "errors"
-
 type Side uint8
 
 const (
@@ -146,38 +144,26 @@ func (side Side) Rotate(rotations uint) Side {
 /*
 argument indicates only ONE cardinal or edge, otherwise it's ambigous
 */
-func (side Side) ConnectedOpposite() (Side, error) { //nolint:gocyclo // splitting into multiple switches would be obscure
-	switch side {
-	case Top:
-		return Bottom, nil
-	case Right:
-		return Left, nil
-	case Left:
-		return Right, nil
-	case Bottom:
-		return Top, nil
+func (side Side) ConnectedOpposite() Side {
 
-	case TopLeftEdge:
-		return BottomLeftEdge, nil
-	case TopRightEdge:
-		return BottomRightEdge, nil
-	case RightTopEdge:
-		return LeftTopEdge, nil
-	case RightBottomEdge:
-		return LeftBottomEdge, nil
-
-	case LeftTopEdge:
-		return RightTopEdge, nil
-	case LeftBottomEdge:
-		return RightBottomEdge, nil
-	case BottomLeftEdge:
-		return TopLeftEdge, nil
-	case BottomRightEdge:
-		return TopRightEdge, nil
-
-	default:
-		return None, errors.New("side None side has not opposite")
+	SwapBits := func(number Side, i uint8, j uint8) Side {
+		// check if needs to swap (check xor)
+		if (((number & (1 << i)) >> i) ^ ((number & (1 << j)) >> j)) == 1 {
+			// xor to swap
+			number ^= 1 << i
+			number ^= 1 << j
+		}
+		return Side(number)
 	}
+
+	// rotate
+	rotated := side.Rotate(2)
+
+	// mirror edges
+	for i := range 4 {
+		rotated = SwapBits(rotated, uint8(2*i), uint8(2*i+1))
+	}
+	return rotated
 }
 
 func (side Side) GetNthCardinalDirection(n uint8) Side {

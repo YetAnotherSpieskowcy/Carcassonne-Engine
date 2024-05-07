@@ -30,38 +30,31 @@ func (pos Position) Add(other Position) Position {
 	return NewPosition(pos.x+other.x, pos.y+other.y)
 }
 
-func PositionFromSide(side sideMod.Side) Position { //nolint:gocyclo // similar problem to sides
-	switch side {
-	case sideMod.Top:
-		return NewPosition(0, 1)
-	case sideMod.Right:
-		return NewPosition(1, 0)
-	case sideMod.Left:
-		return NewPosition(-1, 0)
-	case sideMod.Bottom:
-		return NewPosition(0, -1)
+/*
+Returns relative position directed by the side.
+Caution! It is supposed to be used with side directing only one cardinal direction (or two edges connected by corner)!
+Otherwise it will return undesired value!
+*/
+func PositionFromSide(side sideMod.Side) Position {
+	position := NewPosition(0, 0)
 
-	case sideMod.TopLeftEdge:
-		return NewPosition(0, 1)
-	case sideMod.TopRightEdge:
-		return NewPosition(0, 1)
-	case sideMod.RightTopEdge:
-		return NewPosition(1, 0)
-	case sideMod.RightBottomEdge:
-		return NewPosition(1, 0)
-
-	case sideMod.LeftTopEdge:
-		return NewPosition(-1, 0)
-	case sideMod.LeftBottomEdge:
-		return NewPosition(-1, 0)
-	case sideMod.BottomLeftEdge:
-		return NewPosition(0, -1)
-	case sideMod.BottomRightEdge:
-		return NewPosition(0, -1)
-
-	default:
-		return NewPosition(0, 0)
+	if side&sideMod.Top != 0 {
+		position = position.Add(NewPosition(0, 1))
 	}
+
+	if side&sideMod.Right != 0 {
+		position = position.Add(NewPosition(1, 0))
+	}
+
+	if side&sideMod.Bottom != 0 {
+		position = position.Add(NewPosition(0, -1))
+	}
+
+	if side&sideMod.Left != 0 {
+		position = position.Add(NewPosition(-1, 0))
+	}
+
+	return position
 }
 
 func (pos Position) MarshalText() ([]byte, error) {

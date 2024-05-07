@@ -147,7 +147,6 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	var score = 0
 	var road feature.Feature
 	var finished bool
-	var err error
 	var singleIterationMade = false // to prevent ending before entering loop (f.e.: placed tile is a monastery with a road, so one side is Center from the beginning but it's not loop)
 	// check finished on way
 	// do while loop
@@ -163,39 +162,36 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		}
 
 		score++
-		roadSide, err = roadSide.ConnectedOpposite()
-		// check error
-		if err == nil {
+		roadSide = roadSide.ConnectedOpposite()
 
-			// check for meeple1
-			if tile.Meeple.Side == roadSide {
-				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
-			}
-
-			// get road feature
-			road = *tile.GetFeatureAtSide(roadSide) // check isn't needed because it was already checked at legalmoves
-
-			// swap to other end of tile
-			if road.Sides.GetNthCardinalDirection(0) == roadSide {
-				roadSide = road.Sides.GetNthCardinalDirection(1)
-			} else {
-				roadSide = road.Sides.GetNthCardinalDirection(0)
-			}
-
-			// check for meeple2 (other end of road)
-			if tile.Meeple.Side == roadSide {
-				meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
-			}
+		// check for meeple1
+		if tile.Meeple.Side == roadSide {
+			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
 		}
 
-		if road.Sides.GetCardinalDirectionsLength() == 1 || err != nil {
+		// get road feature
+		road = *tile.GetFeatureAtSide(roadSide) // check isn't needed because it was already checked at legalmoves
+
+		// swap to other end of tile
+		if road.Sides.GetNthCardinalDirection(0) == roadSide {
+			roadSide = road.Sides.GetNthCardinalDirection(1)
+		} else {
+			roadSide = road.Sides.GetNthCardinalDirection(0)
+		}
+
+		// check for meeple2 (other end of road)
+		if tile.Meeple.Side == roadSide {
+			meeples = append(meeples, elements.MeepleTilePlacement{MeeplePlacement: tile.Meeple, PlacedTile: tile})
+		}
+
+		if road.Sides.GetCardinalDirectionsLength() == 1 {
 
 			break
 		}
 	}
 
 	finished = (road.Sides.GetCardinalDirectionsLength() == 1) || (tile.Pos == startTile.Pos)
-	finished = finished && (err == nil) && tileExists
+	finished = finished && tileExists
 
 	looped := (tile.Pos == startTile.Pos) && singleIterationMade
 	return finished, score, meeples, looped
