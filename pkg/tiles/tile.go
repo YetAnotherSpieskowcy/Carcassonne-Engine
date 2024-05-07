@@ -95,7 +95,6 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	return tile
 }
 
-
 func (tile *Tile) GetFeatureAtSide(sideToCheck sideMod.Side) *featureMod.Feature {
 	for _, feature := range tile.Features {
 		if sideToCheck&feature.Sides == sideToCheck {
