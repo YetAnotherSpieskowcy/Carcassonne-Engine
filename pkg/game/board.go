@@ -157,7 +157,6 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		if !tileExists || tile.Pos == startTile.Pos {
 			// tile does not exist
 			// finish
-
 			break
 		}
 
@@ -234,7 +233,6 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	// -------- start counting -------------
 	if roadFinished {
-
 		return elements.CalculateScoreReportOnMeeples(score, meeples)
 	}
 
