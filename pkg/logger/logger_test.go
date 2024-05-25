@@ -10,6 +10,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
@@ -47,9 +48,9 @@ func TestFileLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
+	playerID := player.New(1)
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(expectedTile.Player, expectedTile.LegalMove))
+	err = log.LogEvent(NewPlaceTileEntry(playerID, expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -100,11 +101,11 @@ func TestFileLogger(t *testing.T) {
 	if placeTileLine.Event != "place" {
 		t.Fatalf("expected %#v, got %#v instead", "place", placeTileLine.Event)
 	}
-	if placeTileLine.PlayerID != expectedTile.Player.ID() {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile.Player.ID(), placeTileLine.PlayerID)
+	if placeTileLine.PlayerID != playerID.ID() {
+		t.Fatalf("expected %#v, got %#v instead", playerID.ID(), placeTileLine.PlayerID)
 	}
-	if !reflect.DeepEqual(placeTileLine.Move, expectedTile.LegalMove) {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile.LegalMove, placeTileLine.Move)
+	if !reflect.DeepEqual(placeTileLine.Move, expectedTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileLine.Move)
 	}
 
 	scanner.Scan()
@@ -159,9 +160,9 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
+	playerID := player.New(1)
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(expectedTile.Player, expectedTile.LegalMove))
+	err = log.LogEvent(NewPlaceTileEntry(playerID, expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -206,11 +207,11 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if placeTileLine.PlayerID != expectedTile.Player.ID() {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile.Player.ID(), placeTileLine.PlayerID)
+	if placeTileLine.PlayerID != playerID.ID() {
+		t.Fatalf("expected %#v, got %#v instead", playerID.ID(), placeTileLine.PlayerID)
 	}
-	if !reflect.DeepEqual(placeTileLine.Move, expectedTile.LegalMove) {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile.LegalMove, placeTileLine.Move)
+	if !reflect.DeepEqual(placeTileLine.Move, expectedTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileLine.Move)
 	}
 
 	line, err = buffer.ReadString(byte('\n'))

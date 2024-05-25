@@ -7,8 +7,8 @@ type Player interface {
 	Score() uint32
 	SetScore(value uint32)
 	// how am I supposed to name this sensibly...
-	GetEligibleMovesFrom(moves []LegalMove) []LegalMove
+	GetEligibleMovesFrom(moves []PlacedTile) []PlacedTile
 	// how am I supposed to name this sensibly...
-	IsEligibleFor(move LegalMove) bool
-	PlaceTile(board Board, move LegalMove) (ScoreReport, error)
+	IsEligibleFor(move PlacedTile) bool
+	PlaceTile(board Board, move PlacedTile) (ScoreReport, error)
 }

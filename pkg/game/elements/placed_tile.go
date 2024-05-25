@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -39,51 +40,49 @@ func (pos *Position) UnmarshalText(text []byte) error {
 type MeepleType uint8
 
 const (
-	NormalMeeple MeepleType = iota
+	NoneMeeple MeepleType = iota
+	NormalMeeple
 
 	MeepleTypeCount int = iota
 )
 
-// represents a legal position (and rotation) of a tile on the board
-type TilePlacement struct {
-	tiles.Tile
-	Pos Position
+type TileWithMeeple struct {
+	Features  []PlacedFeature
+	HasShield bool
+	Building  building.Building
 }
 
-func (placement TilePlacement) Rotate(_ uint) TilePlacement {
-	panic("Rotate() not supported on TilePlacement")
+func (placement PlacedTile) Rotate(_ uint) PlacedTile {
+	panic("Rotate() not supported on PlacedTile")
 }
 
-// represents a legal position of a meeple on the tile
-type MeeplePlacement struct {
-	Side side.Side
-	Type MeepleType
+type PlacedFeature struct {
+	feature.Feature
+	MeepleType
+	playerID uint8
+}
+
+func ToPlacedTile(tile tiles.Tile) PlacedTile {
+	features := []PlacedFeature{}
+	for _, n := range tile.Features {
+		features = append(features, PlacedFeature{n, NoneMeeple, 255})
+	}
+	return PlacedTile{
+		TileWithMeeple: TileWithMeeple{
+			Features:  features,
+			HasShield: tile.HasShield,
+			Building:  tile.Building,
+		},
+		Position: NewPosition(0, 0),
+	}
 }
 
 // represents a legal move (tile placement and meeple placement) on the board
-type LegalMove struct {
-	TilePlacement
-	// LegalMove always has a `Meeple`. Whether it is actually placed
-	// is determined by `MeeplePlacement.Side` which will be `None`, if it isn't.
-	Meeple MeeplePlacement
-}
-
-// represents a tile placed on the board, including the player who placed it
 type PlacedTile struct {
-	LegalMove
-	// Although the player field is always set, it technically is only crucial to
-	// the game state *if* a meeple was placed.
-	// For starting tile, Player with ID 0 is used.
-	Player Player
+	TileWithMeeple
+	Position Position
 }
 
 func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
-	return PlacedTile{
-		LegalMove: LegalMove{
-			TilePlacement: TilePlacement{
-				Tile: tileSet.StartingTile,
-				Pos:  NewPosition(0, 0),
-			},
-		},
-	}
+	return ToPlacedTile(tileSet.StartingTile)
 }

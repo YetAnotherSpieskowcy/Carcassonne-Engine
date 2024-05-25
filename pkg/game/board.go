@@ -64,12 +64,13 @@ func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool)
 	return elem, ok
 }
 
-func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.TilePlacement {
-	valid := []elements.TilePlacement{}
+func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.PlacedTile {
+	valid := []elements.PlacedTile{}
 	rotations := tile.GetTileRotations()
 	for _, currentTile := range rotations {
 		for _, placeable := range board.placeablePositions {
-			tilePlacement := elements.TilePlacement{Tile: currentTile, Pos: placeable}
+			tilePlacement := elements.ToPlacedTile(currentTile)
+			tilePlacement.Position = placeable
 			if board.isPositionValid(tilePlacement) {
 				valid = append(valid, tilePlacement)
 			}
@@ -111,7 +112,8 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	rotations := tile.GetTileRotations()
 	for _, currentTile := range rotations {
 		for _, placeable := range board.placeablePositions {
-			tilePlacement := elements.TilePlacement{Tile: currentTile, Pos: placeable}
+			tilePlacement := elements.ToPlacedTile(currentTile)
+			tilePlacement.Position = placeable
 			if board.isPositionValid(tilePlacement) {
 				return true
 			}
@@ -121,19 +123,19 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile elements.TilePlacement) []elements.LegalMove {
+func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.PlacedTile {
 	// TODO for future tasks:
 	// - implement generation of legal moves
 	// - to be implemented after #18, #19 and #20 to avoid code duplication
-	return []elements.LegalMove{}
+	return []elements.PlacedTile{}
 }
 
-func (board *board) isPositionValid(tile elements.TilePlacement) bool {
+func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	for _, f := range tile.Features {
 		s := side.Top
 		for range 4 {
 			if f.Sides&s == s &&
-				!board.testSide(tile.Pos, s.Rotate(2), f.FeatureType) {
+				!board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
 				return false
 			}
 			s = s.Rotate(1)
@@ -159,44 +161,44 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
 	//   or return ErrInvalidMove otherwise
-	setTiles := board.tileSet.Tiles
+	//setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
-		index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
-			return tile.Tile.Equals(candidate)
-		})
-		if index == -1 {
-			return elements.ScoreReport{}, errors.New(
-				"Placed tile not found in the tile set, logic error?",
-			)
-		}
-		actualIndex += index
-		if !board.tiles[actualIndex].Tile.Equals(tile.Tile) {
-			break
-		}
-		// position already taken, gotta find another next matching tile
-		actualIndex++
-		setTiles = setTiles[index+1:]
+		// index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
+		// 	return tile.Tile.Equals(candidate)
+		// })
+		// if index == -1 {
+		// 	return elements.ScoreReport{}, errors.New(
+		// 		"Placed tile not found in the tile set, logic error?",
+		// 	)
+		// }
+		// actualIndex += index
+		// if !board.tiles[actualIndex].Tile.Equals(tile.Tile) {
+		// 	break
+		// }
+		// // position already taken, gotta find another next matching tile
+		// actualIndex++
+		// setTiles = setTiles[index+1:]
 	}
 
 	board.updateValidPlacements(tile)
 	board.tiles[actualIndex] = tile
-	board.tilesMap[tile.Pos] = tile
+	board.tilesMap[tile.Position] = tile
 	scoreReport, err := board.checkCompleted(tile)
 	return scoreReport, err
 }
 
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {
-	tileIndex := slices.Index(board.placeablePositions, tile.Pos)
+	tileIndex := slices.Index(board.placeablePositions, tile.Position)
 	if tileIndex == -1 {
 		panic("Invalid move was played")
 	}
 	board.placeablePositions = slices.Delete(board.placeablePositions, tileIndex, tileIndex+1)
 	validNewPositions := []elements.Position{
-		elements.NewPosition(tile.Pos.X()+1, tile.Pos.Y()),
-		elements.NewPosition(tile.Pos.X()-1, tile.Pos.Y()),
-		elements.NewPosition(tile.Pos.X(), tile.Pos.Y()+1),
-		elements.NewPosition(tile.Pos.X(), tile.Pos.Y()-1),
+		elements.NewPosition(tile.Position.X()+1, tile.Position.Y()),
+		elements.NewPosition(tile.Position.X()-1, tile.Position.Y()),
+		elements.NewPosition(tile.Position.X(), tile.Position.Y()+1),
+		elements.NewPosition(tile.Position.X(), tile.Position.Y()-1),
 	}
 	for _, position := range validNewPositions {
 		_, ok := board.tilesMap[position]
