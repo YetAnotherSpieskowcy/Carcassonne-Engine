@@ -161,7 +161,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
 	//   or return ErrInvalidMove otherwise
-	//setTiles := board.tileSet.Tiles
+	// setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
 		// index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
