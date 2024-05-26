@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -49,7 +48,6 @@ const (
 type TileWithMeeple struct {
 	Features  []PlacedFeature
 	HasShield bool
-	Building  building.Building
 }
 
 func (placement PlacedTile) Rotate(_ uint) PlacedTile {
@@ -69,9 +67,7 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 	}
 	return PlacedTile{
 		TileWithMeeple: TileWithMeeple{
-			Features:  features,
-			HasShield: tile.HasShield,
-			Building:  tile.Building,
+			Features: features,
 		},
 		Position: NewPosition(0, 0),
 	}
@@ -83,9 +79,7 @@ func ToTile(tile PlacedTile) tiles.Tile {
 		features = append(features, n.Feature)
 	}
 	return tiles.Tile{
-		Features:  features,
-		HasShield: tile.HasShield,
-		Building:  tile.Building,
+		Features: features,
 	}
 
 }
