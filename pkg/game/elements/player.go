@@ -1,7 +1,13 @@
 package elements
 
+type ID int8
+
+const (
+	NonePlayer ID = iota
+)
+
 type Player interface {
-	ID() uint8
+	ID() ID
 	MeepleCount(meepleType MeepleType) uint8
 	SetMeepleCount(meepleType MeepleType, value uint8)
 	Score() uint32

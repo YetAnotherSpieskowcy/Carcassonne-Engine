@@ -42,6 +42,8 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	tile := test.GetTestPlacedTile()
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
+	tile.Features[0].MeepleType = elements.NormalMeeple
+	tile.Features[0].PlayerID = player.ID()
 
 	_, err := player.PlaceTile(board, tile)
 	if !errors.Is(err, elements.ErrNoMeepleAvailable) {
@@ -82,6 +84,8 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
+	tile.Features[0].MeepleType = elements.NormalMeeple
+	tile.Features[0].PlayerID = player.ID()
 
 	_, err := player.PlaceTile(board, tile)
 	if err != nil {
@@ -97,9 +101,9 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 	board := &test.BoardMock{}
 	tile := test.GetTestPlacedTile()
-	tile.Features[0].MeepleType = elements.NormalMeeple
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
+
 	expectedMeepleCount := uint8(2)
 
 	_, err := player.PlaceTile(board, tile)
@@ -152,7 +156,7 @@ func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
 }
 
 func TestPlayerNewPlayerSetsId(t *testing.T) {
-	expectedID := uint8(6)
+	expectedID := elements.ID(6)
 	player := player.New(expectedID)
 	actualID := player.ID()
 	if actualID != expectedID {

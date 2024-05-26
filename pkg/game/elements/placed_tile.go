@@ -59,13 +59,13 @@ func (placement PlacedTile) Rotate(_ uint) PlacedTile {
 type PlacedFeature struct {
 	feature.Feature
 	MeepleType
-	playerID uint8
+	PlayerID ID
 }
 
 func ToPlacedTile(tile tiles.Tile) PlacedTile {
 	features := []PlacedFeature{}
 	for _, n := range tile.Features {
-		features = append(features, PlacedFeature{n, NoneMeeple, 255})
+		features = append(features, PlacedFeature{n, NoneMeeple, NonePlayer})
 	}
 	return PlacedTile{
 		TileWithMeeple: TileWithMeeple{
@@ -75,6 +75,19 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 		},
 		Position: NewPosition(0, 0),
 	}
+}
+
+func ToTile(tile PlacedTile) tiles.Tile {
+	features := []feature.Feature{}
+	for _, n := range tile.Features {
+		features = append(features, n.Feature)
+	}
+	return tiles.Tile{
+		Features:  features,
+		HasShield: tile.HasShield,
+		Building:  tile.Building,
+	}
+
 }
 
 // represents a legal move (tile placement and meeple placement) on the board

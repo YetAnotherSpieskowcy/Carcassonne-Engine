@@ -24,7 +24,7 @@ func NewStartEntry(deck deck.Deck, playerCount int) StartEntry {
 
 type PlaceTileEntry struct {
 	Event    string              `json:"event"`
-	PlayerID uint8               `json:"playerID"`
+	PlayerID elements.ID         `json:"playerID"`
 	Move     elements.PlacedTile `json:"move"`
 }
 

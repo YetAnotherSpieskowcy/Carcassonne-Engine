@@ -104,6 +104,14 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 	// This is guaranteed to return a tile that has at least one valid placement
 	// or `OutOfBounds` error, if there's no tiles left in the deck and this turn
 	// shouldn't be happening.
+	currentTile, err := game.GetCurrentTile()
+	if err != nil {
+		return err
+	}
+
+	if !currentTile.Equals(elements.ToTile(move)) {
+		return elements.ErrWrongTile
+	}
 	player := game.CurrentPlayer()
 	defer func() { game.currentPlayer = (game.currentPlayer + 1) % game.PlayerCount() }()
 

@@ -5,13 +5,13 @@ import (
 )
 
 type player struct {
-	id uint8
+	id elements.ID
 	// indexed by meeple's enum value
 	meepleCounts []uint8
 	score        uint32
 }
 
-func New(id uint8) elements.Player {
+func New(id elements.ID) elements.Player {
 	meepleCounts := make([]uint8, elements.MeepleTypeCount)
 	meepleCounts[elements.NormalMeeple] = 7
 	return &player{
@@ -21,7 +21,7 @@ func New(id uint8) elements.Player {
 	}
 }
 
-func (player player) ID() uint8 {
+func (player player) ID() elements.ID {
 	return player.id
 }
 
@@ -82,10 +82,8 @@ func (player *player) PlaceTile(
 	}
 	for _, feature := range move.Features {
 		if feature.MeepleType != elements.NoneMeeple {
-			if player.MeepleCount(feature.MeepleType) != 0 {
-				meepleCount := player.MeepleCount(feature.MeepleType)
-				player.SetMeepleCount(feature.MeepleType, meepleCount-1)
-			}
+			meepleCount := player.MeepleCount(feature.MeepleType)
+			player.SetMeepleCount(feature.MeepleType, meepleCount-1)
 		}
 	}
 	return scoreReport, nil

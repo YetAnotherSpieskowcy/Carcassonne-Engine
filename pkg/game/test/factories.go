@@ -11,7 +11,9 @@ func GetTestTile() tiles.Tile {
 }
 
 func GetTestPlacedTile() elements.PlacedTile {
-	return elements.ToPlacedTile(GetTestTile())
+	tile := elements.ToPlacedTile(GetTestTile())
+	tile.Position = elements.NewPosition(0, 1)
+	return tile
 }
 func GetTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{

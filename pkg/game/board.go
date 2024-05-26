@@ -161,24 +161,24 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	// TODO for future tasks:
 	// - determine if the tile can placed at a given position,
 	//   or return ErrInvalidMove otherwise
-	// setTiles := board.tileSet.Tiles
+	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
-		// index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
-		// 	return tile.Tile.Equals(candidate)
-		// })
-		// if index == -1 {
-		// 	return elements.ScoreReport{}, errors.New(
-		// 		"Placed tile not found in the tile set, logic error?",
-		// 	)
-		// }
-		// actualIndex += index
-		// if !board.tiles[actualIndex].Tile.Equals(tile.Tile) {
-		// 	break
-		// }
-		// // position already taken, gotta find another next matching tile
-		// actualIndex++
-		// setTiles = setTiles[index+1:]
+		index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
+			return elements.ToTile(tile).Equals(candidate)
+		})
+		if index == -1 {
+			return elements.ScoreReport{}, errors.New(
+				"Placed tile not found in the tile set, logic error?",
+			)
+		}
+		actualIndex += index
+		if !elements.ToTile(board.tiles[actualIndex]).Equals(elements.ToTile(tile)) {
+			break
+		}
+		// position already taken, gotta find another next matching tile
+		actualIndex++
+		setTiles = setTiles[index+1:]
 	}
 
 	board.updateValidPlacements(tile)
