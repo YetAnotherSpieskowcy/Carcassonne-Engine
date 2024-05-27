@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestPositionMarshalTextWithPositiveCoords(t *testing.T) {
@@ -69,11 +68,7 @@ func TestPositionUnmarshalTextWithNegativeCoords(t *testing.T) {
 }
 
 func TestTilePlacementRotate(t *testing.T) {
-	move := TilePlacement{
-		Tile: tiletemplates.SingleCityEdgeNoRoads(),
-		Pos:  NewPosition(0, 1),
-	}
-
+	move := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	defer func() {
 		if r := recover(); r == nil {
 			t.Fatal("expected TilePlacement.Rotate() to panic")
@@ -81,19 +76,4 @@ func TestTilePlacementRotate(t *testing.T) {
 	}()
 
 	move.Rotate(1)
-}
-
-func TestNewStartingTile(t *testing.T) {
-	tileSet := tilesets.StandardTileSet()
-	actual := NewStartingTile(tileSet)
-
-	expectedTile := tileSet.StartingTile
-	if !actual.Tile.Equals(expectedTile) {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile, actual.Tile)
-	}
-
-	expectedPos := NewPosition(0, 0)
-	if actual.Pos != expectedPos {
-		t.Fatalf("expected %#v, got %#v instead", expectedPos, actual.Pos)
-	}
 }

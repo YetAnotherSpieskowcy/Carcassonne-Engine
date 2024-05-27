@@ -6,8 +6,8 @@ import (
 
 	//revive:disable-next-line:dot-imports Dot imports for package under test are fine.
 	. "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
@@ -88,20 +88,16 @@ func TestTileEqualsReturnsTrueWhenEqualButRotated(t *testing.T) {
 
 func TestTileRotate(t *testing.T) {
 	var tile Tile
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, Sides: side.Top | side.Left})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
-	tile.HasShield = true
-	tile.Building = building.None
 
 	var rotated = tile.Rotate(1)
 
 	var expected Tile
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.City, Sides: side.Right | side.Top})
+	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Right | side.Top})
 	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Left | side.Bottom})
 	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Field, Sides: side.LeftBottomEdge | side.BottomLeftEdge})
-	expected.HasShield = true
-	expected.Building = building.None
 
 	if !reflect.DeepEqual(rotated, expected) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", rotated, expected)
@@ -110,15 +106,13 @@ func TestTileRotate(t *testing.T) {
 
 func TestTileFeatureGet(t *testing.T) {
 	var tile Tile
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, Sides: side.Top | side.Left})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
-	tile.HasShield = true
-	tile.Building = building.None
 
 	var expectedCities = []feature.Feature{
 		{
-			FeatureType: feature.City, Sides: side.Top | side.Left,
+			FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left,
 		},
 	}
 

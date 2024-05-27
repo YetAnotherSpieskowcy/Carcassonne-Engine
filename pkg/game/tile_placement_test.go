@@ -33,11 +33,9 @@ func TestMultipleStraightRoadsPlacement(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 
-	_, err := board.PlaceTile(elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			TilePlacement: elements.TilePlacement{Tile: tiletemplates.StraightRoads(), Pos: elements.NewPosition(1, 0)},
-		},
-	})
+	ptile := elements.ToPlacedTile(tiletemplates.StraightRoads())
+	ptile.Position = elements.NewPosition(1, 0)
+	_, err := board.PlaceTile(ptile)
 	if err != nil {
 		t.Fail()
 	}
@@ -48,10 +46,9 @@ func TestMultipleStraightRoadsPlacement(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 
-	_, err = board.PlaceTile(elements.PlacedTile{LegalMove: elements.LegalMove{
-		TilePlacement: elements.TilePlacement{Tile: tiletemplates.StraightRoads(), Pos: elements.NewPosition(2, 0)},
-	},
-	})
+	ptile = elements.ToPlacedTile(tiletemplates.StraightRoads())
+	ptile.Position = elements.NewPosition(2, 0)
+	_, err = board.PlaceTile(ptile)
 	if err != nil {
 		t.Fail()
 	}
