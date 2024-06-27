@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 func TestBoardMockImplementsBoardInterface(_ *testing.T) {
@@ -74,7 +73,7 @@ func TestBoardMockTileHasValidPlacement(t *testing.T) {
 
 func TestBoardMockGetLegalMovesFor(t *testing.T) {
 	board := BoardMock{}
-	actual := board.GetLegalMovesFor(GetTestTilePlacement())
+	actual := board.GetLegalMovesFor(GetTestPlacedTile())
 	if len(actual) != 0 {
 		t.Fatalf("expected GetLegalMovesFor() output to be empty, got %#v instead", actual)
 	}
@@ -83,7 +82,7 @@ func TestBoardMockGetLegalMovesFor(t *testing.T) {
 func TestBoardMockCanBePlaced(t *testing.T) {
 	board := BoardMock{}
 	actual := board.CanBePlaced(
-		GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None}),
+		GetTestPlacedTile(),
 	)
 	expected := true
 	if actual != expected {
