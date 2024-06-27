@@ -242,16 +242,15 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	for {
 		singleIterationMade = true
 		tile, tileExists = board.GetTileAt(tile.Position.Add(elements.PositionFromSide(roadSide)))
+		roadSide = roadSide.ConnectedOpposite()
 		// check if tile exists or loop
 		if !tileExists || tile.Position == startTile.Position {
-			roadSide = roadSide.ConnectedOpposite()
 			// tile does not exist
 			// finish
 			break
 		}
 
 		score++
-		roadSide = roadSide.ConnectedOpposite()
 
 		// Get road feature
 		road = tile.GetPlacedFeatureAtSide(roadSide)
@@ -264,14 +263,14 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		if road.Sides.GetCardinalDirectionsLength() == 1 {
 			// found the end of a road
 			break
-		} else {
-			// swap to other end of the road on the same tile
-			if road.Sides.GetNthCardinalDirection(0) == roadSide {
-				roadSide = road.Sides.GetNthCardinalDirection(1)
-			} else {
-				roadSide = road.Sides.GetNthCardinalDirection(0)
-			}
 		}
+		// swap to other end of the road on the same tile
+		if road.Sides.GetNthCardinalDirection(0) == roadSide {
+			roadSide = road.Sides.GetNthCardinalDirection(1)
+		} else {
+			roadSide = road.Sides.GetNthCardinalDirection(0)
+		}
+
 	}
 	finished = tileExists && ((road.Sides.GetCardinalDirectionsLength() == 1) || (tile.Position == startTile.Position))
 
@@ -327,9 +326,8 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	if roadFinished {
 		if loopResult {
 			return elements.CalculateScoreReportOnMeeples(score, meeples), leftSide | rightSide | loopSide
-		} else {
-			return elements.CalculateScoreReportOnMeeples(score, meeples), leftSide | rightSide
 		}
+		return elements.CalculateScoreReportOnMeeples(score, meeples), leftSide | rightSide
 
 	}
 
@@ -346,7 +344,7 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 	var tile = elements.ToTile(placedTile)
 	var roads = tile.Roads()
 
-	var checkedRoadSides side.Side = 0
+	var checkedRoadSides side.Side
 
 	for _, road := range roads {
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
