@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -77,6 +77,11 @@ const (
 	MeepleTypeCount int = iota
 )
 
+type Meeple struct {
+	MeepleType
+	PlayerID ID
+}
+
 type TileWithMeeple struct {
 	Features  []PlacedFeature
 	HasShield bool
@@ -88,14 +93,13 @@ func (placement PlacedTile) Rotate(_ uint) PlacedTile {
 
 type PlacedFeature struct {
 	feature.Feature
-	MeepleType
-	PlayerID ID
+	Meeple
 }
 
 func ToPlacedTile(tile tiles.Tile) PlacedTile {
 	features := []PlacedFeature{}
 	for _, n := range tile.Features {
-		features = append(features, PlacedFeature{n, NoneMeeple, NonePlayer})
+		features = append(features, PlacedFeature{n, Meeple{NoneMeeple, NonePlayer}})
 	}
 	return PlacedTile{
 		TileWithMeeple: TileWithMeeple{
@@ -124,4 +128,13 @@ type PlacedTile struct {
 
 func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 	return ToPlacedTile(tileSet.StartingTile)
+}
+
+func (tile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side) *PlacedFeature {
+	for i, feature := range tile.TileWithMeeple.Features {
+		if sideToCheck&feature.Sides == sideToCheck {
+			return &tile.TileWithMeeple.Features[i]
+		}
+	}
+	return nil
 }

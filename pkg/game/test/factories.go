@@ -23,14 +23,23 @@ func GetTestScoreReport() elements.ScoreReport {
 }
 
 func GetTestCustomPlacedTile(tileTemplate tiles.Tile, playerID uint8) elements.PlacedTile {
+	var placedFeatures []elements.PlacedFeature
+
+	// covnert features to placedFeature
+	for _, feature := range tileTemplate.Features {
+		placedFeatures = append(placedFeatures, elements.PlacedFeature{
+			Feature: feature,
+			Meeple: elements.Meeple{
+				MeepleType: elements.NoneMeeple,
+				PlayerID:   elements.ID(playerID)},
+		})
+	}
+
 	return elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			TilePlacement: elements.TilePlacement{
-				Tile: tileTemplate,
-				Pos:  elements.NewPosition(0, 0),
-			},
-			Meeple: elements.MeeplePlacement{},
+		TileWithMeeple: elements.TileWithMeeple{
+			Features:  placedFeatures,
+			HasShield: false,
 		},
-		Player: player.New(playerID),
+		Position: elements.NewPosition(0, 0),
 	}
 }

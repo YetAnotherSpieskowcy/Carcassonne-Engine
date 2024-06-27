@@ -54,19 +54,19 @@ func NewScoreReport() ScoreReport {
 Create score report by checking meeples control on the same feature, getting rid of not scoring meeples.
 Returns a score report
 */
-func CalculateScoreReportOnMeeples(score int, meeples []MeepleTilePlacement) ScoreReport {
+func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {
 	var mostMeeples = uint8(0)
 	var scoredPlayers = []uint8{}
 	playerMeeples := make(map[uint8]uint8)
 	// count meeples, and find max
 	for _, meeple := range meeples {
-		_, existKey := playerMeeples[meeple.Player.ID()]
+		_, existKey := playerMeeples[uint8(meeple.PlayerID)]
 		if !existKey {
-			playerMeeples[meeple.Player.ID()] = 0
+			playerMeeples[uint8(meeple.PlayerID)] = 0
 		}
-		playerMeeples[meeple.Player.ID()]++
-		if playerMeeples[meeple.Player.ID()] > mostMeeples {
-			mostMeeples = playerMeeples[meeple.Player.ID()]
+		playerMeeples[uint8(meeple.PlayerID)]++
+		if playerMeeples[uint8(meeple.PlayerID)] > mostMeeples {
+			mostMeeples = playerMeeples[uint8(meeple.PlayerID)]
 		}
 	}
 
@@ -85,11 +85,12 @@ func CalculateScoreReportOnMeeples(score int, meeples []MeepleTilePlacement) Sco
 	}
 
 	for _, meeple := range meeples {
-		_, ok := scoreReport.ReturnedMeeples[meeple.Player.ID()]
+		_, ok := scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)]
 		if !ok {
-			scoreReport.ReturnedMeeples[meeple.Player.ID()] = []uint8{0}
+			scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)] = []uint8{0, 0}
 		}
-		scoreReport.ReturnedMeeples[meeple.Player.ID()][meeple.Meeple.Type]++
+		scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)][meeple.MeepleType]++
 	}
+
 	return scoreReport
 }
