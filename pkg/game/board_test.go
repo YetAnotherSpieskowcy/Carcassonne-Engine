@@ -8,7 +8,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -34,22 +33,14 @@ func TestBoardGetTilePlacementsForReturnsEmptySliceWhenCityCannotBePlaced(t *tes
 	// starting tile has a city on top, we want to close it with a single city tile
 	// and then try finding legal moves of a tile filled with a city terrain
 	board := NewBoard(tilesets.StandardTileSet())
-	_, err := board.PlaceTile(
-		elements.PlacedTile{
-			LegalMove: elements.LegalMove{
-				TilePlacement: elements.TilePlacement{
-					Tile: tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
-					Pos:  elements.NewPosition(0, 1),
-				},
-				Meeple: elements.MeeplePlacement{Side: side.None},
-			},
-		},
-	)
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = elements.NewPosition(0, 1)
+	_, err := board.PlaceTile(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	expected := []elements.TilePlacement{}
+	expected := []elements.PlacedTile{}
 	actual := board.GetTilePlacementsFor(tiletemplates.FourCityEdgesConnectedShield())
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -108,7 +99,7 @@ func TestBoardPlaceTileUpdatesBoardFields(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 
-	actual, ok := board.GetTileAt(expected.Pos)
+	actual, ok := board.GetTileAt(expected.Position)
 	if !ok || !reflect.DeepEqual(expected, actual) {
 		t.Fatalf("expected %#v, got %#v instead (ok = %#v)", expected, actual, ok)
 	}
@@ -131,7 +122,7 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 	}
 	// place the test tile (single city edge) below starting tile
 	// (connecting with the field)
-	expected[3].Pos = elements.NewPosition(0, -1)
+	expected[3].Position = elements.NewPosition(0, -1)
 
 	_, err := board.PlaceTile(expected[1])
 	if err != nil {

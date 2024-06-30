@@ -1,6 +1,7 @@
 package feature
 
 import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -11,9 +12,11 @@ const (
 	Road
 	City
 	Field
+	Monastery
 )
 
 type Feature struct {
-	FeatureType Type
-	Sides       side.Side
+	FeatureType  Type
+	ModifierType modifier.Type
+	Sides        side.Side
 }

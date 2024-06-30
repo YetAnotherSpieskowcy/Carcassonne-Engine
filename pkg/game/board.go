@@ -6,7 +6,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -28,6 +28,8 @@ type board struct {
 	// tilesMap is used by the engine for faster lookups
 	// but contains the same information as the `tiles` slice.
 	tilesMap map[elements.Position]elements.PlacedTile
+
+	placeablePositions []elements.Position
 }
 
 func NewBoard(tileSet tilesets.TileSet) elements.Board {
@@ -39,6 +41,12 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 		tiles:   tiles,
 		tilesMap: map[elements.Position]elements.PlacedTile{
 			elements.NewPosition(0, 0): startingTile,
+		},
+		placeablePositions: []elements.Position{
+			elements.NewPosition(0, 1),
+			elements.NewPosition(1, 0),
+			elements.NewPosition(0, -1),
+			elements.NewPosition(-1, 0),
 		},
 	}
 }
@@ -56,33 +64,91 @@ func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool)
 	return elem, ok
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.TilePlacement {
-	// TODO for future tasks:
-	// - implement generation of legal tile placements
-	return []elements.TilePlacement{}
+func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.PlacedTile {
+	valid := []elements.PlacedTile{}
+	rotations := tile.GetTileRotations()
+	for _, currentTile := range rotations {
+		for _, placeable := range board.placeablePositions {
+			tilePlacement := elements.ToPlacedTile(currentTile)
+			tilePlacement.Position = placeable
+			if board.isPositionValid(tilePlacement) {
+				valid = append(valid, tilePlacement)
+			}
+		}
+	}
+	return valid
 }
 
-// early return variant of above
-//
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
+// Verifies if a certain side of a adjacent tile on the board matches an expected feature type.
+// The method takes a board, a position, the expected side, and the expected feature type.
+// Returns a boolean indicating whether the tile has an expected feature on specified side.
+func (board *board) testSide(position elements.Position, expectedSide side.Side, expectedFeatureType feature.Type) bool {
+	var tile elements.PlacedTile
+	var ok bool
+	switch expectedSide {
+	case side.Bottom:
+		tile, ok = board.tilesMap[elements.NewPosition(position.X(), position.Y()+1)]
+	case side.Top:
+		tile, ok = board.tilesMap[elements.NewPosition(position.X(), position.Y()-1)]
+	case side.Left:
+		tile, ok = board.tilesMap[elements.NewPosition(position.X()+1, position.Y())]
+	case side.Right:
+		tile, ok = board.tilesMap[elements.NewPosition(position.X()-1, position.Y())]
+	}
+	if !ok {
+		return true
+	}
+	for _, tileFeature := range tile.Features {
+		if tileFeature.FeatureType == expectedFeatureType {
+			if tileFeature.Sides&expectedSide == expectedSide {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
-	// TODO for future tasks:
-	// - implement generation of legal tile placements
-	return true
+	rotations := tile.GetTileRotations()
+	for _, currentTile := range rotations {
+		for _, placeable := range board.placeablePositions {
+			tilePlacement := elements.ToPlacedTile(currentTile)
+			tilePlacement.Position = placeable
+			if board.isPositionValid(tilePlacement) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile elements.TilePlacement) []elements.LegalMove {
+func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.PlacedTile {
 	// TODO for future tasks:
 	// - implement generation of legal moves
-	return []elements.LegalMove{}
+	// - to be implemented after #18, #19 and #20 to avoid code duplication
+	return []elements.PlacedTile{}
+}
+
+func (board *board) isPositionValid(tile elements.PlacedTile) bool {
+	for _, f := range tile.Features {
+		s := side.Top
+		for range 4 {
+			if f.Sides&s == s &&
+				!board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
+				return false
+			}
+			s = s.Rotate(1)
+		}
+	}
+	return true
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 	// TODO for future tasks:
-	// - implement a way to check if a specified move is valid
+	// - implement generation of legal moves
+	// - to be implemented after #18, #19 and #20 to avoid code duplication
 	return true
 }
 
@@ -99,7 +165,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	actualIndex := 1
 	for {
 		index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
-			return tile.Tile.Equals(candidate)
+			return elements.ToTile(tile).Equals(candidate)
 		})
 		if index == -1 {
 			return elements.ScoreReport{}, errors.New(
@@ -107,17 +173,39 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			)
 		}
 		actualIndex += index
-		if !board.tiles[actualIndex].Tile.Equals(tile.Tile) {
+		if !elements.ToTile(board.tiles[actualIndex]).Equals(elements.ToTile(tile)) {
 			break
 		}
 		// position already taken, gotta find another next matching tile
 		actualIndex++
 		setTiles = setTiles[index+1:]
 	}
+
+	board.updateValidPlacements(tile)
 	board.tiles[actualIndex] = tile
-	board.tilesMap[tile.Pos] = tile
+	board.tilesMap[tile.Position] = tile
 	scoreReport, err := board.checkCompleted(tile)
 	return scoreReport, err
+}
+
+func (board *board) updateValidPlacements(tile elements.PlacedTile) {
+	tileIndex := slices.Index(board.placeablePositions, tile.Position)
+	if tileIndex == -1 {
+		panic("Invalid move was played")
+	}
+	board.placeablePositions = slices.Delete(board.placeablePositions, tileIndex, tileIndex+1)
+	validNewPositions := []elements.Position{
+		elements.NewPosition(tile.Position.X()+1, tile.Position.Y()),
+		elements.NewPosition(tile.Position.X()-1, tile.Position.Y()),
+		elements.NewPosition(tile.Position.X(), tile.Position.Y()+1),
+		elements.NewPosition(tile.Position.X(), tile.Position.Y()-1),
+	}
+	for _, position := range validNewPositions {
+		_, ok := board.tilesMap[position]
+		if !ok && !slices.Contains(board.placeablePositions, position) {
+			board.placeablePositions = append(board.placeablePositions, position)
+		}
+	}
 }
 
 func (board *board) checkCompleted(

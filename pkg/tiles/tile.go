@@ -1,7 +1,8 @@
 package tiles
 
 import (
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
+	"slices"
+
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
@@ -9,21 +10,13 @@ import (
 Immutable object
 */
 type Tile struct {
-	Features  []featureMod.Feature
-	HasShield bool
-	Building  building.Building
+	Features []featureMod.Feature
 }
 
 func (tile Tile) Equals(other Tile) bool {
 outer:
 	for rotations := range uint(4) {
 		rotated := other.Rotate(rotations)
-		if tile.HasShield != rotated.HasShield {
-			continue
-		}
-		if tile.Building != rotated.Building {
-			continue
-		}
 		if len(tile.Features) != len(rotated.Features) {
 			continue
 		}
@@ -79,12 +72,34 @@ func (tile Tile) Rotate(rotations uint) Tile {
 		newFeatures = append(
 			newFeatures,
 			featureMod.Feature{
-				FeatureType: feature.FeatureType,
-				Sides:       feature.Sides.Rotate(rotations),
+				FeatureType:  feature.FeatureType,
+				ModifierType: feature.ModifierType,
+				Sides:        feature.Sides.Rotate(rotations),
 			},
 		)
 	}
 
 	tile.Features = newFeatures
 	return tile
+}
+
+// Returns all possible rotations of the input tile,
+// while ensuring that no duplicates are included in the result.
+func (tile Tile) GetTileRotations() []Tile {
+	rotations := []Tile{tile}
+outer:
+	for range 3 {
+		tile = tile.Rotate(1)
+	inner:
+		for _, t := range rotations {
+			for _, feature := range tile.Features {
+				if !slices.Contains(t.Features, feature) {
+					break inner
+				}
+			}
+			break outer
+		}
+		rotations = append(rotations, tile)
+	}
+	return rotations
 }
