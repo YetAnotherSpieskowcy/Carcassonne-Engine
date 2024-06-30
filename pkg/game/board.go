@@ -222,3 +222,68 @@ func (board *board) checkCompleted(
 	}
 	return scoreReport, nil
 }
+
+/*
+Calculates score for a single monastery.
+If the monastery is finished and has a meeple, returns a ScoreReport with 9 points and the meeple that was in the monastery.
+Otherwise, returns an empty ScoreReport.
+
+'forceScore' can be set to true to score unfinished monasteries at the end of the game.
+In other cases, 'forceScore' should be false
+
+returns: ScoreReport (with one player at most)
+*/
+func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
+	if tile.Building != building.Monastery {
+		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
+	}
+	var meepleType = tile.Meeple.Type
+
+	var score uint32
+	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
+		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
+			_, ok := board.GetTileAt(elements.NewPosition(x, y))
+			if ok {
+				score++
+			}
+		}
+	}
+
+	if score == 9 || forceScore {
+		var returnedMeeples = make([]uint8, elements.MeepleTypeCount)
+		returnedMeeples[meepleType] = 1
+
+		return elements.ScoreReport{
+			ReceivedPoints: map[uint8]uint32{
+				tile.Player.ID(): score,
+			},
+			ReturnedMeeples: map[uint8][]uint8{
+				tile.Player.ID(): returnedMeeples,
+			},
+		}
+	}
+
+	return elements.NewScoreReport()
+}
+
+/*
+Finds all tiles with a monastery and a meeple in it adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
+This function should be called after the placement of each tile, in case it neighbours a monastery.
+
+returns: ScoreReport
+*/
+func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
+	var finalReport = elements.NewScoreReport()
+
+	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
+		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
+			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
+			if ok && adjacentTile.Building == building.Monastery && adjacentTile.Meeple.Side == side.Center {
+				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
+
+				finalReport.Update(report)
+			}
+		}
+	}
+	return finalReport
+}
