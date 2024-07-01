@@ -224,8 +224,8 @@ func (board *board) checkCompleted(
 }
 
 /*
-It doesn't analyze starting tile.
 It analyzes road directed by roadSide parameter.
+It doesn't analyze starting tile.
 returns: road_finished, score, [meeples on road], loop, sideFinishedOn
 param roadSide: always indicates only one cardinal direction!
 */
@@ -236,11 +236,9 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	var score = 0
 	var road *elements.PlacedFeature
 	var finished bool
-	var singleIterationMade = false // to prevent ending before entering loop (f.e.: placed tile is a monastery with a road, so one side is Center from the beginning but it's not loop)
 	// check finished on way
 	// do while loop
 	for {
-		singleIterationMade = true
 		tile, tileExists = board.GetTileAt(tile.Position.Add(elements.PositionFromSide(roadSide)))
 		roadSide = roadSide.ConnectedOpposite()
 		// check if tile exists or loop
@@ -274,7 +272,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	}
 	finished = tileExists && ((road.Sides.GetCardinalDirectionsLength() == 1) || (tile.Position == startTile.Position))
 
-	looped := (tile.Position == startTile.Position) && singleIterationMade
+	looped := (tile.Position == startTile.Position)
 	return finished, score, meeples, looped, roadSide
 }
 
