@@ -6,7 +6,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
@@ -144,27 +143,27 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	var report elements.ScoreReport
 	var extendedTileSet = tilesets.StandardTileSet()
 	for range 3 {
-		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.OnlyField())
+		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.TestOnlyField())
 	}
 	var boardInterface interface{} = NewBoard(extendedTileSet)
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTileMonasteryWithoutRoads(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
 	}
 
 	// add meeple to the monastery
-	tiles[0].Meeple.Side = side.Center
-	tiles[0].Meeple.Type = 0
+	tiles[0].Monastery().Meeple.PlayerID = 1
+	tiles[0].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Pos = elements.NewPosition(0, 0)
-	tiles[1].Pos = elements.NewPosition(1, 0)
-	tiles[2].Pos = elements.NewPosition(0, 1)
-	tiles[3].Pos = elements.NewPosition(1, 1)
+	tiles[0].Position = elements.NewPosition(0, 0)
+	tiles[1].Position = elements.NewPosition(1, 0)
+	tiles[2].Position = elements.NewPosition(0, 1)
+	tiles[3].Position = elements.NewPosition(1, 1)
 
 	// place tiles
 	for i, tile := range tiles {
@@ -211,51 +210,50 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	var report elements.ScoreReport
 	var extendedTileSet = tilesets.StandardTileSet()
 	for range 10 {
-		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.OnlyField())
+		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.TestOnlyField())
 	}
 	var boardInterface interface{} = NewBoard(extendedTileSet)
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestTileMonasteryWithoutRoads(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileOnlyField(),
-		test.GetTestTileMonasteryWithoutRoads(),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
 	}
 
 	// add meeple to the monastery
-	tiles[0].Meeple.Side = side.Center
-	tiles[0].Meeple.Type = 0
+	tiles[0].Monastery().Meeple.PlayerID = 1
+	tiles[0].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
-	tiles[11].Meeple.Side = side.Center
-	tiles[11].Meeple.Type = 0
-	tiles[11].Player = player.New(2)
+	tiles[11].Monastery().Meeple.PlayerID = 2
+	tiles[11].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Pos = elements.NewPosition(0, 0)
+	tiles[0].Position = elements.NewPosition(0, 0)
 
-	tiles[1].Pos = elements.NewPosition(-1, -1)
-	tiles[2].Pos = elements.NewPosition(0, -1)
-	tiles[3].Pos = elements.NewPosition(1, -1)
-	tiles[4].Pos = elements.NewPosition(2, -1)
+	tiles[1].Position = elements.NewPosition(-1, -1)
+	tiles[2].Position = elements.NewPosition(0, -1)
+	tiles[3].Position = elements.NewPosition(1, -1)
+	tiles[4].Position = elements.NewPosition(2, -1)
 
-	tiles[5].Pos = elements.NewPosition(-1, 0)
-	tiles[6].Pos = elements.NewPosition(2, 0)
+	tiles[5].Position = elements.NewPosition(-1, 0)
+	tiles[6].Position = elements.NewPosition(2, 0)
 
-	tiles[7].Pos = elements.NewPosition(-1, 1)
-	tiles[8].Pos = elements.NewPosition(0, 1)
-	tiles[9].Pos = elements.NewPosition(1, 1)
-	tiles[10].Pos = elements.NewPosition(2, 1)
+	tiles[7].Position = elements.NewPosition(-1, 1)
+	tiles[8].Position = elements.NewPosition(0, 1)
+	tiles[9].Position = elements.NewPosition(1, 1)
+	tiles[10].Position = elements.NewPosition(2, 1)
 
-	tiles[11].Pos = elements.NewPosition(1, 0)
+	tiles[11].Position = elements.NewPosition(1, 0)
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {

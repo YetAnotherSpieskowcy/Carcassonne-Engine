@@ -690,7 +690,7 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 /*
 returns tiles.Tile consisting of only a single field. (Unused in game, useful in testing)
 */
-func OnlyField() tiles.Tile {
+func TestOnlyField() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
@@ -701,7 +701,5 @@ func OnlyField() tiles.Tile {
 					side.Bottom,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -45,6 +45,11 @@ const (
 	MeepleTypeCount int = iota
 )
 
+type Meeple struct {
+	MeepleType
+	PlayerID ID
+}
+
 type TileWithMeeple struct {
 	Features  []PlacedFeature
 	HasShield bool
@@ -55,15 +60,14 @@ func (placement PlacedTile) Rotate(_ uint) PlacedTile {
 }
 
 type PlacedFeature struct {
-	feature.Feature
-	MeepleType
-	PlayerID ID
+	featureMod.Feature
+	Meeple
 }
 
 func ToPlacedTile(tile tiles.Tile) PlacedTile {
 	features := []PlacedFeature{}
 	for _, n := range tile.Features {
-		features = append(features, PlacedFeature{n, NoneMeeple, NonePlayer})
+		features = append(features, PlacedFeature{n, Meeple{NoneMeeple, NonePlayer}})
 	}
 	return PlacedTile{
 		TileWithMeeple: TileWithMeeple{
@@ -74,14 +78,13 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 }
 
 func ToTile(tile PlacedTile) tiles.Tile {
-	features := []feature.Feature{}
+	features := []featureMod.Feature{}
 	for _, n := range tile.Features {
 		features = append(features, n.Feature)
 	}
 	return tiles.Tile{
 		Features: features,
 	}
-
 }
 
 // represents a legal move (tile placement and meeple placement) on the board
@@ -92,4 +95,13 @@ type PlacedTile struct {
 
 func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 	return ToPlacedTile(tileSet.StartingTile)
+}
+
+func (tile PlacedTile) Monastery() *PlacedFeature {
+	for _, feature := range tile.Features {
+		if feature.FeatureType == featureMod.Monastery {
+			return &feature
+		}
+	}
+	return nil
 }

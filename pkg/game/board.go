@@ -233,15 +233,20 @@ In other cases, 'forceScore' should be false
 
 returns: ScoreReport (with one player at most)
 */
-func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
-	if tile.Building != building.Monastery {
-		panic("ScoreSingleMonastery() called on a tile without monastery") // todo probably not needed
+func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) (elements.ScoreReport, error) {
+	var monasteryFeature = tile.Monastery()
+	if monasteryFeature == nil {
+		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a monastery")
 	}
-	var meepleType = tile.Meeple.Type
+	if monasteryFeature.MeepleType == elements.NoneMeeple {
+		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a meeple")
+	}
+
+	var meepleType = monasteryFeature.MeepleType
 
 	var score uint32
-	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
-		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
+	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
+		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
 			_, ok := board.GetTileAt(elements.NewPosition(x, y))
 			if ok {
 				score++
@@ -253,17 +258,18 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		var returnedMeeples = make([]uint8, elements.MeepleTypeCount)
 		returnedMeeples[meepleType] = 1
 
-		return elements.ScoreReport{
+		var scoreReport = elements.ScoreReport{
 			ReceivedPoints: map[uint8]uint32{
-				tile.Player.ID(): score,
+				uint8(monasteryFeature.PlayerID): score,
 			},
 			ReturnedMeeples: map[uint8][]uint8{
-				tile.Player.ID(): returnedMeeples,
+				uint8(monasteryFeature.PlayerID): returnedMeeples,
 			},
 		}
+		return scoreReport, nil
 	}
 
-	return elements.NewScoreReport()
+	return elements.NewScoreReport(), nil
 }
 
 /*
@@ -275,13 +281,15 @@ returns: ScoreReport
 func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
 	var finalReport = elements.NewScoreReport()
 
-	for x := tile.Pos.X() - 1; x <= tile.Pos.X()+1; x++ {
-		for y := tile.Pos.Y() - 1; y <= tile.Pos.Y()+1; y++ {
+	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
+		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
 			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
-			if ok && adjacentTile.Building == building.Monastery && adjacentTile.Meeple.Side == side.Center {
-				var report = board.ScoreSingleMonastery(adjacentTile, forceScore)
 
-				finalReport.Update(report)
+			if ok {
+				report, err := board.ScoreSingleMonastery(adjacentTile, forceScore)
+				if err != nil {
+					finalReport.Update(report)
+				}
 			}
 		}
 	}

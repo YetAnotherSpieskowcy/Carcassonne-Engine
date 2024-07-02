@@ -22,28 +22,24 @@ func GetTestScoreReport() elements.ScoreReport {
 	}
 }
 
-func GetTestTileOnlyField() elements.PlacedTile {
-	return elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			TilePlacement: elements.TilePlacement{
-				Tile: tiletemplates.OnlyField(),
-				Pos:  elements.NewPosition(0, 0),
-			},
-			Meeple: elements.MeeplePlacement{},
-		},
-		Player: player.New(1),
-	}
-}
+func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
+	var placedFeatures []elements.PlacedFeature
 
-func GetTestTileMonasteryWithoutRoads() elements.PlacedTile {
+	// convert features to placedFeature
+	for _, feature := range tileTemplate.Features {
+		placedFeatures = append(placedFeatures, elements.PlacedFeature{
+			Feature: feature,
+			Meeple: elements.Meeple{
+				MeepleType: elements.NoneMeeple,
+				PlayerID:   elements.NonePlayer},
+		})
+	}
+
 	return elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			TilePlacement: elements.TilePlacement{
-				Tile: tiletemplates.MonasteryWithoutRoads(),
-				Pos:  elements.NewPosition(0, 0),
-			},
-			Meeple: elements.MeeplePlacement{},
+		TileWithMeeple: elements.TileWithMeeple{
+			Features:  placedFeatures,
+			HasShield: false,
 		},
-		Player: player.New(1),
+		Position: elements.NewPosition(0, 0),
 	}
 }

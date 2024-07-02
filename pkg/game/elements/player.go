@@ -1,6 +1,6 @@
 package elements
 
-type ID int8
+type ID uint8
 
 const (
 	NonePlayer ID = iota
