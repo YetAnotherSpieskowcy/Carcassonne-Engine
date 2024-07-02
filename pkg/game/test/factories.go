@@ -22,7 +22,7 @@ func GetTestScoreReport() elements.ScoreReport {
 	}
 }
 
-func GetTestCustomPlacedTile(tileTemplate tiles.Tile, playerID uint8) elements.PlacedTile {
+func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
 	var placedFeatures []elements.PlacedFeature
 
 	// convert features to placedFeature
@@ -31,7 +31,7 @@ func GetTestCustomPlacedTile(tileTemplate tiles.Tile, playerID uint8) elements.P
 			Feature: feature,
 			Meeple: elements.Meeple{
 				MeepleType: elements.NoneMeeple,
-				PlayerID:   elements.ID(playerID)},
+				PlayerID:   0},
 		})
 	}
 

@@ -168,6 +168,21 @@ func (side Side) ConnectedOpposite() Side {
 }
 
 /*
+Returns other connected side on the same tile.
+It allows getting other side of the rode feature.
+direction must indicate only one cardinal direction!
+*/
+func (featureSides Side) GetConnectedOtherCardinalDirection(direction Side) Side {
+	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
+	for _, cardinal := range cardinals {
+		if featureSides&cardinal == cardinal && cardinal != direction {
+			return cardinal
+		}
+	}
+	return None
+}
+
+/*
 Return nth existing direction indicated by Side.
 For example Side indicates Top,Right,Bottom at once.
 First cardinal direction would be Top, second Right, third Bottom.

@@ -265,11 +265,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 			break
 		}
 		// swap to other end of the road on the same tile
-		if road.Sides.GetNthCardinalDirection(0) == roadSide {
-			roadSide = road.Sides.GetNthCardinalDirection(1)
-		} else {
-			roadSide = road.Sides.GetNthCardinalDirection(0)
-		}
+		roadSide = road.Sides.GetConnectedOtherCardinalDirection(roadSide)
 
 	}
 
