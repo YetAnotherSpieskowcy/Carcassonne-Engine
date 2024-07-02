@@ -172,10 +172,10 @@ Returns other connected side on the same tile.
 It allows getting other side of the rode feature.
 direction must indicate only one cardinal direction!
 */
-func (featureSides Side) GetConnectedOtherCardinalDirection(direction Side) Side {
+func (side Side) GetConnectedOtherCardinalDirection(direction Side) Side {
 	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
 	for _, cardinal := range cardinals {
-		if featureSides&cardinal == cardinal && cardinal != direction {
+		if side&cardinal == cardinal && cardinal != direction {
 			return cardinal
 		}
 	}
