@@ -143,7 +143,7 @@ func TestTileFeatureGet(t *testing.T) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", tile.Fields(), expectedFields)
 	}
 
-	if !reflect.DeepEqual(tile.Monastery(), expectedMonastery) {
-		t.Fatalf("got\n %#v \nshould be \n%#v", tile.Monastery(), expectedMonastery)
+	if *tile.Monastery() != expectedMonastery {
+		t.Fatalf("got\n %#v \nshould be \n%#v", *tile.Monastery(), expectedMonastery)
 	}
 }

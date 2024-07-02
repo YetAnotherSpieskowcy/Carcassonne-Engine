@@ -145,7 +145,7 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	for range 3 {
 		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.TestOnlyField())
 	}
-	var boardInterface interface{} = NewBoard(extendedTileSet)
+	boardInterface := NewBoard(extendedTileSet)
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
@@ -160,10 +160,10 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	tiles[0].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(0, 0)
-	tiles[1].Position = elements.NewPosition(1, 0)
-	tiles[2].Position = elements.NewPosition(0, 1)
-	tiles[3].Position = elements.NewPosition(1, 1)
+	tiles[0].Position = elements.NewPosition(0, 1)
+	tiles[1].Position = elements.NewPosition(1, 1)
+	tiles[2].Position = elements.NewPosition(0, 2)
+	tiles[3].Position = elements.NewPosition(1, 2)
 
 	// place tiles
 	for i, tile := range tiles {
@@ -182,14 +182,14 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	report = board.ScoreMonasteries(tiles[0], true)
 	var expected = elements.ScoreReport{
 		ReceivedPoints: map[uint8]uint32{
-			1: 4,
+			1: 5,
 		},
 		ReturnedMeeples: map[uint8][]uint8{
-			1: {1},
+			1: {0, 1},
 		},
 	}
 	if !reflect.DeepEqual(report, expected) {
-		t.Fatalf("ScoreMonasteries failed when forceScore=true. expected %#v,\ngot %#v instead", expected, report)
+		t.Fatalf("ScoreMonasteries failed when forceScore=true. expected:\n%#v,\ngot:\n%#v instead", expected, report)
 	}
 }
 
@@ -199,11 +199,14 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 		FFFF
 		FMMF
 		FFFF
+		 S
 
 		F - field
 		M - monastery
+		S - starting tile
 
-		left monastery is at (0,0)
+		left monastery is at (0,2)
+		right monastery is at (1,2)
 		right monastery is placed as the last tile
 	*/
 
@@ -212,12 +215,12 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	for range 10 {
 		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.TestOnlyField())
 	}
-	var boardInterface interface{} = NewBoard(extendedTileSet)
+	boardInterface := NewBoard(extendedTileSet)
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
 		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
 		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
 		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
 		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
@@ -231,29 +234,30 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	}
 
 	// add meeple to the monastery
-	tiles[0].Monastery().Meeple.PlayerID = 1
-	tiles[0].Monastery().Meeple.MeepleType = elements.NormalMeeple
+	tiles[1].Monastery().Meeple.PlayerID = 1
+	tiles[1].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	tiles[11].Monastery().Meeple.PlayerID = 2
 	tiles[11].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(0, 0)
+	tiles[0].Position = elements.NewPosition(0, 1)
+	tiles[1].Position = elements.NewPosition(0, 2)
+	tiles[2].Position = elements.NewPosition(0, 3)
 
-	tiles[1].Position = elements.NewPosition(-1, -1)
-	tiles[2].Position = elements.NewPosition(0, -1)
-	tiles[3].Position = elements.NewPosition(1, -1)
-	tiles[4].Position = elements.NewPosition(2, -1)
+	tiles[3].Position = elements.NewPosition(-1, 1)
+	tiles[4].Position = elements.NewPosition(-1, 2)
+	tiles[5].Position = elements.NewPosition(-1, 3)
 
-	tiles[5].Position = elements.NewPosition(-1, 0)
-	tiles[6].Position = elements.NewPosition(2, 0)
+	tiles[6].Position = elements.NewPosition(1, 1)
 
-	tiles[7].Position = elements.NewPosition(-1, 1)
-	tiles[8].Position = elements.NewPosition(0, 1)
-	tiles[9].Position = elements.NewPosition(1, 1)
-	tiles[10].Position = elements.NewPosition(2, 1)
+	tiles[7].Position = elements.NewPosition(2, 1)
+	tiles[8].Position = elements.NewPosition(2, 2)
+	tiles[9].Position = elements.NewPosition(2, 3)
 
-	tiles[11].Position = elements.NewPosition(1, 0)
+	tiles[10].Position = elements.NewPosition(1, 3)
+
+	tiles[11].Position = elements.NewPosition(1, 2)
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
@@ -280,11 +284,11 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 			2: 9,
 		},
 		ReturnedMeeples: map[uint8][]uint8{
-			1: {1},
-			2: {1},
+			1: {0, 1},
+			2: {0, 1},
 		},
 	}
 	if !reflect.DeepEqual(report, expected) {
-		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected %#v, got %#v instead", 11, expected, report)
+		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expected, report)
 	}
 }

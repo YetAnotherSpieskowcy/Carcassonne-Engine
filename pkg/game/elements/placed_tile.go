@@ -98,9 +98,9 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 }
 
 func (tile PlacedTile) Monastery() *PlacedFeature {
-	for _, feature := range tile.Features {
+	for i, feature := range tile.Features {
 		if feature.FeatureType == featureMod.Monastery {
-			return &feature
+			return &tile.Features[i]
 		}
 	}
 	return nil

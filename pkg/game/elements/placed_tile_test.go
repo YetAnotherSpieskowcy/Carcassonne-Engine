@@ -1,7 +1,6 @@
 package elements
 
 import (
-	"reflect"
 	"slices"
 	"testing"
 
@@ -84,10 +83,10 @@ func TestPlacedTileFeatureGet(t *testing.T) {
 	move.Monastery().Meeple.MeepleType = NormalMeeple
 	move.Monastery().Meeple.PlayerID = 1
 
-	var expectedMonastery = tiletemplates.MonasteryWithSingleRoad().Monastery()
+	expectedMonastery := tiletemplates.MonasteryWithSingleRoad().Monastery()
 
-	if !reflect.DeepEqual(move.Monastery().Feature, expectedMonastery) {
-		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery(), expectedMonastery)
+	if move.Monastery().Feature != *expectedMonastery {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Feature, *expectedMonastery)
 	}
 	if move.Monastery().Meeple.MeepleType != NormalMeeple {
 		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Meeple.MeepleType, NormalMeeple)

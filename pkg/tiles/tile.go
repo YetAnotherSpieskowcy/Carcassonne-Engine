@@ -61,9 +61,9 @@ func (tile Tile) Fields() []featureMod.Feature {
 }
 
 func (tile Tile) Monastery() *featureMod.Feature {
-	for _, feature := range tile.Features {
+	for i, feature := range tile.Features {
 		if feature.FeatureType == featureMod.Monastery {
-			return &feature
+			return &tile.Features[i]
 		}
 	}
 	return nil

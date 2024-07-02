@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -191,7 +192,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	tileIndex := slices.Index(board.placeablePositions, tile.Position)
 	if tileIndex == -1 {
-		panic("Invalid move was played")
+		panic(fmt.Sprintf("Invalid move was played: %v", tile.Position))
 	}
 	board.placeablePositions = slices.Delete(board.placeablePositions, tileIndex, tileIndex+1)
 	validNewPositions := []elements.Position{
@@ -287,7 +288,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 
 			if ok {
 				report, err := board.ScoreSingleMonastery(adjacentTile, forceScore)
-				if err != nil {
+				if err == nil {
 					finalReport.Update(report)
 				}
 			}
