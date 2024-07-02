@@ -55,7 +55,7 @@ type TileWithMeeple struct {
 	HasShield bool
 }
 
-func (placement PlacedTile) Rotate(_ uint) PlacedTile {
+func (placedTile PlacedTile) Rotate(_ uint) PlacedTile {
 	panic("Rotate() not supported on PlacedTile")
 }
 
@@ -97,10 +97,10 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 	return ToPlacedTile(tileSet.StartingTile)
 }
 
-func (tile PlacedTile) Monastery() *PlacedFeature {
-	for i, feature := range tile.Features {
+func (placedTile PlacedTile) Monastery() *PlacedFeature {
+	for i, feature := range placedTile.Features {
 		if feature.FeatureType == featureMod.Monastery {
-			return &tile.Features[i]
+			return &placedTile.Features[i]
 		}
 	}
 	return nil
