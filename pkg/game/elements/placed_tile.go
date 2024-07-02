@@ -130,9 +130,12 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 	return ToPlacedTile(tileSet.StartingTile)
 }
 
-func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side) *PlacedFeature {
+/*
+Return the feature of certain type on desired side
+*/
+func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType feature.Type) *PlacedFeature {
 	for i, feature := range placement.TileWithMeeple.Features {
-		if sideToCheck&feature.Sides == sideToCheck {
+		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
 			return &placement.TileWithMeeple.Features[i]
 		}
 	}

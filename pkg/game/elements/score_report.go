@@ -51,7 +51,7 @@ func NewScoreReport() ScoreReport {
 }
 
 /*
-Create score report by checking meeples control on the same feature, getting rid of not scoring meeples.
+Create score report by checking meeples control on the same Fully Connected Feature (like a whole city/road etc), ignoring not scoring meeples.
 Returns a score report
 */
 func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {

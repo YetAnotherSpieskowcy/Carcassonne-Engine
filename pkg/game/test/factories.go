@@ -25,7 +25,7 @@ func GetTestScoreReport() elements.ScoreReport {
 func GetTestCustomPlacedTile(tileTemplate tiles.Tile, playerID uint8) elements.PlacedTile {
 	var placedFeatures []elements.PlacedFeature
 
-	// covnert features to placedFeature
+	// convert features to placedFeature
 	for _, feature := range tileTemplate.Features {
 		placedFeatures = append(placedFeatures, elements.PlacedFeature{
 			Feature: feature,

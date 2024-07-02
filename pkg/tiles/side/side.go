@@ -142,7 +142,8 @@ func (side Side) Rotate(rotations uint) Side {
 }
 
 /*
-argument indicates only ONE cardinal or edge, otherwise it's ambigous
+Returns the opposite side of the argument. Side Top will return Bottom, etc.
+Argument indicates only ONE cardinal or edge, otherwise it's ambigous
 */
 func (side Side) ConnectedOpposite() Side {
 
@@ -166,8 +167,14 @@ func (side Side) ConnectedOpposite() Side {
 	return rotated
 }
 
+/*
+Return nth existing direction indicated by Side.
+For example Side indicates Top,Right,Bottom at once.
+First cardinal direction would be Top, second Right, third Bottom.
+If nth direction doesn't exist, None is returned.
+*/
 func (side Side) GetNthCardinalDirection(n uint8) Side {
-	cardinals := []Side{Top, Left, Right, Bottom}
+	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
 	found := uint8(0)
 	for _, cardinal := range cardinals {
 		if side&cardinal == cardinal {
