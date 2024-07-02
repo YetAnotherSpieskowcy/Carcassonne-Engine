@@ -1,6 +1,7 @@
 package city
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -9,8 +10,14 @@ import (
 
 func TestNewAndGetCompleted(t *testing.T) {
 	a := tiletemplates.SingleCityEdgeNoRoads()
+	cities := a.Cities()
+	cityFeatures := []elements.PlacedFeature{}
+	for _, c := range cities {
+		cityFeatures = append(cityFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
 	pos := elements.NewPosition(1, 1)
-	city := New(pos, a.Cities())
+	city := New(pos, cityFeatures)
 
 	completed := city.GetCompleted()
 	if completed {
@@ -20,7 +27,12 @@ func TestNewAndGetCompleted(t *testing.T) {
 
 func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	a := tiletemplates.SingleCityEdgeNoRoads()
-	expectedFeatures := a.Cities()
+	cities := a.Cities()
+	expectedFeatures := []elements.PlacedFeature{}
+	for _, c := range cities {
+		expectedFeatures = append(expectedFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
 	pos := elements.NewPosition(1, 1)
 	city := New(pos, expectedFeatures)
 
@@ -32,7 +44,7 @@ func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	if len(features) != len(expectedFeatures) {
 		t.Fatalf("expected %#v, got %#v instead", expectedFeatures, features)
 	}
-	featureEqual := features[0].Equals(expectedFeatures[0])
+	featureEqual := reflect.DeepEqual(expectedFeatures[0], features[0])
 	if !featureEqual {
 		t.Fatalf("expected %#v, got %#v instead", true, featureEqual)
 	}
@@ -41,21 +53,33 @@ func TestNewAndGetFeaturesFromTile(t *testing.T) {
 func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	a := tiletemplates.SingleCityEdgeNoRoads()
 	b := tiletemplates.SingleCityEdgeNoRoads()
-	bRotated := b.Rotate(2)
-	pos := elements.NewPosition(1, 2)
-	city := New(elements.NewPosition(1, 1), a.Cities())
-	city.AddTile(pos, bRotated.Cities())
 
-	expectedFeatures := bRotated.Cities()
+	aFeatures := []elements.PlacedFeature{}
+	for _, c := range a.Cities() {
+		aFeatures = append(aFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
+	city := New(elements.NewPosition(1, 1), aFeatures)
+
+	bRotated := b.Rotate(2)
+	bFeatures := []elements.PlacedFeature{}
+	for _, c := range bRotated.Cities() {
+		bFeatures = append(bFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
+
+	pos := elements.NewPosition(1, 2)
+	city.AddTile(pos, bFeatures)
+
 	features, ok := city.GetFeaturesFromTile(pos)
 
 	if !ok {
 		t.Fatalf("expected %#v, got %#v instead", true, ok)
 	}
-	if len(features) != len(expectedFeatures) {
-		t.Fatalf("expected %#v, got %#v instead", expectedFeatures, features)
+	if len(features) != len(bFeatures) {
+		t.Fatalf("expected %#v, got %#v instead", len(bFeatures), len(features))
 	}
-	featureEqual := features[0].Equals(expectedFeatures[0])
+	featureEqual := reflect.DeepEqual(bFeatures[0], features[0])
 	if !featureEqual {
 		t.Fatalf("expected %#v, got %#v instead", true, featureEqual)
 	}
@@ -64,12 +88,24 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 
 func TestCheckCompletedWhenClosed(t *testing.T) {
 	a := tiletemplates.SingleCityEdgeNoRoads()
-
 	b := tiletemplates.SingleCityEdgeNoRoads()
-	bRotated := b.Rotate(2)
 
-	city := New(elements.NewPosition(1, 1), a.Cities())
-	city.AddTile(elements.NewPosition(1, 2), bRotated.Cities())
+	aFeatures := []elements.PlacedFeature{}
+	for _, c := range a.Cities() {
+		aFeatures = append(aFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
+	city := New(elements.NewPosition(1, 1), aFeatures)
+
+	bRotated := b.Rotate(2)
+	bFeatures := []elements.PlacedFeature{}
+	for _, c := range bRotated.Cities() {
+		bFeatures = append(bFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
+
+	pos := elements.NewPosition(1, 2)
+	city.AddTile(pos, bFeatures)
 
 	var expected bool = true
 	var actual bool = city.GetCompleted()
@@ -81,12 +117,24 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 
 func TestCheckCompletedWhenOpen(t *testing.T) {
 	a := tiletemplates.SingleCityEdgeNoRoads()
-
 	b := tiletemplates.TwoCityEdgesCornerConnected()
-	bRotated := b.Rotate(2)
 
-	city := New(elements.NewPosition(1, 1), a.Cities())
-	city.AddTile(elements.NewPosition(1, 2), bRotated.Cities())
+	aFeatures := []elements.PlacedFeature{}
+	for _, c := range a.Cities() {
+		aFeatures = append(aFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
+	city := New(elements.NewPosition(1, 1), aFeatures)
+
+	bRotated := b.Rotate(2)
+	bFeatures := []elements.PlacedFeature{}
+	for _, c := range bRotated.Cities() {
+		bFeatures = append(bFeatures,
+			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+	}
+
+	pos := elements.NewPosition(1, 2)
+	city.AddTile(pos, bFeatures)
 
 	var expected bool = false
 	var actual bool = city.GetCompleted()

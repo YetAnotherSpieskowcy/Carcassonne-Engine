@@ -2,20 +2,19 @@ package city
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 // Represents cities on board
 type City struct {
 	completed bool
-	cities    map[elements.Position][]feature.Feature
+	cities    map[elements.Position][]elements.PlacedFeature
 }
 
-func New(pos elements.Position, cityFeature []feature.Feature) City {
+func New(pos elements.Position, cityFeature []elements.PlacedFeature) City {
 	return City{
 		completed: false,
-		cities: map[elements.Position][]feature.Feature{
+		cities: map[elements.Position][]elements.PlacedFeature{
 			pos: cityFeature,
 		},
 	}
@@ -27,47 +26,52 @@ func (city City) GetCompleted() bool {
 
 func (city *City) CheckCompleted() bool {
 	city.completed = true
-	for key, features := range city.cities {
-		for _, feature := range features {
-			for _, side := range feature.Sides {
-				switch side {
-				case sideMod.Top:
-					_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X(), key.Y()+1))
-					if !ok {
-						city.completed = false
-						continue
-					}
-				case sideMod.Bottom:
-					_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X(), key.Y()-1))
-					if !ok {
-						city.completed = false
-						continue
-					}
-				case sideMod.Right:
-					_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X()+1, key.Y()))
-					if !ok {
-						city.completed = false
-						continue
-					}
-				case sideMod.Left:
-					_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X()-1, key.Y()))
-					if !ok {
-						city.completed = false
-						continue
+	for key, placedFeatures := range city.cities {
+		for _, placedFeature := range placedFeatures {
+			sides := placedFeature.Feature.Sides
+			mask := side.Top
+			for range 4 {
+				if sides&mask == mask {
+					switch mask {
+					case side.Top:
+						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X(), key.Y()+1))
+						if !ok {
+							city.completed = false
+							continue
+						}
+					case side.Bottom:
+						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X(), key.Y()-1))
+						if !ok {
+							city.completed = false
+							continue
+						}
+					case side.Right:
+						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X()+1, key.Y()))
+						if !ok {
+							city.completed = false
+							continue
+						}
+					case side.Left:
+						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X()-1, key.Y()))
+						if !ok {
+							city.completed = false
+							continue
+						}
 					}
 				}
+				mask = mask.Rotate(1)
 			}
 		}
 	}
 	return city.completed
 }
 
-func (city City) GetFeaturesFromTile(pos elements.Position) ([]feature.Feature, bool) {
+func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFeature, bool) {
 	cities, ok := city.cities[pos]
 	return cities, ok
 }
 
-func (city *City) AddTile(pos elements.Position, cityFeatures []feature.Feature) {
+func (city *City) AddTile(pos elements.Position, cityFeatures []elements.PlacedFeature) {
 	city.cities[pos] = cityFeatures
 	city.CheckCompleted()
 }
