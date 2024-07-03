@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
@@ -17,16 +18,19 @@ type testResponse struct {
 }
 
 func (req *testRequest) Execute(game *game.Game) Response {
-	return req.execute(req, game)
+	if req.execute != nil {
+		return req.execute(req, game)
+	}
+	return &testResponse{baseResponse{gameID: req.GameID()}}
 }
 
-func TestGameEngineSendsRequestToWorker(t *testing.T) {
+func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	requestCount := 5
+	requestCount := 100
 	requests := make([]Request, 0, requestCount)
 	for range requestCount {
 		g, err := engine.GenerateGame(tilesets.StandardTileSet())
@@ -34,12 +38,7 @@ func TestGameEngineSendsRequestToWorker(t *testing.T) {
 			t.Fatal(err.Error())
 		}
 
-		req := &testRequest{
-			baseRequest: baseRequest{gameID: g.ID},
-			execute:     func(req *testRequest, game *game.Game) Response {
-				return &testResponse{baseResponse{gameID: req.GameID()}}
-			},
-		}
+		req := &testRequest{baseRequest: baseRequest{gameID: g.ID}}
 		requests = append(requests, req)
 	}
 	responses := engine.SendBatch(requests)
@@ -51,4 +50,50 @@ func TestGameEngineSendsRequestToWorker(t *testing.T) {
 		}
 	}
 	engine.Shutdown()
+}
+
+func TestGameEngineSendBatchFailsWhenGameIDNotFound(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	requests := make([]Request, 0, 2)
+	g, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	successfulReq := &testRequest{baseRequest: baseRequest{gameID: g.ID}}
+	requests = append(requests, successfulReq)
+
+	wrongID := g.ID + 2
+	failingReq := &testRequest{baseRequest: baseRequest{gameID: wrongID}}
+	requests = append(requests, failingReq)
+	responses := engine.SendBatch(requests)
+
+	// successful req
+	err = responses[0].Err()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	expected := g.ID
+	actual := responses[0].GameID()
+	if expected != actual {
+		t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+	}
+
+	// failing req
+	err = responses[1].Err()
+	if err == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(err, ErrGameNotFound) {
+		t.Fatal(err.Error())
+	}
+	expected = wrongID
+	actual = responses[1].GameID()
+	if expected != actual {
+		t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+	}
 }
