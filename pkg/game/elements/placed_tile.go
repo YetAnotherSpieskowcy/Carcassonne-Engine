@@ -119,6 +119,16 @@ func ToTile(tile PlacedTile) tiles.Tile {
 	}
 }
 
+func (t PlacedTile) GetCityFeatures() []PlacedFeature {
+	cityFeatures := []PlacedFeature{}
+	for _, f := range t.Features {
+		if f.FeatureType == feature.City {
+			cityFeatures = append(cityFeatures, f)
+		}
+	}
+	return cityFeatures
+}
+
 // represents a legal move (tile placement and meeple placement) on the board
 type PlacedTile struct {
 	TileWithMeeple
