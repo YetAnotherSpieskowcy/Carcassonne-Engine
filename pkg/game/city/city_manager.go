@@ -10,7 +10,13 @@ type CityManager struct {
 	cities []City
 }
 
-func GetNeighbouringPositions(pos elements.Position) map[side.Side]elements.Position {
+func NewCityManager() CityManager {
+	return CityManager{
+		cities: make([]City, 0),
+	}
+}
+
+func getNeighbouringPositions(pos elements.Position) map[side.Side]elements.Position {
 	return map[side.Side]elements.Position{
 		side.Top:    elements.NewPosition(pos.X(), pos.Y()+1),
 		side.Right:  elements.NewPosition(pos.X()+1, pos.Y()),
@@ -19,7 +25,7 @@ func GetNeighbouringPositions(pos elements.Position) map[side.Side]elements.Posi
 	}
 }
 
-func (manager CityManager) FindNeighbouringCities(positions map[side.Side]elements.Position) map[side.Side]City {
+func (manager CityManager) findNeighbouringCities(positions map[side.Side]elements.Position) map[side.Side]City {
 	neighbouringCities := map[side.Side]City{}
 
 	for s, pos := range positions {
@@ -45,7 +51,7 @@ func (manager CityManager) FindNeighbouringCities(positions map[side.Side]elemen
 	return neighbouringCities
 }
 
-func (manager CityManager) FindCitiesToJoin(foundCities map[side.Side]City, tile elements.PlacedTile) map[elements.PlacedFeature][]City {
+func (manager CityManager) findCitiesToJoin(foundCities map[side.Side]City, tile elements.PlacedTile) map[elements.PlacedFeature][]City {
 	citiesToJoin := map[elements.PlacedFeature][]City{}
 	cityFeatures := tile.GetCityFeatures()
 	for _, cityFeature := range cityFeatures {
@@ -66,11 +72,11 @@ func (manager CityManager) FindCitiesToJoin(foundCities map[side.Side]City, tile
 	return citiesToJoin
 }
 
-func (manager CityManager) UpdateCities(tile elements.PlacedTile) {
-	positions := GetNeighbouringPositions(tile.Position)
-	foundCities := manager.FindNeighbouringCities(positions)
+func (manager *CityManager) UpdateCities(tile elements.PlacedTile) {
+	positions := getNeighbouringPositions(tile.Position)
+	foundCities := manager.findNeighbouringCities(positions)
 	if len(foundCities) > 0 {
-		citiesToJoin := manager.FindCitiesToJoin(foundCities, tile)
+		citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
 		for f, cToJoin := range citiesToJoin {
 			if len(cToJoin) == 0 {
 				// I guess panic
