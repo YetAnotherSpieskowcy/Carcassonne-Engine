@@ -3,7 +3,7 @@ package logger
 import "os"
 
 type FileLogger struct {
-	Logger
+	BaseLogger
 	file *os.File
 }
 

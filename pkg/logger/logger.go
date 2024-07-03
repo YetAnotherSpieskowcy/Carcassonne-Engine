@@ -5,15 +5,19 @@ import (
 	"io"
 )
 
-type Logger struct {
+type Logger interface {
+	LogEvent(interface{}) error
+}
+
+type BaseLogger struct {
 	writer io.Writer
 }
 
-func New(writer io.Writer) Logger {
-	return Logger{writer}
+func New(writer io.Writer) BaseLogger {
+	return BaseLogger{writer}
 }
 
-func (logger *Logger) LogEvent(event interface{}) error {
+func (logger *BaseLogger) LogEvent(event interface{}) error {
 	jsonData, err := json.Marshal(event)
 	if err != nil {
 		return err

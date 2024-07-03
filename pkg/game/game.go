@@ -19,10 +19,10 @@ type Game struct {
 	players []elements.Player
 	// index in the `players` field, not the Player ID
 	currentPlayer int
-	log           *logger.Logger
+	log           logger.Logger
 }
 
-func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error) {
+func NewFromTileSet(tileSet tilesets.TileSet, log logger.Logger) (*Game, error) {
 	deckStack := stack.New(tileSet.Tiles)
 	deck := deck.Deck{
 		Stack:        &deckStack,
@@ -32,7 +32,7 @@ func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error)
 }
 
 func NewFromDeck(
-	deck deck.Deck, log *logger.Logger,
+	deck deck.Deck, log logger.Logger,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
