@@ -1,12 +1,13 @@
 .PHONY: build
-build:
+build: .venv
 	@echo "Building the project..."
-	go build "./..."
+	go build "./pkg/..."
+	.venv/bin/python -m pip install .
 
 .PHONY: test
 test:
 	@echo "Running the test suite..."
-	go test -race "-coverprofile=coverage.txt" "./..."
+	go test -race "-coverprofile=coverage.txt" "./pkg/..."
 
 .PHONY: lint
 lint:
@@ -17,3 +18,6 @@ lint:
 open-coverage:
 	go tool cover "-html=coverage.txt"
 	@echo "Coverage opened in the default browser."
+
+.venv:
+	python3.12 -m venv .venv

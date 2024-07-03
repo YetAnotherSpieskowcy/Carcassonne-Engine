@@ -42,14 +42,21 @@ param (
 )
 
 function build() {
+    if (!(Test-Path .venv)) {
+        & py -3.12 -m venv .venv
+    }
     Write-Output "Building the project..."
-    & go build "./..."
+    & go build "./pkg/..."
+    if ($LASTEXITCODE) {
+        Exit $LASTEXITCODE
+    }
+    & .venv\Scripts\python.exe -m pip install .
     Exit $LASTEXITCODE
 }
 
 function test() {
     Write-Output "Running the test suite..."
-    & go test -race "-coverprofile=coverage.txt" "./..."
+    & go test -race "-coverprofile=coverage.txt" "./pkg/..."
     Exit $LASTEXITCODE
 }
 

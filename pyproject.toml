@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "PyBindGen==0.22.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carcassonne_engine"
+version = "0.1.0"
+authors = [
+    { name = "Bartosz Strzelecki" },
+    { name = "Bogna Lew" },
+    { name = "Jakub Kuczys", email = "me@jacken.men" },
+    { name = "Jakub Wierzba" },
+    { name = "Krzysztof Pisarski" },
+]
+description = "A rule engine for the Carcassonne game."
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Games/Entertainment :: Board Games",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["python_bindings"]
