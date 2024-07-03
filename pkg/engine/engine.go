@@ -131,6 +131,7 @@ func (engine *GameEngine) SendBatch(requests []Request) []Response {
 		input, err := engine.prepareWorkerInput(&waitGroup, outputBuffer, req)
 		if err != nil {
 			responses[i] = &SyncResponse{baseResponse{gameID: req.GameID(), err: err}}
+			continue
 		}
 		outputReqIndexesLock.Lock()
 		outputReqIndexes[input.requestID] = i
