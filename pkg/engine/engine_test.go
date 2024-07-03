@@ -43,6 +43,10 @@ func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testi
 	}
 	responses := engine.SendBatch(requests)
 	for i, resp := range responses {
+		err := resp.Err()
+		if err != nil {
+			t.Fatal(err.Error())
+		}
 		expected := requests[i].GameID()
 		actual := resp.GameID()
 		if actual != expected {
@@ -52,7 +56,7 @@ func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testi
 	engine.Shutdown()
 }
 
-func TestGameEngineSendBatchFailsWhenGameIDNotFound(t *testing.T) {
+func TestGameEngineSendBatchReturnsFailureWhenGameIDNotFound(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
 		t.Fatal(err.Error())
@@ -95,5 +99,41 @@ func TestGameEngineSendBatchFailsWhenGameIDNotFound(t *testing.T) {
 	actual = responses[1].GameID()
 	if expected != actual {
 		t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+	}
+}
+
+func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	requestCount := 5
+	requests := make([]Request, 0, requestCount)
+	for range requestCount {
+		g, err := engine.GenerateGame(tilesets.StandardTileSet())
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+
+		req := &testRequest{baseRequest: baseRequest{gameID: g.ID}}
+		requests = append(requests, req)
+	}
+	engine.Shutdown()
+
+	responses := engine.SendBatch(requests)
+	for i, resp := range responses {
+		err := resp.Err()
+		if err == nil {
+			t.Fatal("expected error to occur")
+		}
+		if !errors.Is(err, ErrCommunicatorClosed) {
+			t.Fatal(err.Error())
+		}
+		expected := requests[i].GameID()
+		actual := resp.GameID()
+		if actual != expected {
+			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+		}
 	}
 }
