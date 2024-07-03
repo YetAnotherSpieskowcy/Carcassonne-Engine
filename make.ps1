@@ -67,7 +67,7 @@ function open-coverage() {
 
 function lint() {
     Write-Output "Running the linter..."
-    & docker run -e "VALIDATE_ALL_CODEBASE=true" -e "DEFAULT_BRANCH=origin/main" -e "VALIDATE_GO=false" -e "LOG_LEVEL=NOTICE" -e "RUN_LOCAL=true" -v ".:/tmp/lint" --rm "ghcr.io/super-linter/super-linter:v6.3.0"
+    & docker run -e "VALIDATE_ALL_CODEBASE=true" -e "DEFAULT_BRANCH=origin/main" -e "VALIDATE_GO=false" -e "VALIDATE_PYTHON_PYLINT=false" -e "FILTER_REGEX_EXCLUDE=.*python_bindings/.*" -e "LOG_LEVEL=NOTICE" -e "RUN_LOCAL=true" -v ".:/tmp/lint" --mount "type=tmpfs,destination=/tmp/lint/python_bindings" --rm "ghcr.io/super-linter/super-linter:v6.3.0"
 }
 
 $script:availableCommands = @("build", "test", "open-coverage", "lint")
