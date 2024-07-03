@@ -16,7 +16,7 @@ func TestNewAndGetCompleted(t *testing.T) {
 	cityFeatures := []elements.PlacedFeature{}
 	for _, c := range cities {
 		cityFeatures = append(cityFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 	pos := elements.NewPosition(1, 1)
 	city := NewCity(pos, cityFeatures, false)
@@ -33,7 +33,7 @@ func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	expectedFeatures := []elements.PlacedFeature{}
 	for _, c := range cities {
 		expectedFeatures = append(expectedFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 	pos := elements.NewPosition(1, 1)
 	city := NewCity(pos, expectedFeatures, false)
@@ -59,7 +59,7 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	aFeatures := []elements.PlacedFeature{}
 	for _, c := range a.Cities() {
 		aFeatures = append(aFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
@@ -67,7 +67,7 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	bFeatures := []elements.PlacedFeature{}
 	for _, c := range bRotated.Cities() {
 		bFeatures = append(bFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 
 	pos := elements.NewPosition(1, 2)
@@ -95,7 +95,7 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	aFeatures := []elements.PlacedFeature{}
 	for _, c := range a.Cities() {
 		aFeatures = append(aFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
@@ -103,7 +103,7 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	bFeatures := []elements.PlacedFeature{}
 	for _, c := range bRotated.Cities() {
 		bFeatures = append(bFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 
 	pos := elements.NewPosition(1, 2)
@@ -124,7 +124,7 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	aFeatures := []elements.PlacedFeature{}
 	for _, c := range a.Cities() {
 		aFeatures = append(aFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
@@ -132,7 +132,7 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	bFeatures := []elements.PlacedFeature{}
 	for _, c := range bRotated.Cities() {
 		bFeatures = append(bFeatures,
-			elements.PlacedFeature{c, elements.NoneMeeple, elements.NonePlayer})
+			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
 	}
 
 	pos := elements.NewPosition(1, 2)
