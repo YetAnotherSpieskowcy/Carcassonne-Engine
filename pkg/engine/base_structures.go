@@ -1,10 +1,15 @@
 package engine
 
-import "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
+import (
+	"sync"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
+)
 
 type workerInput struct {
 	requestID    int
 	outputBuffer chan workerOutput
+	waitGroup    *sync.WaitGroup
 	game         *game.Game
 	request      Request
 }

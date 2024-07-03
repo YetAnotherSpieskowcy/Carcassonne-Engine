@@ -17,6 +17,8 @@ var (
 	ErrGameNotFound       = errors.New("game with the given ID was not found")
 )
 
+const inputBufferSize = 10_000_000
+
 func worker(comm *communicator) {
 	defer comm.workGroup.Done()
 
@@ -26,6 +28,7 @@ func worker(comm *communicator) {
 			requestID: input.requestID,
 			resp:      resp,
 		}
+		input.waitGroup.Done()
 	}
 }
 
@@ -37,7 +40,7 @@ type communicator struct {
 
 func newCommunicator() *communicator {
 	return &communicator{
-		inputBuffer: make(chan workerInput),
+		inputBuffer: make(chan workerInput, inputBufferSize),
 	}
 }
 
@@ -106,46 +109,70 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 
 func (engine *GameEngine) SendBatch(requests []Request) []Response {
 	outputReqIndexes := map[int]int{}
+	outputReqIndexesLock := sync.RWMutex{}
+
 	responses := make([]Response, len(requests))
-	outputBuffer := make(chan workerOutput)
+	outputBuffer := make(chan workerOutput, len(requests))
+	waitGroup := sync.WaitGroup{}
+	outputWaitGroup := sync.WaitGroup{}
+
+	outputWaitGroup.Add(1)
+	go func() {
+		for output := range outputBuffer {
+			outputReqIndexesLock.RLock()
+			i := outputReqIndexes[output.requestID]
+			outputReqIndexesLock.RUnlock()
+			responses[i] = output.resp
+		}
+		outputWaitGroup.Done()
+	}()
 
 	for i, req := range requests {
-		requestID, err := engine.send(outputBuffer, req)
+		input, err := engine.prepareWorkerInput(&waitGroup, outputBuffer, req)
 		if err != nil {
 			responses[i] = &SyncResponse{baseResponse{gameID: req.GameID(), err: err}}
 		}
-		outputReqIndexes[requestID] = i
+		outputReqIndexesLock.Lock()
+		outputReqIndexes[input.requestID] = i
+		outputReqIndexesLock.Unlock()
+		engine.send(input)
 	}
 
-	for output := range outputBuffer {
-		i := outputReqIndexes[output.requestID]
-		responses[i] = output.resp
-	}
+	waitGroup.Wait()
+	close(outputBuffer)
+
+	outputWaitGroup.Wait()
 
 	return responses
 }
 
-func (engine *GameEngine) send(
+func (engine *GameEngine) prepareWorkerInput(
+	waitGroup *sync.WaitGroup,
 	outputBuffer chan workerOutput,
 	req Request,
-) (int, error) {
+) (workerInput, error) {
 	if engine.comm.closed {
-		return 0, ErrCommunicatorClosed
+		return workerInput{}, ErrCommunicatorClosed
 	}
-	game, ok := engine.games[req.GameID()]
+	gameID := req.GameID()
+	game, ok := engine.games[gameID]
 	if !ok {
-		return 0, ErrGameNotFound
+		return workerInput{}, ErrGameNotFound
 	}
-	delete(engine.games, req.GameID())
+	delete(engine.games, gameID)
 
 	requestID := engine.nextReqID
 	engine.nextReqID++
-	input := workerInput{
+	return workerInput{
 		requestID:    requestID,
+		waitGroup:    waitGroup,
 		outputBuffer: outputBuffer,
 		game:         game,
 		request:      req,
-	}
+	}, nil
+}
+
+func (engine *GameEngine) send(input workerInput) {
+	input.waitGroup.Add(1)
 	engine.comm.inputBuffer <- input
-	return requestID, nil
 }
