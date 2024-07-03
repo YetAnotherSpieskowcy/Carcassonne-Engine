@@ -25,17 +25,16 @@ func getNeighbouringPositions(pos elements.Position) map[side.Side]elements.Posi
 	}
 }
 
-func (manager CityManager) findNeighbouringCities(positions map[side.Side]elements.Position) map[side.Side]City {
-	neighbouringCities := map[side.Side]City{}
-
+func (manager CityManager) findCities(positions map[side.Side]elements.Position) map[side.Side]int {
+	foundCities := map[side.Side]int{}
 	for s, pos := range positions {
 		cityFound := false
-		for _, c := range manager.cities {
+		for idx, c := range manager.cities {
 			features, ok := c.GetFeaturesFromTile(pos)
 			if ok {
 				for _, f := range features {
-					if f.Feature.Sides&s == s {
-						neighbouringCities[s] = c
+					if f.Feature.Sides&s.Rotate(2) == s.Rotate(2) {
+						foundCities[s] = idx
 						cityFound = true
 						break
 					}
@@ -47,15 +46,14 @@ func (manager CityManager) findNeighbouringCities(positions map[side.Side]elemen
 			}
 		}
 	}
-
-	return neighbouringCities
+	return foundCities
 }
 
-func (manager CityManager) findCitiesToJoin(foundCities map[side.Side]City, tile elements.PlacedTile) map[elements.PlacedFeature][]City {
-	citiesToJoin := map[elements.PlacedFeature][]City{}
+func (manager CityManager) findCitiesToJoin(foundCities map[side.Side]int, tile elements.PlacedTile) map[elements.PlacedFeature][]int {
+	citiesToJoin := map[elements.PlacedFeature][]int{}
 	cityFeatures := tile.GetCityFeatures()
 	for _, cityFeature := range cityFeatures {
-		var cToJoin = []City{}
+		var cToJoin = []int{}
 		sides := cityFeature.Feature.Sides
 		mask := side.Top
 		for range 4 {
@@ -74,7 +72,8 @@ func (manager CityManager) findCitiesToJoin(foundCities map[side.Side]City, tile
 
 func (manager *CityManager) UpdateCities(tile elements.PlacedTile) {
 	positions := getNeighbouringPositions(tile.Position)
-	foundCities := manager.findNeighbouringCities(positions)
+	foundCities := manager.findCities(positions)
+
 	if len(foundCities) > 0 {
 		citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
 		for f, cToJoin := range citiesToJoin {
@@ -82,15 +81,14 @@ func (manager *CityManager) UpdateCities(tile elements.PlacedTile) {
 				// I guess panic
 				break
 			}
-			firstCity := cToJoin[0]
-			cToJoin = cToJoin[1:]
+			cToIter := cToJoin[1:]
 			if len(cToJoin) > 0 {
-				for _, c := range cToJoin {
-					firstCity.JoinCities(c)
+				for _, c := range cToIter {
+					manager.cities[cToJoin[0]].JoinCities(manager.cities[c])
 				}
 			}
 			toAdd := []elements.PlacedFeature{f}
-			firstCity.AddTile(tile.Position, toAdd, tile.TileWithMeeple.HasShield)
+			manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, tile.TileWithMeeple.HasShield)
 		}
 	} else {
 		for _, f := range tile.GetCityFeatures() {
@@ -98,5 +96,18 @@ func (manager *CityManager) UpdateCities(tile elements.PlacedTile) {
 			manager.cities = append(manager.cities, NewCity(tile.Position, toAppend, tile.HasShield))
 		}
 	}
+}
 
+func (manager *CityManager) ScoreCities(forceScore bool) elements.ScoreReport {
+	scoreReport := elements.NewScoreReport()
+	for idx, city := range manager.cities {
+		if forceScore {
+			scoreReport.JoinReport(city.GetScoreReport())
+		} else if city.GetCompleted() {
+			println("scoring")
+			scoreReport.JoinReport(city.GetScoreReport())
+			manager.cities = append(manager.cities[:idx], manager.cities[idx+1:]...)
+		}
+	}
+	return scoreReport
 }
