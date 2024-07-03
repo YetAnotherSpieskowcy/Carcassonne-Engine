@@ -222,3 +222,135 @@ func (board *board) checkCompleted(
 	}
 	return scoreReport, nil
 }
+
+/*
+It analyzes road directed by roadSide parameter.
+It doesn't analyze starting tile.
+param roadSide: always indicates only one cardinal direction!
+returns: road_finished, score, [meeples on road], loop, sideFinishedOn
+sideFinishedOn matters only if loop is True. Variable used to prevent checking the same road twice in ScoreRoads function
+*/
+func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.Meeple, bool, side.Side) {
+	var meeples = []elements.Meeple{}
+	var tile = startTile
+	var tileExists bool
+	var score = 0
+	var road *elements.PlacedFeature
+	var finished bool
+	// check finished on way
+	// do while loop
+	for {
+		tile, tileExists = board.GetTileAt(tile.Position.Add(elements.PositionFromSide(roadSide)))
+		roadSide = roadSide.ConnectedOpposite()
+		// check if tile exists or loop
+		if !tileExists || tile.Position == startTile.Position {
+			// tile does not exist
+			// or loop found
+			// so finish
+			break
+		}
+
+		score++
+
+		// Get road feature
+		road = tile.GetPlacedFeatureAtSide(roadSide, feature.Road)
+
+		// check if there is meeple on the feature
+		if road.MeepleType != elements.NoneMeeple {
+			meeples = append(meeples, road.Meeple)
+		}
+
+		if road.Sides.GetCardinalDirectionsLength() == 1 {
+			// found the end of a road
+			break
+		}
+		// swap to other end of the road on the same tile
+		roadSide = road.Sides.GetConnectedOtherCardinalDirection(roadSide)
+
+	}
+
+	looped := (tile.Position == startTile.Position)
+	finished = tileExists && ((road.Sides.GetCardinalDirectionsLength() == 1) || (looped))
+
+	return finished, score, meeples, looped, roadSide
+}
+
+/*
+Calculates score for road.
+
+returns: ScoreReport, checked sides of the start tile (also including loop)
+*/
+func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature) (elements.ScoreReport, side.Side) {
+	var meeples = []elements.Meeple{}
+	var leftSide, rightSide side.Side
+	var score = 1
+	leftSide = road.Sides.GetNthCardinalDirection(0)  // first side
+	rightSide = road.Sides.GetNthCardinalDirection(1) // second side
+	var roadFinished = true
+
+	var roadFinishedResult bool
+	var scoreResult int
+	var meeplesResult []elements.Meeple
+	var loopResult bool
+	var loopSide side.Side
+
+	// check meeples on start tile
+	var roadLeft = tile.GetPlacedFeatureAtSide(leftSide, feature.Road)
+	var roadRight = tile.GetPlacedFeatureAtSide(rightSide, feature.Road)
+	if roadLeft.MeepleType != elements.NoneMeeple {
+		meeples = append(meeples, roadLeft.Meeple)
+	} else if roadRight != nil && roadRight.MeepleType != elements.NoneMeeple {
+		meeples = append(meeples, roadRight.Meeple)
+	}
+
+	// check road in "left" direction
+	roadFinishedResult, scoreResult, meeplesResult, loopResult, loopSide = board.CheckRoadInDirection(leftSide, tile)
+	score += scoreResult
+	roadFinished = roadFinished && roadFinishedResult
+	meeples = append(meeples, meeplesResult...)
+
+	// check road in "right" direction
+	if !loopResult && rightSide != side.None {
+		roadFinishedResult, scoreResult, meeplesResult, _, _ = board.CheckRoadInDirection(rightSide, tile)
+		score += scoreResult
+		roadFinished = roadFinished && roadFinishedResult
+		meeples = append(meeples, meeplesResult...)
+	}
+
+	// -------- start counting -------------
+	if roadFinished {
+		if loopResult {
+			return elements.CalculateScoreReportOnMeeples(score, meeples), leftSide | rightSide | loopSide
+		}
+		return elements.CalculateScoreReportOnMeeples(score, meeples), leftSide | rightSide
+
+	}
+
+	// return empty report
+	return elements.NewScoreReport(), leftSide | rightSide
+
+}
+
+/*
+Calculates summary score report from all roads on a tile
+*/
+func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreReport {
+	scoreReport := elements.NewScoreReport()
+	var tile = elements.ToTile(placedTile)
+	var roads = tile.Roads()
+
+	var checkedRoadSides side.Side
+
+	for _, road := range roads {
+		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
+		if checkedRoadSides&road.Sides == 0 {
+			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
+			scoreReport.JoinReport(scoreReportTemp)
+			checkedRoadSides |= roadSide
+			println(checkedRoadSides)
+		}
+		checkedRoadSides |= road.Sides
+		println(checkedRoadSides)
+	}
+	return scoreReport
+}

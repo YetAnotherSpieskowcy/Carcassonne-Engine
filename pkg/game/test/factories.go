@@ -21,3 +21,25 @@ func GetTestScoreReport() elements.ScoreReport {
 		ReturnedMeeples: map[uint8][]uint8{},
 	}
 }
+
+func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
+	var placedFeatures []elements.PlacedFeature
+
+	// convert features to placedFeature
+	for _, feature := range tileTemplate.Features {
+		placedFeatures = append(placedFeatures, elements.PlacedFeature{
+			Feature: feature,
+			Meeple: elements.Meeple{
+				MeepleType: elements.NoneMeeple,
+				PlayerID:   0},
+		})
+	}
+
+	return elements.PlacedTile{
+		TileWithMeeple: elements.TileWithMeeple{
+			Features:  placedFeatures,
+			HasShield: false,
+		},
+		Position: elements.NewPosition(0, 0),
+	}
+}

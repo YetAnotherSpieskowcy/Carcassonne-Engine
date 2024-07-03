@@ -3,7 +3,9 @@ package tiles
 import (
 	"slices"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 /*
@@ -60,6 +62,9 @@ func (tile *Tile) Fields() []featureMod.Feature {
 	return fields
 }
 
+/*
+Rotate tile clockwise
+*/
 func (tile Tile) Rotate(rotations uint) Tile {
 	rotations %= 4
 	if rotations == 0 {
@@ -81,6 +86,18 @@ func (tile Tile) Rotate(rotations uint) Tile {
 
 	tile.Features = newFeatures
 	return tile
+}
+
+/*
+Return the feature of certain type on desired side
+*/
+func (tile *Tile) GetFeatureAtSide(sideToCheck sideMod.Side, featureType feature.Type) *featureMod.Feature {
+	for _, feature := range tile.Features {
+		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
+			return &feature
+		}
+	}
+	return nil
 }
 
 // Returns all possible rotations of the input tile,

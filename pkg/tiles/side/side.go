@@ -140,3 +140,75 @@ func (side Side) Rotate(rotations uint) Side {
 	var shift = rotations * 2
 	return (side >> shift) | (side << (8 - shift)) // circular bitshift (bitwise rotate) side to the right by {2*rotations} bits
 }
+
+/*
+Returns the opposite side of the argument. Side Top will return Bottom, etc.
+Argument indicates only ONE cardinal or edge, otherwise it's ambigous
+*/
+func (side Side) ConnectedOpposite() Side {
+
+	SwapBits := func(number Side, i uint8, j uint8) Side {
+		// check if needs to swap (check xor)
+		if (((number & (1 << i)) >> i) ^ ((number & (1 << j)) >> j)) == 1 {
+			// xor to swap
+			number ^= 1 << i
+			number ^= 1 << j
+		}
+		return number
+	}
+
+	// rotate
+	rotated := side.Rotate(2)
+
+	// mirror edges
+	for i := range 4 {
+		rotated = SwapBits(rotated, uint8(2*i), uint8(2*i+1))
+	}
+	return rotated
+}
+
+/*
+Returns other connected side on the same tile.
+It allows getting other side of the rode feature.
+direction must indicate only one cardinal direction!
+*/
+func (side Side) GetConnectedOtherCardinalDirection(direction Side) Side {
+	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal && cardinal != direction {
+			return cardinal
+		}
+	}
+	return None
+}
+
+/*
+Return nth existing direction indicated by Side.
+For example Side indicates Top,Right,Bottom at once.
+First cardinal direction would be Top, second Right, third Bottom.
+If nth direction doesn't exist, None is returned.
+*/
+func (side Side) GetNthCardinalDirection(n uint8) Side {
+	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
+	found := uint8(0)
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal {
+			found++
+		}
+		if found > n {
+			return cardinal
+		}
+	}
+	return None
+}
+
+func (side Side) GetCardinalDirectionsLength() int {
+	cardinals := []Side{Top, Left, Right, Bottom}
+	found := int(0)
+	for _, cardinal := range cardinals {
+		if side&cardinal == cardinal {
+			found++
+		}
+	}
+	return found
+}
