@@ -142,7 +142,8 @@ func (city *City) JoinCities(other City) {
 	for pos, otherFeature := range other.cities {
 		feature, ok := city.GetFeaturesFromTile(pos)
 		if ok {
-			features := append(feature, otherFeature...)
+			features := feature
+			features = append(features, otherFeature...)
 			city.cities[pos] = features
 		} else {
 			city.cities[pos] = otherFeature

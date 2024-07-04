@@ -32,7 +32,7 @@ type board struct {
 	tilesMap map[elements.Position]elements.PlacedTile
 
 	placeablePositions []elements.Position
-	cityManager        city.CityManager
+	cityManager        city.Manager
 }
 
 func NewBoard(tileSet tilesets.TileSet) elements.Board {

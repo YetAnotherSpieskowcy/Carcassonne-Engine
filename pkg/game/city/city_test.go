@@ -11,15 +11,11 @@ import (
 )
 
 func TestNewAndGetCompleted(t *testing.T) {
-	a := tiletemplates.SingleCityEdgeNoRoads()
-	cities := a.Cities()
-	cityFeatures := []elements.PlacedFeature{}
-	for _, c := range cities {
-		cityFeatures = append(cityFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	cities := a.GetCityFeatures()
 	pos := elements.NewPosition(1, 1)
-	city := NewCity(pos, cityFeatures, false)
+
+	city := NewCity(pos, cities, false)
 
 	completed := city.GetCompleted()
 	if completed {
@@ -28,47 +24,34 @@ func TestNewAndGetCompleted(t *testing.T) {
 }
 
 func TestNewAndGetFeaturesFromTile(t *testing.T) {
-	a := tiletemplates.SingleCityEdgeNoRoads()
-	cities := a.Cities()
-	expectedFeatures := []elements.PlacedFeature{}
-	for _, c := range cities {
-		expectedFeatures = append(expectedFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	cities := a.GetCityFeatures()
 	pos := elements.NewPosition(1, 1)
-	city := NewCity(pos, expectedFeatures, false)
+
+	city := NewCity(pos, cities, false)
 
 	features, ok := city.GetFeaturesFromTile(pos)
 
 	if ok == false {
 		t.Fatalf("expected %#v, got %#v instead", true, ok)
 	}
-	if len(features) != len(expectedFeatures) {
-		t.Fatalf("expected %#v, got %#v instead", expectedFeatures, features)
+	if len(features) != len(cities) {
+		t.Fatalf("expected %#v, got %#v instead", cities, features)
 	}
-	featureEqual := reflect.DeepEqual(expectedFeatures[0], features[0])
+	featureEqual := reflect.DeepEqual(cities[0], features[0])
 	if !featureEqual {
 		t.Fatalf("expected %#v, got %#v instead", true, featureEqual)
 	}
 }
 
 func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
-	a := tiletemplates.SingleCityEdgeNoRoads()
-	b := tiletemplates.SingleCityEdgeNoRoads()
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
-	aFeatures := []elements.PlacedFeature{}
-	for _, c := range a.Cities() {
-		aFeatures = append(aFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	aFeatures := a.GetCityFeatures()
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
-	bRotated := b.Rotate(2)
-	bFeatures := []elements.PlacedFeature{}
-	for _, c := range bRotated.Cities() {
-		bFeatures = append(bFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	bFeatures := b.GetCityFeatures()
 
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
@@ -89,22 +72,13 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 }
 
 func TestCheckCompletedWhenClosed(t *testing.T) {
-	a := tiletemplates.SingleCityEdgeNoRoads()
-	b := tiletemplates.SingleCityEdgeNoRoads()
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
-	aFeatures := []elements.PlacedFeature{}
-	for _, c := range a.Cities() {
-		aFeatures = append(aFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	aFeatures := a.GetCityFeatures()
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
-	bRotated := b.Rotate(2)
-	bFeatures := []elements.PlacedFeature{}
-	for _, c := range bRotated.Cities() {
-		bFeatures = append(bFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	bFeatures := b.GetCityFeatures()
 
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
@@ -118,22 +92,13 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 }
 
 func TestCheckCompletedWhenOpen(t *testing.T) {
-	a := tiletemplates.SingleCityEdgeNoRoads()
-	b := tiletemplates.TwoCityEdgesCornerConnected()
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 
-	aFeatures := []elements.PlacedFeature{}
-	for _, c := range a.Cities() {
-		aFeatures = append(aFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	aFeatures := a.GetCityFeatures()
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
-	bRotated := b.Rotate(2)
-	bFeatures := []elements.PlacedFeature{}
-	for _, c := range bRotated.Cities() {
-		bFeatures = append(bFeatures,
-			elements.PlacedFeature{c, elements.Meeple{elements.NoneMeeple, elements.NonePlayer}})
-	}
+	bFeatures := b.GetCityFeatures()
 
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
@@ -151,18 +116,17 @@ func TestScoreOneTileCity(t *testing.T) {
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedScore uint32 = 2
 
-	a := tiletemplates.SingleCityEdgeNoRoads()
-	aPlaced := elements.ToPlacedTile(a)
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 
 	aFeatures := []elements.PlacedFeature{}
-	for _, tmp := range aPlaced.Features {
+	for _, tmp := range a.Features {
 		if tmp.FeatureType == feature.City {
 			tmp.PlayerID = expectedPlayerID
 			tmp.MeepleType = expectedMeepleType
 			aFeatures = append(aFeatures, tmp)
 		}
 	}
-	city := NewCity(elements.NewPosition(1, 1), aFeatures, aPlaced.TileWithMeeple.HasShield)
+	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
 	scoreReport := city.GetScoreReport()
 	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerID)]
@@ -186,12 +150,11 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedScore uint32 = 4
 
-	a := tiletemplates.TwoCityEdgesCornerConnectedShield()
-	aPlaced := elements.ToPlacedTile(a)
+	a := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield())
 
 	aFeatures := []elements.PlacedFeature{}
 	shield := false
-	for _, tmp := range aPlaced.Features {
+	for _, tmp := range a.Features {
 		if tmp.FeatureType == feature.City {
 			tmp.PlayerID = expectedPlayerID
 			tmp.MeepleType = expectedMeepleType
