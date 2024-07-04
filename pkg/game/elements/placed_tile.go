@@ -141,10 +141,10 @@ func (placedTile PlacedTile) Monastery() *PlacedFeature {
 /*
 Return the feature of certain type on desired side
 */
-func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *PlacedFeature {
-	for i, feature := range placement.TileWithMeeple.Features {
+func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *PlacedFeature {
+	for i, feature := range placedTile.TileWithMeeple.Features {
 		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
-			return &placement.TileWithMeeple.Features[i]
+			return &placedTile.TileWithMeeple.Features[i]
 		}
 	}
 	return nil
