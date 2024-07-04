@@ -19,9 +19,9 @@ func TestGetNeighbouringPositions(t *testing.T) {
 }
 
 func TestUpdateCitiesWhenNoCities(t *testing.T) {
-	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	manager := NewCityManager()
 
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	manager.UpdateCities(a)
 
 	if len(manager.cities) != 1 {

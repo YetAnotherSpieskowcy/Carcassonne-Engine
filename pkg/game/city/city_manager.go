@@ -114,7 +114,6 @@ func (manager *Manager) ScoreCities(forceScore bool) elements.ScoreReport {
 		if forceScore {
 			scoreReport.JoinReport(city.GetScoreReport())
 		} else if city.GetCompleted() {
-			println("scoring")
 			scoreReport.JoinReport(city.GetScoreReport())
 			manager.cities = append(manager.cities[:idx], manager.cities[idx+1:]...)
 		}

@@ -71,7 +71,8 @@ func (city *City) checkCompleted() bool {
 	return city.completed
 }
 
-// Calculates score value of the city and determines players that should receive points.
+// Calculates score value of the city and
+// determines players that should receive points.
 func (city *City) GetScoreReport() elements.ScoreReport {
 	scoreReport := elements.ScoreReport{
 		ReceivedPoints:  map[uint8]uint32{},
