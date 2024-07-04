@@ -55,22 +55,37 @@ func TestUpdateCitiesWhenAddToExistingCity(t *testing.T) {
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 1 {
-		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
+func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	b.Position = elements.NewPosition(2, 1)
+	manager.UpdateCities(b)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
 	}
 }
 
 func TestForceScore(t *testing.T) {
 	var expectedScore uint32 = 2
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
-	var expectedPlayerId elements.ID = 1
+	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerId
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
 
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 	report := manager.ScoreCities(true)
-	meeples, ok := report.ReturnedMeeples[uint8(expectedPlayerId)]
+	meeples, ok := report.ReturnedMeeples[uint8(expectedPlayerID)]
 	if !ok {
 		t.Fatalf("expected player id not in the map")
 	}
@@ -80,7 +95,7 @@ func TestForceScore(t *testing.T) {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
 
-	score := report.ReceivedPoints[uint8(expectedPlayerId)]
+	score := report.ReceivedPoints[uint8(expectedPlayerID)]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}
@@ -89,9 +104,9 @@ func TestForceScore(t *testing.T) {
 func TestScore(t *testing.T) {
 	var expectedScore uint32 = 4
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
-	var expectedPlayerId elements.ID = 1
+	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerId
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
 	a.Position = elements.NewPosition(1, 1)
 	manager := NewCityManager()
@@ -102,7 +117,7 @@ func TestScore(t *testing.T) {
 	manager.UpdateCities(b)
 
 	report := manager.ScoreCities(false)
-	meeples, ok := report.ReturnedMeeples[uint8(expectedPlayerId)]
+	meeples, ok := report.ReturnedMeeples[uint8(expectedPlayerID)]
 	if !ok {
 		t.Fatalf("expected player id not in the map")
 	}
@@ -112,7 +127,7 @@ func TestScore(t *testing.T) {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
 
-	score := report.ReceivedPoints[uint8(expectedPlayerId)]
+	score := report.ReceivedPoints[uint8(expectedPlayerID)]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}

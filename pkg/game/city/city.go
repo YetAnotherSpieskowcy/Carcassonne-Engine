@@ -77,13 +77,13 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 		ReceivedPoints:  map[uint8]uint32{},
 		ReturnedMeeples: map[uint8][]uint8{},
 	}
-	var totalScore uint32 = 0
+	var totalScore uint32
 	// calculate total value of the city and get all meeples
 	for pos, features := range city.cities {
 		for _, feature := range features {
 			if feature.MeepleType != elements.NoneMeeple {
 				if _, ok := scoreReport.ReturnedMeeples[uint8(feature.PlayerID)]; ok {
-					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)][feature.MeepleType] += 1
+					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)][feature.MeepleType]++
 				} else {
 					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)] = make([]uint8, elements.MeepleTypeCount)
 					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)][feature.MeepleType] = 1
@@ -98,7 +98,7 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	}
 
 	// determine winning players
-	var max uint8 = 0
+	var max uint8
 	winningPlayers := []uint8{}
 	for playerID, numMeeples := range scoreReport.ReturnedMeeples {
 		for meepleType, ctr := range numMeeples {
@@ -142,8 +142,8 @@ func (city *City) JoinCities(other City) {
 	for pos, otherFeature := range other.cities {
 		feature, ok := city.GetFeaturesFromTile(pos)
 		if ok {
-			feature := append(feature, otherFeature...)
-			city.cities[pos] = feature
+			features := append(feature, otherFeature...)
+			city.cities[pos] = features
 		} else {
 			city.cities[pos] = otherFeature
 			city.shields[pos] = other.shields[pos]

@@ -109,8 +109,8 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
 
-	var expected bool = true
-	var actual bool = city.GetCompleted()
+	var expected = true
+	var actual = city.GetCompleted()
 
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -138,8 +138,8 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
 
-	var expected bool = false
-	var actual bool = city.GetCompleted()
+	var expected = false
+	var actual = city.GetCompleted()
 
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -147,7 +147,7 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 }
 
 func TestScoreOneTileCity(t *testing.T) {
-	var expectedPlayerId elements.ID = 1
+	var expectedPlayerID elements.ID = 1
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedScore uint32 = 2
 
@@ -157,7 +157,7 @@ func TestScoreOneTileCity(t *testing.T) {
 	aFeatures := []elements.PlacedFeature{}
 	for _, tmp := range aPlaced.Features {
 		if tmp.FeatureType == feature.City {
-			tmp.PlayerID = expectedPlayerId
+			tmp.PlayerID = expectedPlayerID
 			tmp.MeepleType = expectedMeepleType
 			aFeatures = append(aFeatures, tmp)
 		}
@@ -165,7 +165,7 @@ func TestScoreOneTileCity(t *testing.T) {
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, aPlaced.TileWithMeeple.HasShield)
 
 	scoreReport := city.GetScoreReport()
-	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerId)]
+	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerID)]
 	if !ok {
 		t.Fatalf("expected player id not in the map")
 	}
@@ -175,14 +175,14 @@ func TestScoreOneTileCity(t *testing.T) {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
 
-	score := scoreReport.ReceivedPoints[uint8(expectedPlayerId)]
+	score := scoreReport.ReceivedPoints[uint8(expectedPlayerID)]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}
 }
 
 func TestScoreOneTileCityWithShield(t *testing.T) {
-	var expectedPlayerId elements.ID = 1
+	var expectedPlayerID elements.ID = 1
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedScore uint32 = 4
 
@@ -193,7 +193,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	shield := false
 	for _, tmp := range aPlaced.Features {
 		if tmp.FeatureType == feature.City {
-			tmp.PlayerID = expectedPlayerId
+			tmp.PlayerID = expectedPlayerID
 			tmp.MeepleType = expectedMeepleType
 			aFeatures = append(aFeatures, tmp)
 			if tmp.ModifierType == modifier.Shield {
@@ -204,7 +204,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, shield)
 
 	scoreReport := city.GetScoreReport()
-	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerId)]
+	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerID)]
 	if !ok {
 		t.Fatalf("expected player id not in the map")
 	}
@@ -214,7 +214,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
 
-	score := scoreReport.ReceivedPoints[uint8(expectedPlayerId)]
+	score := scoreReport.ReceivedPoints[uint8(expectedPlayerID)]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}

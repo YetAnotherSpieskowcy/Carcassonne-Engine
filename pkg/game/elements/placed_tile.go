@@ -119,9 +119,9 @@ func ToTile(tile PlacedTile) tiles.Tile {
 	}
 }
 
-func (t PlacedTile) GetCityFeatures() []PlacedFeature {
+func (placement PlacedTile) GetCityFeatures() []PlacedFeature {
 	cityFeatures := []PlacedFeature{}
-	for _, f := range t.Features {
+	for _, f := range placement.Features {
 		if f.FeatureType == feature.City {
 			cityFeatures = append(cityFeatures, f)
 		}

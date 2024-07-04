@@ -98,7 +98,7 @@ func TestPlacedTileFeatureGet(t *testing.T) {
 }
 
 func TestGetCityFeatures(t *testing.T) {
-	var expectedLen int = 1
+	var expectedLen = 1
 	var expectedSide side.Side = side.Top
 
 	tile := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())

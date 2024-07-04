@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -31,6 +32,7 @@ type board struct {
 	tilesMap map[elements.Position]elements.PlacedTile
 
 	placeablePositions []elements.Position
+	cityManager        city.CityManager
 }
 
 func NewBoard(tileSet tilesets.TileSet) elements.Board {
@@ -49,6 +51,7 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 			elements.NewPosition(0, -1),
 			elements.NewPosition(-1, 0),
 		},
+		cityManager: city.NewCityManager(),
 	}
 }
 
@@ -218,6 +221,8 @@ func (board *board) checkCompleted(
 	// - resolve control of the completed features
 	// - award points
 	scoreReport := elements.NewScoreReport()
+	board.cityManager.UpdateCities(tile)
+	scoreReport.JoinReport(board.cityManager.ScoreCities(false))
 	return scoreReport, nil
 }
 
