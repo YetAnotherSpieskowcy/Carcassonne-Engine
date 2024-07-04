@@ -6,75 +6,108 @@ import (
 )
 
 func TestUpdateScoreReport(t *testing.T) {
-	report := ScoreReport{
-		ReceivedPoints: map[uint8]uint32{
-			1: 10,
-			2: 5,
-		},
-		ReturnedMeeples: map[uint8][]uint8{
-			1: {1, 0, 1},
-			2: {0, 1, 1},
-			3: {0, 1, 0},
-		},
+	report := NewScoreReport()
+	report.ReceivedPoints = map[uint8]uint32{
+		1: 10,
+		2: 5,
 	}
-	otherReport := ScoreReport{
-		ReceivedPoints: map[uint8]uint32{
-			1: 10,
-			3: 7,
-		},
-		ReturnedMeeples: map[uint8][]uint8{
-			1: {1, 0, 0},
-			2: {0, 0, 1},
-			3: {1, 1, 1},
-		},
+	report.ReturnedMeeples = map[uint8][]uint8{
+		1: {1, 0, 1},
+		2: {0, 1, 1},
+		3: {0, 1, 0},
 	}
-	expected := ScoreReport{
-		ReceivedPoints: map[uint8]uint32{
-			1: 20,
-			2: 5,
-			3: 7,
-		},
-		ReturnedMeeples: map[uint8][]uint8{
-			1: {2, 0, 1},
-			2: {0, 1, 2},
-			3: {1, 2, 1},
-		},
+
+	otherReport := NewScoreReport()
+	otherReport.ReceivedPoints = map[uint8]uint32{
+		1: 10,
+		3: 7,
+	}
+	otherReport.ReturnedMeeples = map[uint8][]uint8{
+		1: {1, 0, 0},
+		2: {0, 0, 1},
+		3: {1, 1, 1},
+	}
+
+	expectedReport := NewScoreReport()
+	expectedReport.ReceivedPoints = map[uint8]uint32{
+		1: 20,
+		2: 5,
+		3: 7,
+	}
+	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+		1: {2, 0, 1},
+		2: {0, 1, 2},
+		3: {1, 2, 1},
 	}
 
 	report.Update(otherReport)
 
-	if !reflect.DeepEqual(report, expected) {
-		t.Fatalf("expected %#v,\ngot %#v instead", expected, report)
+	if !reflect.DeepEqual(report, expectedReport) {
+		t.Fatalf("expected %#v,\ngot %#v instead", expectedReport, report)
 	}
 }
 
 func TestUpdateEmptyScoreReport(t *testing.T) {
 	report := NewScoreReport()
-	otherReport := ScoreReport{
-		ReceivedPoints: map[uint8]uint32{
-			1: 10,
-			3: 7,
-		},
-		ReturnedMeeples: map[uint8][]uint8{
-			1: {1, 0, 0},
-			2: {0, 0, 1},
-			3: {1, 1, 1},
-		},
+
+	otherReport := NewScoreReport()
+	otherReport.ReceivedPoints = map[uint8]uint32{
+		1: 10,
+		3: 7,
 	}
+	otherReport.ReturnedMeeples = map[uint8][]uint8{
+		1: {1, 0, 0},
+		2: {0, 0, 1},
+		3: {1, 1, 1},
+	}
+
 	report.Update(otherReport)
 
 	if !reflect.DeepEqual(report, otherReport) {
 		t.Fatalf("expected %#v,\ngot %#v instead", otherReport, report)
 	}
-  
-func TestJoinReport(t *testing.T) {
+}
+
+func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
+	report := NewScoreReport()
+	report.ReceivedPoints = map[uint8]uint32{
+		1: 10,
+		3: 7,
+	}
+	report.ReturnedMeeples = map[uint8][]uint8{
+		1: {1, 0, 0},
+		2: {0, 0, 1},
+		3: {1, 1, 1},
+	}
+
+	emptyReport := NewScoreReport()
+
+	expectedReport := NewScoreReport()
+	expectedReport.ReceivedPoints = map[uint8]uint32{
+		1: 10,
+		3: 7,
+	}
+	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+		1: {1, 0, 0},
+		2: {0, 0, 1},
+		3: {1, 1, 1},
+	}
+
+	report.Update(emptyReport)
+
+	if !reflect.DeepEqual(report, expectedReport) {
+		t.Fatalf("expected %#v,\ngot %#v instead", expectedReport, report)
+	}
+}
+
+func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 	report1 := NewScoreReport()
 	report1.ReceivedPoints = map[uint8]uint32{
 		1: 1,
 		2: 3,
 	}
 	report1.ReturnedMeeples = map[uint8][]uint8{
-		1: []uint8{1},
+		1: {1},
 	}
 
 	report2 := NewScoreReport()
@@ -83,8 +116,8 @@ func TestJoinReport(t *testing.T) {
 		2: 5,
 	}
 	report2.ReturnedMeeples = map[uint8][]uint8{
-		1: []uint8{0, 1},
-		2: []uint8{0, 2},
+		1: {0, 1},
+		2: {0, 2},
 	}
 
 	expectedReport := NewScoreReport()
@@ -93,11 +126,11 @@ func TestJoinReport(t *testing.T) {
 		2: 8,
 	}
 	expectedReport.ReturnedMeeples = map[uint8][]uint8{
-		1: []uint8{1, 1},
-		2: []uint8{0, 2},
+		1: {1, 1},
+		2: {0, 2},
 	}
 
-	report1.JoinReport(report2)
+	report1.Update(report2)
 
 	if !reflect.DeepEqual(report1, expectedReport) {
 		t.Fatalf("expected %#v, got %#v instead", expectedReport, report1)

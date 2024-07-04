@@ -133,6 +133,10 @@ func (placedTile PlacedTile) Monastery() *PlacedFeature {
 	for i, feature := range placedTile.Features {
 		if feature.FeatureType == featureMod.Monastery {
 			return &placedTile.Features[i]
+		}
+	}
+	return nil
+}
 
 /*
 Return the feature of certain type on desired side

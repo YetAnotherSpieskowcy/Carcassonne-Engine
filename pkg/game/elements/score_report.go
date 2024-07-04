@@ -22,44 +22,19 @@ func (report *ScoreReport) Update(otherReport ScoreReport) {
 	}
 
 	for playerID, meeples := range otherReport.ReturnedMeeples {
-		if _, ok := report.ReturnedMeeples[playerID]; ok {
-			for meepleType, count := range meeples {
-				report.ReturnedMeeples[playerID][meepleType] += count
-			}
-		} else {
-			report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], meeples...)
-		}
-	}
-
-func (report *ScoreReport) JoinReport(other ScoreReport) {
-	var existKey bool
-	// join received points
-	for playerID, score := range other.ReceivedPoints {
-		_, existKey = report.ReceivedPoints[playerID]
-		if !existKey {
-			// create field
-			report.ReceivedPoints[playerID] = 0
-		}
-
-		// add points
-		report.ReceivedPoints[playerID] += score
-	}
-
-	// join returned meeples
-	for playerID, meepleArray := range other.ReturnedMeeples {
-		_, existKey = report.ReturnedMeeples[playerID]
-		if !existKey {
-			// create field
+		_, keyExists := report.ReturnedMeeples[playerID]
+		if !keyExists {
 			report.ReturnedMeeples[playerID] = []uint8{}
 		}
 
-		// compare length
-		if len(report.ReturnedMeeples[playerID]) < len(meepleArray) {
-			// lengthen the array with zeros
-			report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], make([]uint8, len(meepleArray)-len(report.ReturnedMeeples[playerID]))...)
+		if len(report.ReturnedMeeples[playerID]) < len(meeples) {
+			// lengthen the meeples array with zeros
+			// this should not be necessary if we assumed that for all reports, report.ReturnedMeeples should be of length = elements.MeepleTypeCount. Todo?
+			zerosNumber := len(meeples) - len(report.ReturnedMeeples[playerID])
+			report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], make([]uint8, zerosNumber)...)
 		}
 
-		for meepleType, meepleCount := range meepleArray {
+		for meepleType, meepleCount := range meeples {
 			report.ReturnedMeeples[playerID][meepleType] += meepleCount
 		}
 	}

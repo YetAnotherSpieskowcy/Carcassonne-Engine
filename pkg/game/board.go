@@ -217,10 +217,7 @@ func (board *board) checkCompleted(
 	// - identify all completed features
 	// - resolve control of the completed features
 	// - award points
-	scoreReport := elements.ScoreReport{
-		ReceivedPoints:  map[uint8]uint32{},
-		ReturnedMeeples: map[uint8][]uint8{},
-	}
+	scoreReport := elements.NewScoreReport()
 	return scoreReport, nil
 }
 
@@ -259,14 +256,10 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		var returnedMeeples = make([]uint8, elements.MeepleTypeCount)
 		returnedMeeples[meepleType] = 1
 
-		var scoreReport = elements.ScoreReport{
-			ReceivedPoints: map[uint8]uint32{
-				uint8(monasteryFeature.PlayerID): score,
-			},
-			ReturnedMeeples: map[uint8][]uint8{
-				uint8(monasteryFeature.PlayerID): returnedMeeples,
-			},
-		}
+		scoreReport := elements.NewScoreReport()
+		scoreReport.ReceivedPoints[uint8(monasteryFeature.PlayerID)] = score
+		scoreReport.ReturnedMeeples[uint8(monasteryFeature.PlayerID)] = returnedMeeples
+
 		return scoreReport, nil
 	}
 
@@ -295,6 +288,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 		}
 	}
 	return finalReport
+}
 
 /*
 It analyzes road directed by roadSide parameter.
@@ -343,7 +337,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	}
 
 	looped := (tile.Position == startTile.Position)
-	finished = tileExists && ((road.Sides.GetCardinalDirectionsLength() == 1) || (looped))
+	finished = tileExists && (road.Sides.GetCardinalDirectionsLength() == 1 || looped)
 
 	return finished, score, meeples, looped, roadSide
 }
@@ -418,7 +412,7 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
 		if checkedRoadSides&road.Sides == 0 {
 			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
-			scoreReport.JoinReport(scoreReportTemp)
+			scoreReport.Update(scoreReportTemp)
 			checkedRoadSides |= roadSide
 			println(checkedRoadSides)
 		}
