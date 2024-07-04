@@ -29,6 +29,36 @@ func TestUpdateCitiesWhenNoCities(t *testing.T) {
 	}
 }
 
+func TestUpdateCitiesWhenNoAddToExistingCity(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	b.Position = elements.NewPosition(2, 1)
+	manager.UpdateCities(b)
+
+	if len(manager.cities) != 2 {
+		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
+}
+
+func TestUpdateCitiesWhenAddToExistingCity(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	b.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(b)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
+}
+
 func TestForceScore(t *testing.T) {
 	var expectedScore uint32 = 2
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
@@ -85,5 +115,9 @@ func TestScore(t *testing.T) {
 	score := report.ReceivedPoints[uint8(expectedPlayerId)]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
+	}
+
+	if len(manager.cities) != 0 {
+		t.Fatalf("expected %#v, got %#v instead", 0, len(manager.cities))
 	}
 }

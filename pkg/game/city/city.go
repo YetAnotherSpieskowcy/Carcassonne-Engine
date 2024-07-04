@@ -28,7 +28,8 @@ func (city City) GetCompleted() bool {
 	return city.completed
 }
 
-func (city *City) CheckCompleted() bool {
+// Checks if city is closed and sets city.completed.
+func (city *City) checkCompleted() bool {
 	city.completed = true
 	for key, placedFeatures := range city.cities {
 		for _, placedFeature := range placedFeatures {
@@ -70,6 +71,7 @@ func (city *City) CheckCompleted() bool {
 	return city.completed
 }
 
+// Calculates score value of the city and determines players that should receive points.
 func (city *City) GetScoreReport() elements.ScoreReport {
 	scoreReport := elements.ScoreReport{
 		ReceivedPoints:  map[uint8]uint32{},
@@ -121,6 +123,8 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	return scoreReport
 }
 
+// Returnes all features from a tile at a given position that are part of a city and whether such
+// a tile is in the city.
 func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFeature, bool) {
 	cities, ok := city.cities[pos]
 	return cities, ok
@@ -129,7 +133,7 @@ func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFe
 func (city *City) AddTile(pos elements.Position, cityFeatures []elements.PlacedFeature, hasShield bool) {
 	city.cities[pos] = cityFeatures
 	city.shields[pos] = hasShield
-	city.CheckCompleted()
+	city.checkCompleted()
 }
 
 // Merges two cities when they are connetced.
@@ -145,5 +149,5 @@ func (city *City) JoinCities(other City) {
 			city.shields[pos] = other.shields[pos]
 		}
 	}
-	city.CheckCompleted()
+	city.checkCompleted()
 }

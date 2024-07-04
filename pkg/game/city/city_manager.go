@@ -5,7 +5,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-// Represents cities on board
+// Represents a manager responsible for organising cities
 type CityManager struct {
 	cities []City
 }
@@ -16,6 +16,7 @@ func NewCityManager() CityManager {
 	}
 }
 
+// Prepares map of positions surrounding position chosen for tile
 func getNeighbouringPositions(pos elements.Position) map[side.Side]elements.Position {
 	return map[side.Side]elements.Position{
 		side.Top:    elements.NewPosition(pos.X(), pos.Y()+1),
@@ -25,6 +26,8 @@ func getNeighbouringPositions(pos elements.Position) map[side.Side]elements.Posi
 	}
 }
 
+// Finds cities surrounding position of a tile
+// Returns a map of indexes of cities in manager.cities list with side of a tile as a key.
 func (manager CityManager) findCities(positions map[side.Side]elements.Position) map[side.Side]int {
 	foundCities := map[side.Side]int{}
 	for s, pos := range positions {
@@ -49,6 +52,8 @@ func (manager CityManager) findCities(positions map[side.Side]elements.Position)
 	return foundCities
 }
 
+// Checks which cities surrounding positions must be joined after this move.
+// Returns a map of lists of indexes of cities to join. As a key is used a side of a feature.
 func (manager CityManager) findCitiesToJoin(foundCities map[side.Side]int, tile elements.PlacedTile) map[elements.PlacedFeature][]int {
 	citiesToJoin := map[elements.PlacedFeature][]int{}
 	cityFeatures := tile.GetCityFeatures()
@@ -70,6 +75,7 @@ func (manager CityManager) findCitiesToJoin(foundCities map[side.Side]int, tile 
 	return citiesToJoin
 }
 
+// Performes required operations to add a new city feature.
 func (manager *CityManager) UpdateCities(tile elements.PlacedTile) {
 	positions := getNeighbouringPositions(tile.Position)
 	foundCities := manager.findCities(positions)
@@ -98,6 +104,9 @@ func (manager *CityManager) UpdateCities(tile elements.PlacedTile) {
 	}
 }
 
+// Calculates ScoreReport. When forceScore = false calculates score only based on
+// closed cities and removes them from array. Otherwise calculates score based on
+// every city in array and keeps closed ones.
 func (manager *CityManager) ScoreCities(forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 	for idx, city := range manager.cities {

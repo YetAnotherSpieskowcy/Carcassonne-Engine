@@ -4,6 +4,7 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
@@ -93,5 +94,23 @@ func TestPlacedTileFeatureGet(t *testing.T) {
 	}
 	if MeepleType(move.Monastery().Meeple.PlayerID) != 1 {
 		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Meeple.PlayerID, 1)
+	}
+}
+
+func TestGetCityFeatures(t *testing.T) {
+	var expectedLen int = 1
+	var expectedSide side.Side = side.Top
+
+	tile := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+
+	cityFeatures := tile.GetCityFeatures()
+
+	if len(cityFeatures) != expectedLen {
+		t.Fatalf("expected %#v, got %#v instead", expectedLen, len(cityFeatures))
+	}
+
+	actualSide := cityFeatures[0].Sides
+	if actualSide != expectedSide {
+		t.Fatalf("expected side %#v, got %#v instead", expectedSide, actualSide)
 	}
 }
