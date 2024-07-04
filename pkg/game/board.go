@@ -257,8 +257,8 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		returnedMeeples[meepleType] = 1
 
 		scoreReport := elements.NewScoreReport()
-		scoreReport.ReceivedPoints[uint8(monasteryFeature.PlayerID)] = score
-		scoreReport.ReturnedMeeples[uint8(monasteryFeature.PlayerID)] = returnedMeeples
+		scoreReport.ReceivedPoints[monasteryFeature.PlayerID] = score
+		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = returnedMeeples
 
 		return scoreReport, nil
 	}

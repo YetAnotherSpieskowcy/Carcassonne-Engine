@@ -17,8 +17,8 @@ func GetTestPlacedTile() elements.PlacedTile {
 }
 func GetTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{
-		ReceivedPoints:  map[uint8]uint32{0: 5},
-		ReturnedMeeples: map[uint8][]uint8{},
+		ReceivedPoints:  map[elements.ID]uint32{0: 5},
+		ReturnedMeeples: map[elements.ID][]uint8{},
 	}
 }
 

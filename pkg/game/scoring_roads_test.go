@@ -60,7 +60,7 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 		report = board.ScoreRoads(tiles[i])
-		for _, playerID := range []uint8{1, 2} {
+		for _, playerID := range []elements.ID{1, 2} {
 			if report.ReceivedPoints[playerID] != expectedScores[i] {
 				t.Fatalf("placing tile number: %#v failed. expected %+v for player %v, got %+v instead", i, expectedScores[i], playerID, report.ReceivedPoints[playerID])
 			}

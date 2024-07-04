@@ -7,34 +7,34 @@ import (
 
 func TestUpdateScoreReport(t *testing.T) {
 	report := NewScoreReport()
-	report.ReceivedPoints = map[uint8]uint32{
+	report.ReceivedPoints = map[ID]uint32{
 		1: 10,
 		2: 5,
 	}
-	report.ReturnedMeeples = map[uint8][]uint8{
+	report.ReturnedMeeples = map[ID][]uint8{
 		1: {1, 0, 1},
 		2: {0, 1, 1},
 		3: {0, 1, 0},
 	}
 
 	otherReport := NewScoreReport()
-	otherReport.ReceivedPoints = map[uint8]uint32{
+	otherReport.ReceivedPoints = map[ID]uint32{
 		1: 10,
 		3: 7,
 	}
-	otherReport.ReturnedMeeples = map[uint8][]uint8{
+	otherReport.ReturnedMeeples = map[ID][]uint8{
 		1: {1, 0, 0},
 		2: {0, 0, 1},
 		3: {1, 1, 1},
 	}
 
 	expectedReport := NewScoreReport()
-	expectedReport.ReceivedPoints = map[uint8]uint32{
+	expectedReport.ReceivedPoints = map[ID]uint32{
 		1: 20,
 		2: 5,
 		3: 7,
 	}
-	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+	expectedReport.ReturnedMeeples = map[ID][]uint8{
 		1: {2, 0, 1},
 		2: {0, 1, 2},
 		3: {1, 2, 1},
@@ -51,11 +51,11 @@ func TestUpdateEmptyScoreReport(t *testing.T) {
 	report := NewScoreReport()
 
 	otherReport := NewScoreReport()
-	otherReport.ReceivedPoints = map[uint8]uint32{
+	otherReport.ReceivedPoints = map[ID]uint32{
 		1: 10,
 		3: 7,
 	}
-	otherReport.ReturnedMeeples = map[uint8][]uint8{
+	otherReport.ReturnedMeeples = map[ID][]uint8{
 		1: {1, 0, 0},
 		2: {0, 0, 1},
 		3: {1, 1, 1},
@@ -70,11 +70,11 @@ func TestUpdateEmptyScoreReport(t *testing.T) {
 
 func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
 	report := NewScoreReport()
-	report.ReceivedPoints = map[uint8]uint32{
+	report.ReceivedPoints = map[ID]uint32{
 		1: 10,
 		3: 7,
 	}
-	report.ReturnedMeeples = map[uint8][]uint8{
+	report.ReturnedMeeples = map[ID][]uint8{
 		1: {1, 0, 0},
 		2: {0, 0, 1},
 		3: {1, 1, 1},
@@ -83,11 +83,11 @@ func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
 	emptyReport := NewScoreReport()
 
 	expectedReport := NewScoreReport()
-	expectedReport.ReceivedPoints = map[uint8]uint32{
+	expectedReport.ReceivedPoints = map[ID]uint32{
 		1: 10,
 		3: 7,
 	}
-	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+	expectedReport.ReturnedMeeples = map[ID][]uint8{
 		1: {1, 0, 0},
 		2: {0, 0, 1},
 		3: {1, 1, 1},
@@ -102,30 +102,30 @@ func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
 
 func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 	report1 := NewScoreReport()
-	report1.ReceivedPoints = map[uint8]uint32{
+	report1.ReceivedPoints = map[ID]uint32{
 		1: 1,
 		2: 3,
 	}
-	report1.ReturnedMeeples = map[uint8][]uint8{
+	report1.ReturnedMeeples = map[ID][]uint8{
 		1: {1},
 	}
 
 	report2 := NewScoreReport()
-	report2.ReceivedPoints = map[uint8]uint32{
+	report2.ReceivedPoints = map[ID]uint32{
 		1: 2,
 		2: 5,
 	}
-	report2.ReturnedMeeples = map[uint8][]uint8{
+	report2.ReturnedMeeples = map[ID][]uint8{
 		1: {0, 1},
 		2: {0, 2},
 	}
 
 	expectedReport := NewScoreReport()
-	expectedReport.ReceivedPoints = map[uint8]uint32{
+	expectedReport.ReceivedPoints = map[ID]uint32{
 		1: 3,
 		2: 8,
 	}
-	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+	expectedReport.ReturnedMeeples = map[ID][]uint8{
 		1: {1, 1},
 		2: {0, 2},
 	}

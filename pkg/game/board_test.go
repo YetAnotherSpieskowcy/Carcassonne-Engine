@@ -182,10 +182,10 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	report = board.ScoreMonasteries(tiles[0], true)
 
 	expectedReport := elements.NewScoreReport()
-	expectedReport.ReceivedPoints = map[uint8]uint32{
+	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 5,
 	}
-	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
 		1: {0, 1},
 	}
 
@@ -280,11 +280,11 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	}
 	report = board.ScoreMonasteries(tiles[11], false)
 	expectedReport := elements.NewScoreReport()
-	expectedReport.ReceivedPoints = map[uint8]uint32{
+	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 9,
 		2: 9,
 	}
-	expectedReport.ReturnedMeeples = map[uint8][]uint8{
+	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
 		1: {0, 1},
 		2: {0, 1},
 	}

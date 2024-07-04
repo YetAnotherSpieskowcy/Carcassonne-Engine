@@ -2,16 +2,16 @@ package elements
 
 type ScoreReport struct {
 	// ReceivedPoints[playerID (uint8)] = player's received points
-	ReceivedPoints map[uint8]uint32
+	ReceivedPoints map[ID]uint32
 	// ReturnedMeeples[playerID (uint8)][meeple type (MeepleType)] = number of returned meeples
 	// for reference, see also: player.meepleCounts
-	ReturnedMeeples map[uint8][]uint8
+	ReturnedMeeples map[ID][]uint8
 }
 
 func NewScoreReport() ScoreReport {
 	return ScoreReport{
-		ReceivedPoints:  map[uint8]uint32{},
-		ReturnedMeeples: map[uint8][]uint8{},
+		ReceivedPoints:  map[ID]uint32{},
+		ReturnedMeeples: map[ID][]uint8{},
 	}
 }
 
@@ -71,15 +71,15 @@ func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {
 	scoreReport := NewScoreReport()
 
 	for _, playerID := range scoredPlayers {
-		scoreReport.ReceivedPoints[playerID] = uint32(score)
+		scoreReport.ReceivedPoints[ID(playerID)] = uint32(score)
 	}
 
 	for _, meeple := range meeples {
-		_, ok := scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)]
+		_, ok := scoreReport.ReturnedMeeples[meeple.PlayerID]
 		if !ok {
-			scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)] = []uint8{0, 0}
+			scoreReport.ReturnedMeeples[meeple.PlayerID] = []uint8{0, 0}
 		}
-		scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)][meeple.MeepleType]++
+		scoreReport.ReturnedMeeples[meeple.PlayerID][meeple.MeepleType]++
 	}
 
 	return scoreReport
