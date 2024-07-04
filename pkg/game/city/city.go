@@ -123,8 +123,8 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	return scoreReport
 }
 
-// Returnes all features from a tile at a given position that are part of a city and whether such
-// a tile is in the city.
+// Returnes all features from a tile at a given position that are part of a city
+// and whether such a tile is in the city.
 func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFeature, bool) {
 	cities, ok := city.cities[pos]
 	return cities, ok

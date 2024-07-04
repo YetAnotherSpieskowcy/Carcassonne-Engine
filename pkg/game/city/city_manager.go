@@ -27,7 +27,8 @@ func getNeighbouringPositions(pos elements.Position) map[side.Side]elements.Posi
 }
 
 // Finds cities surrounding position of a tile
-// Returns a map of indexes of cities in manager.cities list with side of a tile as a key.
+// Returns a map of indexes of cities in
+// manager.cities list with side of a tile as a key.
 func (manager Manager) findCities(positions map[side.Side]elements.Position) map[side.Side]int {
 	foundCities := map[side.Side]int{}
 	for s, pos := range positions {
