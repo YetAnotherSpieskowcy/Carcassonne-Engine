@@ -40,7 +40,7 @@ func TestUpdateScoreReport(t *testing.T) {
 		3: {1, 2, 1},
 	}
 
-	report.Update(otherReport)
+	report.Join(otherReport)
 
 	if !reflect.DeepEqual(report, expectedReport) {
 		t.Fatalf("expected %#v,\ngot %#v instead", expectedReport, report)
@@ -61,7 +61,7 @@ func TestUpdateEmptyScoreReport(t *testing.T) {
 		3: {1, 1, 1},
 	}
 
-	report.Update(otherReport)
+	report.Join(otherReport)
 
 	if !reflect.DeepEqual(report, otherReport) {
 		t.Fatalf("expected %#v,\ngot %#v instead", otherReport, report)
@@ -93,7 +93,7 @@ func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
 		3: {1, 1, 1},
 	}
 
-	report.Update(emptyReport)
+	report.Join(emptyReport)
 
 	if !reflect.DeepEqual(report, expectedReport) {
 		t.Fatalf("expected %#v,\ngot %#v instead", expectedReport, report)
@@ -130,7 +130,7 @@ func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 		2: {0, 2},
 	}
 
-	report1.Update(report2)
+	report1.Join(report2)
 
 	if !reflect.DeepEqual(report1, expectedReport) {
 		t.Fatalf("expected %#v, got %#v instead", expectedReport, report1)

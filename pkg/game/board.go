@@ -282,7 +282,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 			if ok {
 				report, err := board.ScoreSingleMonastery(adjacentTile, forceScore)
 				if err == nil {
-					finalReport.Update(report)
+					finalReport.Join(report)
 				}
 			}
 		}
@@ -412,7 +412,7 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
 		if checkedRoadSides&road.Sides == 0 {
 			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
-			scoreReport.Update(scoreReportTemp)
+			scoreReport.Join(scoreReportTemp)
 			checkedRoadSides |= roadSide
 			println(checkedRoadSides)
 		}

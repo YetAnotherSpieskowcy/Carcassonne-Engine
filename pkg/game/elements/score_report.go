@@ -16,7 +16,7 @@ func NewScoreReport() ScoreReport {
 }
 
 // Adds the contents of otherReport to the contents of this score report
-func (report *ScoreReport) Update(otherReport ScoreReport) {
+func (report *ScoreReport) Join(otherReport ScoreReport) {
 	for playerID, score := range otherReport.ReceivedPoints {
 		report.ReceivedPoints[playerID] += score
 	}
