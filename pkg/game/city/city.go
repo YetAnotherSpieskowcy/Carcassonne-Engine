@@ -113,7 +113,7 @@ func (city *City) AddTile(pos elements.Position, cityFeatures []elements.PlacedF
 	city.checkCompleted()
 }
 
-// Merges two cities when they are connetced.
+// Merges two cities when they are connected.
 // Other city must be deleted after to avoid problems
 func (city *City) JoinCities(other City) {
 	for pos, otherFeature := range other.features {
