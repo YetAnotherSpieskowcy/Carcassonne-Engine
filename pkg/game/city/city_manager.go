@@ -76,7 +76,7 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 	return citiesToJoin
 }
 
-// Performes required operations to add a new city feature.
+// Performs required operations to add a new city feature.
 func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 	positions := getNeighbouringPositions(tile.Position)
 	foundCities := manager.findCities(positions)
@@ -113,7 +113,7 @@ func (manager *Manager) ScoreCities(forceScore bool) elements.ScoreReport {
 	for idx, city := range manager.cities {
 		if forceScore {
 			scoreReport.JoinReport(city.GetScoreReport())
-		} else if city.GetCompleted() {
+		} else if city.IsCompleted() {
 			scoreReport.JoinReport(city.GetScoreReport())
 			manager.cities = append(manager.cities[:idx], manager.cities[idx+1:]...)
 		}

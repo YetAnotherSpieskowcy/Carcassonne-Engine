@@ -10,14 +10,14 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
-func TestNewAndGetCompleted(t *testing.T) {
+func TestNewAndIsCompleted(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	cities := a.GetCityFeatures()
 	pos := elements.NewPosition(1, 1)
 
 	city := NewCity(pos, cities, false)
 
-	completed := city.GetCompleted()
+	completed := city.IsCompleted()
 	if completed {
 		t.Fatalf("expected %#v, got %#v instead", false, completed)
 	}
@@ -84,7 +84,7 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	city.AddTile(pos, bFeatures, false)
 
 	var expected = true
-	var actual = city.GetCompleted()
+	var actual = city.IsCompleted()
 
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -104,7 +104,7 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	city.AddTile(pos, bFeatures, false)
 
 	var expected = false
-	var actual = city.GetCompleted()
+	var actual = city.IsCompleted()
 
 	if actual != expected {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)

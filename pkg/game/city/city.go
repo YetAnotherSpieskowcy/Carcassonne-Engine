@@ -24,44 +24,23 @@ func NewCity(pos elements.Position, cityFeature []elements.PlacedFeature, hasShi
 	}
 }
 
-func (city City) GetCompleted() bool {
+func (city City) IsCompleted() bool {
 	return city.completed
 }
 
 // Checks if city is closed and sets city.completed.
 func (city *City) checkCompleted() bool {
 	city.completed = true
-	for key, placedFeatures := range city.cities {
+	for pos, placedFeatures := range city.cities {
 		for _, placedFeature := range placedFeatures {
 			sides := placedFeature.Feature.Sides
 			mask := side.Top
 			for range 4 {
 				if sides&mask == mask {
-					switch mask {
-					case side.Top:
-						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X(), key.Y()+1))
-						if !ok {
-							city.completed = false
-							continue
-						}
-					case side.Bottom:
-						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X(), key.Y()-1))
-						if !ok {
-							city.completed = false
-							continue
-						}
-					case side.Right:
-						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X()+1, key.Y()))
-						if !ok {
-							city.completed = false
-							continue
-						}
-					case side.Left:
-						_, ok := city.GetFeaturesFromTile(elements.NewPosition(key.X()-1, key.Y()))
-						if !ok {
-							city.completed = false
-							continue
-						}
+					_, ok := city.GetFeaturesFromTile(pos.Add(elements.PositionFromSide(mask)))
+					if !ok {
+						city.completed = false
+						break
 					}
 				}
 				mask = mask.Rotate(1)
@@ -124,7 +103,7 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	return scoreReport
 }
 
-// Returnes all features from a tile at a given position that are part of a city
+// Returns all features from a tile at a given position that are part of a city
 // and whether such a tile is in the city.
 func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFeature, bool) {
 	cities, ok := city.cities[pos]
