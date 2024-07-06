@@ -107,7 +107,33 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 
-func (engine *GameEngine) SendBatch(requests []Request) []Response {
+func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest) []*PlayTurnResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*PlayTurnResponse, len(responses))
+	for i := range responses {
+		concreteResponses[i] = responses[i].(*PlayTurnResponse)
+	}
+	return concreteResponses
+}
+
+func (engine *GameEngine) SendGameTreeBatch(concreteRequests []*GameTreeRequest) []*GameTreeResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*GameTreeResponse, len(responses))
+	for i := range responses {
+		concreteResponses[i] = responses[i].(*GameTreeResponse)
+	}
+	return concreteResponses
+}
+
+func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputReqIndexes := map[int]int{}
 	outputReqIndexesLock := sync.RWMutex{}
 

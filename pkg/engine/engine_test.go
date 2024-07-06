@@ -44,7 +44,7 @@ func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testi
 		req := &testRequest{GameID: g.ID}
 		requests = append(requests, req)
 	}
-	responses := engine.SendBatch(requests)
+	responses := engine.sendBatch(requests)
 	for i, resp := range responses {
 		err := resp.Err()
 		if err != nil {
@@ -77,7 +77,7 @@ func TestGameEngineSendBatchReturnsFailureWhenGameIDNotFound(t *testing.T) {
 	wrongID := g.ID + 2
 	failingReq := &testRequest{GameID: wrongID}
 	requests = append(requests, failingReq)
-	responses := engine.SendBatch(requests)
+	responses := engine.sendBatch(requests)
 
 	// successful req
 	err = responses[0].Err()
@@ -124,7 +124,7 @@ func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) 
 	}
 	engine.Shutdown()
 
-	responses := engine.SendBatch(requests)
+	responses := engine.sendBatch(requests)
 	for i, resp := range responses {
 		err := resp.Err()
 		if err == nil {
