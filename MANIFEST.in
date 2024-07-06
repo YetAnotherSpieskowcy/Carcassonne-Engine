@@ -1,2 +1,6 @@
-global-include *.so *.py *.pyd
-global-exclude build.py
+# exclude auto-generated files from source distribution
+recursive-exclude python_bindings *.py *.so
+recursive-include python_bindings __init__.py
+
+# exclude files containing byte-code and compiled libs
+global-exclude *.py[cod]

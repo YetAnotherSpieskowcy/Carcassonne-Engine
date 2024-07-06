@@ -27,10 +27,17 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine"
+"Homepage" = "https://github.com/YetAnotherSpieskowcy/Carcassonne-Engine"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["python_bindings"]
+exclude = ["tests"]
+
+[tool.setuptools.package-data]
+"*" = [
+    # include built shared objects in binary distribution
+    "*.so",
+]

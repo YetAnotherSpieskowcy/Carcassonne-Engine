@@ -61,7 +61,9 @@ pip-wheel-metadata/
 venv
 venvs
 
-python_bindings/
+python_bindings/carcassonne_engine/
 !python_bindings/carcassonne_engine/__init__.py
 
 logs/
+
+built_wheels/
