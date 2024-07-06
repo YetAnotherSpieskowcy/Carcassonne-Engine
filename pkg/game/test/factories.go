@@ -30,8 +30,8 @@ func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
 		placedFeatures = append(placedFeatures, elements.PlacedFeature{
 			Feature: feature,
 			Meeple: elements.Meeple{
-				MeepleType: elements.NoneMeeple,
-				PlayerID:   0},
+				Type:     elements.NoneMeeple,
+				PlayerID: 0},
 		})
 	}
 

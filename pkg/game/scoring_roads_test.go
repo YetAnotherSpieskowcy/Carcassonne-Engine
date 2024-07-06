@@ -37,10 +37,10 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 
 	// add meeple to first road
 	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.PlayerID = 1
-	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.MeepleType = elements.NormalMeeple
+	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.Type = elements.NormalMeeple
 	// add meeple to second road
 	tiles[1].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.PlayerID = 2
-	tiles[1].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.MeepleType = elements.NormalMeeple
+	tiles[1].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.Type = elements.NormalMeeple
 
 	// set positions
 	tiles[0].Position = elements.NewPosition(0, -1)
@@ -95,7 +95,7 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 
 	// add meeple to first road
 	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.PlayerID = 1
-	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.MeepleType = elements.NormalMeeple
+	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.Type = elements.NormalMeeple
 
 	// set positions
 	tiles[0].Position = elements.NewPosition(0, -1)
@@ -145,7 +145,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	}
 
 	// add meeple to first road
-	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{PlayerID: 1, MeepleType: elements.NormalMeeple}
+	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{PlayerID: 1, Type: elements.NormalMeeple}
 
 	// set positions
 	tiles[0].Position = elements.NewPosition(-1, 0)
@@ -196,9 +196,9 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 
 	// add meeples to monastery roads
 	tiles[0].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.PlayerID = 1
-	tiles[0].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.MeepleType = elements.NormalMeeple
+	tiles[0].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.Type = elements.NormalMeeple
 	tiles[1].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.PlayerID = 1
-	tiles[1].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.MeepleType = elements.NormalMeeple
+	tiles[1].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.Type = elements.NormalMeeple
 
 	// set positions
 	tiles[0].Position = elements.NewPosition(1, 0)

@@ -5,7 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -36,22 +36,22 @@ Returns relative position directed by the side.
 Caution! It is supposed to be used with side directing only one cardinal direction (or two edges connected by corner)!
 Otherwise it will return undesired value!
 */
-func PositionFromSide(side sideMod.Side) Position {
+func PositionFromSide(sideToCheck side.Side) Position {
 	position := NewPosition(0, 0)
 
-	if side&sideMod.Top != 0 {
+	if sideToCheck&side.Top != 0 {
 		position = position.Add(NewPosition(0, 1))
 	}
 
-	if side&sideMod.Right != 0 {
+	if sideToCheck&side.Right != 0 {
 		position = position.Add(NewPosition(1, 0))
 	}
 
-	if side&sideMod.Bottom != 0 {
+	if sideToCheck&side.Bottom != 0 {
 		position = position.Add(NewPosition(0, -1))
 	}
 
-	if side&sideMod.Left != 0 {
+	if sideToCheck&side.Left != 0 {
 		position = position.Add(NewPosition(-1, 0))
 	}
 
@@ -78,7 +78,7 @@ const (
 )
 
 type Meeple struct {
-	MeepleType
+	Type     MeepleType
 	PlayerID ID
 }
 
@@ -87,7 +87,8 @@ type TileWithMeeple struct {
 	HasShield bool
 }
 
-func (placement PlacedTile) Rotate(_ uint) PlacedTile {
+func (placement PlacedTile) Rotate(rotations uint) PlacedTile {
+	_ = rotations
 	panic("Rotate() not supported on PlacedTile")
 }
 
@@ -133,7 +134,7 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 /*
 Return the feature of certain type on desired side
 */
-func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType feature.Type) *PlacedFeature {
+func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
 	for i, feature := range placement.TileWithMeeple.Features {
 		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
 			return &placement.TileWithMeeple.Features[i]

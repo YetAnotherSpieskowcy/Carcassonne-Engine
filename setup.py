@@ -11,6 +11,9 @@ GO_MAIN_PACKAGE_NAME = "engine"
 GO_EXCLUDED_PACKAGES = (
     # avoid listing main package twice
     GO_MAIN_PACKAGE_NAME,
+    # fortunately we shouldn't need it but this package is problematic
+    # due to use of generics: https://github.com/go-python/gopy/issues/283
+    "stack",
 )
 GO_MAIN_PACKAGE = f"{GO_BASE_PACKAGE}/{GO_MAIN_PACKAGE_NAME}"
 GO_PACKAGES = tuple(

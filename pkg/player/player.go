@@ -56,8 +56,8 @@ func (player *player) GetEligibleMovesFrom(moves []elements.PlacedTile) []elemen
 func (player *player) IsEligibleFor(move elements.PlacedTile) bool {
 	count := 0
 	for _, feature := range move.Features {
-		if feature.MeepleType != elements.NoneMeeple {
-			if player.MeepleCount(feature.MeepleType) == 0 {
+		if feature.Meeple.Type != elements.NoneMeeple {
+			if player.MeepleCount(feature.Meeple.Type) == 0 {
 				return false
 			}
 			if count > 1 {
@@ -81,9 +81,9 @@ func (player *player) PlaceTile(
 		return scoreReport, err
 	}
 	for _, feature := range move.Features {
-		if feature.MeepleType != elements.NoneMeeple {
-			meepleCount := player.MeepleCount(feature.MeepleType)
-			player.SetMeepleCount(feature.MeepleType, meepleCount-1)
+		if feature.Meeple.Type != elements.NoneMeeple {
+			meepleCount := player.MeepleCount(feature.Meeple.Type)
+			player.SetMeepleCount(feature.Meeple.Type, meepleCount-1)
 		}
 	}
 	return scoreReport, nil

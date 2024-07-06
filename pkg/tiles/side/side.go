@@ -32,7 +32,7 @@ const (
 	Bottom Side = 0b0000_1100
 	Left   Side = 0b0000_0011
 
-	None Side = 0b0000_0000
+	NoSide Side = 0b0000_0000
 )
 
 func (side Side) String() string {
@@ -101,7 +101,7 @@ func (side Side) String() string {
 	}
 
 	if output == "" {
-		output = "NONE"
+		output = "NO_SIDE"
 	}
 
 	return output
@@ -129,7 +129,7 @@ func (side Side) Rotate(rotations uint) Side {
 		Bottom          0b00001100
 		Left            0b00000011
 
-		None            0b00000000
+		NoSide          0b00000000
 	*/
 
 	rotations %= 4
@@ -179,14 +179,14 @@ func (side Side) GetConnectedOtherCardinalDirection(direction Side) Side {
 			return cardinal
 		}
 	}
-	return None
+	return NoSide
 }
 
 /*
 Return nth existing direction indicated by Side.
 For example Side indicates Top,Right,Bottom at once.
 First cardinal direction would be Top, second Right, third Bottom.
-If nth direction doesn't exist, None is returned.
+If nth direction doesn't exist, NoSide is returned.
 */
 func (side Side) GetNthCardinalDirection(n uint8) Side {
 	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
@@ -199,7 +199,7 @@ func (side Side) GetNthCardinalDirection(n uint8) Side {
 			return cardinal
 		}
 	}
-	return None
+	return NoSide
 }
 
 func (side Side) GetCardinalDirectionsLength() int {
