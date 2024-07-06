@@ -149,7 +149,7 @@ func TestScore(t *testing.T) {
 
 func TestScoreTwice(t *testing.T) {
 	var expectedScore uint32 = 4
-	var expectedScore2 uint32 = 0
+	var expectedScore2 uint32
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
