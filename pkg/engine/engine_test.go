@@ -8,20 +8,23 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-type testRequest struct {
-	baseRequest
-	execute func(req *testRequest, game *game.Game) Response
-}
-
 type testResponse struct {
-	baseResponse
+	BaseResponse
+}
+type testRequest struct {
+	GameID      int
+	executeFunc func(req *testRequest, game *game.Game) Response
 }
 
-func (req *testRequest) Execute(game *game.Game) Response {
-	if req.execute != nil {
-		return req.execute(req, game)
+func (req *testRequest) gameID() int {
+	return req.GameID
+}
+
+func (req *testRequest) execute(game *game.Game) Response {
+	if req.executeFunc != nil {
+		return req.executeFunc(req, game)
 	}
-	return &testResponse{baseResponse{gameID: req.GameID()}}
+	return &testResponse{BaseResponse{gameID: req.gameID()}}
 }
 
 func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testing.T) {
@@ -38,7 +41,7 @@ func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testi
 			t.Fatal(err.Error())
 		}
 
-		req := &testRequest{baseRequest: baseRequest{gameID: g.ID}}
+		req := &testRequest{GameID: g.ID}
 		requests = append(requests, req)
 	}
 	responses := engine.SendBatch(requests)
@@ -47,7 +50,7 @@ func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testi
 		if err != nil {
 			t.Fatal(err.Error())
 		}
-		expected := requests[i].GameID()
+		expected := requests[i].gameID()
 		actual := resp.GameID()
 		if actual != expected {
 			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
@@ -68,11 +71,11 @@ func TestGameEngineSendBatchReturnsFailureWhenGameIDNotFound(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	successfulReq := &testRequest{baseRequest: baseRequest{gameID: g.ID}}
+	successfulReq := &testRequest{GameID: g.ID}
 	requests = append(requests, successfulReq)
 
 	wrongID := g.ID + 2
-	failingReq := &testRequest{baseRequest: baseRequest{gameID: wrongID}}
+	failingReq := &testRequest{GameID: wrongID}
 	requests = append(requests, failingReq)
 	responses := engine.SendBatch(requests)
 
@@ -116,7 +119,7 @@ func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) 
 			t.Fatal(err.Error())
 		}
 
-		req := &testRequest{baseRequest: baseRequest{gameID: g.ID}}
+		req := &testRequest{GameID: g.ID}
 		requests = append(requests, req)
 	}
 	engine.Shutdown()
@@ -130,7 +133,7 @@ func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) 
 		if !errors.Is(err, ErrCommunicatorClosed) {
 			t.Fatal(err.Error())
 		}
-		expected := requests[i].GameID()
+		expected := requests[i].gameID()
 		actual := resp.GameID()
 		if actual != expected {
 			t.Fatalf("expected %v game ID, got %v instead", expected, actual)

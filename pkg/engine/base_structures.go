@@ -23,32 +23,24 @@ type Response interface {
 	Err() error
 }
 type Request interface {
-	GameID() int
-	Execute(*game.Game) Response
+	gameID() int
+	execute(*game.Game) Response
 }
 
-type baseRequest struct {
-	gameID int
-}
-
-func (req *baseRequest) GameID() int {
-	return req.gameID
-}
-
-type baseResponse struct {
+type BaseResponse struct {
 	gameID int
 	err    error
 }
 
-func (resp *baseResponse) GameID() int {
+func (resp *BaseResponse) GameID() int {
 	return resp.gameID
 }
 
-func (resp *baseResponse) Err() error {
+func (resp *BaseResponse) Err() error {
 	return resp.err
 }
 
 // used when the request doesn't even reach the worker
 type SyncResponse struct {
-	baseResponse
+	BaseResponse
 }

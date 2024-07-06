@@ -6,19 +6,23 @@ import (
 )
 
 type PlayTurnResponse struct {
-	baseResponse
+	BaseResponse
 	Game game.SerializedGame
 }
 type PlayTurnRequest struct {
-	baseRequest
-	Move elements.PlacedTile
+	GameID int
+	Move   elements.PlacedTile
 }
 
-func (req *PlayTurnRequest) Execute(game *game.Game) Response {
+func (req *PlayTurnRequest) gameID() int {
+	return req.GameID
+}
+
+func (req *PlayTurnRequest) execute(game *game.Game) Response {
 	err := game.PlayTurn(req.Move)
 	resp := &PlayTurnResponse{
-		baseResponse: baseResponse{
-			gameID: req.GameID(),
+		BaseResponse: BaseResponse{
+			gameID: req.gameID(),
 			err:    err,
 		},
 	}
@@ -32,13 +36,17 @@ func (req *PlayTurnRequest) Execute(game *game.Game) Response {
 
 // TODO: implement game tree request based on agent's needs
 type GameTreeResponse struct {
-	baseResponse
+	BaseResponse
 }
 type GameTreeRequest struct {
-	baseRequest
+	GameID int
 }
 
-func (req *GameTreeRequest) Execute(game *game.Game) Response {
+func (req *GameTreeRequest) gameID() int {
+	return req.GameID
+}
+
+func (req *GameTreeRequest) execute(game *game.Game) Response {
 	_ = game
 	panic("game tree request not implemented")
 }

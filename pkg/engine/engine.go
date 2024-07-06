@@ -23,7 +23,7 @@ func worker(comm *communicator) {
 	defer comm.workGroup.Done()
 
 	for input := range comm.inputBuffer {
-		resp := input.request.Execute(input.game)
+		resp := input.request.execute(input.game)
 		input.outputBuffer <- workerOutput{
 			requestID: input.requestID,
 			resp:      resp,
@@ -130,7 +130,7 @@ func (engine *GameEngine) SendBatch(requests []Request) []Response {
 	for i, req := range requests {
 		input, err := engine.prepareWorkerInput(&waitGroup, outputBuffer, req)
 		if err != nil {
-			responses[i] = &SyncResponse{baseResponse{gameID: req.GameID(), err: err}}
+			responses[i] = &SyncResponse{BaseResponse{gameID: req.gameID(), err: err}}
 			continue
 		}
 		outputReqIndexesLock.Lock()
@@ -155,7 +155,7 @@ func (engine *GameEngine) prepareWorkerInput(
 	if engine.comm.closed {
 		return workerInput{}, ErrCommunicatorClosed
 	}
-	gameID := req.GameID()
+	gameID := req.gameID()
 	game, ok := engine.games[gameID]
 	if !ok {
 		return workerInput{}, ErrGameNotFound
