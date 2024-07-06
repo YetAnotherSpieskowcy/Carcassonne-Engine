@@ -13,6 +13,15 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+type SerializedGame struct {
+	CurrentTile         *tiles.Tile
+	ValidTilePlacements []elements.PlacedTile
+	CurrentPlayer       elements.Player
+	PlayerCount         int
+	Tiles               []elements.PlacedTile
+	TileSet             tilesets.TileSet
+}
+
 type Game struct {
 	board   elements.Board
 	deck    deck.Deck
@@ -59,6 +68,21 @@ func NewFromDeck(
 	}
 
 	return game, nil
+}
+
+func (game *Game) Serialized() SerializedGame {
+	serialized := SerializedGame{
+		CurrentPlayer: game.CurrentPlayer(),
+		PlayerCount:   game.PlayerCount(),
+		Tiles:         game.board.Tiles(),
+		TileSet:       game.deck.TileSet(),
+	}
+
+	if tile, err := game.GetCurrentTile(); err == nil {
+		serialized.CurrentTile = &tile
+		serialized.ValidTilePlacements = game.board.GetTilePlacementsFor(tile)
+	}
+	return serialized
 }
 
 func (game *Game) GetCurrentTile() (tiles.Tile, error) {
