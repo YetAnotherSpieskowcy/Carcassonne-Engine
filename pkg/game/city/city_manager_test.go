@@ -9,15 +9,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
-func TestGetNeighbouringPositions(t *testing.T) {
-	positions := getNeighbouringPositions(elements.NewPosition(1, 1))
-
-	topPosition := positions[side.Top]
-	if topPosition.X() != 1 || topPosition.Y() != 2 {
-		t.Fatalf("expected x=%#v y=%#v, got x=%#v y=%#v instead", 1, 2, topPosition.X(), topPosition.Y())
-	}
-}
-
 func TestUpdateCitiesWhenNoCities(t *testing.T) {
 	manager := NewCityManager()
 
@@ -68,6 +59,25 @@ func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	b.Position = elements.NewPosition(2, 1)
 	manager.UpdateCities(b)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
+func TestJoinCitiesOnAdd(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
+	b.Position = elements.NewPosition(2, 2)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
 
 	if len(manager.cities) != 1 {
 		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
@@ -134,5 +144,99 @@ func TestScore(t *testing.T) {
 
 	if len(manager.cities) != 0 {
 		t.Fatalf("expected %#v, got %#v instead", 0, len(manager.cities))
+	}
+}
+
+func TestScoreAfterJoin(t *testing.T) {
+	var expectedScore uint32 = 6
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID elements.ID = 1
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
+	b.Position = elements.NewPosition(2, 2)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
+
+	report := manager.ScoreCities(false)
+	if report.ReceivedPoints[uint8(expectedPlayerID)] != expectedScore {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore, report.ReceivedPoints[uint8(expectedPlayerID)])
+	}
+}
+
+func TestScoreTwoCitiesNotConnected(t *testing.T) {
+	var expectedScore uint32 = 4
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID1 elements.ID = 1
+	var expectedPlayerID2 elements.ID = 2
+
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.Position = elements.NewPosition(1, 1)
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
+	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.MeepleType = expectedMeepleType
+	b.Position = elements.NewPosition(1, 3)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
+
+	report := manager.ScoreCities(false)
+	if report.ReceivedPoints[uint8(expectedPlayerID1)] != expectedScore {
+		t.Fatalf("expected %#v for player %#v, got %#v instead", expectedScore, expectedPlayerID1, report.ReceivedPoints[uint8(expectedPlayerID1)])
+	}
+
+	if report.ReceivedPoints[uint8(expectedPlayerID2)] != expectedScore {
+		t.Fatalf("expected %#v for player %#v, got %#v instead", expectedScore, expectedPlayerID2, report.ReceivedPoints[uint8(expectedPlayerID2)])
+	}
+}
+
+func TestScoreTwoPlayersCityConnected(t *testing.T) {
+	var expectedScore uint32 = 6
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID1 elements.ID = 1
+	var expectedPlayerID2 elements.ID = 2
+
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.Position = elements.NewPosition(1, 1)
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
+	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.MeepleType = expectedMeepleType
+	b.Position = elements.NewPosition(1, 3)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
+
+	report := manager.ScoreCities(false)
+	if report.ReceivedPoints[uint8(expectedPlayerID1)] != expectedScore {
+		t.Fatalf("expected %#v for player %#v, got %#v instead", expectedScore, expectedPlayerID1, report.ReceivedPoints[uint8(expectedPlayerID1)])
+	}
+
+	if report.ReceivedPoints[uint8(expectedPlayerID2)] != expectedScore {
+		t.Fatalf("expected %#v for player %#v, got %#v instead", expectedScore, expectedPlayerID2, report.ReceivedPoints[uint8(expectedPlayerID2)])
 	}
 }

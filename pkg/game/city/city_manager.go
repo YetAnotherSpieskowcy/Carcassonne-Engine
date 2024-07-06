@@ -1,6 +1,8 @@
 package city
 
 import (
+	"slices"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
@@ -16,20 +18,17 @@ func NewCityManager() Manager {
 	}
 }
 
-// Prepares map of positions surrounding position chosen for tile
-func getNeighbouringPositions(pos elements.Position) map[side.Side]elements.Position {
-	return map[side.Side]elements.Position{
+// Finds cities surrounding position of a tile
+// Returns a map of indexes of cities in
+// manager.cities list with side of a tile as a key.
+func (manager Manager) findCities(pos elements.Position) map[side.Side]int {
+	positions := map[side.Side]elements.Position{
 		side.Top:    elements.NewPosition(pos.X(), pos.Y()+1),
 		side.Right:  elements.NewPosition(pos.X()+1, pos.Y()),
 		side.Bottom: elements.NewPosition(pos.X(), pos.Y()-1),
 		side.Left:   elements.NewPosition(pos.X()-1, pos.Y()),
 	}
-}
 
-// Finds cities surrounding position of a tile
-// Returns a map of indexes of cities in
-// manager.cities list with side of a tile as a key.
-func (manager Manager) findCities(positions map[side.Side]elements.Position) map[side.Side]int {
 	foundCities := map[side.Side]int{}
 	for s, pos := range positions {
 		cityFound := false
@@ -54,7 +53,8 @@ func (manager Manager) findCities(positions map[side.Side]elements.Position) map
 }
 
 // Checks which cities surrounding positions must be joined after this move.
-// Returns a map of lists of indexes of cities to join. As a key is used a side of a feature.
+// Returns a map of lists of indexes of cities to join. As a key is used a
+// feature that will close the city.
 func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elements.PlacedTile) map[elements.PlacedFeature][]int {
 	citiesToJoin := map[elements.PlacedFeature][]int{}
 	cityFeatures := tile.GetCityFeatures()
@@ -78,24 +78,36 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 
 // Performs required operations to add a new city feature.
 func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
-	positions := getNeighbouringPositions(tile.Position)
-	foundCities := manager.findCities(positions)
+	foundCities := manager.findCities(tile.Position)
 
 	if len(foundCities) > 0 {
+		citiesToRemove := make([]int, 0)
 		citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
+		// join cities
 		for f, cToJoin := range citiesToJoin {
 			if len(cToJoin) == 0 {
 				// I guess panic
 				break
 			}
-			cToIter := cToJoin[1:]
-			if len(cToJoin) > 0 {
-				for _, c := range cToIter {
-					manager.cities[cToJoin[0]].JoinCities(manager.cities[c])
+			if len(cToJoin) > 1 {
+				for _, cityIndex := range cToJoin[1:] {
+					manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
+					citiesToRemove = append(citiesToRemove, cityIndex)
+					println("aaa")
 				}
 			}
 			toAdd := []elements.PlacedFeature{f}
 			manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, tile.TileWithMeeple.HasShield)
+		}
+		// remove cities that were merged into another city
+		if len(citiesToRemove) > 0 {
+			newCities := make([]City, 0)
+			for index, city := range manager.cities {
+				if !slices.Contains(citiesToRemove, index) {
+					newCities = append(newCities, city)
+				}
+			}
+			manager.cities = newCities
 		}
 	} else {
 		for _, f := range tile.GetCityFeatures() {
@@ -110,13 +122,17 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 // every city in array and keeps closed ones.
 func (manager *Manager) ScoreCities(forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
-	for idx, city := range manager.cities {
+	newCities := make([]City, 0)
+	for _, city := range manager.cities {
 		if forceScore {
 			scoreReport.JoinReport(city.GetScoreReport())
 		} else if city.IsCompleted() {
 			scoreReport.JoinReport(city.GetScoreReport())
-			manager.cities = append(manager.cities[:idx], manager.cities[idx+1:]...)
+			continue
 		}
+		newCities = append(newCities, city)
 	}
+	manager.cities = newCities
+
 	return scoreReport
 }

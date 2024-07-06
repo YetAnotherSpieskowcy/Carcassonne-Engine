@@ -8,14 +8,14 @@ import (
 // Represents cities on board
 type City struct {
 	completed bool
-	cities    map[elements.Position][]elements.PlacedFeature
+	features  map[elements.Position][]elements.PlacedFeature
 	shields   map[elements.Position]bool
 }
 
 func NewCity(pos elements.Position, cityFeature []elements.PlacedFeature, hasShield bool) City {
 	return City{
 		completed: false,
-		cities: map[elements.Position][]elements.PlacedFeature{
+		features: map[elements.Position][]elements.PlacedFeature{
 			pos: cityFeature,
 		},
 		shields: map[elements.Position]bool{
@@ -31,7 +31,7 @@ func (city City) IsCompleted() bool {
 // Checks if city is closed and sets city.completed.
 func (city *City) checkCompleted() bool {
 	city.completed = true
-	for pos, placedFeatures := range city.cities {
+	for pos, placedFeatures := range city.features {
 		for _, placedFeature := range placedFeatures {
 			sides := placedFeature.Feature.Sides
 			mask := side.Top
@@ -53,13 +53,10 @@ func (city *City) checkCompleted() bool {
 // Calculates score value of the city and
 // determines players that should receive points.
 func (city *City) GetScoreReport() elements.ScoreReport {
-	scoreReport := elements.ScoreReport{
-		ReceivedPoints:  map[uint8]uint32{},
-		ReturnedMeeples: map[uint8][]uint8{},
-	}
+	scoreReport := elements.NewScoreReport()
 	var totalScore uint32
 	// calculate total value of the city and get all meeples
-	for pos, features := range city.cities {
+	for pos, features := range city.features {
 		for _, feature := range features {
 			if feature.MeepleType != elements.NoneMeeple {
 				if _, ok := scoreReport.ReturnedMeeples[uint8(feature.PlayerID)]; ok {
@@ -81,14 +78,14 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	var max uint8
 	winningPlayers := []uint8{}
 	for playerID, numMeeples := range scoreReport.ReturnedMeeples {
-		for meepleType, ctr := range numMeeples {
-			if ctr > 0 && meepleType != int(elements.NoneMeeple) {
+		for meepleType, meepleCount := range numMeeples {
+			if meepleCount > 0 && meepleType != int(elements.NoneMeeple) {
 				// TODO: add excluding meeples like builder, etc. when they are implemented
-				if ctr > max {
-					max = ctr
+				if meepleCount > max {
+					max = meepleCount
 					winningPlayers = nil // remove all values that are in array since there is a player with more meeples
 					winningPlayers = append(winningPlayers, playerID)
-				} else if ctr == max {
+				} else if meepleCount == max {
 					winningPlayers = append(winningPlayers, playerID)
 				}
 			}
@@ -106,12 +103,12 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 // Returns all features from a tile at a given position that are part of a city
 // and whether such a tile is in the city.
 func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFeature, bool) {
-	cities, ok := city.cities[pos]
+	cities, ok := city.features[pos]
 	return cities, ok
 }
 
 func (city *City) AddTile(pos elements.Position, cityFeatures []elements.PlacedFeature, hasShield bool) {
-	city.cities[pos] = cityFeatures
+	city.features[pos] = cityFeatures
 	city.shields[pos] = hasShield
 	city.checkCompleted()
 }
@@ -119,14 +116,14 @@ func (city *City) AddTile(pos elements.Position, cityFeatures []elements.PlacedF
 // Merges two cities when they are connetced.
 // Other city must be deleted after to avoid problems
 func (city *City) JoinCities(other City) {
-	for pos, otherFeature := range other.cities {
+	for pos, otherFeature := range other.features {
 		feature, ok := city.GetFeaturesFromTile(pos)
 		if ok {
 			features := feature
 			features = append(features, otherFeature...)
-			city.cities[pos] = features
+			city.features[pos] = features
 		} else {
-			city.cities[pos] = otherFeature
+			city.features[pos] = otherFeature
 			city.shields[pos] = other.shields[pos]
 		}
 	}
