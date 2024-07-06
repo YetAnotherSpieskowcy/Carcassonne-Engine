@@ -118,17 +118,19 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 }
 
 // Calculates ScoreReport. When forceScore = false calculates score only based on
-// closed cities and removes them from array. Otherwise calculates score based on
+// closed cities and sets city.score to true. Otherwise calculates score based on
 // every city in array and keeps closed ones.
 func (manager *Manager) ScoreCities(forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 	newCities := make([]City, 0)
 	for _, city := range manager.cities {
-		if forceScore {
-			scoreReport.JoinReport(city.GetScoreReport())
-		} else if city.IsCompleted() {
-			scoreReport.JoinReport(city.GetScoreReport())
-			continue
+		if !city.scored {
+			if forceScore {
+				scoreReport.JoinReport(city.GetScoreReport())
+			} else if city.IsCompleted() {
+				scoreReport.JoinReport(city.GetScoreReport())
+				city.SetScored(true)
+			}
 		}
 		newCities = append(newCities, city)
 	}

@@ -8,6 +8,7 @@ import (
 // Represents cities on board
 type City struct {
 	completed bool
+	scored    bool
 	features  map[elements.Position][]elements.PlacedFeature
 	shields   map[elements.Position]bool
 }
@@ -15,6 +16,7 @@ type City struct {
 func NewCity(pos elements.Position, cityFeature []elements.PlacedFeature, hasShield bool) City {
 	return City{
 		completed: false,
+		scored:    false,
 		features: map[elements.Position][]elements.PlacedFeature{
 			pos: cityFeature,
 		},
@@ -48,6 +50,10 @@ func (city *City) checkCompleted() bool {
 		}
 	}
 	return city.completed
+}
+
+func (city *City) SetScored(scored bool) {
+	city.scored = scored
 }
 
 // Calculates score value of the city and

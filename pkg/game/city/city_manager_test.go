@@ -142,8 +142,42 @@ func TestScore(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}
 
-	if len(manager.cities) != 0 {
-		t.Fatalf("expected %#v, got %#v instead", 0, len(manager.cities))
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
+func TestScoreTwice(t *testing.T) {
+	var expectedScore uint32 = 4
+	var expectedScore2 uint32 = 0
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID elements.ID = 1
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	b.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(b)
+
+	report := manager.ScoreCities(false)
+
+	score := report.ReceivedPoints[uint8(expectedPlayerID)]
+	if score != expectedScore {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
+	}
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+
+	report2 := manager.ScoreCities(false)
+	score2 := report2.ReceivedPoints[uint8(expectedPlayerID)]
+	if score2 != expectedScore2 {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore2, score2)
 	}
 }
 
@@ -168,8 +202,13 @@ func TestScoreAfterJoin(t *testing.T) {
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
+
 	if report.ReceivedPoints[uint8(expectedPlayerID)] != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, report.ReceivedPoints[uint8(expectedPlayerID)])
+	}
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
 	}
 }
 
@@ -205,6 +244,10 @@ func TestScoreTwoCitiesNotConnected(t *testing.T) {
 	if report.ReceivedPoints[uint8(expectedPlayerID2)] != expectedScore {
 		t.Fatalf("expected %#v for player %#v, got %#v instead", expectedScore, expectedPlayerID2, report.ReceivedPoints[uint8(expectedPlayerID2)])
 	}
+
+	if len(manager.cities) != 2 {
+		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
 }
 
 func TestScoreTwoPlayersCityConnected(t *testing.T) {
@@ -238,5 +281,9 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 
 	if report.ReceivedPoints[uint8(expectedPlayerID2)] != expectedScore {
 		t.Fatalf("expected %#v for player %#v, got %#v instead", expectedScore, expectedPlayerID2, report.ReceivedPoints[uint8(expectedPlayerID2)])
+	}
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
 	}
 }
