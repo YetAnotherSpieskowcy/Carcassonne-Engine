@@ -77,3 +77,21 @@ func TestTilePlacementRotate(t *testing.T) {
 
 	move.Rotate(1)
 }
+
+func TestPlacedTileFeatureGet(t *testing.T) {
+	move := ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	move.Monastery().Meeple.MeepleType = NormalMeeple
+	move.Monastery().Meeple.PlayerID = 1
+
+	expectedMonastery := tiletemplates.MonasteryWithSingleRoad().Monastery()
+
+	if move.Monastery().Feature != *expectedMonastery {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Feature, *expectedMonastery)
+	}
+	if move.Monastery().Meeple.MeepleType != NormalMeeple {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Meeple.MeepleType, NormalMeeple)
+	}
+	if MeepleType(move.Monastery().Meeple.PlayerID) != 1 {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Meeple.PlayerID, 1)
+	}
+}

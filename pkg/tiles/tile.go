@@ -32,7 +32,7 @@ outer:
 	return false
 }
 
-func (tile *Tile) Cities() []featureMod.Feature {
+func (tile Tile) Cities() []featureMod.Feature {
 	var cities []featureMod.Feature
 	for _, feature := range tile.Features {
 		if feature.FeatureType == featureMod.City {
@@ -42,7 +42,7 @@ func (tile *Tile) Cities() []featureMod.Feature {
 	return cities
 }
 
-func (tile *Tile) Roads() []featureMod.Feature {
+func (tile Tile) Roads() []featureMod.Feature {
 	var roads []featureMod.Feature
 	for _, feature := range tile.Features {
 		if feature.FeatureType == featureMod.Road {
@@ -52,7 +52,7 @@ func (tile *Tile) Roads() []featureMod.Feature {
 	return roads
 }
 
-func (tile *Tile) Fields() []featureMod.Feature {
+func (tile Tile) Fields() []featureMod.Feature {
 	var fields []featureMod.Feature
 	for _, feature := range tile.Features {
 		if feature.FeatureType == featureMod.Field {
@@ -60,6 +60,15 @@ func (tile *Tile) Fields() []featureMod.Feature {
 		}
 	}
 	return fields
+}
+
+func (tile Tile) Monastery() *featureMod.Feature {
+	for i, feature := range tile.Features {
+		if feature.FeatureType == featureMod.Monastery {
+			return &tile.Features[i]
+		}
+	}
+	return nil
 }
 
 /*

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -87,12 +87,12 @@ type TileWithMeeple struct {
 	HasShield bool
 }
 
-func (placement PlacedTile) Rotate(_ uint) PlacedTile {
+func (placedTile PlacedTile) Rotate(_ uint) PlacedTile {
 	panic("Rotate() not supported on PlacedTile")
 }
 
 type PlacedFeature struct {
-	feature.Feature
+	featureMod.Feature
 	Meeple
 }
 
@@ -110,14 +110,13 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 }
 
 func ToTile(tile PlacedTile) tiles.Tile {
-	features := []feature.Feature{}
+	features := []featureMod.Feature{}
 	for _, n := range tile.Features {
 		features = append(features, n.Feature)
 	}
 	return tiles.Tile{
 		Features: features,
 	}
-
 }
 
 // represents a legal move (tile placement and meeple placement) on the board
@@ -130,13 +129,22 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 	return ToPlacedTile(tileSet.StartingTile)
 }
 
+func (placedTile PlacedTile) Monastery() *PlacedFeature {
+	for i, feature := range placedTile.Features {
+		if feature.FeatureType == featureMod.Monastery {
+			return &placedTile.Features[i]
+		}
+	}
+	return nil
+}
+
 /*
 Return the feature of certain type on desired side
 */
-func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType feature.Type) *PlacedFeature {
-	for i, feature := range placement.TileWithMeeple.Features {
+func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *PlacedFeature {
+	for i, feature := range placedTile.TileWithMeeple.Features {
 		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
-			return &placement.TileWithMeeple.Features[i]
+			return &placedTile.TileWithMeeple.Features[i]
 		}
 	}
 	return nil
