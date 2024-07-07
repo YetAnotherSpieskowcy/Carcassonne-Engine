@@ -129,7 +129,7 @@ func TestScoreOneTileCity(t *testing.T) {
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
 	scoreReport := city.GetScoreReport()
-	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerID)]
+	meeples, ok := scoreReport.ReturnedMeeples[expectedPlayerID]
 	if !ok {
 		t.Fatalf("expected player id not in the map")
 	}
@@ -139,7 +139,7 @@ func TestScoreOneTileCity(t *testing.T) {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
 
-	score := scoreReport.ReceivedPoints[uint8(expectedPlayerID)]
+	score := scoreReport.ReceivedPoints[expectedPlayerID]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}
@@ -167,7 +167,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, shield)
 
 	scoreReport := city.GetScoreReport()
-	meeples, ok := scoreReport.ReturnedMeeples[uint8(expectedPlayerID)]
+	meeples, ok := scoreReport.ReturnedMeeples[expectedPlayerID]
 	if !ok {
 		t.Fatalf("expected player id not in the map")
 	}
@@ -177,7 +177,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
 
-	score := scoreReport.ReceivedPoints[uint8(expectedPlayerID)]
+	score := scoreReport.ReceivedPoints[expectedPlayerID]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
 	}

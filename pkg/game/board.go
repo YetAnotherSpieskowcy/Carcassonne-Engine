@@ -222,7 +222,7 @@ func (board *board) checkCompleted(
 	// - award points
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
-	scoreReport.JoinReport(board.cityManager.ScoreCities(false))
+	scoreReport.Join(board.cityManager.ScoreCities(false))
 	return scoreReport, nil
 }
 

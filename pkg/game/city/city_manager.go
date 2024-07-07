@@ -126,9 +126,9 @@ func (manager *Manager) ScoreCities(forceScore bool) elements.ScoreReport {
 	for _, city := range manager.cities {
 		if !city.scored {
 			if forceScore {
-				scoreReport.JoinReport(city.GetScoreReport())
+				scoreReport.Join(city.GetScoreReport())
 			} else if city.IsCompleted() {
-				scoreReport.JoinReport(city.GetScoreReport())
+				scoreReport.Join(city.GetScoreReport())
 				city.SetScored(true)
 			}
 		}

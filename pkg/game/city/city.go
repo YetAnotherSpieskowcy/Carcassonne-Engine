@@ -65,11 +65,11 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	for pos, features := range city.features {
 		for _, feature := range features {
 			if feature.MeepleType != elements.NoneMeeple {
-				if _, ok := scoreReport.ReturnedMeeples[uint8(feature.PlayerID)]; ok {
-					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)][feature.MeepleType]++
+				if _, ok := scoreReport.ReturnedMeeples[feature.PlayerID]; ok {
+					scoreReport.ReturnedMeeples[feature.PlayerID][feature.MeepleType]++
 				} else {
-					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)] = make([]uint8, elements.MeepleTypeCount)
-					scoreReport.ReturnedMeeples[uint8(feature.PlayerID)][feature.MeepleType] = 1
+					scoreReport.ReturnedMeeples[feature.PlayerID] = make([]uint8, elements.MeepleTypeCount)
+					scoreReport.ReturnedMeeples[feature.PlayerID][feature.MeepleType] = 1
 				}
 			}
 		}
@@ -82,7 +82,7 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 
 	// determine winning players
 	var max uint8
-	winningPlayers := []uint8{}
+	winningPlayers := []elements.ID{}
 	for playerID, numMeeples := range scoreReport.ReturnedMeeples {
 		for meepleType, meepleCount := range numMeeples {
 			if meepleCount > 0 && meepleType != int(elements.NoneMeeple) {
