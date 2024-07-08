@@ -71,7 +71,9 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 			}
 			mask = mask.Rotate(1)
 		}
-		citiesToJoin[cityFeature] = cToJoin
+		if len(cToJoin) > 0 {
+			citiesToJoin[cityFeature] = cToJoin
+		}
 	}
 	return citiesToJoin
 }
@@ -86,14 +88,12 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 		// join cities
 		for f, cToJoin := range citiesToJoin {
 			if len(cToJoin) == 0 {
-				// I guess panic
-				break
+				panic("No cities to join.")
 			}
 			if len(cToJoin) > 1 {
 				for _, cityIndex := range cToJoin[1:] {
 					manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
 					citiesToRemove = append(citiesToRemove, cityIndex)
-					println("aaa")
 				}
 			}
 			toAdd := []elements.PlacedFeature{f}
@@ -118,7 +118,7 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 }
 
 // Calculates ScoreReport. When forceScore = false calculates score only based on
-// closed cities and sets city.score to true. Otherwise calculates score based on
+// closed cities and sets city.scored to true. Otherwise calculates score based on
 // every city in array and keeps closed ones.
 func (manager *Manager) ScoreCities(forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
