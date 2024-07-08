@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -97,7 +98,7 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 				}
 			}
 			toAdd := []elements.PlacedFeature{f}
-			manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, tile.TileWithMeeple.HasShield)
+			manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, f.ModifierType == modifier.Shield)
 		}
 		// remove cities that were merged into another city
 		if len(citiesToRemove) > 0 {

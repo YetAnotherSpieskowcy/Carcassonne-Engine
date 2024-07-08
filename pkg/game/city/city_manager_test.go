@@ -84,6 +84,25 @@ func TestJoinCitiesOnAdd(t *testing.T) {
 	}
 }
 
+func TestJoinCitiesOnAddCityNotClosed(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
+	b.Position = elements.NewPosition(2, 2)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
 func TestForceScore(t *testing.T) {
 	var expectedScore uint32 = 2
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
@@ -202,6 +221,68 @@ func TestScoreAfterJoin(t *testing.T) {
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
+
+	if report.ReceivedPoints[expectedPlayerID] != expectedScore {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore, report.ReceivedPoints[expectedPlayerID])
+	}
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
+func TestScoreAfterJoinNotClosed(t *testing.T) {
+	var expectedScore uint32 = 0
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID elements.ID = 1
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
+	b.Position = elements.NewPosition(2, 2)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
+
+	report := manager.ScoreCities(false)
+
+	if report.ReceivedPoints[expectedPlayerID] != expectedScore {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore, report.ReceivedPoints[expectedPlayerID])
+	}
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
+func TestForceScoreAfterJoinNotClosedWithShield(t *testing.T) {
+	var expectedScore uint32 = 8
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID elements.ID = 1
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.Position = elements.NewPosition(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
+	b.Position = elements.NewPosition(2, 2)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	c.Position = elements.NewPosition(1, 2)
+	manager.UpdateCities(c)
+
+	report := manager.ScoreCities(true)
 
 	if report.ReceivedPoints[expectedPlayerID] != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, report.ReceivedPoints[expectedPlayerID])

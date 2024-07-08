@@ -7,6 +7,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
@@ -180,5 +181,67 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	score := scoreReport.ReceivedPoints[expectedPlayerID]
 	if score != expectedScore {
 		t.Fatalf("expected %#v, got %#v instead", expectedScore, score)
+	}
+}
+
+func TestScoreThreeTilesPlusShield(t *testing.T) {
+	var expectedScore uint32 = 8
+	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
+	var expectedPlayerID elements.ID = 1
+
+	shield := false
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	aFeatures := []elements.PlacedFeature{}
+	for _, tmp := range a.Features {
+		if tmp.FeatureType == feature.City {
+			aFeatures = append(aFeatures, tmp)
+			if tmp.ModifierType == modifier.Shield {
+				shield = true
+			}
+		}
+	}
+	city := NewCity(elements.NewPosition(1, 1), aFeatures, shield)
+	shield = false
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
+	bFeatures := []elements.PlacedFeature{}
+	for _, tmp := range b.Features {
+		if tmp.FeatureType == feature.City {
+			bFeatures = append(bFeatures, tmp)
+			if tmp.ModifierType == modifier.Shield {
+				shield = true
+			}
+		}
+	}
+	city.AddTile(elements.NewPosition(2, 2), bFeatures, shield)
+
+	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	cFeatures := []elements.PlacedFeature{}
+	for _, tmp := range c.Features {
+		if tmp.FeatureType == feature.City {
+			cFeatures = append(cFeatures, tmp)
+			if tmp.ModifierType == modifier.Shield {
+				shield = true
+			}
+		}
+	}
+	city.AddTile(elements.NewPosition(1, 2), cFeatures, shield)
+
+	report := city.GetScoreReport()
+	meeples, ok := report.ReturnedMeeples[expectedPlayerID]
+	if !ok {
+		t.Fatalf("expected player id not in the map")
+	}
+
+	numMeeples := meeples[expectedMeepleType]
+	if numMeeples != 1 {
+		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
+	}
+
+	if report.ReceivedPoints[expectedPlayerID] != expectedScore {
+		t.Fatalf("expected %#v, got %#v instead", expectedScore, report.ReceivedPoints[expectedPlayerID])
 	}
 }
