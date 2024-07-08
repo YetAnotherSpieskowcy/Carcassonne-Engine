@@ -232,7 +232,7 @@ func TestScoreAfterJoin(t *testing.T) {
 }
 
 func TestScoreAfterJoinNotClosed(t *testing.T) {
-	var expectedScore uint32 = 0
+	var expectedScore uint32
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedPlayerID elements.ID = 1
 
