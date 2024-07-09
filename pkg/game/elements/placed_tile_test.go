@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestPositionMarshalTextWithPositiveCoords(t *testing.T) {
@@ -69,11 +69,7 @@ func TestPositionUnmarshalTextWithNegativeCoords(t *testing.T) {
 }
 
 func TestTilePlacementRotate(t *testing.T) {
-	move := TilePlacement{
-		Tile: tiletemplates.SingleCityEdgeNoRoads(),
-		Pos:  NewPosition(0, 1),
-	}
-
+	move := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	defer func() {
 		if r := recover(); r == nil {
 			t.Fatal("expected TilePlacement.Rotate() to panic")
@@ -83,17 +79,38 @@ func TestTilePlacementRotate(t *testing.T) {
 	move.Rotate(1)
 }
 
-func TestNewStartingTile(t *testing.T) {
-	tileSet := tilesets.StandardTileSet()
-	actual := NewStartingTile(tileSet)
+func TestPlacedTileFeatureGet(t *testing.T) {
+	move := ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	move.Monastery().Meeple.MeepleType = NormalMeeple
+	move.Monastery().Meeple.PlayerID = 1
 
-	expectedTile := tileSet.StartingTile
-	if !actual.Tile.Equals(expectedTile) {
-		t.Fatalf("expected %#v, got %#v instead", expectedTile, actual.Tile)
+	expectedMonastery := tiletemplates.MonasteryWithSingleRoad().Monastery()
+
+	if move.Monastery().Feature != *expectedMonastery {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Feature, *expectedMonastery)
+	}
+	if move.Monastery().Meeple.MeepleType != NormalMeeple {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Meeple.MeepleType, NormalMeeple)
+	}
+	if MeepleType(move.Monastery().Meeple.PlayerID) != 1 {
+		t.Fatalf("got\n %#v \nshould be \n%#v", move.Monastery().Meeple.PlayerID, 1)
+	}
+}
+
+func TestGetCityFeatures(t *testing.T) {
+	var expectedLen = 1
+	var expectedSide side.Side = side.Top
+
+	tile := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+
+	cityFeatures := tile.GetCityFeatures()
+
+	if len(cityFeatures) != expectedLen {
+		t.Fatalf("expected %#v, got %#v instead", expectedLen, len(cityFeatures))
 	}
 
-	expectedPos := NewPosition(0, 0)
-	if actual.Pos != expectedPos {
-		t.Fatalf("expected %#v, got %#v instead", expectedPos, actual.Pos)
+	actualSide := cityFeatures[0].Sides
+	if actualSide != expectedSide {
+		t.Fatalf("expected side %#v, got %#v instead", expectedSide, actualSide)
 	}
 }

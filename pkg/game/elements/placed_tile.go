@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -26,17 +27,15 @@ func (pos Position) Y() int16 {
 	return pos.y
 }
 
-func (pos Position) MarshalText() ([]byte, error) {
-	return fmt.Appendf([]byte{}, "%v,%v", pos.x, pos.y), nil
+func (pos Position) Add(other Position) Position {
+	return NewPosition(pos.x+other.x, pos.y+other.y)
 }
 
-func (pos *Position) UnmarshalText(text []byte) error {
-	_, err := fmt.Sscanf(string(text), "%v,%v", &pos.x, &pos.y)
-	return err
-}
-
-// Returns the position neighbouring (0,0) from the given side
-// Secondary sides return the same thing as their respective primary sides (e.g.: TopRight, TopLeft, Top behave exactly the same)
+/*
+Returns relative position directed by the side.
+Caution! It is supposed to be used with side directing only one cardinal direction (or two edges connected by corner)!
+Otherwise it will return undesired value!
+*/
 func PositionFromSide(side sideMod.Side) Position {
 	switch {
 	case side&sideMod.Top != 0:
@@ -53,6 +52,15 @@ func PositionFromSide(side sideMod.Side) Position {
 	}
 }
 
+func (pos Position) MarshalText() ([]byte, error) {
+	return fmt.Appendf([]byte{}, "%v,%v", pos.x, pos.y), nil
+}
+
+func (pos *Position) UnmarshalText(text []byte) error {
+	_, err := fmt.Sscanf(string(text), "%v,%v", &pos.x, &pos.y)
+	return err
+}
+
 func AddPositions(pos1 Position, pos2 Position) Position {
 	return Position{
 		x: pos1.x + pos2.x,
@@ -64,51 +72,91 @@ func AddPositions(pos1 Position, pos2 Position) Position {
 type MeepleType uint8
 
 const (
-	NormalMeeple MeepleType = iota
+	NoneMeeple MeepleType = iota
+	NormalMeeple
 
 	MeepleTypeCount int = iota
 )
 
-// represents a legal position (and rotation) of a tile on the board
-type TilePlacement struct {
-	tiles.Tile
-	Pos Position
+type Meeple struct {
+	MeepleType
+	PlayerID ID
 }
 
-func (placement TilePlacement) Rotate(_ uint) TilePlacement {
-	panic("Rotate() not supported on TilePlacement")
+type TileWithMeeple struct {
+	Features  []PlacedFeature
+	HasShield bool
 }
 
-// represents a legal position of a meeple on the tile
-type MeeplePlacement struct {
-	Side sideMod.Side
-	Type MeepleType
+func (placedTile PlacedTile) Rotate(_ uint) PlacedTile {
+	panic("Rotate() not supported on PlacedTile")
+}
+
+type PlacedFeature struct {
+	featureMod.Feature
+	Meeple
+}
+
+func ToPlacedTile(tile tiles.Tile) PlacedTile {
+	features := []PlacedFeature{}
+	for _, n := range tile.Features {
+		features = append(features, PlacedFeature{n, Meeple{NoneMeeple, NonePlayer}})
+	}
+	return PlacedTile{
+		TileWithMeeple: TileWithMeeple{
+			Features: features,
+		},
+		Position: NewPosition(0, 0),
+	}
+}
+
+func ToTile(tile PlacedTile) tiles.Tile {
+	features := []featureMod.Feature{}
+	for _, n := range tile.Features {
+		features = append(features, n.Feature)
+	}
+	return tiles.Tile{
+		Features: features,
+	}
+}
+
+func (placedTile PlacedTile) GetCityFeatures() []PlacedFeature {
+	cityFeatures := []PlacedFeature{}
+	for _, f := range placedTile.Features {
+		if f.FeatureType == featureMod.City {
+			cityFeatures = append(cityFeatures, f)
+		}
+	}
+	return cityFeatures
 }
 
 // represents a legal move (tile placement and meeple placement) on the board
-type LegalMove struct {
-	TilePlacement
-	// LegalMove always has a `Meeple`. Whether it is actually placed
-	// is determined by `MeeplePlacement.Side` which will be `None`, if it isn't.
-	Meeple MeeplePlacement
-}
-
-// represents a tile placed on the board, including the player who placed it
 type PlacedTile struct {
-	LegalMove
-	// Although the player field is always set, it technically is only crucial to
-	// the game state *if* a meeple was placed.
-	// For starting tile, Player with ID 0 is used.
-	Player Player
+	TileWithMeeple
+	Position Position
 }
 
 func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
-	return PlacedTile{
-		LegalMove: LegalMove{
-			TilePlacement: TilePlacement{
-				Tile: tileSet.StartingTile,
-				Pos:  NewPosition(0, 0),
-			},
-		},
+	return ToPlacedTile(tileSet.StartingTile)
+}
+
+func (placedTile PlacedTile) Monastery() *PlacedFeature {
+	for i, feature := range placedTile.Features {
+		if feature.FeatureType == featureMod.Monastery {
+			return &placedTile.Features[i]
+		}
 	}
+	return nil
+}
+
+/*
+Return the feature of certain type on desired side
+*/
+func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *PlacedFeature {
+	for i, feature := range placedTile.TileWithMeeple.Features {
+		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
+			return &placedTile.TileWithMeeple.Features[i]
+		}
+	}
+	return nil
 }

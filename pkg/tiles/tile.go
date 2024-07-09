@@ -1,29 +1,24 @@
 package tiles
 
 import (
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
+	"slices"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 /*
 Immutable object
 */
 type Tile struct {
-	Features  []featureMod.Feature
-	HasShield bool
-	Building  building.Building
+	Features []featureMod.Feature
 }
 
 func (tile Tile) Equals(other Tile) bool {
 outer:
 	for rotations := range uint(4) {
 		rotated := other.Rotate(rotations)
-		if tile.HasShield != rotated.HasShield {
-			continue
-		}
-		if tile.Building != rotated.Building {
-			continue
-		}
 		if len(tile.Features) != len(rotated.Features) {
 			continue
 		}
@@ -37,7 +32,7 @@ outer:
 	return false
 }
 
-func (tile *Tile) Cities() []featureMod.Feature {
+func (tile Tile) Cities() []featureMod.Feature {
 	var cities []featureMod.Feature
 	for _, feature := range tile.Features {
 		if feature.FeatureType == featureMod.City {
@@ -47,7 +42,7 @@ func (tile *Tile) Cities() []featureMod.Feature {
 	return cities
 }
 
-func (tile *Tile) Roads() []featureMod.Feature {
+func (tile Tile) Roads() []featureMod.Feature {
 	var roads []featureMod.Feature
 	for _, feature := range tile.Features {
 		if feature.FeatureType == featureMod.Road {
@@ -57,7 +52,7 @@ func (tile *Tile) Roads() []featureMod.Feature {
 	return roads
 }
 
-func (tile *Tile) Fields() []featureMod.Feature {
+func (tile Tile) Fields() []featureMod.Feature {
 	var fields []featureMod.Feature
 	for _, feature := range tile.Features {
 		if feature.FeatureType == featureMod.Field {
@@ -67,6 +62,18 @@ func (tile *Tile) Fields() []featureMod.Feature {
 	return fields
 }
 
+func (tile Tile) Monastery() *featureMod.Feature {
+	for i, feature := range tile.Features {
+		if feature.FeatureType == featureMod.Monastery {
+			return &tile.Features[i]
+		}
+	}
+	return nil
+}
+
+/*
+Rotate tile clockwise
+*/
 func (tile Tile) Rotate(rotations uint) Tile {
 	rotations %= 4
 	if rotations == 0 {
@@ -79,12 +86,46 @@ func (tile Tile) Rotate(rotations uint) Tile {
 		newFeatures = append(
 			newFeatures,
 			featureMod.Feature{
-				FeatureType: feature.FeatureType,
-				Sides:       feature.Sides.Rotate(rotations),
+				FeatureType:  feature.FeatureType,
+				ModifierType: feature.ModifierType,
+				Sides:        feature.Sides.Rotate(rotations),
 			},
 		)
 	}
 
 	tile.Features = newFeatures
 	return tile
+}
+
+/*
+Return the feature of certain type on desired side
+*/
+func (tile *Tile) GetFeatureAtSide(sideToCheck sideMod.Side, featureType feature.Type) *featureMod.Feature {
+	for _, feature := range tile.Features {
+		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
+			return &feature
+		}
+	}
+	return nil
+}
+
+// Returns all possible rotations of the input tile,
+// while ensuring that no duplicates are included in the result.
+func (tile Tile) GetTileRotations() []Tile {
+	rotations := []Tile{tile}
+outer:
+	for range 3 {
+		tile = tile.Rotate(1)
+	inner:
+		for _, t := range rotations {
+			for _, feature := range tile.Features {
+				if !slices.Contains(t.Features, feature) {
+					break inner
+				}
+			}
+			break outer
+		}
+		rotations = append(rotations, tile)
+	}
+	return rotations
 }

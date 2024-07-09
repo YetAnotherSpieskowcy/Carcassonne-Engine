@@ -9,23 +9,17 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testing.T) {
 	player := player.New(1)
-	input := []elements.LegalMove{
-		test.GetTestPlacedTile().LegalMove,
-		test.GetTestPlacedTileWithMeeple(
-			elements.MeeplePlacement{Side: side.None},
-		).LegalMove,
-	}
-	expected := input
+	input := []elements.PlacedTile{test.GetTestPlacedTile()}
+	expected := input[0]
 
 	actual := player.GetEligibleMovesFrom(input)
 
-	if !reflect.DeepEqual(expected, actual) {
+	if !reflect.DeepEqual(expected, actual[0]) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
@@ -33,13 +27,8 @@ func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testin
 func TestPlayerGetEligibleMovesFromReturnsMovesWithoutMeepleWhenPlayerHasNoMeeples(t *testing.T) {
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
-	input := []elements.LegalMove{
-		test.GetTestPlacedTile().LegalMove,
-		test.GetTestPlacedTileWithMeeple(
-			elements.MeeplePlacement{Side: side.None},
-		).LegalMove,
-	}
-	expected := []elements.LegalMove{input[1]}
+	input := []elements.PlacedTile{test.GetTestPlacedTile()}
+	expected := []elements.PlacedTile{input[0]}
 
 	actual := player.GetEligibleMovesFrom(input)
 
@@ -51,10 +40,12 @@ func TestPlayerGetEligibleMovesFromReturnsMovesWithoutMeepleWhenPlayerHasNoMeepl
 func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	board := game.NewBoard(tilesets.StandardTileSet())
 	tile := test.GetTestPlacedTile()
-	player := tile.Player
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
+	tile.Features[0].MeepleType = elements.NormalMeeple
+	tile.Features[0].PlayerID = player.ID()
 
-	_, err := player.PlaceTile(board, tile.LegalMove)
+	_, err := player.PlaceTile(board, tile)
 	if !errors.Is(err, elements.ErrNoMeepleAvailable) {
 		t.Fatalf("expected NoMeepleAvailable error type, got %#v instead", err)
 	}
@@ -71,9 +62,9 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 	}
 
 	tile := test.GetTestPlacedTile()
-	player := tile.Player
+	player := player.New(1)
 
-	actualScoreReport, err := player.PlaceTile(board, tile.LegalMove)
+	actualScoreReport, err := player.PlaceTile(board, tile)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -90,11 +81,13 @@ func TestPlayerPlaceTileCallsBoardPlaceTile(t *testing.T) {
 func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 	board := &test.BoardMock{}
 	tile := test.GetTestPlacedTile()
-	player := tile.Player
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
+	tile.Features[0].MeepleType = elements.NormalMeeple
+	tile.Features[0].PlayerID = player.ID()
 
-	_, err := player.PlaceTile(board, tile.LegalMove)
+	_, err := player.PlaceTile(board, tile)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -107,12 +100,13 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 
 func TestPlayerPlaceTileKeepsMeepleCountWhenNoMeeplePlaced(t *testing.T) {
 	board := &test.BoardMock{}
-	tile := test.GetTestPlacedTileWithMeeple(elements.MeeplePlacement{Side: side.None})
-	player := tile.Player
+	tile := test.GetTestPlacedTile()
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
+
 	expectedMeepleCount := uint8(2)
 
-	_, err := player.PlaceTile(board, tile.LegalMove)
+	_, err := player.PlaceTile(board, tile)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -130,11 +124,11 @@ func TestPlayerPlaceTileKeepsMeepleCountWhenErrorReturned(t *testing.T) {
 		},
 	}
 	tile := test.GetTestPlacedTile()
-	player := tile.Player
+	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(2)
 
-	_, err := player.PlaceTile(board, tile.LegalMove)
+	_, err := player.PlaceTile(board, tile)
 	if err == nil {
 		t.Fatal("expected error to occur")
 	}
@@ -162,7 +156,7 @@ func TestPlayerScoreUpdatesAfterSet(t *testing.T) {
 }
 
 func TestPlayerNewPlayerSetsId(t *testing.T) {
-	expectedID := uint8(6)
+	expectedID := elements.ID(6)
 	player := player.New(expectedID)
 	actualID := player.ID()
 	if actualID != expectedID {

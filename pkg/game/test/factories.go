@@ -2,9 +2,7 @@ package test
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
@@ -12,36 +10,36 @@ func GetTestTile() tiles.Tile {
 	return tiletemplates.SingleCityEdgeNoRoads().Rotate(2)
 }
 
-func GetTestTilePlacement() elements.TilePlacement {
-	return elements.TilePlacement{
-		Tile: GetTestTile(),
-		Pos:  elements.NewPosition(0, 1),
-	}
-}
-
 func GetTestPlacedTile() elements.PlacedTile {
-	return elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			TilePlacement: GetTestTilePlacement(),
-			Meeple:        elements.MeeplePlacement{Side: side.Bottom},
-		},
-		Player: player.New(1),
-	}
+	tile := elements.ToPlacedTile(GetTestTile())
+	tile.Position = elements.NewPosition(0, 1)
+	return tile
 }
-
-func GetTestPlacedTileWithMeeple(meeple elements.MeeplePlacement) elements.PlacedTile {
-	return elements.PlacedTile{
-		LegalMove: elements.LegalMove{
-			TilePlacement: GetTestTilePlacement(),
-			Meeple:        meeple,
-		},
-		Player: player.New(1),
-	}
-}
-
 func GetTestScoreReport() elements.ScoreReport {
 	return elements.ScoreReport{
-		ReceivedPoints:  map[uint8]uint32{0: 5},
-		ReturnedMeeples: map[uint8][]uint8{},
+		ReceivedPoints:  map[elements.ID]uint32{0: 5},
+		ReturnedMeeples: map[elements.ID][]uint8{},
+	}
+}
+
+func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
+	var placedFeatures []elements.PlacedFeature
+
+	// convert features to placedFeature
+	for _, feature := range tileTemplate.Features {
+		placedFeatures = append(placedFeatures, elements.PlacedFeature{
+			Feature: feature,
+			Meeple: elements.Meeple{
+				MeepleType: elements.NoneMeeple,
+				PlayerID:   elements.NonePlayer},
+		})
+	}
+
+	return elements.PlacedTile{
+		TileWithMeeple: elements.TileWithMeeple{
+			Features:  placedFeatures,
+			HasShield: false,
+		},
+		Position: elements.NewPosition(0, 0),
 	}
 }

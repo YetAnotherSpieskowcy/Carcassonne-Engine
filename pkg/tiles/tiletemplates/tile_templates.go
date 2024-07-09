@@ -2,8 +2,8 @@ package tiletemplates
 
 import (
 	tiles "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/building"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -24,9 +24,10 @@ func MonasteryWithoutRoads() tiles.Tile {
 					side.BottomLeftEdge |
 					side.BottomRightEdge,
 			},
+			{
+				FeatureType: feature.Monastery,
+			},
 		},
-		HasShield: false,
-		Building:  building.Monastery,
 	}
 }
 
@@ -54,9 +55,10 @@ func MonasteryWithSingleRoad() tiles.Tile {
 					side.BottomLeftEdge |
 					side.BottomRightEdge,
 			},
+			{
+				FeatureType: feature.Monastery,
+			},
 		},
-		HasShield: false,
-		Building:  building.Monastery,
 	}
 }
 
@@ -86,8 +88,6 @@ func StraightRoads() tiles.Tile {
 					side.RightTopEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -118,8 +118,6 @@ func RoadsTurn() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -160,8 +158,6 @@ func TCrossRoad() tiles.Tile {
 					side.RightTopEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -205,8 +201,6 @@ func XCrossRoad() tiles.Tile {
 					side.RightTopEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -230,8 +224,6 @@ func SingleCityEdgeNoRoads() tiles.Tile {
 					side.BottomLeftEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -263,8 +255,6 @@ func SingleCityEdgeStraightRoads() tiles.Tile {
 					side.RightTopEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -296,8 +286,6 @@ func SingleCityEdgeLeftRoadTurn() tiles.Tile {
 					side.LeftBottomEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -329,8 +317,6 @@ func SingleCityEdgeRightRoadTurn() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -372,8 +358,6 @@ func SingleCityEdgeCrossRoad() tiles.Tile {
 					side.LeftBottomEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -399,8 +383,6 @@ func TwoCityEdgesUpAndDownNotConnected() tiles.Tile {
 					side.RightBottomEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -426,8 +408,6 @@ func TwoCityEdgesCornerNotConnected() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -453,8 +433,6 @@ func TwoCityEdgesUpAndDownConnected() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -465,7 +443,8 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
 				Sides: side.Top |
 					side.Bottom,
 			},
@@ -480,8 +459,6 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: true,
-		Building:  building.None,
 	}
 }
 
@@ -504,8 +481,6 @@ func TwoCityEdgesCornerConnected() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -517,7 +492,8 @@ func TwoCityEdgesCornerConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
 				Sides: side.Top |
 					side.Right,
 			},
@@ -529,8 +505,6 @@ func TwoCityEdgesCornerConnectedShield() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: true,
-		Building:  building.None,
 	}
 }
 
@@ -561,8 +535,6 @@ func TwoCityEdgesCornerConnectedRoadTurn() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -573,7 +545,8 @@ func TwoCityEdgesCornerConnectedRoadTurnShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
 				Sides: side.Top |
 					side.Right,
 			},
@@ -593,8 +566,6 @@ func TwoCityEdgesCornerConnectedRoadTurnShield() tiles.Tile {
 					side.BottomRightEdge,
 			},
 		},
-		HasShield: true,
-		Building:  building.None,
 	}
 }
 
@@ -616,8 +587,6 @@ func ThreeCityEdgesConnected() tiles.Tile {
 					side.BottomLeftEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -628,7 +597,8 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
 				Sides: side.Top |
 					side.Right |
 					side.Left,
@@ -639,8 +609,6 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 					side.BottomLeftEdge,
 			},
 		},
-		HasShield: true,
-		Building:  building.None,
 	}
 }
 
@@ -669,8 +637,6 @@ func ThreeCityEdgesConnectedRoad() tiles.Tile {
 				Sides:       side.BottomLeftEdge,
 			},
 		},
-		HasShield: false,
-		Building:  building.None,
 	}
 }
 
@@ -681,7 +647,8 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
 				Sides: side.Top |
 					side.Right |
 					side.Left,
@@ -699,8 +666,6 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 				Sides:       side.BottomLeftEdge,
 			},
 		},
-		HasShield: true,
-		Building:  building.None,
 	}
 }
 
@@ -711,14 +676,30 @@ func FourCityEdgesConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{
 			{
-				FeatureType: feature.City,
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
 				Sides: side.Top |
 					side.Right |
 					side.Left |
 					side.Bottom,
 			},
 		},
-		HasShield: true,
-		Building:  building.None,
+	}
+}
+
+/*
+returns tiles.Tile consisting of only a single field. (Unused in game, useful in testing)
+*/
+func TestOnlyField() tiles.Tile {
+	return tiles.Tile{
+		Features: []feature.Feature{
+			{
+				FeatureType: feature.Field,
+				Sides: side.Top |
+					side.Right |
+					side.Left |
+					side.Bottom,
+			},
+		},
 	}
 }
