@@ -73,7 +73,7 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey { // todo n
 				mirroredSide := side.Mirror()
 				for _, feature := range tile.Features {
 					if feature.FeatureType == featureMod.Field && feature.Sides&mirroredSide != 0 {
-						neighbours = append(neighbours, fieldKey{feature: feature, position: neighbourPosition})
+						neighbours = append(neighbours, fieldKey{feature: feature.Feature, position: neighbourPosition})
 						break
 					}
 				}
