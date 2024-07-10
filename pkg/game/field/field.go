@@ -7,51 +7,54 @@ import (
 )
 
 type fieldKey struct {
-	feature  featureMod.Feature
+	feature  elements.PlacedFeature
 	position elements.Position
-}
-
-// todo would be nice to move this to some "utilities" package maybe? todo
-func GetAny[K comparable, V any](m map[K]V) (K, V, bool) {
-	for key, value := range m {
-		return key, value, true
-	}
-	return *new(K), *new(V), false
 }
 
 // Represents a field on the board
 type Field struct {
-	features map[fieldKey]struct{}
+	features map[fieldKey]struct{} // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
+	// todo neighbouring cities
 }
 
-func New(feature featureMod.Feature, position elements.Position) Field {
+func NewField(feature elements.PlacedFeature, position elements.Position) Field {
 	features := map[fieldKey]struct{}{
 		{feature: feature, position: position}: {},
 	}
 	return Field{features: features}
 }
 
+func (field *Field) Features() map[fieldKey]struct{} { // todo maybe delete this and change field.features to public?
+	return field.features
+}
+
 // Expands this field to maximum possible size - like flood fill
-func (field *Field) Expand(board elements.Board) { // todo not sure if board should be an argument..
+// todo should find cities as well, probably
+func (field *Field) Expand(board elements.Board) {
 	newFeatures := map[fieldKey]struct{}{}
+
 	for len(field.features) != 0 {
 		element, _, _ := GetAny(field.features)
 
-		if _, ok := newFeatures[element]; !ok {
+		_, exists := newFeatures[element]
+		if !exists {
 			newFeatures[element] = struct{}{}
-
 			for _, neighbour := range findNeighbours(element, board) {
-				if _, ok := newFeatures[neighbour]; !ok {
+				_, exists := newFeatures[neighbour]
+				if !exists {
 					field.features[neighbour] = struct{}{}
-					newFeatures[neighbour] = struct{}{}
 				}
 			}
+
 		}
 		delete(field.features, element)
 	}
+	field.features = newFeatures
 }
 
-func findNeighbours(field fieldKey, board elements.Board) []fieldKey { // todo not sure if board should be an argument..
+// Returns a slice of fieldKey elements containing all features neighbouring a given fieldKey (feature and position)
+// The slice may contain duplicates in some cases (todo?)
+func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 	sides := []side.Side{
 		side.TopLeftEdge,
 		side.TopRightEdge,
@@ -68,18 +71,17 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey { // todo n
 	for _, side := range sides {
 		if field.feature.Sides&side != 0 {
 			neighbourPosition := elements.AddPositions(field.position, elements.PositionFromSide(side))
-			tile, ok := board.GetTileAt(neighbourPosition)
-			if ok {
-				mirroredSide := side.Mirror()
-				for _, feature := range tile.Features {
-					if feature.FeatureType == featureMod.Field && feature.Sides&mirroredSide != 0 {
-						neighbours = append(neighbours, fieldKey{feature: feature.Feature, position: neighbourPosition})
-						break
-					}
-				}
-				panic("No matching field found on adjacent tile!")
-			}
 
+			tile, tileExists := board.GetTileAt(neighbourPosition)
+			if tileExists {
+				mirroredSide := side.Mirror()
+
+				feature := tile.GetPlacedFeatureAtSide(mirroredSide, featureMod.Field)
+				if feature == nil {
+					panic("No matching field found on adjacent tile!") // when a field is directly touching another feature (e.g. a city). Should never happen
+				}
+				neighbours = append(neighbours, fieldKey{feature: *feature, position: neighbourPosition})
+			}
 		}
 	}
 	return neighbours
@@ -91,3 +93,13 @@ Assumptions:
  - if the field feature doesn't have any sides (i.e. its sides==side.None), it neighbours ALL cities on this tile
  - in other cases, fields neighbour all cities they share a common tile corner with
 */
+
+// todo would be nice to move this to some "utilities" package maybe? todo
+// Retrieves key and value from a map, and a bool indicating if the map is empty.
+// In case of multi-element maps, it is not specified which element is returned.
+func GetAny[K comparable, V any](m map[K]V) (K, V, bool) {
+	for key, value := range m {
+		return key, value, true
+	}
+	return *new(K), *new(V), false
+}

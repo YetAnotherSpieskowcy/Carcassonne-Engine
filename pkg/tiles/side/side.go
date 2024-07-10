@@ -33,6 +33,8 @@ const (
 	Left   Side = 0b0000_0011
 
 	None Side = 0b0000_0000
+
+	All Side = 0b1111_1111
 )
 
 func (side Side) String() string {
