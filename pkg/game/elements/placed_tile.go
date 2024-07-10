@@ -153,9 +153,9 @@ func (placedTile PlacedTile) Monastery() *PlacedFeature {
 Return the feature of certain type on desired side
 */
 func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *PlacedFeature {
-	for i, feature := range placedTile.TileWithMeeple.Features {
+	for i, feature := range placedTile.Features {
 		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
-			return &placedTile.TileWithMeeple.Features[i]
+			return &placedTile.Features[i]
 		}
 	}
 	return nil
