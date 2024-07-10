@@ -93,6 +93,15 @@ func (game *Game) CurrentPlayer() elements.Player {
 	return game.players[game.currentPlayer]
 }
 
+func (game *Game) GetPlayerByID(playerID elements.ID) elements.Player {
+	for _, player := range game.players {
+		if player.ID() == playerID {
+			return player
+		}
+	}
+	panic("Player with desired ID doesn't exist!")
+}
+
 func (game *Game) PlayerCount() int {
 	return len(game.players)
 }
