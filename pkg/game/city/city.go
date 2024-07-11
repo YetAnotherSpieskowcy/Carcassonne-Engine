@@ -40,7 +40,7 @@ func (city *City) checkCompleted() bool {
 			mask := side.Top
 			for range 4 {
 				if sides&mask == mask {
-					_, ok := city.GetFeaturesFromTile(pos.Add(position.PositionFromSide(mask)))
+					_, ok := city.GetFeaturesFromTile(pos.Add(position.FromSide(mask)))
 					if !ok {
 						city.completed = false
 						break

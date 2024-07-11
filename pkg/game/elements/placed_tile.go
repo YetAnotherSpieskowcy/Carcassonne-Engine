@@ -46,7 +46,7 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 		TileWithMeeple: TileWithMeeple{
 			Features: features,
 		},
-		Position: position.NewPosition(0, 0),
+		Position: position.New(0, 0),
 	}
 }
 

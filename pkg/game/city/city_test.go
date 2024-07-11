@@ -15,7 +15,7 @@ import (
 func TestNewAndIsCompleted(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	cities := a.GetCityFeatures()
-	pos := position.NewPosition(1, 1)
+	pos := position.New(1, 1)
 
 	city := NewCity(pos, cities, false)
 
@@ -28,7 +28,7 @@ func TestNewAndIsCompleted(t *testing.T) {
 func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	cities := a.GetCityFeatures()
-	pos := position.NewPosition(1, 1)
+	pos := position.New(1, 1)
 
 	city := NewCity(pos, cities, false)
 
@@ -51,11 +51,11 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
 	aFeatures := a.GetCityFeatures()
-	city := NewCity(position.NewPosition(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures, false)
 
 	bFeatures := b.GetCityFeatures()
 
-	pos := position.NewPosition(1, 2)
+	pos := position.New(1, 2)
 	city.AddTile(pos, bFeatures, false)
 
 	features, ok := city.GetFeaturesFromTile(pos)
@@ -78,11 +78,11 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
 	aFeatures := a.GetCityFeatures()
-	city := NewCity(position.NewPosition(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures, false)
 
 	bFeatures := b.GetCityFeatures()
 
-	pos := position.NewPosition(1, 2)
+	pos := position.New(1, 2)
 	city.AddTile(pos, bFeatures, false)
 
 	var expected = true
@@ -98,11 +98,11 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 
 	aFeatures := a.GetCityFeatures()
-	city := NewCity(position.NewPosition(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures, false)
 
 	bFeatures := b.GetCityFeatures()
 
-	pos := position.NewPosition(1, 2)
+	pos := position.New(1, 2)
 	city.AddTile(pos, bFeatures, false)
 
 	var expected = false
@@ -128,7 +128,7 @@ func TestScoreOneTileCity(t *testing.T) {
 			aFeatures = append(aFeatures, tmp)
 		}
 	}
-	city := NewCity(position.NewPosition(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures, false)
 
 	scoreReport := city.GetScoreReport()
 	meeples, ok := scoreReport.ReturnedMeeples[expectedPlayerID]
@@ -166,7 +166,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 			}
 		}
 	}
-	city := NewCity(position.NewPosition(1, 1), aFeatures, shield)
+	city := NewCity(position.New(1, 1), aFeatures, shield)
 
 	scoreReport := city.GetScoreReport()
 	meeples, ok := scoreReport.ReturnedMeeples[expectedPlayerID]
@@ -204,7 +204,7 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 			}
 		}
 	}
-	city := NewCity(position.NewPosition(1, 1), aFeatures, shield)
+	city := NewCity(position.New(1, 1), aFeatures, shield)
 	shield = false
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
@@ -217,7 +217,7 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 			}
 		}
 	}
-	city.AddTile(position.NewPosition(2, 2), bFeatures, shield)
+	city.AddTile(position.New(2, 2), bFeatures, shield)
 
 	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	cFeatures := []elements.PlacedFeature{}
@@ -229,7 +229,7 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 			}
 		}
 	}
-	city.AddTile(position.NewPosition(1, 2), cFeatures, shield)
+	city.AddTile(position.New(1, 2), cFeatures, shield)
 
 	report := city.GetScoreReport()
 	meeples, ok := report.ReturnedMeeples[expectedPlayerID]

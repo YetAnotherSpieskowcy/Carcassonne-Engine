@@ -35,7 +35,7 @@ func TestMultipleStraightRoadsPlacement(t *testing.T) {
 	}
 
 	ptile := elements.ToPlacedTile(tiletemplates.StraightRoads())
-	ptile.Position = position.NewPosition(1, 0)
+	ptile.Position = position.New(1, 0)
 	_, err := board.PlaceTile(ptile)
 	if err != nil {
 		t.Fail()
@@ -48,7 +48,7 @@ func TestMultipleStraightRoadsPlacement(t *testing.T) {
 	}
 
 	ptile = elements.ToPlacedTile(tiletemplates.StraightRoads())
-	ptile.Position = position.NewPosition(2, 0)
+	ptile.Position = position.New(2, 0)
 	_, err = board.PlaceTile(ptile)
 	if err != nil {
 		t.Fail()

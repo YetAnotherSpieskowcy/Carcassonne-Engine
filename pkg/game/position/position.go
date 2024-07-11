@@ -12,7 +12,7 @@ type Position struct {
 	y int16
 }
 
-func NewPosition(x int16, y int16) Position {
+func New(x int16, y int16) Position {
 	return Position{x, y}
 }
 
@@ -25,7 +25,7 @@ func (pos Position) Y() int16 {
 }
 
 func (pos Position) Add(other Position) Position {
-	return NewPosition(pos.x+other.x, pos.y+other.y)
+	return New(pos.x+other.x, pos.y+other.y)
 }
 
 /*
@@ -33,19 +33,19 @@ Returns relative position directed by the side.
 Caution! It is supposed to be used with side directing only one cardinal direction (or two edges connected by corner)!
 Otherwise it will return undesired value!
 */
-func PositionFromSide(side sideMod.Side) Position {
+func FromSide(side sideMod.Side) Position {
 	switch {
 	case side&sideMod.Top != 0:
-		return NewPosition(0, 1)
+		return New(0, 1)
 	case side&sideMod.Right != 0:
-		return NewPosition(1, 0)
+		return New(1, 0)
 	case side&sideMod.Left != 0:
-		return NewPosition(-1, 0)
+		return New(-1, 0)
 	case side&sideMod.Bottom != 0:
-		return NewPosition(0, -1)
+		return New(0, -1)
 
 	default:
-		return NewPosition(0, 0)
+		return New(0, 0)
 	}
 }
 

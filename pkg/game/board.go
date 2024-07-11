@@ -44,13 +44,13 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 		tileSet: tileSet,
 		tiles:   tiles,
 		tilesMap: map[positionMod.Position]elements.PlacedTile{
-			positionMod.NewPosition(0, 0): startingTile,
+			positionMod.New(0, 0): startingTile,
 		},
 		placeablePositions: []positionMod.Position{
-			positionMod.NewPosition(0, 1),
-			positionMod.NewPosition(1, 0),
-			positionMod.NewPosition(0, -1),
-			positionMod.NewPosition(-1, 0),
+			positionMod.New(0, 1),
+			positionMod.New(1, 0),
+			positionMod.New(0, -1),
+			positionMod.New(-1, 0),
 		},
 		cityManager: city.NewCityManager(),
 	}
@@ -92,13 +92,13 @@ func (board *board) testSide(position positionMod.Position, expectedSide side.Si
 	var ok bool
 	switch expectedSide {
 	case side.Bottom:
-		tile, ok = board.tilesMap[positionMod.NewPosition(position.X(), position.Y()+1)]
+		tile, ok = board.tilesMap[positionMod.New(position.X(), position.Y()+1)]
 	case side.Top:
-		tile, ok = board.tilesMap[positionMod.NewPosition(position.X(), position.Y()-1)]
+		tile, ok = board.tilesMap[positionMod.New(position.X(), position.Y()-1)]
 	case side.Left:
-		tile, ok = board.tilesMap[positionMod.NewPosition(position.X()+1, position.Y())]
+		tile, ok = board.tilesMap[positionMod.New(position.X()+1, position.Y())]
 	case side.Right:
-		tile, ok = board.tilesMap[positionMod.NewPosition(position.X()-1, position.Y())]
+		tile, ok = board.tilesMap[positionMod.New(position.X()-1, position.Y())]
 	}
 	if !ok {
 		return true
@@ -200,10 +200,10 @@ func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	}
 	board.placeablePositions = slices.Delete(board.placeablePositions, tileIndex, tileIndex+1)
 	validNewPositions := []positionMod.Position{
-		positionMod.NewPosition(tile.Position.X()+1, tile.Position.Y()),
-		positionMod.NewPosition(tile.Position.X()-1, tile.Position.Y()),
-		positionMod.NewPosition(tile.Position.X(), tile.Position.Y()+1),
-		positionMod.NewPosition(tile.Position.X(), tile.Position.Y()-1),
+		positionMod.New(tile.Position.X()+1, tile.Position.Y()),
+		positionMod.New(tile.Position.X()-1, tile.Position.Y()),
+		positionMod.New(tile.Position.X(), tile.Position.Y()+1),
+		positionMod.New(tile.Position.X(), tile.Position.Y()-1),
 	}
 	for _, position := range validNewPositions {
 		_, ok := board.tilesMap[position]
@@ -251,7 +251,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	var score uint32
 	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
 		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
-			_, ok := board.GetTileAt(positionMod.NewPosition(x, y))
+			_, ok := board.GetTileAt(positionMod.New(x, y))
 			if ok {
 				score++
 			}
@@ -283,7 +283,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 
 	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
 		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
-			adjacentTile, ok := board.GetTileAt(positionMod.NewPosition(x, y))
+			adjacentTile, ok := board.GetTileAt(positionMod.New(x, y))
 
 			if ok {
 				report, err := board.ScoreSingleMonastery(adjacentTile, forceScore)
@@ -313,7 +313,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	// check finished on way
 	// do while loop
 	for {
-		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.PositionFromSide(roadSide)))
+		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.FromSide(roadSide)))
 		roadSide = roadSide.ConnectedOpposite()
 		// check if tile exists or loop
 		if !tileExists || tile.Position == startTile.Position {

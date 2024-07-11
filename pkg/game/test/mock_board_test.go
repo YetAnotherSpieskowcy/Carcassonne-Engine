@@ -49,7 +49,7 @@ func TestBoardMockTiles(t *testing.T) {
 
 func TestBoardMockGetTileAt(t *testing.T) {
 	board := BoardMock{}
-	_, ok := board.GetTileAt(position.NewPosition(0, 0))
+	_, ok := board.GetTileAt(position.New(0, 0))
 	if !ok {
 		t.Fatalf("expected GetTileAt() output to be ok")
 	}

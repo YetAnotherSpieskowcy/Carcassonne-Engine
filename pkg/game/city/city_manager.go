@@ -25,10 +25,10 @@ func NewCityManager() Manager {
 // manager.cities list with side of a tile as a key.
 func (manager Manager) findCities(pos position.Position) map[side.Side]int {
 	positions := map[side.Side]position.Position{
-		side.Top:    position.NewPosition(pos.X(), pos.Y()+1),
-		side.Right:  position.NewPosition(pos.X()+1, pos.Y()),
-		side.Bottom: position.NewPosition(pos.X(), pos.Y()-1),
-		side.Left:   position.NewPosition(pos.X()-1, pos.Y()),
+		side.Top:    position.New(pos.X(), pos.Y()+1),
+		side.Right:  position.New(pos.X()+1, pos.Y()),
+		side.Bottom: position.New(pos.X(), pos.Y()-1),
+		side.Left:   position.New(pos.X()-1, pos.Y()),
 	}
 
 	foundCities := map[side.Side]int{}

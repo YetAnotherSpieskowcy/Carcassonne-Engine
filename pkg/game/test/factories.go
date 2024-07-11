@@ -13,7 +13,7 @@ func GetTestTile() tiles.Tile {
 
 func GetTestPlacedTile() elements.PlacedTile {
 	tile := elements.ToPlacedTile(GetTestTile())
-	tile.Position = position.NewPosition(0, 1)
+	tile.Position = position.New(0, 1)
 	return tile
 }
 func GetTestScoreReport() elements.ScoreReport {
@@ -41,6 +41,6 @@ func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
 			Features:  placedFeatures,
 			HasShield: false,
 		},
-		Position: position.NewPosition(0, 0),
+		Position: position.New(0, 0),
 	}
 }
