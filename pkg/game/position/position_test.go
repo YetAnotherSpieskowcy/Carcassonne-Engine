@@ -3,6 +3,8 @@ package position
 import (
 	"slices"
 	"testing"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 func TestAddPositions(t *testing.T) {
@@ -29,6 +31,52 @@ func TestAddPositions(t *testing.T) {
 	if !(added.X() == -1 && added.Y() == 5) {
 		t.Fatalf("expected (%#v,%#v), got (%#v,%#v) instead", -1, 5, added.X(), added.Y())
 	}
+}
+
+func TestPositionFromSide(t *testing.T) {
+	sides := []side.Side{
+		side.Top,
+		side.TopLeftEdge,
+		side.TopRightEdge,
+
+		side.Right,
+		side.RightTopEdge,
+		side.RightBottomEdge,
+
+		side.Bottom,
+		side.BottomRightEdge,
+		side.BottomLeftEdge,
+
+		side.Left,
+		side.LeftBottomEdge,
+		side.LeftTopEdge,
+	}
+
+	expected := []Position{
+		NewPosition(0, 1),
+		NewPosition(0, 1),
+		NewPosition(0, 1),
+
+		NewPosition(1, 0),
+		NewPosition(1, 0),
+		NewPosition(1, 0),
+
+		NewPosition(0, -1),
+		NewPosition(0, -1),
+		NewPosition(0, -1),
+
+		NewPosition(-1, 0),
+		NewPosition(-1, 0),
+		NewPosition(-1, 0),
+	}
+
+	for i, side := range sides {
+		actual := PositionFromSide(side)
+		if actual != expected[i] {
+			t.Fatalf("PositionFromSide(%#v): expected %#v, got %#v instead", side.String(), expected[i], actual)
+		}
+	}
+
 }
 
 func TestPositionMarshalTextWithPositiveCoords(t *testing.T) {

@@ -34,25 +34,19 @@ Caution! It is supposed to be used with side directing only one cardinal directi
 Otherwise it will return undesired value!
 */
 func PositionFromSide(side sideMod.Side) Position {
-	position := NewPosition(0, 0)
+	switch {
+	case side&sideMod.Top != 0:
+		return NewPosition(0, 1)
+	case side&sideMod.Right != 0:
+		return NewPosition(1, 0)
+	case side&sideMod.Left != 0:
+		return NewPosition(-1, 0)
+	case side&sideMod.Bottom != 0:
+		return NewPosition(0, -1)
 
-	if side&sideMod.Top != 0 {
-		position = position.Add(NewPosition(0, 1))
+	default:
+		return NewPosition(0, 0)
 	}
-
-	if side&sideMod.Right != 0 {
-		position = position.Add(NewPosition(1, 0))
-	}
-
-	if side&sideMod.Bottom != 0 {
-		position = position.Add(NewPosition(0, -1))
-	}
-
-	if side&sideMod.Left != 0 {
-		position = position.Add(NewPosition(-1, 0))
-	}
-
-	return position
 }
 
 func (pos Position) MarshalText() ([]byte, error) {
