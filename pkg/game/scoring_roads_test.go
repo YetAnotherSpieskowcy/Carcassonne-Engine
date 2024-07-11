@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -43,11 +44,11 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	tiles[1].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(0, -1)
-	tiles[1].Position = elements.NewPosition(-1, 0)
-	tiles[2].Position = elements.NewPosition(-1, -1)
-	tiles[3].Position = elements.NewPosition(1, -1)
-	tiles[4].Position = elements.NewPosition(1, 0)
+	tiles[0].Position = position.NewPosition(0, -1)
+	tiles[1].Position = position.NewPosition(-1, 0)
+	tiles[2].Position = position.NewPosition(-1, -1)
+	tiles[3].Position = position.NewPosition(1, -1)
+	tiles[4].Position = position.NewPosition(1, 0)
 
 	expectedScores := []uint32{0, 0, 0, 0, 6}
 	expectedMeeples := [][]uint8{nil, nil, nil, nil, {0, 1}}
@@ -98,10 +99,10 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(0, -1)
-	tiles[1].Position = elements.NewPosition(1, -1)
-	tiles[2].Position = elements.NewPosition(1, -2)
-	tiles[3].Position = elements.NewPosition(0, -2)
+	tiles[0].Position = position.NewPosition(0, -1)
+	tiles[1].Position = position.NewPosition(1, -1)
+	tiles[2].Position = position.NewPosition(1, -2)
+	tiles[3].Position = position.NewPosition(0, -2)
 
 	expectedScores := []uint32{0, 0, 0, 4}
 	expectedMeeples := [][]uint8{nil, nil, nil, {0, 1}}
@@ -148,8 +149,8 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{PlayerID: 1, MeepleType: elements.NormalMeeple}
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(-1, 0)
-	tiles[1].Position = elements.NewPosition(1, 0)
+	tiles[0].Position = position.NewPosition(-1, 0)
+	tiles[1].Position = position.NewPosition(1, 0)
 
 	expectedScores := []uint32{0, 3}
 	expectedMeeples := [][]uint8{nil, {0, 1}} // expected zero Nones, and 1 normal meeple
@@ -201,10 +202,10 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 	tiles[1].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(1, 0)
-	tiles[1].Position = elements.NewPosition(0, -1)
-	tiles[2].Position = elements.NewPosition(-1, -1)
-	tiles[3].Position = elements.NewPosition(-1, 0)
+	tiles[0].Position = position.NewPosition(1, 0)
+	tiles[1].Position = position.NewPosition(0, -1)
+	tiles[2].Position = position.NewPosition(-1, -1)
+	tiles[3].Position = position.NewPosition(-1, 0)
 
 	expectedScores := []uint32{0, 0, 0, 5}
 	expectedMeeples := [][]uint8{nil, nil, nil, {0, 2}}

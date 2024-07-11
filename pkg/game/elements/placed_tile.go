@@ -1,6 +1,7 @@
 package elements
 
 import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -45,7 +46,7 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 		TileWithMeeple: TileWithMeeple{
 			Features: features,
 		},
-		Position: NewPosition(0, 0),
+		Position: position.NewPosition(0, 0),
 	}
 }
 
@@ -72,7 +73,7 @@ func (placedTile PlacedTile) GetCityFeatures() []PlacedFeature {
 // represents a legal move (tile placement and meeple placement) on the board
 type PlacedTile struct {
 	TileWithMeeple
-	Position Position
+	Position position.Position
 }
 
 func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {

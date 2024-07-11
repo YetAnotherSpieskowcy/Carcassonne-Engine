@@ -6,6 +6,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -31,7 +32,7 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = elements.NewPosition(0, -1)
+	ptile.Position = position.NewPosition(0, -1)
 	err = game.PlayTurn(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -40,7 +41,7 @@ func TestFullGame(t *testing.T) {
 	// incorrect move - try placing tile 0 when 1 should be placed
 	tile = tileSet.Tiles[0]
 	ptile = elements.ToPlacedTile(tile)
-	ptile.Position = elements.NewPosition(0, 1)
+	ptile.Position = position.NewPosition(0, 1)
 	err = game.PlayTurn(ptile)
 	if err == nil {
 		t.Fatal("expected error to occur")
@@ -55,14 +56,14 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	ptile = elements.ToPlacedTile(tile)
-	ptile.Position = elements.NewPosition(0, 1)
+	ptile.Position = position.NewPosition(0, 1)
 	err = game.PlayTurn(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	ptile = elements.ToPlacedTile(tileSet.Tiles[1])
-	ptile.Position = elements.NewPosition(0, 0)
+	ptile.Position = position.NewPosition(0, 0)
 	// check if out of bounds state is detected
 	err = game.PlayTurn(ptile)
 	if err == nil {

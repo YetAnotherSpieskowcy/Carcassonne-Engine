@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 )
 
 func TestBoardMockImplementsBoardInterface(_ *testing.T) {
@@ -48,7 +49,7 @@ func TestBoardMockTiles(t *testing.T) {
 
 func TestBoardMockGetTileAt(t *testing.T) {
 	board := BoardMock{}
-	_, ok := board.GetTileAt(elements.NewPosition(0, 0))
+	_, ok := board.GetTileAt(position.NewPosition(0, 0))
 	if !ok {
 		t.Fatalf("expected GetTileAt() output to be ok")
 	}
