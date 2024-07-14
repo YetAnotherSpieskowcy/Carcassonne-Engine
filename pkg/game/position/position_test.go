@@ -50,6 +50,8 @@ func TestPositionFromSide(t *testing.T) {
 		side.Left,
 		side.LeftBottomEdge,
 		side.LeftTopEdge,
+
+		side.None,
 	}
 
 	expected := []Position{
@@ -68,6 +70,8 @@ func TestPositionFromSide(t *testing.T) {
 		New(-1, 0),
 		New(-1, 0),
 		New(-1, 0),
+
+		New(0, 0),
 	}
 
 	for i, side := range sides {
@@ -76,7 +80,28 @@ func TestPositionFromSide(t *testing.T) {
 			t.Fatalf("PositionFromSide(%#v): expected %#v, got %#v instead", side.String(), expected[i], actual)
 		}
 	}
+}
 
+func TestPositionFromSidePanic(t *testing.T) {
+	sides := []side.Side{
+		side.Top | side.Left,
+		side.RightBottomEdge | side.BottomRightEdge,
+		side.Top | side.Right | side.Bottom | side.Left,
+		side.Top | side.BottomLeftEdge,
+	}
+	for _, side := range sides {
+		// weird nested anonymous function and defer combo
+		// I don't know how or why it works, but without nesting "defer func()" in "func()", only a single iteration is tested
+		func() {
+			defer func() {
+				r := recover()
+				if r == nil {
+					t.Errorf("position.FromSide(%08b) did not panic", side)
+				}
+			}()
+			FromSide(side)
+		}()
+	}
 }
 
 func TestPositionMarshalTextWithPositiveCoords(t *testing.T) {

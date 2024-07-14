@@ -29,24 +29,35 @@ func (pos Position) Add(other Position) Position {
 }
 
 /*
-Returns relative position directed by the side.
-Caution! It is supposed to be used with side directing only one cardinal direction (or two edges connected by corner)!
-Otherwise it will return undesired value!
+Returns position neighbouring (0,0) from the given side.
+Valid sides are either a single half-edge side (e.g. side.TopLeftEdge) or a single primary side (e.g. side.Right)
+Examples:
+position.FromSide(side.Right) ---> (1,0)
+position.FromSide(side.BottomLeftEdge) == position.FromSide(side.BottomRightEdge) ---> (0, -1)
 */
 func FromSide(side sideMod.Side) Position {
-	switch {
-	case side&sideMod.Top != 0:
-		return New(0, 1)
-	case side&sideMod.Right != 0:
-		return New(1, 0)
-	case side&sideMod.Left != 0:
-		return New(-1, 0)
-	case side&sideMod.Bottom != 0:
-		return New(0, -1)
-
-	default:
-		return New(0, 0)
+	primarySides := 0
+	for _, checkedSide := range []sideMod.Side{sideMod.Top, sideMod.Right, sideMod.Left, sideMod.Bottom} {
+		if side&checkedSide != 0 {
+			primarySides += 1
+		}
 	}
+
+	if primarySides == 0 {
+		return New(0, 0)
+	} else if primarySides == 1 {
+		switch {
+		case side&sideMod.Top != 0:
+			return New(0, 1)
+		case side&sideMod.Right != 0:
+			return New(1, 0)
+		case side&sideMod.Left != 0:
+			return New(-1, 0)
+		case side&sideMod.Bottom != 0:
+			return New(0, -1)
+		}
+	}
+	panic(fmt.Sprintf("position.FromSide called with more than one primary side. 'side' = %08b", side))
 }
 
 func (pos Position) MarshalText() ([]byte, error) {
