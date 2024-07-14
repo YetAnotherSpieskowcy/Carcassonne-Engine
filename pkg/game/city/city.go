@@ -80,6 +80,9 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 			totalScore += 2
 		}
 	}
+	if !city.completed {
+		totalScore /= 2
+	}
 
 	// determine winning players
 	var max uint8

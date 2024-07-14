@@ -105,7 +105,7 @@ func TestJoinCitiesOnAddCityNotClosed(t *testing.T) {
 }
 
 func TestForceScore(t *testing.T) {
-	var expectedScore uint32 = 2
+	var expectedScore uint32 = 1
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
@@ -264,7 +264,7 @@ func TestScoreAfterJoinNotClosed(t *testing.T) {
 }
 
 func TestForceScoreAfterJoinNotClosedWithShield(t *testing.T) {
-	var expectedScore uint32 = 8
+	var expectedScore uint32 = 4
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedPlayerID elements.ID = 1
 
