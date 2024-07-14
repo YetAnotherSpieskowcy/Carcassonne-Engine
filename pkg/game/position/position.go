@@ -39,7 +39,7 @@ func FromSide(side sideMod.Side) Position {
 	primarySides := 0
 	for _, checkedSide := range []sideMod.Side{sideMod.Top, sideMod.Right, sideMod.Left, sideMod.Bottom} {
 		if side&checkedSide != 0 {
-			primarySides += 1
+			primarySides++
 		}
 	}
 
