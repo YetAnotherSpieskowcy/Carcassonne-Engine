@@ -37,6 +37,24 @@ const (
 	All Side = 0b1111_1111
 )
 
+var PrimarySides = []Side{
+	Top,
+	Right,
+	Bottom,
+	Left,
+}
+
+var EdgeSides = []Side{
+	TopLeftEdge,
+	TopRightEdge,
+	RightTopEdge,
+	RightBottomEdge,
+	BottomRightEdge,
+	BottomLeftEdge,
+	LeftBottomEdge,
+	LeftTopEdge,
+}
+
 func (side Side) String() string {
 	type sideNamesStruct struct {
 		primary     Side

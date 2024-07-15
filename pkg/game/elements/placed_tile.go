@@ -120,14 +120,28 @@ func ToTile(tile PlacedTile) tiles.Tile {
 	}
 }
 
-func (placedTile PlacedTile) GetCityFeatures() []PlacedFeature {
-	cityFeatures := []PlacedFeature{}
-	for _, f := range placedTile.Features {
-		if f.FeatureType == featureMod.City {
-			cityFeatures = append(cityFeatures, f)
+// Returns a list of all features of the given type on this tile
+func (placedTile PlacedTile) GetFeaturesOfType(featureType featureMod.Type) []PlacedFeature {
+	features := []PlacedFeature{}
+	for _, feature := range placedTile.Features {
+		if feature.FeatureType == featureType {
+			features = append(features, feature)
 		}
 	}
-	return cityFeatures
+	return features
+}
+
+/*
+Return a list of all features of the given type that overlaps the given side. The overlap does not need to be exact.
+*/
+func (placedTile PlacedTile) GetPlacedFeaturesOverlappingSide(sideToCheck sideMod.Side, featureType featureMod.Type) []PlacedFeature {
+	features := []PlacedFeature{}
+	for _, feature := range placedTile.Features {
+		if sideToCheck&feature.Sides != 0 && feature.FeatureType == featureType {
+			features = append(features, feature)
+		}
+	}
+	return features
 }
 
 // represents a legal move (tile placement and meeple placement) on the board

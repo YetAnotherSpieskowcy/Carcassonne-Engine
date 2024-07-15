@@ -12,7 +12,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func TestFeaturesLengthOfFieldExpand(t *testing.T) {
+func TestFeaturesLengthOfFieldExpand(t *testing.T) { // todo maybe close the starting city and add check if it was counted?
 	/*
 		the board setup is as follows:
 		─┼SM·
@@ -65,7 +65,7 @@ func TestFeaturesLengthOfFieldExpand(t *testing.T) {
 
 	// test field.Expand()
 	field := field.NewField(*tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field), tiles[0].Position)
-	field.Expand(board)
+	field.Expand(board, board.cityManager)
 
 	if len(field.Features()) != 12 {
 		t.Fatalf("expected %#v, got %#v instead", 12, len(field.Features()))

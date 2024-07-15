@@ -13,7 +13,7 @@ import (
 
 func TestNewAndIsCompleted(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	cities := a.GetCityFeatures()
+	cities := a.GetFeaturesOfType(feature.City)
 	pos := elements.NewPosition(1, 1)
 
 	city := NewCity(pos, cities, false)
@@ -26,7 +26,7 @@ func TestNewAndIsCompleted(t *testing.T) {
 
 func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	cities := a.GetCityFeatures()
+	cities := a.GetFeaturesOfType(feature.City)
 	pos := elements.NewPosition(1, 1)
 
 	city := NewCity(pos, cities, false)
@@ -49,10 +49,10 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
-	aFeatures := a.GetCityFeatures()
+	aFeatures := a.GetFeaturesOfType(feature.City)
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
-	bFeatures := b.GetCityFeatures()
+	bFeatures := b.GetFeaturesOfType(feature.City)
 
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
@@ -76,10 +76,10 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
-	aFeatures := a.GetCityFeatures()
+	aFeatures := a.GetFeaturesOfType(feature.City)
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
-	bFeatures := b.GetCityFeatures()
+	bFeatures := b.GetFeaturesOfType(feature.City)
 
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)
@@ -96,10 +96,10 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 
-	aFeatures := a.GetCityFeatures()
+	aFeatures := a.GetFeaturesOfType(feature.City)
 	city := NewCity(elements.NewPosition(1, 1), aFeatures, false)
 
-	bFeatures := b.GetCityFeatures()
+	bFeatures := b.GetFeaturesOfType(feature.City)
 
 	pos := elements.NewPosition(1, 2)
 	city.AddTile(pos, bFeatures, false)

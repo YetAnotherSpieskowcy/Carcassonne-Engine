@@ -4,6 +4,7 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
@@ -103,7 +104,7 @@ func TestGetCityFeatures(t *testing.T) {
 
 	tile := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 
-	cityFeatures := tile.GetCityFeatures()
+	cityFeatures := tile.GetFeaturesOfType(feature.City)
 
 	if len(cityFeatures) != expectedLen {
 		t.Fatalf("expected %#v, got %#v instead", expectedLen, len(cityFeatures))

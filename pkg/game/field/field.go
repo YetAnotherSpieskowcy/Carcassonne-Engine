@@ -1,6 +1,9 @@
 package field
 
 import (
+	"fmt"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -13,8 +16,8 @@ type fieldKey struct {
 
 // Represents a field on the board
 type Field struct {
-	features map[fieldKey]struct{} // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
-	// todo neighbouring cities
+	features           map[fieldKey]struct{} // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
+	neighbouringCities map[int]struct{}      // this is a set of cities' IDs
 }
 
 func NewField(feature elements.PlacedFeature, position elements.Position) Field {
@@ -29,13 +32,13 @@ func (field *Field) Features() map[fieldKey]struct{} { // todo maybe delete this
 }
 
 // Expands this field to maximum possible size - like flood fill
-// todo should find cities as well, probably
-func (field *Field) Expand(board elements.Board) {
+func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 	newFeatures := map[fieldKey]struct{}{}
 
 	for len(field.features) != 0 {
 		element, _, _ := GetAny(field.features)
 
+		// add neighbouring tiles to the set
 		_, exists := newFeatures[element]
 		if !exists {
 			newFeatures[element] = struct{}{}
@@ -47,6 +50,42 @@ func (field *Field) Expand(board elements.Board) {
 			}
 
 		}
+
+		// find neighbouring city features
+		var neighbouringCityFeatures []elements.PlacedFeature
+
+		if element.feature.Sides == side.None {
+			// field neighbours all cities on this tile
+			tile, _ := board.GetTileAt(element.position)
+			neighbouringCityFeatures = tile.GetFeaturesOfType(featureMod.City)
+
+		} else {
+			cornerFlippedSide := element.feature.Sides.FlipCorners()
+
+			if cornerFlippedSide != element.feature.Sides {
+				tile, _ := board.GetTileAt(element.position)
+				if len(tile.GetFeaturesOfType(featureMod.Field)) == 1 {
+					// field neighbours all cities on this tile
+					neighbouringCityFeatures = tile.GetFeaturesOfType(featureMod.City)
+
+				} else {
+					// field neighbours only the cities it shares a common corner with
+					neighbouringCityFeatures = tile.GetPlacedFeaturesOverlappingSide(cornerFlippedSide, featureMod.City)
+				}
+			} // else { the field feature doesn't neighbour any cities }
+		}
+
+		for _, cityFeature := range neighbouringCityFeatures {
+			city, cityID := cityManager.GetCity(element.position, cityFeature)
+			if city == nil {
+				panic(fmt.Sprintf("city manager didn't found city: %#v at position %#v", cityFeature, element.position))
+			}
+			if city.IsCompleted() {
+				field.neighbouringCities[cityID] = struct{}{}
+			}
+		}
+
+		// remove the processed field feature from field.features set
 		delete(field.features, element)
 	}
 	field.features = newFeatures
@@ -87,11 +126,15 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 	return neighbours
 }
 
-/* todo neighbouring cities:
+/*
 Assumptions:
  - if there is only one field feature on a tile, it neighbours ALL cities on this tile
  - if the field feature doesn't have any sides (i.e. its sides==side.None), it neighbours ALL cities on this tile
  - in other cases, fields neighbour all cities they share a common tile corner with
+
+Observation:
+ - fieldFeature.sides.FlipCorners() produces different sides ONLY when the field neighbours a city,
+   because only in that case the field doesn't contain both edge sides around the corner
 */
 
 // todo would be nice to move this to some "utilities" package maybe? todo
