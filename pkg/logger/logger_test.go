@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
@@ -44,18 +45,20 @@ func TestFileLogger(t *testing.T) {
 	expectedStartingTile := deck.StartingTile
 	expectedStack := deck.GetRemaining()
 	expectedPlayerCount := 2
-	err = log.LogEvent(NewStartEntry(deck, expectedPlayerCount))
+	err = log.LogEvent(NewStartEntry(expectedStartingTile, expectedStack, expectedPlayerCount))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	playerID := player.New(1)
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(playerID, expectedTile))
+	err = log.LogEvent(NewPlaceTileEntry(playerID.ID(), expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	expectedScores := []uint32{1, 2}
+	expectedScores := elements.NewScoreReport()
+	expectedScores.ReceivedPoints[playerID.ID()] = 1
+	expectedScores.ReceivedPoints[elements.ID(2)] = 2
 	err = log.LogEvent(NewEndEntry(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())
@@ -140,7 +143,8 @@ func TestFileLoggerInvalidFiles(t *testing.T) {
 		t.Fatal("FAILED")
 	}
 
-	err = log.LogEvent(NewStartEntry(getTestDeck(), 2))
+	deck := getTestDeck()
+	err = log.LogEvent(NewStartEntry(deck.StartingTile, deck.Stack.GetTiles(), 2))
 	if err == nil {
 		t.Fatal("FAILED")
 	}
@@ -156,18 +160,21 @@ func TestLogger(t *testing.T) {
 	expectedStack := deck.GetRemaining()
 	expectedStartingTile := deck.StartingTile
 	expectedPlayerCount := 2
-	err := log.LogEvent(NewStartEntry(deck, expectedPlayerCount))
+	err := log.LogEvent(NewStartEntry(expectedStartingTile, expectedStack, expectedPlayerCount))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	playerID := player.New(1)
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent(NewPlaceTileEntry(playerID, expectedTile))
+	err = log.LogEvent(NewPlaceTileEntry(playerID.ID(), expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	expectedScores := []uint32{1, 2}
+	expectedScores := elements.NewScoreReport()
+	expectedScores.ReceivedPoints[playerID.ID()] = 1
+	expectedScores.ReceivedPoints[elements.ID(2)] = 2
+	err = log.LogEvent(NewEndEntry(expectedScores))
 	err = log.LogEvent(NewEndEntry(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())

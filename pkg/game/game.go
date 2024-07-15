@@ -53,7 +53,7 @@ func NewFromDeck(
 		return nil, err
 	}
 	if err := log.LogEvent(
-		logger.NewStartEntry(game.deck, len(game.players)),
+		logger.NewStartEntry(game.deck.StartingTile, game.deck.GetRemaining(), len(game.players)),
 	); err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		return err
 	}
 	if err = game.log.LogEvent(
-		logger.NewPlaceTileEntry(player, move),
+		logger.NewPlaceTileEntry(player.ID(), move),
 	); err != nil {
 		return err
 	}
@@ -156,15 +156,15 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 	return nil
 }
 
-func (game *Game) Finalize() ([]uint32, error) {
-	playerScores := make([]uint32, len(game.players))
+func (game *Game) Finalize() (elements.ScoreReport, error) {
+	playerScores := elements.NewScoreReport() //make([]uint32, len(game.players))
 
 	if _, err := game.GetCurrentTile(); !errors.Is(err, stack.ErrStackOutOfBounds) {
 		return playerScores, elements.ErrGameIsNotFinished
 	}
 
-	for i, player := range game.players {
-		playerScores[i] = player.Score()
+	for _, player := range game.players {
+		playerScores.ReceivedPoints[player.ID()] = player.Score()
 	}
 	if err := game.log.LogEvent(logger.NewEndEntry(playerScores)); err != nil {
 		return playerScores, err

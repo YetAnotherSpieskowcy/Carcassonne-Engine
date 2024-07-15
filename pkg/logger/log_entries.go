@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
@@ -13,11 +12,11 @@ type StartEntry struct {
 	PlayerCount  int          `json:"playerCount"`
 }
 
-func NewStartEntry(deck deck.Deck, playerCount int) StartEntry {
+func NewStartEntry(startingTile tiles.Tile, stack []tiles.Tile, playerCount int) StartEntry {
 	return StartEntry{
 		Event:        "start",
-		StartingTile: deck.StartingTile,
-		Stack:        deck.GetRemaining(),
+		StartingTile: startingTile,
+		Stack:        stack,
 		PlayerCount:  playerCount,
 	}
 }
@@ -28,15 +27,15 @@ type PlaceTileEntry struct {
 	Move     elements.PlacedTile `json:"move"`
 }
 
-func NewPlaceTileEntry(player elements.Player, move elements.PlacedTile) PlaceTileEntry {
-	return PlaceTileEntry{"place", player.ID(), move}
+func NewPlaceTileEntry(player elements.ID, move elements.PlacedTile) PlaceTileEntry {
+	return PlaceTileEntry{"place", player, move}
 }
 
 type EndEntry struct {
-	Event  string   `json:"event"`
-	Scores []uint32 `json:"scores"`
+	Event  string               `json:"event"`
+	Scores elements.ScoreReport `json:"scores"`
 }
 
-func NewEndEntry(scores []uint32) EndEntry {
+func NewEndEntry(scores elements.ScoreReport) EndEntry {
 	return EndEntry{"end", scores}
 }
