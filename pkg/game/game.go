@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
@@ -22,26 +23,32 @@ type Game struct {
 	log           *logger.Logger
 }
 
-func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error) {
+func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger, playerCount uint8) (*Game, error) {
 	deckStack := stack.New(tileSet.Tiles)
 	deck := deck.Deck{
 		Stack:        &deckStack,
 		StartingTile: tileSet.StartingTile,
 	}
-	return NewFromDeck(deck, log)
+	return NewFromDeck(deck, log, playerCount)
 }
 
 func NewFromDeck(
-	deck deck.Deck, log *logger.Logger,
+	deck deck.Deck, log *logger.Logger, playerCount uint8,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
 		log = &nullLogger
 	}
+
+	var players = []elements.Player{}
+	for i := range playerCount {
+		players = append(players, player.New(elements.ID(i+1)))
+	}
+
 	game := &Game{
 		board:         NewBoard(deck.TileSet()),
 		deck:          deck,
-		players:       []elements.Player{player.New(1), player.New(2)},
+		players:       players,
 		currentPlayer: 0,
 		log:           log,
 	}
@@ -75,7 +82,8 @@ func (game *Game) GetPlayerByID(playerID elements.ID) elements.Player {
 			return player
 		}
 	}
-	panic("Player with desired ID doesn't exist!")
+	errorString := fmt.Sprintf("Player with desired ID=%d doesn't exist!", playerID)
+	panic(errorString)
 }
 
 func (game *Game) PlayerCount() int {
