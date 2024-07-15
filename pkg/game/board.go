@@ -39,6 +39,8 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 	tiles := make([]elements.PlacedTile, len(tileSet.Tiles)+1)
 	startingTile := elements.NewStartingTile(tileSet)
 	tiles[0] = startingTile
+	cityManager := city.NewCityManager()
+	cityManager.UpdateCities(startingTile)
 	return &board{
 		tileSet: tileSet,
 		tiles:   tiles,
@@ -51,7 +53,7 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 			elements.NewPosition(0, -1),
 			elements.NewPosition(-1, 0),
 		},
-		cityManager: city.NewCityManager(),
+		cityManager: cityManager,
 	}
 }
 

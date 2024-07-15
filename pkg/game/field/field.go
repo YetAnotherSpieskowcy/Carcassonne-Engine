@@ -32,7 +32,7 @@ func (field *Field) Features() map[fieldKey]struct{} {
 	return field.features
 }
 
-// Expands this field to maximum possible size - like flood fill
+// Expands this field to maximum possible size (like flood fill) and finds all neighbouring cities
 func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 	newFeatures := map[fieldKey]struct{}{}
 
@@ -79,9 +79,9 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		for _, cityFeature := range neighbouringCityFeatures {
 			city, cityID := cityManager.GetCity(element.position, cityFeature)
 			if city == nil {
-				//panic(fmt.Sprintf("city manager did not find city: %#v at position %#v", cityFeature, element.position))
-				fmt.Println("Panic temporarily disabled")
-			} else if city.IsCompleted() {
+				panic(fmt.Sprintf("city manager did not find city: %#v at position %#v", cityFeature, element.position))
+			}
+			if city.IsCompleted() {
 				field.neighbouringCities[cityID] = struct{}{}
 			}
 		}
