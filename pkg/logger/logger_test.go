@@ -175,7 +175,6 @@ func TestLogger(t *testing.T) {
 	expectedScores.ReceivedPoints[playerID.ID()] = 1
 	expectedScores.ReceivedPoints[elements.ID(2)] = 2
 	err = log.LogEvent(NewEndEntry(expectedScores))
-	err = log.LogEvent(NewEndEntry(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
