@@ -4,12 +4,12 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/tiletemplates"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tilesets"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestFullGame(t *testing.T) {
@@ -77,9 +77,11 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	expectedScores := []uint32{0, 0}
-	for playerID, actual := range actualScores {
-		expected := expectedScores[playerID]
+	expectedScores := elements.NewScoreReport()
+	expectedScores.ReceivedPoints[elements.ID(1)] = 0
+	expectedScores.ReceivedPoints[elements.ID(2)] = 0
+	for playerID, actual := range actualScores.ReceivedPoints {
+		expected := expectedScores.ReceivedPoints[playerID]
 		if actual != expected {
 			t.Fatalf("expected %v, got %v for player %v instead", expected, actual, playerID)
 		}

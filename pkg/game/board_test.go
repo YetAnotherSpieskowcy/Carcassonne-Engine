@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/tiletemplates"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tilesets"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {

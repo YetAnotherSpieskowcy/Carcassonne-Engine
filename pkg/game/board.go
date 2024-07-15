@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tilesets"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 // mutable type

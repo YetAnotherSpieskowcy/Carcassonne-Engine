@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
 )
 
 type player struct {

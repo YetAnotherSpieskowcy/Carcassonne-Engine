@@ -1,11 +1,13 @@
 .PHONY: build
 build:
 	@echo "Building the project..."
+    go get github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API@main
 	go build "./..."
 
 .PHONY: test
 test:
 	@echo "Running the test suite..."
+    go get github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API@main
 	go test -race "-coverprofile=coverage.txt" "./..."
 
 .PHONY: lint

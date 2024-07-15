@@ -3,9 +3,9 @@ package game
 import (
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/tiletemplates"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tilesets"
 )
 
 func TestStartingTilePlacement(t *testing.T) {

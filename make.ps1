@@ -43,12 +43,14 @@ param (
 
 function build() {
     Write-Output "Building the project..."
+    & go get github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API@main
     & go build "./..."
     Exit $LASTEXITCODE
 }
 
 function test() {
     Write-Output "Running the test suite..."
+    & go get github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API@main
     & go test -race "-coverprofile=coverage.txt" "./..."
     Exit $LASTEXITCODE
 }

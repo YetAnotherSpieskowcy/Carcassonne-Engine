@@ -3,9 +3,9 @@ package city
 import (
 	"slices"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/feature/modifier"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles/side"
 )
 
 // Represents a manager responsible for organising cities

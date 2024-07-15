@@ -1,9 +1,9 @@
 package deck
 
 import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/tilesets"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 type Deck struct {

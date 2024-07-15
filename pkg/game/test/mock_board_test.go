@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API/pkg/elements"
 )
 
 func TestBoardMockImplementsBoardInterface(_ *testing.T) {
