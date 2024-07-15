@@ -7,6 +7,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/utilities"
 )
 
 type fieldKey struct {
@@ -36,7 +37,7 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 	newFeatures := map[fieldKey]struct{}{}
 
 	for len(field.features) != 0 {
-		element, _, _ := GetAny(field.features)
+		element, _, _ := utilities.GetAnyElementFromMap(field.features)
 
 		// add neighbouring tiles to the set
 		_, exists := newFeatures[element]
@@ -136,13 +137,3 @@ Observation:
  - fieldFeature.sides.FlipCorners() produces different sides ONLY when the field neighbours a city,
    because only in that case the field doesn't contain both edge sides around the corner
 */
-
-// todo would be nice to move this to some "utilities" package maybe? todo
-// Retrieves key and value from a map, and a bool indicating if the map is empty.
-// In case of multi-element maps, it is not specified which element is returned.
-func GetAny[K comparable, V any](m map[K]V) (K, V, bool) {
-	for key, value := range m {
-		return key, value, true
-	}
-	return *new(K), *new(V), false
-}
