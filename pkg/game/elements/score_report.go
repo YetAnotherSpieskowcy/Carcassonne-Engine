@@ -2,52 +2,42 @@ package elements
 
 type ScoreReport struct {
 	// ReceivedPoints[playerID (uint8)] = player's received points
-	ReceivedPoints map[uint8]uint32
+	ReceivedPoints map[ID]uint32
 	// ReturnedMeeples[playerID (uint8)][meeple type (MeepleType)] = number of returned meeples
 	// for reference, see also: player.meepleCounts
-	ReturnedMeeples map[uint8][]uint8
-}
-
-func (report *ScoreReport) JoinReport(other ScoreReport) {
-	var existKey bool
-	// join received points
-	for playerID, score := range other.ReceivedPoints {
-		_, existKey = report.ReceivedPoints[playerID]
-		if !existKey {
-			// create field
-			report.ReceivedPoints[playerID] = 0
-		}
-
-		// add points
-		report.ReceivedPoints[playerID] += score
-	}
-
-	// join returned meeples
-	for playerID, meepleArray := range other.ReturnedMeeples {
-		_, existKey = report.ReturnedMeeples[playerID]
-		if !existKey {
-			// create field
-			report.ReturnedMeeples[playerID] = []uint8{}
-		}
-
-		// compare length
-		if len(report.ReturnedMeeples[playerID]) < len(meepleArray) {
-			// lengthen the array with zeros
-			report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], make([]uint8, len(meepleArray)-len(report.ReturnedMeeples[playerID]))...)
-		}
-
-		for meepleType, meepleCount := range meepleArray {
-			report.ReturnedMeeples[playerID][meepleType] += meepleCount
-		}
-	}
+	ReturnedMeeples map[ID][]uint8
 }
 
 func NewScoreReport() ScoreReport {
-	report := ScoreReport{}
+	return ScoreReport{
+		ReceivedPoints:  map[ID]uint32{},
+		ReturnedMeeples: map[ID][]uint8{},
+	}
+}
 
-	report.ReceivedPoints = make(map[uint8]uint32)
-	report.ReturnedMeeples = make(map[uint8][]uint8)
-	return report
+// Adds the contents of otherReport to the contents of this score report
+func (report *ScoreReport) Join(otherReport ScoreReport) {
+	for playerID, score := range otherReport.ReceivedPoints {
+		report.ReceivedPoints[playerID] += score
+	}
+
+	for playerID, meeples := range otherReport.ReturnedMeeples {
+		_, keyExists := report.ReturnedMeeples[playerID]
+		if !keyExists {
+			report.ReturnedMeeples[playerID] = []uint8{}
+		}
+
+		if len(report.ReturnedMeeples[playerID]) < len(meeples) {
+			// lengthen the meeples array with zeros
+			// this should not be necessary if we assumed that for all reports, report.ReturnedMeeples should be of length = elements.MeepleTypeCount. Todo?
+			zerosNumber := len(meeples) - len(report.ReturnedMeeples[playerID])
+			report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], make([]uint8, zerosNumber)...)
+		}
+
+		for meepleType, meepleCount := range meeples {
+			report.ReturnedMeeples[playerID][meepleType] += meepleCount
+		}
+	}
 }
 
 /*
@@ -81,15 +71,15 @@ func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {
 	scoreReport := NewScoreReport()
 
 	for _, playerID := range scoredPlayers {
-		scoreReport.ReceivedPoints[playerID] = uint32(score)
+		scoreReport.ReceivedPoints[ID(playerID)] = uint32(score)
 	}
 
 	for _, meeple := range meeples {
-		_, ok := scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)]
+		_, ok := scoreReport.ReturnedMeeples[meeple.PlayerID]
 		if !ok {
-			scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)] = []uint8{0, 0}
+			scoreReport.ReturnedMeeples[meeple.PlayerID] = []uint8{0, 0}
 		}
-		scoreReport.ReturnedMeeples[uint8(meeple.PlayerID)][meeple.Type]++
+		scoreReport.ReturnedMeeples[meeple.PlayerID][meeple.Type]++
 	}
 
 	return scoreReport

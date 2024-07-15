@@ -109,6 +109,7 @@ func TestTileFeatureGet(t *testing.T) {
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
 	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
+	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Monastery})
 
 	var expectedCities = []feature.Feature{
 		{
@@ -128,6 +129,8 @@ func TestTileFeatureGet(t *testing.T) {
 		},
 	}
 
+	var expectedMonastery = feature.Feature{FeatureType: feature.Monastery}
+
 	if !reflect.DeepEqual(tile.Cities(), expectedCities) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", tile.Cities(), expectedCities)
 	}
@@ -138,5 +141,9 @@ func TestTileFeatureGet(t *testing.T) {
 
 	if !reflect.DeepEqual(tile.Fields(), expectedFields) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", tile.Fields(), expectedFields)
+	}
+
+	if *tile.Monastery() != expectedMonastery {
+		t.Fatalf("got\n %#v \nshould be \n%#v", *tile.Monastery(), expectedMonastery)
 	}
 }

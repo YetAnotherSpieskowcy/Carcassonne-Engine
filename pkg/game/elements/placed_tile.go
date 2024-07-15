@@ -87,7 +87,7 @@ type TileWithMeeple struct {
 	HasShield bool
 }
 
-func (placement PlacedTile) Rotate(rotations uint) PlacedTile {
+func (placedTile PlacedTile) Rotate(rotations uint) PlacedTile {
 	_ = rotations
 	panic("Rotate() not supported on PlacedTile")
 }
@@ -118,7 +118,16 @@ func ToTile(tile PlacedTile) tiles.Tile {
 	return tiles.Tile{
 		Features: features,
 	}
+}
 
+func (placedTile PlacedTile) GetCityFeatures() []PlacedFeature {
+	cityFeatures := []PlacedFeature{}
+	for _, f := range placedTile.Features {
+		if f.FeatureType == feature.City {
+			cityFeatures = append(cityFeatures, f)
+		}
+	}
+	return cityFeatures
 }
 
 // represents a legal move (tile placement and meeple placement) on the board
@@ -131,13 +140,22 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 	return ToPlacedTile(tileSet.StartingTile)
 }
 
+func (placedTile PlacedTile) Monastery() *PlacedFeature {
+	for i, feat := range placedTile.Features {
+		if feat.FeatureType == feature.Monastery {
+			return &placedTile.Features[i]
+		}
+	}
+	return nil
+}
+
 /*
 Return the feature of certain type on desired side
 */
-func (placement *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
-	for i, feature := range placement.TileWithMeeple.Features {
-		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
-			return &placement.TileWithMeeple.Features[i]
+func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
+	for i, feat := range placedTile.TileWithMeeple.Features {
+		if sideToCheck&feat.Sides == sideToCheck && feat.FeatureType == featureType {
+			return &placedTile.TileWithMeeple.Features[i]
 		}
 	}
 	return nil

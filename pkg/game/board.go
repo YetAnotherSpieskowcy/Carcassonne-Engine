@@ -2,8 +2,10 @@ package game
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -30,6 +32,7 @@ type board struct {
 	tilesMap map[elements.Position]elements.PlacedTile
 
 	placeablePositions []elements.Position
+	cityManager        city.Manager
 }
 
 func NewBoard(tileSet tilesets.TileSet) elements.Board {
@@ -48,6 +51,7 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 			elements.NewPosition(0, -1),
 			elements.NewPosition(-1, 0),
 		},
+		cityManager: city.NewCityManager(),
 	}
 }
 
@@ -191,7 +195,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	tileIndex := slices.Index(board.placeablePositions, tile.Position)
 	if tileIndex == -1 {
-		panic("Invalid move was played")
+		panic(fmt.Sprintf("Invalid move was played: %v", tile.Position))
 	}
 	board.placeablePositions = slices.Delete(board.placeablePositions, tileIndex, tileIndex+1)
 	validNewPositions := []elements.Position{
@@ -216,11 +220,79 @@ func (board *board) checkCompleted(
 	// - identify all completed features
 	// - resolve control of the completed features
 	// - award points
-	scoreReport := elements.ScoreReport{
-		ReceivedPoints:  map[uint8]uint32{},
-		ReturnedMeeples: map[uint8][]uint8{},
-	}
+	scoreReport := elements.NewScoreReport()
+	board.cityManager.UpdateCities(tile)
+	scoreReport.Join(board.cityManager.ScoreCities(false))
 	return scoreReport, nil
+}
+
+/*
+Calculates score for a single monastery.
+If the monastery is finished and has a meeple, returns a ScoreReport with 9 points and the meeple that was in the monastery.
+Otherwise, returns an empty ScoreReport.
+
+'forceScore' can be set to true to score unfinished monasteries at the end of the game.
+In other cases, 'forceScore' should be false
+
+returns: ScoreReport (with one player at most)
+*/
+func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bool) (elements.ScoreReport, error) {
+	var monasteryFeature = tile.Monastery()
+	if monasteryFeature == nil {
+		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a monastery")
+	}
+	if monasteryFeature.Meeple.Type == elements.NoneMeeple {
+		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a meeple")
+	}
+
+	var meepleType = monasteryFeature.Meeple.Type
+
+	var score uint32
+	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
+		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
+			_, ok := board.GetTileAt(elements.NewPosition(x, y))
+			if ok {
+				score++
+			}
+		}
+	}
+
+	if score == 9 || forceScore {
+		var returnedMeeples = make([]uint8, elements.MeepleTypeCount)
+		returnedMeeples[meepleType] = 1
+
+		scoreReport := elements.NewScoreReport()
+		scoreReport.ReceivedPoints[monasteryFeature.PlayerID] = score
+		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = returnedMeeples
+
+		return scoreReport, nil
+	}
+
+	return elements.NewScoreReport(), nil
+}
+
+/*
+Finds all tiles with a monastery and a meeple in it adjacent to 'tile' (and 'tile' itself) and calls ScoreSingleMonastery on each of them.
+This function should be called after the placement of each tile, in case it neighbours a monastery.
+
+returns: ScoreReport
+*/
+func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
+	var finalReport = elements.NewScoreReport()
+
+	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
+		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
+			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
+
+			if ok {
+				report, err := board.ScoreSingleMonastery(adjacentTile, forceScore)
+				if err == nil {
+					finalReport.Join(report)
+				}
+			}
+		}
+	}
+	return finalReport
 }
 
 /*
@@ -270,7 +342,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	}
 
 	looped := (tile.Position == startTile.Position)
-	finished = tileExists && ((road.Sides.GetCardinalDirectionsLength() == 1) || (looped))
+	finished = tileExists && (road.Sides.GetCardinalDirectionsLength() == 1 || looped)
 
 	return finished, score, meeples, looped, roadSide
 }
@@ -345,7 +417,7 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
 		if checkedRoadSides&road.Sides == 0 {
 			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
-			scoreReport.JoinReport(scoreReportTemp)
+			scoreReport.Join(scoreReportTemp)
 			checkedRoadSides |= roadSide
 			println(checkedRoadSides)
 		}

@@ -138,3 +138,157 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
+
+func TestBoardScoreInclompleteMonastery(t *testing.T) {
+	var report elements.ScoreReport
+	var extendedTileSet = tilesets.StandardTileSet()
+	for range 3 {
+		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.TestOnlyField())
+	}
+	boardInterface := NewBoard(extendedTileSet)
+	board := boardInterface.(*board)
+
+	tiles := []elements.PlacedTile{
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+	}
+
+	// add meeple to the monastery
+	tiles[0].Monastery().Meeple.PlayerID = 1
+	tiles[0].Monastery().Meeple.Type = elements.NormalMeeple
+
+	// set positions
+	tiles[0].Position = elements.NewPosition(0, 1)
+	tiles[1].Position = elements.NewPosition(1, 1)
+	tiles[2].Position = elements.NewPosition(0, 2)
+	tiles[3].Position = elements.NewPosition(1, 2)
+
+	// place tiles
+	for i, tile := range tiles {
+		_, err := board.PlaceTile(tile)
+		if err != nil {
+			t.Fatalf("error placing tile number: %#v: %#v", i, err)
+		}
+
+		report = board.ScoreMonasteries(tile, false)
+		if !reflect.DeepEqual(report, elements.NewScoreReport()) {
+			t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected %#v, got %#v instead", i, elements.NewScoreReport(), report)
+		}
+	}
+
+	// test forceScore
+	report = board.ScoreMonasteries(tiles[0], true)
+
+	expectedReport := elements.NewScoreReport()
+	expectedReport.ReceivedPoints = map[elements.ID]uint32{
+		1: 5,
+	}
+	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
+		1: {0, 1},
+	}
+
+	if !reflect.DeepEqual(report, expectedReport) {
+		t.Fatalf("ScoreMonasteries failed when forceScore=true. expected:\n%#v,\ngot:\n%#v instead", expectedReport, report)
+	}
+}
+
+func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
+	/*
+		the board setup is as follows:
+		FFFF
+		FMMF
+		FFFF
+		 S
+
+		F - field
+		M - monastery
+		S - starting tile
+
+		left monastery is at (0,2)
+		right monastery is at (1,2)
+		right monastery is placed as the last tile
+	*/
+
+	var report elements.ScoreReport
+	var extendedTileSet = tilesets.StandardTileSet()
+	for range 10 {
+		extendedTileSet.Tiles = append(extendedTileSet.Tiles, tiletemplates.TestOnlyField())
+	}
+	boardInterface := NewBoard(extendedTileSet)
+	board := boardInterface.(*board)
+
+	tiles := []elements.PlacedTile{
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+	}
+
+	// add meeple to the monastery
+	tiles[1].Monastery().Meeple.PlayerID = 1
+	tiles[1].Monastery().Meeple.Type = elements.NormalMeeple
+
+	tiles[11].Monastery().Meeple.PlayerID = 2
+	tiles[11].Monastery().Meeple.Type = elements.NormalMeeple
+
+	// set positions
+	tiles[0].Position = elements.NewPosition(0, 1)
+	tiles[1].Position = elements.NewPosition(0, 2)
+	tiles[2].Position = elements.NewPosition(0, 3)
+
+	tiles[3].Position = elements.NewPosition(-1, 1)
+	tiles[4].Position = elements.NewPosition(-1, 2)
+	tiles[5].Position = elements.NewPosition(-1, 3)
+
+	tiles[6].Position = elements.NewPosition(1, 1)
+
+	tiles[7].Position = elements.NewPosition(2, 1)
+	tiles[8].Position = elements.NewPosition(2, 2)
+	tiles[9].Position = elements.NewPosition(2, 3)
+
+	tiles[10].Position = elements.NewPosition(1, 3)
+
+	tiles[11].Position = elements.NewPosition(1, 2)
+
+	// place tiles
+	for i, tile := range tiles[:len(tiles)-1] {
+		_, err := board.PlaceTile(tile)
+		if err != nil {
+			t.Fatalf("error placing tile number: %#v: %#v", i, err)
+		}
+
+		report = board.ScoreMonasteries(tile, false)
+		if !reflect.DeepEqual(report, elements.NewScoreReport()) {
+			t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected %#v, got %#v instead", i, elements.NewScoreReport(), report)
+		}
+	}
+
+	// place the last tile
+	_, err := board.PlaceTile(tiles[11])
+	if err != nil {
+		t.Fatalf("error placing tile number: %#v: %#v", 11, err)
+	}
+	report = board.ScoreMonasteries(tiles[11], false)
+	expectedReport := elements.NewScoreReport()
+	expectedReport.ReceivedPoints = map[elements.ID]uint32{
+		1: 9,
+		2: 9,
+	}
+	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
+		1: {0, 1},
+		2: {0, 1},
+	}
+	if !reflect.DeepEqual(report, expectedReport) {
+		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expectedReport, report)
+	}
+}
