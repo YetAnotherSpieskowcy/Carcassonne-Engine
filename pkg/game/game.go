@@ -157,7 +157,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 }
 
 func (game *Game) Finalize() (elements.ScoreReport, error) {
-	playerScores := elements.NewScoreReport() //make([]uint32, len(game.players))
+	playerScores := elements.NewScoreReport()
 
 	if _, err := game.GetCurrentTile(); !errors.Is(err, stack.ErrStackOutOfBounds) {
 		return playerScores, elements.ErrGameIsNotFinished
