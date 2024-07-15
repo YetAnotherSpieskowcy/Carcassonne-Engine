@@ -115,7 +115,19 @@ func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest)
 	responses := engine.sendBatch(requests)
 	concreteResponses := make([]*PlayTurnResponse, len(responses))
 	for i := range responses {
-		concreteResponses[i] = responses[i].(*PlayTurnResponse)
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*PlayTurnResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &PlayTurnResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
 	}
 	return concreteResponses
 }
@@ -128,7 +140,19 @@ func (engine *GameEngine) SendGameTreeBatch(concreteRequests []*GameTreeRequest)
 	responses := engine.sendBatch(requests)
 	concreteResponses := make([]*GameTreeResponse, len(responses))
 	for i := range responses {
-		concreteResponses[i] = responses[i].(*GameTreeResponse)
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*GameTreeResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &GameTreeResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
 	}
 	return concreteResponses
 }
