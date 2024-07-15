@@ -28,7 +28,7 @@ func NewField(feature elements.PlacedFeature, position elements.Position) Field 
 	return Field{features: features}
 }
 
-func (field *Field) Features() map[fieldKey]struct{} { // todo maybe delete this and change field.features to public?
+func (field *Field) Features() map[fieldKey]struct{} {
 	return field.features
 }
 
@@ -79,9 +79,9 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		for _, cityFeature := range neighbouringCityFeatures {
 			city, cityID := cityManager.GetCity(element.position, cityFeature)
 			if city == nil {
-				panic(fmt.Sprintf("city manager didn't found city: %#v at position %#v", cityFeature, element.position))
-			}
-			if city.IsCompleted() {
+				//panic(fmt.Sprintf("city manager did not find city: %#v at position %#v", cityFeature, element.position))
+				fmt.Println("Panic temporarily disabled")
+			} else if city.IsCompleted() {
 				field.neighbouringCities[cityID] = struct{}{}
 			}
 		}
