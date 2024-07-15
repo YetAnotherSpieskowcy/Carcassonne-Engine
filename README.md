@@ -63,6 +63,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 ```
 or run the build command manually:
 ```console
+go get github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API@main
 go build "./..."
 ```
 
@@ -82,6 +83,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 ```
 or run the test command manually:
 ```console
+go get github.com/YetAnotherSpieskowcy/Carcassonne-Engine-API@main
 go test -race "-coverprofile=coverage.txt" "./..."
 ```
 
