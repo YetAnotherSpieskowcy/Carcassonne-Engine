@@ -12,9 +12,10 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func TestFeaturesLengthOfFieldExpand(t *testing.T) { // todo maybe close the starting city and add check if it was counted?
+func TestFieldExpandFeatureAndCitiesCount(t *testing.T) {
 	/*
 		the board setup is as follows:
+		..C..
 		─┼SM·
 		··┌─┐
 		··M··
@@ -22,6 +23,7 @@ func TestFeaturesLengthOfFieldExpand(t *testing.T) { // todo maybe close the sta
 		· - empty
 		M - monastery with a single road
 		S - starting tile
+		C - city closing the starting tile
 		┌, ─, ┐, ┼ - roads
 
 		The meeple is placed on the field feature in the higher monastery tile (position: 1,0).
@@ -38,6 +40,7 @@ func TestFeaturesLengthOfFieldExpand(t *testing.T) { // todo maybe close the sta
 		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn()),
 		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
 		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(2)),
+		test.GetTestCustomPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
 	}
 
 	// add meeple to the field
@@ -55,6 +58,8 @@ func TestFeaturesLengthOfFieldExpand(t *testing.T) { // todo maybe close the sta
 
 	tiles[6].Position = elements.NewPosition(0, -2)
 
+	tiles[7].Position = elements.NewPosition(0, 1)
+
 	// place tiles
 	for i, tile := range tiles {
 		_, err := board.PlaceTile(tile)
@@ -67,7 +72,11 @@ func TestFeaturesLengthOfFieldExpand(t *testing.T) { // todo maybe close the sta
 	field := field.NewField(*tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field), tiles[0].Position)
 	field.Expand(board, board.cityManager)
 
-	if len(field.Features()) != 12 {
-		t.Fatalf("expected %#v, got %#v instead", 12, len(field.Features()))
+	if field.FeaturesCount() != 12 {
+		t.Fatalf("expected %#v, got %#v instead", 12, field.FeaturesCount())
+	}
+
+	if field.CitiesCount() != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, field.CitiesCount())
 	}
 }

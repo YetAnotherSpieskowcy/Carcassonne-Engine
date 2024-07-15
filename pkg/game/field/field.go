@@ -25,11 +25,15 @@ func NewField(feature elements.PlacedFeature, position elements.Position) Field 
 	features := map[fieldKey]struct{}{
 		{feature: feature, position: position}: {},
 	}
-	return Field{features: features}
+	return Field{features: features, neighbouringCities: map[int]struct{}{}}
 }
 
-func (field *Field) Features() map[fieldKey]struct{} {
-	return field.features
+func (field *Field) FeaturesCount() int {
+	return len(field.features)
+}
+
+func (field *Field) CitiesCount() int {
+	return len(field.neighbouringCities)
 }
 
 // Expands this field to maximum possible size (like flood fill) and finds all neighbouring cities
