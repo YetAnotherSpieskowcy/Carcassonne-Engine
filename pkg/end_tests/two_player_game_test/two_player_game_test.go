@@ -74,8 +74,10 @@ func Test2PlayerFullGame(t *testing.T) {
 | 	   ...
 */
 func checkFirstTurn(game *gameMod.Game, t *testing.T) {
+	pos := elements.NewPosition(0, 1)
+	end_tests.MakeTurn(game, t, pos, 2, elements.NormalMeeple, side.Bottom, feature.City)
 
-	end_tests.MakeTurn(game, t, elements.NewPosition(0, 1), 2, elements.NormalMeeple, side.Bottom, feature.City)
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.City, false) // removed meeple
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{7, 7})
 }
 
@@ -92,7 +94,10 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 | 	   ...
 */
 func checkSecondTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(1, 1), 0, elements.NormalMeeple, side.Left, feature.Road)
+	pos := elements.NewPosition(1, 1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Left, feature.Road)
+
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Left, feature.Road, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{7, 6})
 }
 
@@ -109,7 +114,10 @@ func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 | 	   ......
 */
 func checkThirdTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(1, 0), 0, elements.NoneMeeple, side.None, feature.None)
+	pos := elements.NewPosition(1, 0)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.None, feature.None)
+
+	end_tests.VerifyMeepleExistence(t, game, pos, side.TopLeftEdge, feature.Field, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 6})
 }
 
@@ -126,7 +134,10 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 | 	.M.......
 */
 func checkFourthTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(-1, 0), 0, elements.NormalMeeple, side.Bottom, feature.Road)
+	pos := elements.NewPosition(-1, 0)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Bottom, feature.Road)
+
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 5})
 }
 
@@ -147,7 +158,10 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 | 	...
 */
 func checkFifthTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(-1, 0), 0, elements.NormalMeeple, side.None, feature.Monastery)
+	pos := elements.NewPosition(-1, -1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.None, feature.Monastery)
+
+	end_tests.VerifyMeepleExistence(t, game, pos, side.None, feature.Monastery, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 6})
 
 }
@@ -168,7 +182,10 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 | 	...   ...
 */
 func checkSixthTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(1, -1), 0, elements.NormalMeeple, side.Right, feature.City)
+	pos := elements.NewPosition(1, -1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Right, feature.City)
+
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 5})
 }
 
@@ -190,7 +207,11 @@ func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 | 	...   ......
 */
 func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(2, -1), 0, elements.NormalMeeple, side.Right, feature.City)
+	pos := elements.NewPosition(2, -1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Right, feature.City)
+
+	end_tests.VerifyMeepleExistence(t, game, elements.NewPosition(1, -1), side.Right, feature.City, false) // removed meeple
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 6}, []uint8{4, 6})
 }
 
@@ -211,7 +232,10 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 | 	...   ......
 */
 func checkEightthTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(1, 1), 0, elements.NormalMeeple, side.Bottom, feature.Road)
+	pos := elements.NewPosition(1, 1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Bottom, feature.Road)
+
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 6}, []uint8{4, 5})
 }
 
@@ -233,7 +257,11 @@ func checkEightthTurn(game *gameMod.Game, t *testing.T) {
 | 	...   ......
 */
 func checkNinethTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(-1, 1), 0, elements.NormalMeeple, side.TopRightEdge, feature.Field)
+	pos := elements.NewPosition(-1, 1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.TopRightEdge, feature.Field)
+
+	end_tests.VerifyMeepleExistence(t, game, elements.NewPosition(1, 1), side.Left, feature.Road, false) // removed meeple
+	end_tests.VerifyMeepleExistence(t, game, pos, side.TopRightEdge, feature.Field, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 12}, []uint8{3, 6})
 }
 
@@ -255,7 +283,11 @@ func checkNinethTurn(game *gameMod.Game, t *testing.T) {
 | 	...   .........
 */
 func checkTenthTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(3, -1), 0, elements.NormalMeeple, side.Right, feature.City)
+	pos := elements.NewPosition(3, -1)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Right, feature.City)
+
+	end_tests.VerifyMeepleExistence(t, game, elements.NewPosition(2, 1), side.Right, feature.City, false) // removed meeple
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5})
 }
 
@@ -275,7 +307,9 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 | 	...   .........
 */
 func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(2, 0), 0, elements.NoneMeeple, side.None, feature.None)
+	pos := elements.NewPosition(2, 0)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.None, feature.None)
+
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5})
 }
 
@@ -294,7 +328,9 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 | 	...   .........
 */
 func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
-	end_tests.MakeTurn(game, t, elements.NewPosition(3, 0), 0, elements.NoneMeeple, side.None, feature.None)
+	pos := elements.NewPosition(3, 0)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.None, feature.None)
+
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5})
 }
 
