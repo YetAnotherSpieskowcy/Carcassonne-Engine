@@ -1,6 +1,7 @@
 package end_tests
 
 import (
+	"fmt"
 	"testing"
 
 	gameMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
@@ -48,4 +49,24 @@ func CheckMeeplesAndScore(game *gameMod.Game, t *testing.T, playerScores []uint3
 			t.Fatalf("Player %d received wrong amount of points! Expected: %d  Got: %d ", i+1, playerScores[i], player.Score())
 		}
 	}
+}
+
+func VerifyMeepleExistence(t *testing.T, game *gameMod.Game, pos elements.Position, side side.Side, featureType feature.Type, meepleExist bool) {
+	board := game.GetBoard()
+	placedTile, tileExists := board.GetTileAt(pos)
+	if !tileExists {
+		errorMsg := fmt.Sprintf("There is no tile on desired positon: %#v", pos)
+		t.Fatalf(errorMsg)
+	}
+	placedFeature := placedTile.GetPlacedFeatureAtSide(side, featureType)
+	if meepleExist {
+		if placedFeature.MeepleType != elements.NormalMeeple {
+			t.Fatalf("Missing meeple on a tile!")
+		}
+	} else {
+		if placedFeature.MeepleType != elements.NoneMeeple {
+			t.Fatalf("Meeple hasn't been removed!")
+		}
+	}
+
 }
