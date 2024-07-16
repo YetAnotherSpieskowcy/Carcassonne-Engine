@@ -5,37 +5,48 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
-type StartEntry struct {
-	Event        string       `json:"event"`
+type Entry struct {
+	Event   string `json:"event"`
+	Content []byte `json:"content"`
+}
+
+func NewEntry(event string, content []byte) Entry {
+	return Entry{
+		Event:   event,
+		Content: content,
+	}
+}
+
+type StartEntryContent struct {
 	StartingTile tiles.Tile   `json:"startingTile"`
 	Stack        []tiles.Tile `json:"stack"`
 	PlayerCount  int          `json:"playerCount"`
 }
 
-func NewStartEntry(startingTile tiles.Tile, stack []tiles.Tile, playerCount int) StartEntry {
-	return StartEntry{
-		Event:        "start",
+func NewStartEntryContent(startingTile tiles.Tile, stack []tiles.Tile, playerCount int) StartEntryContent {
+	return StartEntryContent{
 		StartingTile: startingTile,
 		Stack:        stack,
 		PlayerCount:  playerCount,
 	}
 }
 
-type PlaceTileEntry struct {
-	Event    string              `json:"event"`
+type PlaceTileEntryContent struct {
 	PlayerID elements.ID         `json:"playerID"`
 	Move     elements.PlacedTile `json:"move"`
 }
 
-func NewPlaceTileEntry(player elements.ID, move elements.PlacedTile) PlaceTileEntry {
-	return PlaceTileEntry{"place", player, move}
+func NewPlaceTileEntryContent(player elements.ID, move elements.PlacedTile) PlaceTileEntryContent {
+	return PlaceTileEntryContent{
+		PlayerID: player,
+		Move:     move,
+	}
 }
 
-type EndEntry struct {
-	Event  string               `json:"event"`
+type EndEntryContent struct {
 	Scores elements.ScoreReport `json:"scores"`
 }
 
-func NewEndEntry(scores elements.ScoreReport) EndEntry {
-	return EndEntry{"end", scores}
+func NewEndEntryContent(scores elements.ScoreReport) EndEntryContent {
+	return EndEntryContent{Scores: scores}
 }
