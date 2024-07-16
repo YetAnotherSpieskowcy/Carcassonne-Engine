@@ -6,11 +6,12 @@ import (
 
 	gameMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-func MakeTurn(game *gameMod.Game, t *testing.T, tilePosition elements.Position, rotations uint, meeple elements.MeepleType, featureSide side.Side, featureType feature.Type) {
+func MakeTurn(game *gameMod.Game, t *testing.T, tilePosition position.Position, rotations uint, meeple elements.MeepleType, featureSide side.Side, featureType feature.Type) {
 	tile, err := game.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -51,7 +52,7 @@ func CheckMeeplesAndScore(game *gameMod.Game, t *testing.T, playerScores []uint3
 	}
 }
 
-func VerifyMeepleExistence(t *testing.T, game *gameMod.Game, pos elements.Position, side side.Side, featureType feature.Type, meepleExist bool) {
+func VerifyMeepleExistence(t *testing.T, game *gameMod.Game, pos position.Position, side side.Side, featureType feature.Type, meepleExist bool) {
 	board := game.GetBoard()
 	placedTile, tileExists := board.GetTileAt(pos)
 	if !tileExists {
