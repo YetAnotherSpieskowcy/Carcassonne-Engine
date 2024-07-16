@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -33,7 +34,7 @@ func TestBoardGetTilePlacementsForReturnsEmptySliceWhenCityCannotBePlaced(t *tes
 	// and then try finding legal moves of a tile filled with a city terrain
 	board := NewBoard(tilesets.StandardTileSet())
 	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
-	ptile.Position = elements.NewPosition(0, 1)
+	ptile.Position = position.New(0, 1)
 	_, err := board.PlaceTile(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -121,7 +122,7 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 	}
 	// place the test tile (single city edge) below starting tile
 	// (connecting with the field)
-	expected[3].Position = elements.NewPosition(0, -1)
+	expected[3].Position = position.New(0, -1)
 
 	_, err := board.PlaceTile(expected[1])
 	if err != nil {
@@ -160,10 +161,10 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	tiles[0].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(0, 1)
-	tiles[1].Position = elements.NewPosition(1, 1)
-	tiles[2].Position = elements.NewPosition(0, 2)
-	tiles[3].Position = elements.NewPosition(1, 2)
+	tiles[0].Position = position.New(0, 1)
+	tiles[1].Position = position.New(1, 1)
+	tiles[2].Position = position.New(0, 2)
+	tiles[3].Position = position.New(1, 2)
 
 	// place tiles
 	for i, tile := range tiles {
@@ -242,23 +243,23 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	tiles[11].Monastery().Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(0, 1)
-	tiles[1].Position = elements.NewPosition(0, 2)
-	tiles[2].Position = elements.NewPosition(0, 3)
+	tiles[0].Position = position.New(0, 1)
+	tiles[1].Position = position.New(0, 2)
+	tiles[2].Position = position.New(0, 3)
 
-	tiles[3].Position = elements.NewPosition(-1, 1)
-	tiles[4].Position = elements.NewPosition(-1, 2)
-	tiles[5].Position = elements.NewPosition(-1, 3)
+	tiles[3].Position = position.New(-1, 1)
+	tiles[4].Position = position.New(-1, 2)
+	tiles[5].Position = position.New(-1, 3)
 
-	tiles[6].Position = elements.NewPosition(1, 1)
+	tiles[6].Position = position.New(1, 1)
 
-	tiles[7].Position = elements.NewPosition(2, 1)
-	tiles[8].Position = elements.NewPosition(2, 2)
-	tiles[9].Position = elements.NewPosition(2, 3)
+	tiles[7].Position = position.New(2, 1)
+	tiles[8].Position = position.New(2, 2)
+	tiles[9].Position = position.New(2, 3)
 
-	tiles[10].Position = elements.NewPosition(1, 3)
+	tiles[10].Position = position.New(1, 3)
 
-	tiles[11].Position = elements.NewPosition(1, 2)
+	tiles[11].Position = position.New(1, 2)
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
