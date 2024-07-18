@@ -5,12 +5,20 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
+type EventType string
+
+const (
+	StartEvent     EventType = "start"
+	PlaceTileEvent EventType = "place"
+	ScoreEvent     EventType = "score"
+)
+
 type Entry struct {
-	Event   string `json:"event"`
-	Content []byte `json:"content"`
+	Event   EventType `json:"event"`
+	Content []byte    `json:"content"`
 }
 
-func NewEntry(event string, content []byte) Entry {
+func NewEntry(event EventType, content []byte) Entry {
 	return Entry{
 		Event:   event,
 		Content: content,
@@ -43,10 +51,10 @@ func NewPlaceTileEntryContent(player elements.ID, move elements.PlacedTile) Plac
 	}
 }
 
-type EndEntryContent struct {
+type ScoreEntryContent struct {
 	Scores elements.ScoreReport `json:"scores"`
 }
 
-func NewEndEntryContent(scores elements.ScoreReport) EndEntryContent {
-	return EndEntryContent{Scores: scores}
+func NewScoreEntryContent(scores elements.ScoreReport) ScoreEntryContent {
+	return ScoreEntryContent{Scores: scores}
 }

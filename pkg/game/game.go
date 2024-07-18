@@ -53,7 +53,7 @@ func NewFromDeck(
 		return nil, err
 	}
 	if err := log.LogEvent(
-		"start", logger.NewStartEntryContent(game.deck.StartingTile, game.deck.GetRemaining(), len(game.players)),
+		logger.StartEvent, logger.NewStartEntryContent(game.deck.StartingTile, game.deck.GetRemaining(), len(game.players)),
 	); err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		return err
 	}
 	if err = game.log.LogEvent(
-		"place", logger.NewPlaceTileEntryContent(player.ID(), move),
+		logger.PlaceTileEvent, logger.NewPlaceTileEntryContent(player.ID(), move),
 	); err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 	for _, player := range game.players {
 		playerScores.ReceivedPoints[player.ID()] = player.Score()
 	}
-	if err := game.log.LogEvent("end", logger.NewEndEntryContent(playerScores)); err != nil {
+	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(playerScores)); err != nil {
 		return playerScores, err
 	}
 

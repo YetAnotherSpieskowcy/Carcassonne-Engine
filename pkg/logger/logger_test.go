@@ -46,13 +46,13 @@ func TestFileLogger(t *testing.T) {
 	expectedStack := deck.GetRemaining()
 	expectedPlayerCount := 2
 
-	err = log.LogEvent("start", NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount))
+	err = log.LogEvent(StartEvent, NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	playerID := player.New(1)
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent("place", NewPlaceTileEntryContent(playerID.ID(), expectedTile))
+	err = log.LogEvent(PlaceTileEvent, NewPlaceTileEntryContent(playerID.ID(), expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -60,7 +60,7 @@ func TestFileLogger(t *testing.T) {
 	expectedScores := elements.NewScoreReport()
 	expectedScores.ReceivedPoints[playerID.ID()] = 1
 	expectedScores.ReceivedPoints[elements.ID(2)] = 2
-	err = log.LogEvent("end", NewEndEntryContent(expectedScores))
+	err = log.LogEvent(ScoreEvent, NewScoreEntryContent(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -68,7 +68,7 @@ func TestFileLogger(t *testing.T) {
 	var entryLine Entry
 	var startContent StartEntryContent
 	var placeTileContent PlaceTileEntryContent
-	var endContent EndEntryContent
+	var endContent ScoreEntryContent
 
 	log.Close()
 
@@ -85,8 +85,8 @@ func TestFileLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if entryLine.Event != "start" {
-		t.Fatalf("expected %#v, got %#v instead", "start", entryLine.Event)
+	if entryLine.Event != StartEvent {
+		t.Fatalf("expected %#v, got %#v instead", StartEvent, entryLine.Event)
 	}
 	err = json.Unmarshal(entryLine.Content, &startContent)
 	if err != nil {
@@ -107,8 +107,8 @@ func TestFileLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if entryLine.Event != "place" {
-		t.Fatalf("expected %#v, got %#v instead", "place", entryLine.Event)
+	if entryLine.Event != PlaceTileEvent {
+		t.Fatalf("expected %#v, got %#v instead", PlaceTileEvent, entryLine.Event)
 	}
 	err = json.Unmarshal(entryLine.Content, &placeTileContent)
 	if err != nil {
@@ -126,8 +126,8 @@ func TestFileLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if entryLine.Event != "end" {
-		t.Fatalf("expected %#v, got %#v instead", "end", entryLine.Event)
+	if entryLine.Event != ScoreEvent {
+		t.Fatalf("expected %#v, got %#v instead", ScoreEvent, entryLine.Event)
 	}
 	err = json.Unmarshal(entryLine.Content, &endContent)
 	if err != nil {
@@ -158,7 +158,7 @@ func TestFileLoggerInvalidFiles(t *testing.T) {
 	}
 
 	deck := getTestDeck()
-	err = log.LogEvent("start", NewStartEntryContent(deck.StartingTile, deck.Stack.GetTiles(), 2))
+	err = log.LogEvent(StartEvent, NewStartEntryContent(deck.StartingTile, deck.Stack.GetTiles(), 2))
 	if err == nil {
 		t.Fatal("FAILED")
 	}
@@ -174,13 +174,13 @@ func TestLogger(t *testing.T) {
 	expectedStack := deck.GetRemaining()
 	expectedStartingTile := deck.StartingTile
 	expectedPlayerCount := 2
-	err := log.LogEvent("start", NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount))
+	err := log.LogEvent(StartEvent, NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	playerID := player.New(1)
 	expectedTile := test.GetTestPlacedTile()
-	err = log.LogEvent("place", NewPlaceTileEntryContent(playerID.ID(), expectedTile))
+	err = log.LogEvent(PlaceTileEvent, NewPlaceTileEntryContent(playerID.ID(), expectedTile))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -188,7 +188,7 @@ func TestLogger(t *testing.T) {
 	expectedScores := elements.NewScoreReport()
 	expectedScores.ReceivedPoints[playerID.ID()] = 1
 	expectedScores.ReceivedPoints[elements.ID(2)] = 2
-	err = log.LogEvent("end", NewEndEntryContent(expectedScores))
+	err = log.LogEvent(ScoreEvent, NewScoreEntryContent(expectedScores))
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -201,14 +201,14 @@ func TestLogger(t *testing.T) {
 	var entryLine Entry
 	var startContent StartEntryContent
 	var placeTileContent PlaceTileEntryContent
-	var endContent EndEntryContent
+	var endContent ScoreEntryContent
 
 	err = json.Unmarshal([]byte(line), &entryLine)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if entryLine.Event != "start" {
-		t.Fatalf("expected %#v, got %#v instead", "start", entryLine.Event)
+	if entryLine.Event != StartEvent {
+		t.Fatalf("expected %#v, got %#v instead", StartEvent, entryLine.Event)
 	}
 	err = json.Unmarshal(entryLine.Content, &startContent)
 	if err != nil {
@@ -232,8 +232,8 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if entryLine.Event != "place" {
-		t.Fatalf("expected %#v, got %#v instead", "place", entryLine.Event)
+	if entryLine.Event != PlaceTileEvent {
+		t.Fatalf("expected %#v, got %#v instead", PlaceTileEvent, entryLine.Event)
 	}
 	err = json.Unmarshal(entryLine.Content, &placeTileContent)
 	if err != nil {
@@ -254,8 +254,8 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if entryLine.Event != "end" {
-		t.Fatalf("expected %#v, got %#v instead", "end", entryLine.Event)
+	if entryLine.Event != ScoreEvent {
+		t.Fatalf("expected %#v, got %#v instead", ScoreEvent, entryLine.Event)
 	}
 	err = json.Unmarshal(entryLine.Content, &endContent)
 	if err != nil {

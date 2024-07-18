@@ -13,7 +13,7 @@ func New(writer io.Writer) Logger {
 	return Logger{writer}
 }
 
-func (logger *Logger) LogEvent(eventName string, event interface{}) error {
+func (logger *Logger) LogEvent(eventName EventType, event interface{}) error {
 	jsonData, err := json.Marshal(event)
 	if err != nil {
 		return err
