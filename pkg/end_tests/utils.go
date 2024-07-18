@@ -52,7 +52,7 @@ func CheckMeeplesAndScore(game *gameMod.Game, t *testing.T, playerScores []uint3
 }
 
 func VerifyMeepleExistence(t *testing.T, game *gameMod.Game, pos position.Position, side side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
-	board := game.GetBoard() //nolint:typecheck
+	board := game.GetBoard() // nolint:typecheck
 	placedTile, tileExists := board.GetTileAt(pos)
 	if !tileExists {
 		t.Fatalf("Turn %d: There is no tile on desired positon: %#v", turnNumber, pos)
