@@ -21,9 +21,6 @@ func (fl *FileLogger) Open(filename string) error {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	fl.file = file
 	fl.writer = file
-	if err != nil {
-		return err
-	}
 	return err
 }
 
