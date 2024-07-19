@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"encoding/json"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
@@ -39,6 +41,15 @@ func NewStartEntryContent(startingTile tiles.Tile, stack []tiles.Tile, playerCou
 	}
 }
 
+func ParseStartEntryContent(entryContent []byte) StartEntryContent {
+	var content StartEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
 type PlaceTileEntryContent struct {
 	PlayerID elements.ID         `json:"playerID"`
 	Move     elements.PlacedTile `json:"move"`
@@ -51,10 +62,28 @@ func NewPlaceTileEntryContent(player elements.ID, move elements.PlacedTile) Plac
 	}
 }
 
+func ParsePlaceTileEntryContent(entryContent []byte) PlaceTileEntryContent {
+	var content PlaceTileEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
 type ScoreEntryContent struct {
 	Scores elements.ScoreReport `json:"scores"`
 }
 
 func NewScoreEntryContent(scores elements.ScoreReport) ScoreEntryContent {
 	return ScoreEntryContent{Scores: scores}
+}
+
+func ParseScoreEntryContent(entryContent []byte) ScoreEntryContent {
+	var content ScoreEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
 }

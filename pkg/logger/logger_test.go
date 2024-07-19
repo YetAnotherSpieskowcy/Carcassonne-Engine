@@ -37,10 +37,6 @@ func TestFileLogger(t *testing.T) {
 	}
 	defer os.Remove(filename)
 
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
 	deck := getTestDeck()
 	expectedStartingTile := deck.StartingTile
 	expectedStack := deck.GetRemaining()
@@ -77,7 +73,6 @@ func TestFileLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 
 	scanner.Scan()
@@ -136,6 +131,90 @@ func TestFileLogger(t *testing.T) {
 	if !reflect.DeepEqual(endContent.Scores, expectedScores) {
 		t.Fatalf("expected %#v, got %#v instead", expectedScores, endContent.Scores)
 	}
+
+}
+
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
+func TestReadLogsFileLogger(t *testing.T) {
+	filename := "test_file.jsonl"
+
+	log, err := NewFromFile(filename)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	defer os.Remove(filename)
+
+	deck := getTestDeck()
+	expectedStartingTile := deck.StartingTile
+	expectedStack := deck.GetRemaining()
+	expectedPlayerCount := 2
+
+	err = log.LogEvent(StartEvent, NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	playerID := player.New(1)
+	expectedTile := test.GetTestPlacedTile()
+	err = log.LogEvent(PlaceTileEvent, NewPlaceTileEntryContent(playerID.ID(), expectedTile))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	expectedScores := elements.NewScoreReport()
+	expectedScores.ReceivedPoints[playerID.ID()] = 1
+	expectedScores.ReceivedPoints[elements.ID(2)] = 2
+	err = log.LogEvent(ScoreEvent, NewScoreEntryContent(expectedScores))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var startContent StartEntryContent
+	var placeTileContent PlaceTileEntryContent
+	var endContent ScoreEntryContent
+
+	for e := range log.ReadLogs() {
+		switch e.Event {
+		case StartEvent:
+			err = json.Unmarshal(e.Content, &startContent)
+			if err != nil {
+				t.Fatal(err.Error())
+			}
+			if !reflect.DeepEqual(startContent.StartingTile, expectedStartingTile) {
+				t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startContent.StartingTile)
+			}
+			if !reflect.DeepEqual(startContent.Stack, expectedStack) {
+				t.Fatalf("expected %#v, got %#v instead", expectedStack, startContent.Stack)
+			}
+			if !reflect.DeepEqual(startContent.PlayerCount, expectedPlayerCount) {
+				t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startContent.PlayerCount)
+			}
+		case PlaceTileEvent:
+			err = json.Unmarshal(e.Content, &placeTileContent)
+			if err != nil {
+				t.Fatal(err.Error())
+			}
+			if placeTileContent.PlayerID != playerID.ID() {
+				t.Fatalf("expected %#v, got %#v instead", playerID.ID(), placeTileContent.PlayerID)
+			}
+			if !reflect.DeepEqual(placeTileContent.Move, expectedTile) {
+				t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileContent.Move)
+			}
+		case ScoreEvent:
+			err = json.Unmarshal(e.Content, &endContent)
+
+			if err != nil {
+				t.Fatal(err.Error())
+			}
+
+			if !reflect.DeepEqual(endContent.Scores, expectedScores) {
+				t.Fatalf("expected %#v, got %#v instead", expectedScores, endContent.Scores)
+			}
+		default:
+			t.Fatalf("unexpected event type")
+		}
+	}
+
+	log.Close()
 }
 
 func TestFileLoggerInvalidFiles(t *testing.T) {
@@ -263,5 +342,104 @@ func TestLogger(t *testing.T) {
 	}
 	if !reflect.DeepEqual(endContent.Scores, expectedScores) {
 		t.Fatalf("expected %#v, got %#v instead", expectedScores, endContent.Scores)
+	}
+}
+
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
+func TestParseEntries(t *testing.T) {
+	buffer := bytes.NewBuffer(nil)
+
+	log := New(buffer)
+
+	deck := getTestDeck()
+	expectedStack := deck.GetRemaining()
+	expectedStartingTile := deck.StartingTile
+	expectedPlayerCount := 2
+	err := log.LogEvent(StartEvent, NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	playerID := player.New(1)
+	expectedTile := test.GetTestPlacedTile()
+	err = log.LogEvent(PlaceTileEvent, NewPlaceTileEntryContent(playerID.ID(), expectedTile))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	expectedScores := elements.NewScoreReport()
+	expectedScores.ReceivedPoints[playerID.ID()] = 1
+	expectedScores.ReceivedPoints[elements.ID(2)] = 2
+	err = log.LogEvent(ScoreEvent, NewScoreEntryContent(expectedScores))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	line, err := buffer.ReadString(byte('\n'))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var entryLine Entry
+
+	err = json.Unmarshal([]byte(line), &entryLine)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if entryLine.Event != StartEvent {
+		t.Fatalf("expected %#v, got %#v instead", StartEvent, entryLine.Event)
+	}
+	startContent := ParseStartEntryContent(entryLine.Content)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if !reflect.DeepEqual(startContent.StartingTile, expectedStartingTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startContent.StartingTile)
+	}
+	if !reflect.DeepEqual(startContent.Stack, expectedStack) {
+		t.Fatalf("expected %#v, got %#v instead", expectedStack, startContent.Stack)
+	}
+	if !reflect.DeepEqual(startContent.PlayerCount, expectedPlayerCount) {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startContent.PlayerCount)
+	}
+
+	line, err = buffer.ReadString(byte('\n'))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	err = json.Unmarshal([]byte(line), &entryLine)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if entryLine.Event != PlaceTileEvent {
+		t.Fatalf("expected %#v, got %#v instead", PlaceTileEvent, entryLine.Event)
+	}
+	placeTileContent := ParsePlaceTileEntryContent(entryLine.Content)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if placeTileContent.PlayerID != playerID.ID() {
+		t.Fatalf("expected %#v, got %#v instead", playerID.ID(), placeTileContent.PlayerID)
+	}
+	if !reflect.DeepEqual(placeTileContent.Move, expectedTile) {
+		t.Fatalf("expected %#v, got %#v instead", expectedTile, placeTileContent.Move)
+	}
+
+	line, err = buffer.ReadString(byte('\n'))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	err = json.Unmarshal([]byte(line), &entryLine)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if entryLine.Event != ScoreEvent {
+		t.Fatalf("expected %#v, got %#v instead", ScoreEvent, entryLine.Event)
+	}
+	scoreContent := ParseScoreEntryContent(entryLine.Content)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if !reflect.DeepEqual(scoreContent.Scores, expectedScores) {
+		t.Fatalf("expected %#v, got %#v instead", expectedScores, scoreContent.Scores)
 	}
 }
