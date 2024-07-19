@@ -134,6 +134,7 @@ func TestFileLogger(t *testing.T) {
 
 }
 
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
 func TestReadLogsFileLogger(t *testing.T) {
 	filename := "test_file.jsonl"
 
@@ -344,6 +345,7 @@ func TestLogger(t *testing.T) {
 	}
 }
 
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
 func TestParseEntries(t *testing.T) {
 	buffer := bytes.NewBuffer(nil)
 
