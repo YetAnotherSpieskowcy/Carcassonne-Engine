@@ -8,8 +8,7 @@ import (
 
 type FileLogger struct {
 	Logger
-	file     *os.File
-	filename string
+	file *os.File
 }
 
 func NewFromFile(filename string) (FileLogger, error) {
@@ -25,7 +24,6 @@ func (fl *FileLogger) Open(filename string) error {
 	if err != nil {
 		return err
 	}
-	fl.filename = filename
 	return err
 }
 
