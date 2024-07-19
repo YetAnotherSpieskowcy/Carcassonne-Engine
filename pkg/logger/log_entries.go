@@ -45,7 +45,7 @@ func ParseStartEntryContent(entryContent []byte) StartEntryContent {
 	var content StartEntryContent
 	err := json.Unmarshal(entryContent, &content)
 	if err != nil {
-		return StartEntryContent{}
+		panic(err)
 	}
 	return content
 }
@@ -66,7 +66,7 @@ func ParsePlaceTileEntryContent(entryContent []byte) PlaceTileEntryContent {
 	var content PlaceTileEntryContent
 	err := json.Unmarshal(entryContent, &content)
 	if err != nil {
-		return PlaceTileEntryContent{}
+		panic(err)
 	}
 	return content
 }
@@ -83,7 +83,7 @@ func ParseScoreEntryContent(entryContent []byte) ScoreEntryContent {
 	var content ScoreEntryContent
 	err := json.Unmarshal(entryContent, &content)
 	if err != nil {
-		return ScoreEntryContent{}
+		panic(err)
 	}
 	return content
 }
