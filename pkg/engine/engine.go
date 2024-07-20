@@ -45,6 +45,10 @@ func newCommunicator() *communicator {
 }
 
 func (comm *communicator) Shutdown() {
+	if comm.closed {
+		comm.workGroup.Wait()
+		return
+	}
 	comm.closed = true
 	close(comm.inputBuffer)
 	comm.workGroup.Wait()
