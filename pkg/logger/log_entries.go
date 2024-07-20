@@ -1,42 +1,89 @@
 package logger
 
 import (
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
+	"encoding/json"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
-type StartEntry struct {
-	Event        string       `json:"event"`
+type EventType string
+
+const (
+	StartEvent     EventType = "start"
+	PlaceTileEvent EventType = "place"
+	ScoreEvent     EventType = "score"
+)
+
+type Entry struct {
+	Event   EventType `json:"event"`
+	Content []byte    `json:"content"`
+}
+
+func NewEntry(event EventType, content []byte) Entry {
+	return Entry{
+		Event:   event,
+		Content: content,
+	}
+}
+
+type StartEntryContent struct {
 	StartingTile tiles.Tile   `json:"startingTile"`
 	Stack        []tiles.Tile `json:"stack"`
 	PlayerCount  int          `json:"playerCount"`
 }
 
-func NewStartEntry(deck deck.Deck, playerCount int) StartEntry {
-	return StartEntry{
-		Event:        "start",
-		StartingTile: deck.StartingTile,
-		Stack:        deck.GetRemaining(),
+func NewStartEntryContent(startingTile tiles.Tile, stack []tiles.Tile, playerCount int) StartEntryContent {
+	return StartEntryContent{
+		StartingTile: startingTile,
+		Stack:        stack,
 		PlayerCount:  playerCount,
 	}
 }
 
-type PlaceTileEntry struct {
-	Event    string              `json:"event"`
+func ParseStartEntryContent(entryContent []byte) StartEntryContent {
+	var content StartEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
+type PlaceTileEntryContent struct {
 	PlayerID elements.ID         `json:"playerID"`
 	Move     elements.PlacedTile `json:"move"`
 }
 
-func NewPlaceTileEntry(player elements.Player, move elements.PlacedTile) PlaceTileEntry {
-	return PlaceTileEntry{"place", player.ID(), move}
+func NewPlaceTileEntryContent(player elements.ID, move elements.PlacedTile) PlaceTileEntryContent {
+	return PlaceTileEntryContent{
+		PlayerID: player,
+		Move:     move,
+	}
 }
 
-type EndEntry struct {
-	Event  string   `json:"event"`
-	Scores []uint32 `json:"scores"`
+func ParsePlaceTileEntryContent(entryContent []byte) PlaceTileEntryContent {
+	var content PlaceTileEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
 }
 
-func NewEndEntry(scores []uint32) EndEntry {
-	return EndEntry{"end", scores}
+type ScoreEntryContent struct {
+	Scores elements.ScoreReport `json:"scores"`
+}
+
+func NewScoreEntryContent(scores elements.ScoreReport) ScoreEntryContent {
+	return ScoreEntryContent{Scores: scores}
+}
+
+func ParseScoreEntryContent(entryContent []byte) ScoreEntryContent {
+	var content ScoreEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
 }

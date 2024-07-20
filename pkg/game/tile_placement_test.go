@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -34,7 +35,7 @@ func TestMultipleStraightRoadsPlacement(t *testing.T) {
 	}
 
 	ptile := elements.ToPlacedTile(tiletemplates.StraightRoads())
-	ptile.Position = elements.NewPosition(1, 0)
+	ptile.Position = position.New(1, 0)
 	_, err := board.PlaceTile(ptile)
 	if err != nil {
 		t.Fail()
@@ -47,7 +48,7 @@ func TestMultipleStraightRoadsPlacement(t *testing.T) {
 	}
 
 	ptile = elements.ToPlacedTile(tiletemplates.StraightRoads())
-	ptile.Position = elements.NewPosition(2, 0)
+	ptile.Position = position.New(2, 0)
 	_, err = board.PlaceTile(ptile)
 	if err != nil {
 		t.Fail()

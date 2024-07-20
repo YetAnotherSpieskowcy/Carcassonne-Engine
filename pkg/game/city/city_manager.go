@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
@@ -22,12 +23,12 @@ func NewCityManager() Manager {
 // Finds cities surrounding position of a tile
 // Returns a map of indexes of cities in
 // manager.cities list with side of a tile as a key.
-func (manager Manager) findCities(pos elements.Position) map[side.Side]int {
-	positions := map[side.Side]elements.Position{
-		side.Top:    elements.NewPosition(pos.X(), pos.Y()+1),
-		side.Right:  elements.NewPosition(pos.X()+1, pos.Y()),
-		side.Bottom: elements.NewPosition(pos.X(), pos.Y()-1),
-		side.Left:   elements.NewPosition(pos.X()-1, pos.Y()),
+func (manager Manager) findCities(pos position.Position) map[side.Side]int {
+	positions := map[side.Side]position.Position{
+		side.Top:    position.New(pos.X(), pos.Y()+1),
+		side.Right:  position.New(pos.X()+1, pos.Y()),
+		side.Bottom: position.New(pos.X(), pos.Y()-1),
+		side.Left:   position.New(pos.X()-1, pos.Y()),
 	}
 
 	foundCities := map[side.Side]int{}

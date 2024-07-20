@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
@@ -21,7 +22,7 @@ func (board *BoardMock) Tiles() []elements.PlacedTile {
 	return []elements.PlacedTile{}
 }
 
-func (board *BoardMock) GetTileAt(pos elements.Position) (elements.PlacedTile, bool) {
+func (board *BoardMock) GetTileAt(pos position.Position) (elements.PlacedTile, bool) {
 	_ = pos
 	return elements.PlacedTile{}, true
 }
