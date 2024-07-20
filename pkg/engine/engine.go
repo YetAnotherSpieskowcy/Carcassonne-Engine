@@ -60,11 +60,11 @@ type SerializedGameWithID struct {
 }
 
 type GameEngine struct {
-	comm       *communicator
-	logDir     string
-	games      map[int]*game.Game
-	nextGameID int
-	nextReqID  int
+	comm          *communicator
+	logDir        string
+	games         map[int]*game.Game
+	nextGameID    int
+	nextRequestID int
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -73,11 +73,11 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 	}
 	comm := newCommunicator()
 	engine := &GameEngine{
-		comm:       comm,
-		logDir:     logDir,
-		games:      map[int]*game.Game{},
-		nextGameID: 1,
-		nextReqID:  1,
+		comm:          comm,
+		logDir:        logDir,
+		games:         map[int]*game.Game{},
+		nextGameID:    1,
+		nextRequestID: 1,
 	}
 
 	for range workerCount {
@@ -216,8 +216,8 @@ func (engine *GameEngine) prepareWorkerInput(
 	}
 	delete(engine.games, gameID)
 
-	requestID := engine.nextReqID
-	engine.nextReqID++
+	requestID := engine.nextRequestID
+	engine.nextRequestID++
 	return workerInput{
 		requestID:    requestID,
 		waitGroup:    waitGroup,
