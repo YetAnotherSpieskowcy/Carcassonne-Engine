@@ -140,6 +140,7 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputReqIndexes := map[int]int{}
 	outputReqIndexesLock := sync.RWMutex{}
 
+	games := map[int]*game.Game{}
 	responses := make([]Response, len(requests))
 	outputBuffer := make(chan workerOutput, len(requests))
 	waitGroup := sync.WaitGroup{}
@@ -162,6 +163,7 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 			responses[i] = &SyncResponse{BaseResponse{gameID: req.gameID(), err: err}}
 			continue
 		}
+		games[req.gameID()] = input.game
 		outputReqIndexesLock.Lock()
 		outputReqIndexes[input.requestID] = i
 		outputReqIndexesLock.Unlock()
@@ -172,6 +174,12 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	close(outputBuffer)
 
 	outputWaitGroup.Wait()
+
+	// prepareWorkerInput removes games from the map to avoid concurrent
+	// requests to the same game. Now it's time to add them back.
+	for gameID, game := range games {
+		engine.games[gameID] = game
+	}
 
 	return responses
 }
@@ -189,6 +197,8 @@ func (engine *GameEngine) prepareWorkerInput(
 	if !ok {
 		return workerInput{}, ErrGameNotFound
 	}
+	// Delete the game to avoid concurrent requests to it
+	// This needs to be added back by the caller when the requests finishes.
 	delete(engine.games, gameID)
 
 	requestID := engine.nextRequestID
