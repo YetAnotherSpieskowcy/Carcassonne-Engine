@@ -32,6 +32,8 @@ func worker(comm *communicator) {
 	}
 }
 
+// Internal struct with communication tools used by the game engine to send requests
+// and cooperatively shutdown the workers.
 type communicator struct {
 	workGroup   sync.WaitGroup
 	inputBuffer chan workerInput
@@ -59,6 +61,8 @@ type SerializedGameWithID struct {
 	Game game.SerializedGame
 }
 
+// The entry point for Python side of things - the engine keeps track of created games,
+// sends requests to its workers and returns back responses received from them.
 type GameEngine struct {
 	comm          *communicator
 	logDir        string
@@ -92,6 +96,7 @@ func (engine *GameEngine) Shutdown() {
 	engine.comm.Shutdown()
 }
 
+// Generate a random game from the given tileset.
 func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGameWithID, error) {
 	id := engine.nextGameID
 	engine.nextGameID++
@@ -111,6 +116,8 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 
+// Due to limitations of Python bindings generator with []interface return type,
+// this wraps sendBatch() and limits the return type to only one Response type.
 func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest) []*PlayTurnResponse {
 	requests := make([]Request, len(concreteRequests))
 	for i := range concreteRequests {
@@ -136,6 +143,16 @@ func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest)
 	return concreteResponses
 }
 
+// API for handling the sent requests using background workers.
+// The order and types of returned responses correspond to the requests slice.
+//
+// If a request fails before reaching a worker, a `SyncResponse` type will be
+// be returned in place of the worker response.
+//
+// Concurrent calls to this function can be made but no more than
+// one request for a *single* game (ID) can be performed at the same time
+// to avoid concurrent writes by the workers on different threads.
+// You will receive `ErrGameNotFound` error, if you try doing so.
 func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputReqIndexes := map[int]int{}
 	outputReqIndexesLock := sync.RWMutex{}
@@ -170,9 +187,11 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 		engine.send(input)
 	}
 
+	// Wait for all workers request to finish running on the workers.
 	waitGroup.Wait()
+	// Close the output buffer to let the response-handling goroutine know
+	// that there will be no more requests and wait for it to finish.
 	close(outputBuffer)
-
 	outputWaitGroup.Wait()
 
 	// prepareWorkerInput removes games from the map to avoid concurrent
@@ -184,6 +203,11 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	return responses
 }
 
+// Prepare the input that will be sent through engine's input buffer
+// to a worker. This mutates engine's games map (deleting the game from
+// the request) and updates the next free request ID.
+// If this function did not return an error, the caller needs to readd
+// the game from the request after the worker is done with it.
 func (engine *GameEngine) prepareWorkerInput(
 	waitGroup *sync.WaitGroup,
 	outputBuffer chan workerOutput,
