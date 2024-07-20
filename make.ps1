@@ -1,11 +1,21 @@
 <#
 .Synopsis
-Makefile script in PowerShell that contains commands useful during development of Carcassonne-Engine.
+Makefile script in PowerShell that contains commands useful
+during development of Carcassonne-Engine.
 
 .Description
 Available commands:
-   build             Build all Go source files.
-   test              Run the test suite.
+   build-and-install Build all Go source files
+                     + build and install Python bindings.
+   build             Build all Go source files and Python bindings.
+   build-go          Build all Go source files.
+   build-python      Build Python bindings.
+   install-python    Build and install Python bindings.
+   test              Run the Go and Python test suite
+                     (Python bindings always get freshly built and installed).
+   test-go           Run the Go test suite.
+   test-python       Run the Python test suite.
+                     (Python bindings always get freshly built and installed).
    open-coverage     Show coverage in the browser after running the test suite.
    lint              Lint all Go source files.
 
@@ -41,8 +51,8 @@ param (
             "test",
             "test-go",
             "test-python",
-            "lint",
-            "open-coverage"
+            "open-coverage",
+            "lint"
         )
         return $script:availableCommands | Where-Object { $_ -like "$wordToComplete*" }
     })]
@@ -129,6 +139,11 @@ function test-python() {
     Exit-On-Fail $LASTEXITCODE
 }
 
+function open-coverage() {
+    & go tool cover "-html=coverage.txt"
+    Write-Output "Coverage opened in the default browser."
+}
+
 function lint() {
     Write-Output "Running the linter..."
     & docker run --rm `
@@ -144,11 +159,6 @@ function lint() {
         "ghcr.io/super-linter/super-linter:v6.3.0"
 }
 
-function open-coverage() {
-    & go tool cover "-html=coverage.txt"
-    Write-Output "Coverage opened in the default browser."
-}
-
 $script:availableCommands = @(
     "build-and-install",
     "build",
@@ -158,8 +168,8 @@ $script:availableCommands = @(
     "test",
     "test-go",
     "test-python",
-    "lint",
-    "open-coverage"
+    "open-coverage",
+    "lint"
 )
 
 if (!$command) {
