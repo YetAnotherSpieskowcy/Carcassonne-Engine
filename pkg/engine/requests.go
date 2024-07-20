@@ -35,18 +35,3 @@ func (req *PlayTurnRequest) execute(game *game.Game) Response {
 }
 
 // TODO: implement game tree request based on agent's needs
-type GameTreeResponse struct {
-	BaseResponse
-}
-type GameTreeRequest struct {
-	GameID int
-}
-
-func (req *GameTreeRequest) gameID() int {
-	return req.GameID
-}
-
-func (req *GameTreeRequest) execute(game *game.Game) Response {
-	_ = game
-	panic("game tree request not implemented")
-}
