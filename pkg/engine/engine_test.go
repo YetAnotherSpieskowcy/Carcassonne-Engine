@@ -27,6 +27,15 @@ func (req *testRequest) execute(game *game.Game) Response {
 	return &testResponse{BaseResponse{gameID: req.gameID()}}
 }
 
+func TestGameEngineDoubleShutdownDoesNotPanic(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	engine.Shutdown()
+	engine.Shutdown()
+}
+
 func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
