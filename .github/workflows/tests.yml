@@ -32,9 +32,9 @@ jobs:
         uses: GoTestTools/gotestfmt-action@v2            
       - name: Run tests 
         # omit end-to-end tests
-        run: go test -run "^(?!Test2PlayerFullGame$|Test4PlayerFullGame$).*" -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test
+        run: go test -run "^(?!Test2PlayerFullGame$|Test4PlayerFullGame$).*" -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
         # when end to golang end job will be removed, the command should return to:
-        # run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test
+        # run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
       - name: Convert go coverage to corbetura format
         run: gocover-cobertura < coverage.txt > coverage.xml
       - name: Generate code coverage report
@@ -93,7 +93,7 @@ jobs:
         uses: GoTestTools/gotestfmt-action@v2            
       - name: Run tests 
         # only two tests end-to-end tests
-        run: go test -run "(Test2PlayerFullGame|Test4PlayerFullGame)" -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test
+        run: go test  -run "(Test2PlayerFullGame|Test4PlayerFullGame)" --tags=test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 
   python-tests:
