@@ -82,7 +82,7 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", 1, field.CitiesCount())
 	}
 
-	//test field.GetScoreReport()
+	// test field.GetScoreReport()
 	expectedReport := elements.NewScoreReport()
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 3,
@@ -179,7 +179,7 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", 3, field.CitiesCount())
 	}
 
-	//test field.GetScoreReport()
+	// test field.GetScoreReport()
 	expectedReport := elements.NewScoreReport()
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 6,

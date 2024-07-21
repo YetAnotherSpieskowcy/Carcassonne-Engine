@@ -408,4 +408,11 @@ func TestGetCity(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", 3, len(manager.cities))
 	}
 
+	nilCity, nilCityID := manager.GetCity(position.New(21, 37), *a.GetPlacedFeatureAtSide(side.Top, feature.City))
+	if nilCity != nil {
+		t.Fatalf("expected %#v, got %#v instead", nil, nilCity)
+	}
+	if nilCityID != -1 {
+		t.Fatalf("expected %#v, got %#v instead", -1, nilCityID)
+	}
 }

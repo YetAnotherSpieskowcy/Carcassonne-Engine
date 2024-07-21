@@ -77,7 +77,7 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 			if !exists {
 				field.meeples[meeple.PlayerID] = make([]uint8, elements.MeepleTypeCount)
 			}
-			field.meeples[meeple.PlayerID][meeple.MeepleType] += 1
+			field.meeples[meeple.PlayerID][meeple.MeepleType]++
 		}
 
 		// find neighbouring city features
