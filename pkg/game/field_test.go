@@ -5,6 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -48,17 +49,17 @@ func TestFieldExpandFeatureAndCitiesCount(t *testing.T) {
 	tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Meeple.MeepleType = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = elements.NewPosition(1, 0)
-	tiles[1].Position = elements.NewPosition(-1, 0)
-	tiles[2].Position = elements.NewPosition(-2, 0)
+	tiles[0].Position = position.New(1, 0)
+	tiles[1].Position = position.New(-1, 0)
+	tiles[2].Position = position.New(-2, 0)
 
-	tiles[3].Position = elements.NewPosition(1, -1)
-	tiles[4].Position = elements.NewPosition(2, -1)
-	tiles[5].Position = elements.NewPosition(0, -1)
+	tiles[3].Position = position.New(1, -1)
+	tiles[4].Position = position.New(2, -1)
+	tiles[5].Position = position.New(0, -1)
 
-	tiles[6].Position = elements.NewPosition(0, -2)
+	tiles[6].Position = position.New(0, -2)
 
-	tiles[7].Position = elements.NewPosition(0, 1)
+	tiles[7].Position = position.New(0, 1)
 
 	// place tiles
 	for i, tile := range tiles {

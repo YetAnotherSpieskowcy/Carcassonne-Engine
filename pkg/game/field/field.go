@@ -5,6 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/utilities"
@@ -12,7 +13,7 @@ import (
 
 type fieldKey struct {
 	feature  elements.PlacedFeature
-	position elements.Position
+	position position.Position
 }
 
 // Represents a field on the board
@@ -21,7 +22,7 @@ type Field struct {
 	neighbouringCities map[int]struct{}      // this is a set of cities' IDs
 }
 
-func NewField(feature elements.PlacedFeature, position elements.Position) Field {
+func NewField(feature elements.PlacedFeature, position position.Position) Field {
 	features := map[fieldKey]struct{}{
 		{feature: feature, position: position}: {},
 	}
@@ -114,7 +115,7 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 
 	for _, side := range sides {
 		if field.feature.Sides&side != 0 {
-			neighbourPosition := elements.AddPositions(field.position, elements.PositionFromSide(side))
+			neighbourPosition := field.position.Add(position.FromSide(side))
 
 			tile, tileExists := board.GetTileAt(neighbourPosition)
 			if tileExists {
