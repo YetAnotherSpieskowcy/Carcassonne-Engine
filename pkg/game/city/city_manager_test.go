@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -22,12 +23,12 @@ func TestUpdateCitiesWhenNoCities(t *testing.T) {
 
 func TestUpdateCitiesWhenNoAddToExistingCity(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	b.Position = elements.NewPosition(2, 1)
+	b.Position = position.New(2, 1)
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 2 {
@@ -37,12 +38,12 @@ func TestUpdateCitiesWhenNoAddToExistingCity(t *testing.T) {
 
 func TestUpdateCitiesWhenAddToExistingCity(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
-	b.Position = elements.NewPosition(1, 2)
+	b.Position = position.New(1, 2)
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 1 {
@@ -52,12 +53,12 @@ func TestUpdateCitiesWhenAddToExistingCity(t *testing.T) {
 
 func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
-	b.Position = elements.NewPosition(2, 1)
+	b.Position = position.New(2, 1)
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 1 {
@@ -67,16 +68,16 @@ func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 
 func TestJoinCitiesOnAdd(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
-	b.Position = elements.NewPosition(2, 2)
+	b.Position = position.New(2, 2)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	if len(manager.cities) != 1 {
@@ -86,16 +87,16 @@ func TestJoinCitiesOnAdd(t *testing.T) {
 
 func TestJoinCitiesOnAddCityNotClosed(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
-	b.Position = elements.NewPosition(2, 2)
+	b.Position = position.New(2, 2)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	if len(manager.cities) != 1 {
@@ -137,12 +138,12 @@ func TestScore(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
-	b.Position = elements.NewPosition(1, 2)
+	b.Position = position.New(1, 2)
 	manager.UpdateCities(b)
 
 	report := manager.ScoreCities(false)
@@ -174,12 +175,12 @@ func TestScoreTwice(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
-	b.Position = elements.NewPosition(1, 2)
+	b.Position = position.New(1, 2)
 	manager.UpdateCities(b)
 
 	report := manager.ScoreCities(false)
@@ -208,16 +209,16 @@ func TestScoreAfterJoin(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
-	b.Position = elements.NewPosition(2, 2)
+	b.Position = position.New(2, 2)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -239,16 +240,16 @@ func TestScoreAfterJoinNotClosed(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
-	b.Position = elements.NewPosition(2, 2)
+	b.Position = position.New(2, 2)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -270,16 +271,16 @@ func TestForceScoreAfterJoinNotClosedWithShield(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
-	b.Position = elements.NewPosition(2, 2)
+	b.Position = position.New(2, 2)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(true)
@@ -304,17 +305,17 @@ func TestScoreTwoCitiesNotConnected(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
 	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.MeepleType = expectedMeepleType
-	b.Position = elements.NewPosition(1, 3)
+	b.Position = position.New(1, 3)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -342,17 +343,17 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
-	a.Position = elements.NewPosition(1, 1)
+	a.Position = position.New(1, 1)
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
 	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.MeepleType = expectedMeepleType
-	b.Position = elements.NewPosition(1, 3)
+	b.Position = position.New(1, 3)
 	manager.UpdateCities(b)
 
 	c := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
-	c.Position = elements.NewPosition(1, 2)
+	c.Position = position.New(1, 2)
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)

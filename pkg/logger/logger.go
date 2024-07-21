@@ -13,13 +13,19 @@ func New(writer io.Writer) Logger {
 	return Logger{writer}
 }
 
-func (logger *Logger) LogEvent(event interface{}) error {
+func (logger *Logger) LogEvent(eventName EventType, event interface{}) error {
 	jsonData, err := json.Marshal(event)
 	if err != nil {
 		return err
 	}
 
-	_, err = logger.writer.Write(jsonData)
+	entry := NewEntry(eventName, jsonData)
+	jsonEntry, err := json.Marshal(entry)
+	if err != nil {
+		return err
+	}
+
+	_, err = logger.writer.Write(jsonEntry)
 	if err != nil {
 		return err
 	}

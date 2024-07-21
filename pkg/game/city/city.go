@@ -2,6 +2,7 @@ package city
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -9,18 +10,18 @@ import (
 type City struct {
 	completed bool
 	scored    bool
-	features  map[elements.Position][]elements.PlacedFeature
-	shields   map[elements.Position]bool
+	features  map[position.Position][]elements.PlacedFeature
+	shields   map[position.Position]bool
 }
 
-func NewCity(pos elements.Position, cityFeature []elements.PlacedFeature, hasShield bool) City {
+func NewCity(pos position.Position, cityFeature []elements.PlacedFeature, hasShield bool) City {
 	return City{
 		completed: false,
 		scored:    false,
-		features: map[elements.Position][]elements.PlacedFeature{
+		features: map[position.Position][]elements.PlacedFeature{
 			pos: cityFeature,
 		},
-		shields: map[elements.Position]bool{
+		shields: map[position.Position]bool{
 			pos: hasShield,
 		},
 	}
@@ -39,7 +40,7 @@ func (city *City) checkCompleted() bool {
 			mask := side.Top
 			for range 4 {
 				if sides&mask == mask {
-					_, ok := city.GetFeaturesFromTile(pos.Add(elements.PositionFromSide(mask)))
+					_, ok := city.GetFeaturesFromTile(pos.Add(position.FromSide(mask)))
 					if !ok {
 						city.completed = false
 						break
@@ -111,12 +112,12 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 
 // Returns all features from a tile at a given position that are part of a city
 // and whether such a tile is in the city.
-func (city City) GetFeaturesFromTile(pos elements.Position) ([]elements.PlacedFeature, bool) {
+func (city City) GetFeaturesFromTile(pos position.Position) ([]elements.PlacedFeature, bool) {
 	cities, ok := city.features[pos]
 	return cities, ok
 }
 
-func (city *City) AddTile(pos elements.Position, cityFeatures []elements.PlacedFeature, hasShield bool) {
+func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedFeature, hasShield bool) {
 	city.features[pos] = cityFeatures
 	city.shields[pos] = hasShield
 	city.checkCompleted()

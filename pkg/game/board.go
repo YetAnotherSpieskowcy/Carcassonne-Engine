@@ -7,6 +7,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	positionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -29,9 +30,9 @@ type board struct {
 	tiles []elements.PlacedTile
 	// tilesMap is used by the engine for faster lookups
 	// but contains the same information as the `tiles` slice.
-	tilesMap map[elements.Position]elements.PlacedTile
+	tilesMap map[positionMod.Position]elements.PlacedTile
 
-	placeablePositions []elements.Position
+	placeablePositions []positionMod.Position
 	cityManager        city.Manager
 }
 
@@ -44,14 +45,14 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 	return &board{
 		tileSet: tileSet,
 		tiles:   tiles,
-		tilesMap: map[elements.Position]elements.PlacedTile{
-			elements.NewPosition(0, 0): startingTile,
+		tilesMap: map[positionMod.Position]elements.PlacedTile{
+			positionMod.New(0, 0): startingTile,
 		},
-		placeablePositions: []elements.Position{
-			elements.NewPosition(0, 1),
-			elements.NewPosition(1, 0),
-			elements.NewPosition(0, -1),
-			elements.NewPosition(-1, 0),
+		placeablePositions: []positionMod.Position{
+			positionMod.New(0, 1),
+			positionMod.New(1, 0),
+			positionMod.New(0, -1),
+			positionMod.New(-1, 0),
 		},
 		cityManager: cityManager,
 	}
@@ -65,7 +66,7 @@ func (board *board) Tiles() []elements.PlacedTile {
 	return board.tiles
 }
 
-func (board *board) GetTileAt(pos elements.Position) (elements.PlacedTile, bool) {
+func (board *board) GetTileAt(pos positionMod.Position) (elements.PlacedTile, bool) {
 	elem, ok := board.tilesMap[pos]
 	return elem, ok
 }
@@ -88,18 +89,18 @@ func (board *board) GetTilePlacementsFor(tile tiles.Tile) []elements.PlacedTile 
 // Verifies if a certain side of a adjacent tile on the board matches an expected feature type.
 // The method takes a board, a position, the expected side, and the expected feature type.
 // Returns a boolean indicating whether the tile has an expected feature on specified side.
-func (board *board) testSide(position elements.Position, expectedSide side.Side, expectedFeatureType feature.Type) bool {
+func (board *board) testSide(position positionMod.Position, expectedSide side.Side, expectedFeatureType feature.Type) bool {
 	var tile elements.PlacedTile
 	var ok bool
 	switch expectedSide {
 	case side.Bottom:
-		tile, ok = board.tilesMap[elements.NewPosition(position.X(), position.Y()+1)]
+		tile, ok = board.tilesMap[positionMod.New(position.X(), position.Y()+1)]
 	case side.Top:
-		tile, ok = board.tilesMap[elements.NewPosition(position.X(), position.Y()-1)]
+		tile, ok = board.tilesMap[positionMod.New(position.X(), position.Y()-1)]
 	case side.Left:
-		tile, ok = board.tilesMap[elements.NewPosition(position.X()+1, position.Y())]
+		tile, ok = board.tilesMap[positionMod.New(position.X()+1, position.Y())]
 	case side.Right:
-		tile, ok = board.tilesMap[elements.NewPosition(position.X()-1, position.Y())]
+		tile, ok = board.tilesMap[positionMod.New(position.X()-1, position.Y())]
 	}
 	if !ok {
 		return true
@@ -200,11 +201,11 @@ func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 		panic(fmt.Sprintf("Invalid move was played: %v", tile.Position))
 	}
 	board.placeablePositions = slices.Delete(board.placeablePositions, tileIndex, tileIndex+1)
-	validNewPositions := []elements.Position{
-		elements.NewPosition(tile.Position.X()+1, tile.Position.Y()),
-		elements.NewPosition(tile.Position.X()-1, tile.Position.Y()),
-		elements.NewPosition(tile.Position.X(), tile.Position.Y()+1),
-		elements.NewPosition(tile.Position.X(), tile.Position.Y()-1),
+	validNewPositions := []positionMod.Position{
+		positionMod.New(tile.Position.X()+1, tile.Position.Y()),
+		positionMod.New(tile.Position.X()-1, tile.Position.Y()),
+		positionMod.New(tile.Position.X(), tile.Position.Y()+1),
+		positionMod.New(tile.Position.X(), tile.Position.Y()-1),
 	}
 	for _, position := range validNewPositions {
 		_, ok := board.tilesMap[position]
@@ -252,7 +253,7 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	var score uint32
 	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
 		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
-			_, ok := board.GetTileAt(elements.NewPosition(x, y))
+			_, ok := board.GetTileAt(positionMod.New(x, y))
 			if ok {
 				score++
 			}
@@ -284,7 +285,7 @@ func (board *board) ScoreMonasteries(tile elements.PlacedTile, forceScore bool) 
 
 	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
 		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
-			adjacentTile, ok := board.GetTileAt(elements.NewPosition(x, y))
+			adjacentTile, ok := board.GetTileAt(positionMod.New(x, y))
 
 			if ok {
 				report, err := board.ScoreSingleMonastery(adjacentTile, forceScore)
@@ -314,7 +315,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	// check finished on way
 	// do while loop
 	for {
-		tile, tileExists = board.GetTileAt(tile.Position.Add(elements.PositionFromSide(roadSide)))
+		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.FromSide(roadSide)))
 		roadSide = roadSide.ConnectedOpposite()
 		// check if tile exists or loop
 		if !tileExists || tile.Position == startTile.Position {

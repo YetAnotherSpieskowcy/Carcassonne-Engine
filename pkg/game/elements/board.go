@@ -1,12 +1,15 @@
 package elements
 
-import "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+)
 
 // mutable type
 type Board interface {
 	TileCount() int
 	Tiles() []PlacedTile
-	GetTileAt(pos Position) (PlacedTile, bool)
+	GetTileAt(pos position.Position) (PlacedTile, bool)
 	GetTilePlacementsFor(tile tiles.Tile) []PlacedTile
 	TileHasValidPlacement(tile tiles.Tile) bool
 	GetLegalMovesFor(tile PlacedTile) []PlacedTile
