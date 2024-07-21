@@ -22,8 +22,8 @@ func MakeTurn(game *gameMod.Game, t *testing.T, tilePosition position.Position, 
 	ptile.Position = tilePosition
 	if meeple != elements.NoneMeeple {
 		ptile.GetPlacedFeatureAtSide(featureSide, featureType).Meeple = elements.Meeple{
-			MeepleType: meeple,
-			PlayerID:   player.ID(),
+			Type:     meeple,
+			PlayerID: player.ID(),
 		}
 	}
 
@@ -59,11 +59,11 @@ func VerifyMeepleExistence(t *testing.T, game *gameMod.Game, pos position.Positi
 	}
 	placedFeature := placedTile.GetPlacedFeatureAtSide(side, featureType)
 	if meepleExist {
-		if placedFeature.MeepleType != elements.NormalMeeple {
+		if placedFeature.Type != elements.NormalMeeple {
 			t.Fatalf("Turn %d: Missing meeple on a tile!", turnNumber)
 		}
 	} else {
-		if placedFeature.MeepleType != elements.NoneMeeple {
+		if placedFeature.Type != elements.NoneMeeple {
 			t.Fatalf("Turn %d: Meeple hasn't been removed!", turnNumber)
 		}
 	}

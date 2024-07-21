@@ -109,7 +109,7 @@ func TestGameSerializedCurrentTileNilWhenStackOutOfBounds(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

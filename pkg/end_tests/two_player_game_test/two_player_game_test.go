@@ -116,7 +116,7 @@ func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 0)
-	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.None, feature.None)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.NoSide, feature.NoneType)
 
 	end_tests.VerifyMeepleExistence(t, game, pos, side.TopLeftEdge, feature.Field, true, 3)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 6}, 3)
@@ -160,9 +160,9 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, -1)
-	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.None, feature.Monastery)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.NoSide, feature.Monastery)
 
-	end_tests.VerifyMeepleExistence(t, game, pos, side.None, feature.Monastery, true, 5)
+	end_tests.VerifyMeepleExistence(t, game, pos, side.NoSide, feature.Monastery, true, 5)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 6}, 5)
 
 }
@@ -309,7 +309,7 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 0)
-	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.None, feature.None)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.NoSide, feature.NoneType)
 
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 11)
 }
@@ -330,7 +330,7 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 0)
-	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.None, feature.None)
+	end_tests.MakeTurn(game, t, pos, 0, elements.NoneMeeple, side.NoSide, feature.NoneType)
 
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 12)
 }
@@ -349,11 +349,11 @@ func checkFinalResult(game *gameMod.Game, t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if scores[0] != 19 {
-		t.Fatalf("Player 1 final score incorrect. Expected 19, got: %d", scores[1])
+	if scores.ReceivedPoints[0] != 19 {
+		t.Fatalf("Player 1 final score incorrect. Expected 19, got: %d", scores.ReceivedPoints[1])
 	}
 
-	if scores[1] != 16 {
-		t.Fatalf("Player 2 final score incorrect. Expected 16, got: %d", scores[1])
+	if scores.ReceivedPoints[1] != 16 {
+		t.Fatalf("Player 2 final score incorrect. Expected 16, got: %d", scores.ReceivedPoints[1])
 	}
 }

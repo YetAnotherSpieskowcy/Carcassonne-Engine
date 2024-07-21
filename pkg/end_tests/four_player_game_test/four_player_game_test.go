@@ -425,10 +425,10 @@ Player4 scores 3 points for finished road
 */
 func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 1)
-	end_tests.MakeTurn(game, t, pos, 1, elements.NormalMeeple, side.None, feature.Monastery)
+	end_tests.MakeTurn(game, t, pos, 1, elements.NormalMeeple, side.NoSide, feature.Monastery)
 
 	end_tests.VerifyMeepleExistence(t, game, position.New(1, 1), side.Right, feature.Road, false, 10) // removed meeple
-	end_tests.VerifyMeepleExistence(t, game, pos, side.None, feature.Field, true, 10)
+	end_tests.VerifyMeepleExistence(t, game, pos, side.NoSide, feature.Field, true, 10)
 	end_tests.CheckMeeplesAndScore(game, t, []uint32{0, 4, 4, 3}, []uint8{4, 5, 6, 6}, 10)
 }
 
@@ -462,7 +462,7 @@ player1 and player4 score 4 points for their roads
 */
 func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 1)
-	end_tests.MakeTurn(game, t, pos, 3, elements.NormalMeeple, side.None, feature.Monastery)
+	end_tests.MakeTurn(game, t, pos, 3, elements.NormalMeeple, side.NoSide, feature.Monastery)
 
 	end_tests.VerifyMeepleExistence(t, game, position.New(-1, 0), side.Bottom, feature.Road, false, 11) // removed meeple
 	end_tests.VerifyMeepleExistence(t, game, position.New(0, 1), side.Bottom, feature.Road, false, 11)  // removed meeple
@@ -530,8 +530,8 @@ func checkFinalResult(game *gameMod.Game, t *testing.T) {
 	var expectedScores = []uint32{4 + 15, 4 + 2, 4 + 2, 7 + 1}
 
 	for i := range 4 {
-		if scores[i] != expectedScores[i] {
-			t.Fatalf("Player %d final score incorrect. Expected %d, got: %d", i+1, expectedScores[i], scores[1])
+		if scores.ReceivedPoints[elements.ID(i)] != expectedScores[i] {
+			t.Fatalf("Player %d final score incorrect. Expected %d, got: %d", i+1, expectedScores[i], scores.ReceivedPoints[1])
 		}
 	}
 }

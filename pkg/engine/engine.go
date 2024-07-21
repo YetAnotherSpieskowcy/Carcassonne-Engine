@@ -107,7 +107,7 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 		return SerializedGameWithID{}, err
 	}
 
-	g, err := game.NewFromTileSet(tileSet, &logger)
+	g, err := game.NewFromTileSet(tileSet, &logger, 2)
 	if err != nil {
 		return SerializedGameWithID{}, err
 	}

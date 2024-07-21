@@ -32,7 +32,7 @@ type Game struct {
 	log           logger.Logger
 }
 
-func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger, playerCount uint8) (*Game, error) {
+func NewFromTileSet(tileSet tilesets.TileSet, log logger.Logger, playerCount uint8) (*Game, error) {
 	deckStack := stack.New(tileSet.Tiles)
 	deck := deck.Deck{
 		Stack:        &deckStack,
@@ -42,7 +42,7 @@ func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger, playerCount ui
 }
 
 func NewFromDeck(
-	deck deck.Deck, log *logger.Logger, playerCount uint8,
+	deck deck.Deck, log logger.Logger, playerCount uint8,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
