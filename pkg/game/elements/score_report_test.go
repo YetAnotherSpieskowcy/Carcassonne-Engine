@@ -136,3 +136,33 @@ func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expectedReport, report1)
 	}
 }
+
+func TestGetPlayersWithMostMeeplesOnePlayer(t *testing.T) {
+	meeples := map[ID][]uint8{
+		1: {0, 1},
+		2: {0, 3},
+		3: {0, 2},
+	}
+
+	expectedPlayers := []ID{2}
+	actualplayers := GetPlayersWithMostMeeples(meeples)
+
+	if !reflect.DeepEqual(expectedPlayers, actualplayers) {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayers, actualplayers)
+	}
+}
+
+func TestGetPlayersWithMostMeeplesTwoPlayers(t *testing.T) {
+	meeples := map[ID][]uint8{
+		1: {0, 1},
+		2: {0, 2},
+		3: {0, 2},
+	}
+
+	expectedPlayers := []ID{2, 3}
+	actualplayers := GetPlayersWithMostMeeples(meeples)
+
+	if !reflect.DeepEqual(expectedPlayers, actualplayers) {
+		t.Fatalf("expected %#v, got %#v instead", expectedPlayers, actualplayers)
+	}
+}
