@@ -49,8 +49,8 @@ jobs:
           indicators: true
           output: both
           thresholds: '88 100'
-
-python-build:
+          
+  python-build:
     name: Python Build
     runs-on: ubuntu-latest
 
