@@ -47,7 +47,7 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 
 	// add meeple to the field
 	tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Meeple =
-		elements.Meeple{PlayerID: 1, MeepleType: elements.NormalMeeple}
+		elements.Meeple{PlayerID: 1, Type: elements.NormalMeeple}
 
 	// set positions
 	tiles[0].Position = position.New(1, 0)
@@ -139,9 +139,9 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 
 	// add meeple to the fields
 	tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Meeple =
-		elements.Meeple{PlayerID: 1, MeepleType: elements.NormalMeeple}
+		elements.Meeple{PlayerID: 1, Type: elements.NormalMeeple}
 	tiles[5].GetPlacedFeatureAtSide(side.BottomRightEdge|side.RightBottomEdge, feature.Field).Meeple =
-		elements.Meeple{PlayerID: 2, MeepleType: elements.NormalMeeple}
+		elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
 
 	// set positions
 	tiles[0].Position = position.New(1, 0)

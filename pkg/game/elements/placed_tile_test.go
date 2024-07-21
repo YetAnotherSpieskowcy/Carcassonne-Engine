@@ -138,7 +138,7 @@ func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
 	}
 
 	// fields on none side (should be 0)
-	tileFeatures = tile.GetPlacedFeaturesOverlappingSide(side.None, feature.Field)
+	tileFeatures = tile.GetPlacedFeaturesOverlappingSide(side.NoSide, feature.Field)
 	if len(tileFeatures) != 0 {
 		t.Fatalf("expected 0 features, got %#v features instead", len(tileFeatures))
 	}

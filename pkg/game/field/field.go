@@ -72,18 +72,18 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 
 		// add meeple if it exists
 		meeple := element.feature.Meeple
-		if meeple.MeepleType != elements.NoneMeeple {
+		if meeple.Type != elements.NoneMeeple {
 			_, exists := field.meeples[meeple.PlayerID]
 			if !exists {
 				field.meeples[meeple.PlayerID] = make([]uint8, elements.MeepleTypeCount)
 			}
-			field.meeples[meeple.PlayerID][meeple.MeepleType]++
+			field.meeples[meeple.PlayerID][meeple.Type]++
 		}
 
 		// find neighbouring city features
 		var neighbouringCityFeatures []elements.PlacedFeature
 
-		if element.feature.Sides == side.None {
+		if element.feature.Sides == side.NoSide {
 			// field neighbours all cities on this tile
 			tile, _ := board.GetTileAt(element.position)
 			neighbouringCityFeatures = tile.GetFeaturesOfType(featureMod.City)
