@@ -54,6 +54,10 @@ func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all state
 		t.Fatalf("got %#v should be %#v after rotation", LeftTopEdge.Rotate(1), TopRightEdge)
 	}
 
+	if LeftTopEdge.Rotate(4) != LeftTopEdge {
+		t.Fatalf("got %#v should be %#v after rotation", LeftTopEdge.Rotate(4), LeftTopEdge)
+	}
+
 	if None.Rotate(1) != None {
 		t.Fatalf("got %#v should be %#v after rotation", None.Rotate(1), None)
 	}
@@ -64,6 +68,72 @@ func TestSideRotateReturnsSideRotatedTwice(t *testing.T) {
 	actual := Top.Rotate(2)
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestSideMirror(t *testing.T) {
+	if None.Mirror() != None {
+		t.Fatalf("expected %#v, got %#v instead", None, None.Mirror())
+	}
+
+	if All.Mirror() != All {
+		t.Fatalf("expected %#v, got %#v instead", All, All.Mirror())
+	}
+
+	if Right.Mirror() != Left {
+		t.Fatalf("expected %#v, got %#v instead", Left, Right.Mirror())
+	}
+
+	if TopLeftEdge.Mirror() != BottomLeftEdge {
+		t.Fatalf("expected %#v, got %#v instead", BottomLeftEdge, TopLeftEdge.Mirror())
+	}
+
+	if (TopLeftEdge | Right).Mirror() != (BottomLeftEdge | Left) {
+		t.Fatalf("expected %#v, got %#v instead", (BottomLeftEdge | Left), (TopLeftEdge | Right).Mirror())
+	}
+}
+
+func TestSideFlipSides(t *testing.T) {
+	if None.FlipSides() != None {
+		t.Fatalf("expected %#v, got %#v instead", None, None.FlipSides())
+	}
+
+	if All.FlipSides() != All {
+		t.Fatalf("expected %#v, got %#v instead", All, All.FlipSides())
+	}
+
+	if Right.FlipSides() != Right {
+		t.Fatalf("expected %#v, got %#v instead", Left, Right.FlipSides())
+	}
+
+	if TopLeftEdge.FlipSides() != TopRightEdge {
+		t.Fatalf("expected %#v, got %#v instead", TopRightEdge, TopLeftEdge.FlipSides())
+	}
+
+	if (TopLeftEdge | Right).FlipSides() != (TopRightEdge | Right) {
+		t.Fatalf("expected %#v, got %#v instead", (TopRightEdge | Right), (TopLeftEdge | Right).FlipSides())
+	}
+}
+
+func TestSideFlipCorners(t *testing.T) {
+	if None.FlipCorners() != None {
+		t.Fatalf("expected %#v, got %#v instead", None, None.FlipCorners())
+	}
+
+	if All.FlipCorners() != All {
+		t.Fatalf("expected %#v, got %#v instead", All, All.FlipCorners())
+	}
+
+	if Right.FlipCorners() != (TopRightEdge | BottomRightEdge) {
+		t.Fatalf("expected %#v, got %#v instead", (TopRightEdge | BottomRightEdge), Right.FlipCorners())
+	}
+
+	if TopLeftEdge.FlipCorners() != LeftTopEdge {
+		t.Fatalf("expected %#v, got %#v instead", BottomLeftEdge, TopLeftEdge.FlipCorners())
+	}
+
+	if (TopLeftEdge | Right).FlipCorners() != (LeftTopEdge | TopRightEdge | BottomRightEdge) {
+		t.Fatalf("expected %#v, got %#v instead", (LeftTopEdge | TopRightEdge | BottomRightEdge), (TopLeftEdge | Right).FlipCorners())
 	}
 }
 
