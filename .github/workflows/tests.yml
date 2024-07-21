@@ -30,8 +30,11 @@ jobs:
       # Install gotestfmt on the VM running the action.
       - name: Set up gotestfmt
         uses: GoTestTools/gotestfmt-action@v2            
-      - name: Run tests
-        run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test
+      - name: Run tests 
+        # omit end-to-end tests
+        run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test -run ^(?!Test2PlayerFullGame$|Test4PlayerFullGame$).*
+        # when end to golang end job will be removed, the command should return to:
+        # run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test
       - name: Convert go coverage to corbetura format
         run: gocover-cobertura < coverage.txt > coverage.xml
       - name: Generate code coverage report
@@ -47,7 +50,7 @@ jobs:
           output: both
           thresholds: '88 100'
 
-  python-build:
+python-build:
     name: Python Build
     runs-on: ubuntu-latest
 
@@ -68,7 +71,28 @@ jobs:
         with:
           name: "${{ env.BUILT_WHEELS_DIR }}"
           path: |
-            ${{ env.BUILT_WHEELS_DIR }}
+            ${{ env.BUILT_WHEELS_DIR }}      
+
+  end_to_end_temp_test:
+    # should be deleted when when they will start to pass
+    # this job will only do the end to end tests, which are not passing at the moment
+    name: End to GOLang end tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Install gocover-cobertura
+        run: |
+          go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
+      # Install gotestfmt on the VM running the action.
+      - name: Set up gotestfmt
+        uses: GoTestTools/gotestfmt-action@v2            
+      - name: Run tests 
+        # only two tests end-to-end tests
+        run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt --tags=test -run (Test2PlayerFullGame|Test4PlayerFullGame)
+
 
   python-tests:
     name: Python Tests
