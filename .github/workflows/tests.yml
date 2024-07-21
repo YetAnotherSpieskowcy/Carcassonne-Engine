@@ -1,4 +1,4 @@
-name: Tests
+name: Build and test
 
 on:
   push:
@@ -7,9 +7,14 @@ on:
   pull_request:
     branches: main
 
+env:
+  GO_VERSION: '1.22.1'
+  PYTHON_VERSION: '3.12'
+  BUILT_WHEELS_DIR: built_wheels
+
 permissions: read-all
 jobs:
-  build:
+  go-tests:
     name: Tests
     runs-on: ubuntu-latest
 
@@ -18,7 +23,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.1'
+          go-version: "${{ env.GO_VERSION }}"
       - name: Install gocover-cobertura
         run: |
           go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
@@ -41,3 +46,48 @@ jobs:
           indicators: true
           output: both
           thresholds: '88 100'
+
+  python-build:
+    name: Python Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Setup Python "${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Build Python project
+        run: make build-python
+      - name: Upload built wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.BUILT_WHEELS_DIR }}"
+          path: |
+            ${{ env.BUILT_WHEELS_DIR }}
+
+  python-tests:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    needs: python-build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Download built wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.BUILT_WHEELS_DIR }}"
+          path: "${{ env.BUILT_WHEELS_DIR }}"
+      - name: Install built wheel
+        run: |
+          make -o build-python .venv install-python
+      - name: Run tests
+        run: make -o install-python test-python

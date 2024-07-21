@@ -158,7 +158,7 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 
 	// add meeple to the monastery
 	tiles[0].Monastery().Meeple.PlayerID = 1
-	tiles[0].Monastery().Meeple.MeepleType = elements.NormalMeeple
+	tiles[0].Monastery().Meeple.Type = elements.NormalMeeple
 
 	// set positions
 	tiles[0].Position = position.New(0, 1)
@@ -237,10 +237,10 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 
 	// add meeple to the monastery
 	tiles[1].Monastery().Meeple.PlayerID = 1
-	tiles[1].Monastery().Meeple.MeepleType = elements.NormalMeeple
+	tiles[1].Monastery().Meeple.Type = elements.NormalMeeple
 
 	tiles[11].Monastery().Meeple.PlayerID = 2
-	tiles[11].Monastery().Meeple.MeepleType = elements.NormalMeeple
+	tiles[11].Monastery().Meeple.Type = elements.NormalMeeple
 
 	// set positions
 	tiles[0].Position = position.New(0, 1)

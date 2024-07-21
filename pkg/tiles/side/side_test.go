@@ -54,8 +54,8 @@ func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all state
 		t.Fatalf("got %#v should be %#v after rotation", LeftTopEdge.Rotate(1), TopRightEdge)
 	}
 
-	if None.Rotate(1) != None {
-		t.Fatalf("got %#v should be %#v after rotation", None.Rotate(1), None)
+	if NoSide.Rotate(1) != NoSide {
+		t.Fatalf("got %#v should be %#v after rotation", NoSide.Rotate(1), NoSide)
 	}
 }
 
@@ -109,7 +109,7 @@ func TestSideToString(t *testing.T) { //nolint:gocyclo // simply testing all sta
 		t.Fatalf("got %#v should be %#v", BottomRightEdge.String(), "BOTTOM_RIGHT_EDGE")
 	}
 
-	if None.String() != "NONE" {
-		t.Fatalf("got %#v should be %#v", None.String(), "NONE")
+	if NoSide.String() != "NO_SIDE" {
+		t.Fatalf("got %#v should be %#v", NoSide.String(), "NO_SIDE")
 	}
 }

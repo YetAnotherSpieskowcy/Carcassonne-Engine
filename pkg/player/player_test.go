@@ -42,7 +42,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	tile := test.GetTestPlacedTile()
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
-	tile.Features[0].MeepleType = elements.NormalMeeple
+	tile.Features[0].Meeple.Type = elements.NormalMeeple
 	tile.Features[0].PlayerID = player.ID()
 
 	_, err := player.PlaceTile(board, tile)
@@ -84,7 +84,7 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
-	tile.Features[0].MeepleType = elements.NormalMeeple
+	tile.Features[0].Meeple.Type = elements.NormalMeeple
 	tile.Features[0].PlayerID = player.ID()
 
 	_, err := player.PlaceTile(board, tile)

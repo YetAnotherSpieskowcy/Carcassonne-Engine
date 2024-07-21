@@ -7,7 +7,7 @@ import (
 )
 
 type FileLogger struct {
-	Logger
+	BaseLogger
 	file *os.File
 }
 

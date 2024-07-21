@@ -3,8 +3,8 @@ package elements
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -19,7 +19,7 @@ const (
 )
 
 type Meeple struct {
-	MeepleType
+	Type     MeepleType
 	PlayerID ID
 }
 
@@ -29,11 +29,12 @@ type TileWithMeeple struct {
 }
 
 type PlacedFeature struct {
-	featureMod.Feature
+	feature.Feature
 	Meeple
 }
 
-func (placedTile PlacedTile) Rotate(_ uint) PlacedTile {
+func (placedTile PlacedTile) Rotate(rotations uint) PlacedTile {
+	_ = rotations
 	panic("Rotate() not supported on PlacedTile")
 }
 
@@ -51,7 +52,7 @@ func ToPlacedTile(tile tiles.Tile) PlacedTile {
 }
 
 func ToTile(tile PlacedTile) tiles.Tile {
-	features := []featureMod.Feature{}
+	features := []feature.Feature{}
 	for _, n := range tile.Features {
 		features = append(features, n.Feature)
 	}
@@ -63,7 +64,7 @@ func ToTile(tile PlacedTile) tiles.Tile {
 func (placedTile PlacedTile) GetCityFeatures() []PlacedFeature {
 	cityFeatures := []PlacedFeature{}
 	for _, f := range placedTile.Features {
-		if f.FeatureType == featureMod.City {
+		if f.FeatureType == feature.City {
 			cityFeatures = append(cityFeatures, f)
 		}
 	}
@@ -81,8 +82,8 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 }
 
 func (placedTile PlacedTile) Monastery() *PlacedFeature {
-	for i, feature := range placedTile.Features {
-		if feature.FeatureType == featureMod.Monastery {
+	for i, feat := range placedTile.Features {
+		if feat.FeatureType == feature.Monastery {
 			return &placedTile.Features[i]
 		}
 	}
@@ -92,9 +93,9 @@ func (placedTile PlacedTile) Monastery() *PlacedFeature {
 /*
 Return the feature of certain type on desired side
 */
-func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *PlacedFeature {
-	for i, feature := range placedTile.TileWithMeeple.Features {
-		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
+func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
+	for i, feat := range placedTile.TileWithMeeple.Features {
+		if sideToCheck&feat.Sides == sideToCheck && feat.FeatureType == featureType {
 			return &placedTile.TileWithMeeple.Features[i]
 		}
 	}

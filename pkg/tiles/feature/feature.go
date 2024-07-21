@@ -8,7 +8,7 @@ import (
 type Type int64
 
 const (
-	None Type = iota
+	NoneType Type = iota
 	Road
 	City
 	Field

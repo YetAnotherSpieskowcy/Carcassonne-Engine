@@ -11,7 +11,8 @@ A rule engine for the Carcassonne game.
    **Tip:** If you're using Ubuntu 23.10 or lower, Go version in official repositories is going to be too old.
    You can get the latest version by adding [the PPA listed on Go wiki](https://go.dev/wiki/Ubuntu) and installing `golang` package after.
 2. Install `gcc` toolchain from your distro's package repositories (for example, `build-essential` package on Ubuntu).
-3. Install [Docker Engine](https://docs.docker.com/engine/install/).
+3. Install Python 3.12 (default version on Ubuntu 24.04, find how to install on your distribution otherwise)
+4. Install [Docker Engine](https://docs.docker.com/engine/install/).
 
 ### Windows
 
@@ -29,7 +30,8 @@ We provide you with 2 ways of installing pre-requirements - manual installation 
    ```console
    %USERPROFILE%\mingw64\bin
    ```
-3. Install [Docker Desktop (or Engine)](https://docs.docker.com/desktop/install/windows-install/)
+3. Install [Python 3.12](https://www.python.org/downloads/windows/).
+4. Install [Docker Desktop (or Engine)](https://docs.docker.com/desktop/install/windows-install/)
 
 > [!NOTE]
 > This will require enabling optional Windows features (such as Hyper-V) and may require a reboot.
@@ -44,7 +46,7 @@ We provide you with 2 ways of installing pre-requirements - manual installation 
 Run PowerShell as Administrator and execute the following command:
 ```console
 choco install Containers Microsoft-Hyper-V --source windowsfeatures
-choco install docker-engine golang mingw golangci-lint
+choco install docker-engine golang mingw golangci-lint python312
 ```
 
 Reboot the system to enable Hyper-V and start the Docker service.

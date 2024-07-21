@@ -79,7 +79,7 @@ func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {
 		if !ok {
 			scoreReport.ReturnedMeeples[meeple.PlayerID] = []uint8{0, 0}
 		}
-		scoreReport.ReturnedMeeples[meeple.PlayerID][meeple.MeepleType]++
+		scoreReport.ReturnedMeeples[meeple.PlayerID][meeple.Type]++
 	}
 
 	return scoreReport

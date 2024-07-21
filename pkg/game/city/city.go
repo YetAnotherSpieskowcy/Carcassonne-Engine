@@ -65,12 +65,12 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	// calculate total value of the city and get all meeples
 	for pos, features := range city.features {
 		for _, feature := range features {
-			if feature.MeepleType != elements.NoneMeeple {
+			if feature.Meeple.Type != elements.NoneMeeple {
 				if _, ok := scoreReport.ReturnedMeeples[feature.PlayerID]; ok {
-					scoreReport.ReturnedMeeples[feature.PlayerID][feature.MeepleType]++
+					scoreReport.ReturnedMeeples[feature.PlayerID][feature.Meeple.Type]++
 				} else {
 					scoreReport.ReturnedMeeples[feature.PlayerID] = make([]uint8, elements.MeepleTypeCount)
-					scoreReport.ReturnedMeeples[feature.PlayerID][feature.MeepleType] = 1
+					scoreReport.ReturnedMeeples[feature.PlayerID][feature.Meeple.Type] = 1
 				}
 			}
 		}
