@@ -49,7 +49,7 @@ jobs:
           indicators: true
           output: both
           thresholds: '88 100'
-          
+
   python-build:
     name: Python Build
     runs-on: ubuntu-latest
@@ -77,6 +77,8 @@ jobs:
     # should be deleted when when they will start to pass
     # this job will only do the end to end tests, which are not passing at the moment
     name: End to GOLang end tests
+    runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
