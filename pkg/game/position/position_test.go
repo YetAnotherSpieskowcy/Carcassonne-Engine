@@ -51,7 +51,7 @@ func TestPositionFromSide(t *testing.T) {
 		side.LeftBottomEdge,
 		side.LeftTopEdge,
 
-		side.None,
+		side.NoSide,
 	}
 
 	expected := []Position{

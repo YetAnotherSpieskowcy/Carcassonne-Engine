@@ -111,7 +111,7 @@ func TestForceScore(t *testing.T) {
 	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -138,7 +138,7 @@ func TestScore(t *testing.T) {
 	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -175,7 +175,7 @@ func TestScoreTwice(t *testing.T) {
 	var expectedPlayerID elements.ID = 1
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -209,7 +209,7 @@ func TestScoreAfterJoin(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -240,7 +240,7 @@ func TestScoreAfterJoinNotClosed(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -271,7 +271,7 @@ func TestForceScoreAfterJoinNotClosedWithShield(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -305,13 +305,13 @@ func TestScoreTwoCitiesNotConnected(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
-	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.MeepleType = expectedMeepleType
+	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.Type = expectedMeepleType
 	b.Position = position.New(1, 3)
 	manager.UpdateCities(b)
 
@@ -343,13 +343,13 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	a.Position = position.New(1, 1)
 	manager.UpdateCities(a)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
-	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.MeepleType = expectedMeepleType
+	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.Type = expectedMeepleType
 	b.Position = position.New(1, 3)
 	manager.UpdateCities(b)
 

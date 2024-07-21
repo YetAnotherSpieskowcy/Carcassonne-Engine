@@ -58,8 +58,8 @@ func TestSideRotate(t *testing.T) { //nolint:gocyclo // simply testing all state
 		t.Fatalf("got %#v should be %#v after rotation", LeftTopEdge.Rotate(4), LeftTopEdge)
 	}
 
-	if None.Rotate(1) != None {
-		t.Fatalf("got %#v should be %#v after rotation", None.Rotate(1), None)
+	if NoSide.Rotate(1) != NoSide {
+		t.Fatalf("got %#v should be %#v after rotation", NoSide.Rotate(1), NoSide)
 	}
 }
 
@@ -72,8 +72,8 @@ func TestSideRotateReturnsSideRotatedTwice(t *testing.T) {
 }
 
 func TestSideMirror(t *testing.T) {
-	if None.Mirror() != None {
-		t.Fatalf("expected %#v, got %#v instead", None, None.Mirror())
+	if NoSide.Mirror() != NoSide {
+		t.Fatalf("expected %#v, got %#v instead", NoSide, NoSide.Mirror())
 	}
 
 	if All.Mirror() != All {
@@ -94,8 +94,8 @@ func TestSideMirror(t *testing.T) {
 }
 
 func TestSideFlipSides(t *testing.T) {
-	if None.FlipSides() != None {
-		t.Fatalf("expected %#v, got %#v instead", None, None.FlipSides())
+	if NoSide.FlipSides() != NoSide {
+		t.Fatalf("expected %#v, got %#v instead", NoSide, NoSide.FlipSides())
 	}
 
 	if All.FlipSides() != All {
@@ -116,8 +116,8 @@ func TestSideFlipSides(t *testing.T) {
 }
 
 func TestSideFlipCorners(t *testing.T) {
-	if None.FlipCorners() != None {
-		t.Fatalf("expected %#v, got %#v instead", None, None.FlipCorners())
+	if NoSide.FlipCorners() != NoSide {
+		t.Fatalf("expected %#v, got %#v instead", NoSide, NoSide.FlipCorners())
 	}
 
 	if All.FlipCorners() != All {
@@ -179,7 +179,7 @@ func TestSideToString(t *testing.T) { //nolint:gocyclo // simply testing all sta
 		t.Fatalf("got %#v should be %#v", BottomRightEdge.String(), "BOTTOM_RIGHT_EDGE")
 	}
 
-	if None.String() != "NONE" {
-		t.Fatalf("got %#v should be %#v", None.String(), "NONE")
+	if NoSide.String() != "NO_SIDE" {
+		t.Fatalf("got %#v should be %#v", NoSide.String(), "NO_SIDE")
 	}
 }

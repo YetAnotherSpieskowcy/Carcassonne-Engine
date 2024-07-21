@@ -26,3 +26,44 @@ devenv.local.nix
 **/debug.test*
 
 coverage.txt
+
+### Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# virtual environments
+.venv
+.venvs
+venv
+venvs
+
+python_bindings/carcassonne_engine/
+!python_bindings/carcassonne_engine/__init__.py
+
+logs/
+
+built_wheels/

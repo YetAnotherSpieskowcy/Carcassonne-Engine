@@ -124,7 +124,7 @@ func TestScoreOneTileCity(t *testing.T) {
 	for _, tmp := range a.Features {
 		if tmp.FeatureType == feature.City {
 			tmp.PlayerID = expectedPlayerID
-			tmp.MeepleType = expectedMeepleType
+			tmp.Meeple.Type = expectedMeepleType
 			aFeatures = append(aFeatures, tmp)
 		}
 	}
@@ -159,7 +159,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	for _, tmp := range a.Features {
 		if tmp.FeatureType == feature.City {
 			tmp.PlayerID = expectedPlayerID
-			tmp.MeepleType = expectedMeepleType
+			tmp.Meeple.Type = expectedMeepleType
 			aFeatures = append(aFeatures, tmp)
 			if tmp.ModifierType == modifier.Shield {
 				shield = true
@@ -194,7 +194,7 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.MeepleType = expectedMeepleType
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	aFeatures := []elements.PlacedFeature{}
 	for _, tmp := range a.Features {
 		if tmp.FeatureType == feature.City {

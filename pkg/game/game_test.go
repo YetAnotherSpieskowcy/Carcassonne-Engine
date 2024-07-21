@@ -104,3 +104,18 @@ func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 }
+
+func TestGameSerializedCurrentTileNilWhenStackOutOfBounds(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{}
+
+	game, err := NewFromTileSet(tileSet, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	serialized := game.Serialized()
+	if serialized.CurrentTile != nil {
+		t.Fatalf("expected nil, got %v instead", serialized.CurrentTile)
+	}
+}

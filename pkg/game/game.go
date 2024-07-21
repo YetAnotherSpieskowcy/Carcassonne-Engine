@@ -13,16 +13,25 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+type SerializedGame struct {
+	CurrentTile         *tiles.Tile
+	ValidTilePlacements []elements.PlacedTile
+	CurrentPlayer       elements.Player
+	PlayerCount         int
+	Tiles               []elements.PlacedTile
+	TileSet             tilesets.TileSet
+}
+
 type Game struct {
 	board   elements.Board
 	deck    deck.Deck
 	players []elements.Player
 	// index in the `players` field, not the Player ID
 	currentPlayer int
-	log           *logger.Logger
+	log           logger.Logger
 }
 
-func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error) {
+func NewFromTileSet(tileSet tilesets.TileSet, log logger.Logger) (*Game, error) {
 	deckStack := stack.New(tileSet.Tiles)
 	deck := deck.Deck{
 		Stack:        &deckStack,
@@ -32,7 +41,7 @@ func NewFromTileSet(tileSet tilesets.TileSet, log *logger.Logger) (*Game, error)
 }
 
 func NewFromDeck(
-	deck deck.Deck, log *logger.Logger,
+	deck deck.Deck, log logger.Logger,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.New(io.Discard)
@@ -59,6 +68,21 @@ func NewFromDeck(
 	}
 
 	return game, nil
+}
+
+func (game *Game) Serialized() SerializedGame {
+	serialized := SerializedGame{
+		CurrentPlayer: game.CurrentPlayer(),
+		PlayerCount:   game.PlayerCount(),
+		Tiles:         game.board.Tiles(),
+		TileSet:       game.deck.TileSet(),
+	}
+
+	if tile, err := game.GetCurrentTile(); err == nil {
+		serialized.CurrentTile = &tile
+		serialized.ValidTilePlacements = game.board.GetTilePlacementsFor(tile)
+	}
+	return serialized
 }
 
 func (game *Game) GetCurrentTile() (tiles.Tile, error) {

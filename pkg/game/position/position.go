@@ -3,7 +3,7 @@ package position
 import (
 	"fmt"
 
-	sideMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 type Position struct {
@@ -35,10 +35,10 @@ Examples:
 position.FromSide(side.Right) ---> (1,0)
 position.FromSide(side.BottomLeftEdge) == position.FromSide(side.BottomRightEdge) ---> (0, -1)
 */
-func FromSide(side sideMod.Side) Position {
+func FromSide(checkedSide side.Side) Position {
 	primarySides := 0
-	for _, checkedSide := range []sideMod.Side{sideMod.Top, sideMod.Right, sideMod.Left, sideMod.Bottom} {
-		if side&checkedSide != 0 {
+	for _, otherSide := range []side.Side{side.Top, side.Right, side.Left, side.Bottom} {
+		if checkedSide&otherSide != 0 {
 			primarySides++
 		}
 	}
@@ -47,17 +47,17 @@ func FromSide(side sideMod.Side) Position {
 		return New(0, 0)
 	} else if primarySides == 1 {
 		switch {
-		case side&sideMod.Top != 0:
+		case checkedSide&side.Top != 0:
 			return New(0, 1)
-		case side&sideMod.Right != 0:
+		case checkedSide&side.Right != 0:
 			return New(1, 0)
-		case side&sideMod.Left != 0:
+		case checkedSide&side.Left != 0:
 			return New(-1, 0)
-		case side&sideMod.Bottom != 0:
+		case checkedSide&side.Bottom != 0:
 			return New(0, -1)
 		}
 	}
-	panic(fmt.Sprintf("position.FromSide called with more than one primary side. 'side' = %08b", side))
+	panic(fmt.Sprintf("position.FromSide called with more than one primary side. 'side' = %08b", checkedSide))
 }
 
 func (pos Position) MarshalText() ([]byte, error) {

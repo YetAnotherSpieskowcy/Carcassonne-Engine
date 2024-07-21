@@ -244,11 +244,11 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	if monasteryFeature == nil {
 		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a monastery")
 	}
-	if monasteryFeature.MeepleType == elements.NoneMeeple {
+	if monasteryFeature.Meeple.Type == elements.NoneMeeple {
 		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a meeple")
 	}
 
-	var meepleType = monasteryFeature.MeepleType
+	var meepleType = monasteryFeature.Meeple.Type
 
 	var score uint32
 	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
@@ -331,7 +331,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		road = tile.GetPlacedFeatureAtSide(roadSide, feature.Road)
 
 		// check if there is meeple on the feature
-		if road.MeepleType != elements.NoneMeeple {
+		if road.Meeple.Type != elements.NoneMeeple {
 			meeples = append(meeples, road.Meeple)
 		}
 
@@ -372,9 +372,9 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	// check meeples on start tile
 	var roadLeft = tile.GetPlacedFeatureAtSide(leftSide, feature.Road)
 	var roadRight = tile.GetPlacedFeatureAtSide(rightSide, feature.Road)
-	if roadLeft.MeepleType != elements.NoneMeeple {
+	if roadLeft.Meeple.Type != elements.NoneMeeple {
 		meeples = append(meeples, roadLeft.Meeple)
-	} else if roadRight != nil && roadRight.MeepleType != elements.NoneMeeple {
+	} else if roadRight != nil && roadRight.Meeple.Type != elements.NoneMeeple {
 		meeples = append(meeples, roadRight.Meeple)
 	}
 
@@ -385,7 +385,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	meeples = append(meeples, meeplesResult...)
 
 	// check road in "right" direction
-	if !loopResult && rightSide != side.None {
+	if !loopResult && rightSide != side.NoSide {
 		roadFinishedResult, scoreResult, meeplesResult, _, _ = board.CheckRoadInDirection(rightSide, tile)
 		score += scoreResult
 		roadFinished = roadFinished && roadFinishedResult
