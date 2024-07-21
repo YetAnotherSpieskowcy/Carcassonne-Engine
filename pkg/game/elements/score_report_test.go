@@ -160,9 +160,10 @@ func TestGetPlayersWithMostMeeplesTwoPlayers(t *testing.T) {
 	}
 
 	expectedPlayers := []ID{2, 3}
+	expectedPlayers2 := []ID{3, 2} // the order does not matter
 	actualplayers := GetPlayersWithMostMeeples(meeples)
 
-	if !reflect.DeepEqual(expectedPlayers, actualplayers) {
+	if !(reflect.DeepEqual(expectedPlayers, actualplayers) || reflect.DeepEqual(expectedPlayers2, actualplayers)) {
 		t.Fatalf("expected %#v, got %#v instead", expectedPlayers, actualplayers)
 	}
 }
