@@ -71,7 +71,7 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 	}
 
 	// test field.Expand()
-	field := field.NewField(*tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field), tiles[0].Position)
+	field := field.New(*tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field), tiles[0].Position)
 	field.Expand(board, board.cityManager)
 
 	if field.FeaturesCount() != 12 {
@@ -168,7 +168,7 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 	}
 
 	// test field.Expand()
-	field := field.NewField(*tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field), tiles[0].Position)
+	field := field.New(*tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field), tiles[0].Position)
 	field.Expand(board, board.cityManager)
 
 	if field.FeaturesCount() != 14 {

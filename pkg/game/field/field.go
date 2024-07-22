@@ -35,18 +35,18 @@ type Field struct {
 	meeples            map[elements.ID][]uint8 // returned meeples for each player ID (same as in elements.ScoreReport)
 }
 
-func NewField(feature elements.PlacedFeature, position position.Position) Field {
+func New(feature elements.PlacedFeature, position position.Position) Field {
 	features := map[fieldKey]struct{}{
 		{feature: feature, position: position}: {},
 	}
 	return Field{features: features, neighbouringCities: map[int]struct{}{}, meeples: map[elements.ID][]uint8{}}
 }
 
-func (field *Field) FeaturesCount() int {
+func (field Field) FeaturesCount() int {
 	return len(field.features)
 }
 
-func (field *Field) CitiesCount() int {
+func (field Field) CitiesCount() int {
 	return len(field.neighbouringCities)
 }
 
@@ -146,7 +146,7 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 
 				feature := tile.GetPlacedFeatureAtSide(mirroredSide, featureMod.Field)
 				if feature == nil {
-					panic("No matching field found on adjacent tile!") // when a field is directly touching another feature (e.g. a city). Should never happen
+					panic("No matching field found on adjacent tile! The field is directly touching another feature (e.g. city or road). This should never happen")
 				}
 				neighbours = append(neighbours, fieldKey{feature: *feature, position: neighbourPosition})
 			}
@@ -156,7 +156,7 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 }
 
 // Returns score report for this field. Has to be called after field.Expand() (todo?)
-func (field *Field) GetScoreReport() elements.ScoreReport {
+func (field Field) GetScoreReport() elements.ScoreReport {
 	points := uint32(len(field.neighbouringCities) * 3)
 
 	scoreReport := elements.NewScoreReport()
