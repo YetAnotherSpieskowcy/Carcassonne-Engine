@@ -18,6 +18,8 @@ GO_EXCLUDED_PACKAGES = (
     "stack",
     # nothing depends on end tests (unless Wierzba made a mistake)
     "end_tests",
+    "end_tests/four_player_game_test",
+    "end_tests/two_player_game_test",
 )
 GO_MAIN_PACKAGE = f"{GO_BASE_PACKAGE}/{GO_MAIN_PACKAGE_NAME}"
 
