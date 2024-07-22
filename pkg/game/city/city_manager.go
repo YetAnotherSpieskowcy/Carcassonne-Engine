@@ -5,6 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
@@ -18,6 +19,22 @@ func NewCityManager() Manager {
 	return Manager{
 		cities: make([]City, 0),
 	}
+}
+
+// Returns a pointer to a City that has the given feature at the given position, and its index in the city manager
+// Returns nil if no such city exists
+func (manager Manager) GetCity(position position.Position, feature elements.PlacedFeature) (*City, int) {
+	for cityIndex, city := range manager.cities {
+		cityFeatures, exists := city.features[position]
+		if exists {
+			for _, cityFeature := range cityFeatures {
+				if cityFeature == feature {
+					return &manager.cities[cityIndex], cityIndex
+				}
+			}
+		}
+	}
+	return nil, -1
 }
 
 // Finds cities surrounding position of a tile
@@ -59,7 +76,7 @@ func (manager Manager) findCities(pos position.Position) map[side.Side]int {
 // feature that will close the city.
 func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elements.PlacedTile) map[elements.PlacedFeature][]int {
 	citiesToJoin := map[elements.PlacedFeature][]int{}
-	cityFeatures := tile.GetCityFeatures()
+	cityFeatures := tile.GetFeaturesOfType(feature.City)
 	for _, cityFeature := range cityFeatures {
 		var cToJoin = []int{}
 		sides := cityFeature.Feature.Sides
@@ -112,7 +129,7 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 			manager.cities = newCities
 		}
 	} else {
-		for _, f := range tile.GetCityFeatures() {
+		for _, f := range tile.GetFeaturesOfType(feature.City) {
 			toAppend := []elements.PlacedFeature{f}
 			manager.cities = append(manager.cities, NewCity(tile.Position, toAppend, tile.HasShield))
 		}

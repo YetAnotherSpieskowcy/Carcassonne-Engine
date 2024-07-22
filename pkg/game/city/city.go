@@ -85,22 +85,7 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 	}
 
 	// determine winning players
-	var max uint8
-	winningPlayers := []elements.ID{}
-	for playerID, numMeeples := range scoreReport.ReturnedMeeples {
-		for meepleType, meepleCount := range numMeeples {
-			if meepleCount > 0 && meepleType != int(elements.NoneMeeple) {
-				// TODO: add excluding meeples like builder, etc. when they are implemented
-				if meepleCount > max {
-					max = meepleCount
-					winningPlayers = nil // remove all values that are in array since there is a player with more meeples
-					winningPlayers = append(winningPlayers, playerID)
-				} else if meepleCount == max {
-					winningPlayers = append(winningPlayers, playerID)
-				}
-			}
-		}
-	}
+	winningPlayers := elements.GetPlayersWithMostMeeples(scoreReport.ReturnedMeeples)
 
 	// award points
 	for _, player := range winningPlayers {

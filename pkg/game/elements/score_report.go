@@ -40,6 +40,27 @@ func (report *ScoreReport) Join(otherReport ScoreReport) {
 	}
 }
 
+// Returns a list of IDs of players that have the most meeples in the given map
+func GetPlayersWithMostMeeples(meeples map[ID][]uint8) []ID {
+	var max uint8
+	winningPlayers := []ID{}
+	for playerID, numMeeples := range meeples {
+		for meepleType, meepleCount := range numMeeples {
+			if meepleCount > 0 && MeepleType(meepleType) != NoneMeeple {
+				// TODO: add excluding meeples like builder, etc. when they are implemented
+				if meepleCount > max {
+					max = meepleCount
+					winningPlayers = nil // remove all values that are in array since there is a player with more meeples
+					winningPlayers = append(winningPlayers, playerID)
+				} else if meepleCount == max {
+					winningPlayers = append(winningPlayers, playerID)
+				}
+			}
+		}
+	}
+	return winningPlayers
+}
+
 /*
 Create score report by checking meeples control on the same Fully Connected Feature (like a whole city/road etc), ignoring not scoring meeples.
 Returns a score report

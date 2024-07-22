@@ -1,6 +1,7 @@
 package city
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -367,5 +368,51 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 
 	if len(manager.cities) != 1 {
 		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
+func TestGetCity(t *testing.T) {
+
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = position.New(1, 1)
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	b.Position = position.New(2, 1)
+	manager.UpdateCities(b)
+
+	aCity, aCityID := manager.GetCity(position.New(1, 1), *a.GetPlacedFeatureAtSide(side.Top, feature.City))
+	if !reflect.DeepEqual(*aCity, manager.cities[aCityID]) {
+		t.Fatalf("expected %#v, got %#v instead", *aCity, manager.cities[aCityID])
+	}
+
+	bTopCity, bTopCityID := manager.GetCity(position.New(2, 1), *b.GetPlacedFeatureAtSide(side.Top, feature.City))
+
+	if !reflect.DeepEqual(*bTopCity, manager.cities[bTopCityID]) {
+		t.Fatalf("expected %#v, got %#v instead", *bTopCity, manager.cities[bTopCityID])
+	}
+
+	bBottomCity, bBottomCityID := manager.GetCity(position.New(2, 1), *b.GetPlacedFeatureAtSide(side.Bottom, feature.City))
+
+	if !reflect.DeepEqual(*bBottomCity, manager.cities[bBottomCityID]) {
+		t.Fatalf("expected %#v, got %#v instead", *bBottomCity, manager.cities[bBottomCityID])
+	}
+
+	if aCityID == bTopCityID || aCityID == bBottomCityID || bTopCityID == bBottomCityID {
+		t.Fatalf("expected all city IDs to be different. Got: %#v, %#v, %#v", aCityID, bTopCityID, bBottomCityID)
+	}
+
+	if len(manager.cities) != 3 {
+		t.Fatalf("expected %#v, got %#v instead", 3, len(manager.cities))
+	}
+
+	nilCity, nilCityID := manager.GetCity(position.New(21, 37), *a.GetPlacedFeatureAtSide(side.Top, feature.City))
+	if nilCity != nil {
+		t.Fatalf("expected %#v, got %#v instead", nil, nilCity)
+	}
+	if nilCityID != -1 {
+		t.Fatalf("expected %#v, got %#v instead", -1, nilCityID)
 	}
 }

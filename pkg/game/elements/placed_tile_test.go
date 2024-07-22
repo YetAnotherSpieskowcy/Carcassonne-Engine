@@ -3,6 +3,7 @@ package elements
 import (
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
@@ -42,7 +43,7 @@ func TestGetCityFeatures(t *testing.T) {
 
 	tile := ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 
-	cityFeatures := tile.GetCityFeatures()
+	cityFeatures := tile.GetFeaturesOfType(feature.City)
 
 	if len(cityFeatures) != expectedLen {
 		t.Fatalf("expected %#v, got %#v instead", expectedLen, len(cityFeatures))
@@ -51,5 +52,97 @@ func TestGetCityFeatures(t *testing.T) {
 	actualSide := cityFeatures[0].Sides
 	if actualSide != expectedSide {
 		t.Fatalf("expected side %#v, got %#v instead", expectedSide, actualSide)
+	}
+}
+
+func TestGetPlacedFeatureAtSide(t *testing.T) {
+	tile := ToPlacedTile(tiletemplates.SingleCityEdgeStraightRoads())
+
+	// city on top of the tile
+	tileFeature := tile.GetPlacedFeatureAtSide(side.Top, feature.City)
+	if tileFeature == nil || tileFeature.FeatureType != feature.City {
+		t.Fatalf("expected a city feature, got %#v instead", tileFeature)
+	}
+
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Right, feature.City)
+	if tileFeature != nil {
+		t.Fatalf("expected nil, got %#v instead", tileFeature)
+	}
+
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	if tileFeature != nil {
+		t.Fatalf("expected nil, got %#v instead", tileFeature)
+	}
+
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Left, feature.City)
+	if tileFeature != nil {
+		t.Fatalf("expected nil, got %#v instead", tileFeature)
+	}
+
+	// road on the bottom of the tile
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Left, feature.Road)
+	if tileFeature == nil || tileFeature.FeatureType != feature.Road {
+		t.Fatalf("expected a road feature, got %#v instead", tileFeature)
+	}
+
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Right, feature.Road)
+	if tileFeature == nil || tileFeature.FeatureType != feature.Road {
+		t.Fatalf("expected a road feature, got %#v instead", tileFeature)
+	}
+
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Top, feature.Road)
+	if tileFeature != nil {
+		t.Fatalf("expected nil, got %#v instead", tileFeature)
+	}
+
+	tileFeature = tile.GetPlacedFeatureAtSide(side.Bottom, feature.Road)
+	if tileFeature != nil {
+		t.Fatalf("expected nil, got %#v instead", tileFeature)
+	}
+}
+
+func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
+	tile := ToPlacedTile(tiletemplates.SingleCityEdgeCrossRoad())
+
+	// city on top of the tile
+	tileFeatures := tile.GetPlacedFeaturesOverlappingSide(side.Top, feature.City)
+	if len(tileFeatures) != 1 {
+		t.Fatalf("expected 1 feature, got %#v features instead", len(tileFeatures))
+	}
+	for _, f := range tileFeatures {
+		if f.FeatureType != feature.City {
+			t.Fatalf("expected a city feature, got %#v instead", f.FeatureType)
+		}
+	}
+
+	// roads on right, bottom and left of the tile
+	tileFeatures = tile.GetPlacedFeaturesOverlappingSide(side.Left|side.RightTopEdge|side.BottomLeftEdge, feature.Road)
+	if len(tileFeatures) != 3 {
+		t.Fatalf("expected 3 features, got %#v features instead", len(tileFeatures))
+	}
+	for _, f := range tileFeatures {
+		if f.FeatureType != feature.Road {
+			t.Fatalf("expected a road feature, got %#v instead", f.FeatureType)
+		}
+	}
+
+	// fields
+	tileFeatures = tile.GetPlacedFeaturesOverlappingSide(side.All, feature.Field)
+	if len(tileFeatures) != 3 {
+		t.Fatalf("expected 3 features, got %#v features instead", len(tileFeatures))
+	}
+	for _, f := range tileFeatures {
+		if f.FeatureType != feature.Field {
+			t.Fatalf("expected a road feature, got %#v instead", f.FeatureType)
+		}
+	}
+
+	// fields on none side (should be 0)
+	tileFeatures = tile.GetPlacedFeaturesOverlappingSide(side.NoSide, feature.Field)
+	if len(tileFeatures) != 0 {
+		t.Fatalf("expected 0 features, got %#v features instead", len(tileFeatures))
+	}
+	for _, f := range tileFeatures {
+		t.Fatalf("expected nothing, got %#v instead", f)
 	}
 }

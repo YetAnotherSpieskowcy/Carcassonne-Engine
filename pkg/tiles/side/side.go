@@ -33,7 +33,27 @@ const (
 	Left   Side = 0b0000_0011
 
 	NoSide Side = 0b0000_0000
+
+	All Side = 0b1111_1111
 )
+
+var PrimarySides = []Side{
+	Top,
+	Right,
+	Bottom,
+	Left,
+}
+
+var EdgeSides = []Side{
+	TopLeftEdge,
+	TopRightEdge,
+	RightTopEdge,
+	RightBottomEdge,
+	BottomRightEdge,
+	BottomLeftEdge,
+	LeftBottomEdge,
+	LeftTopEdge,
+}
 
 func (side Side) String() string {
 	type sideNamesStruct struct {
@@ -108,7 +128,7 @@ func (side Side) String() string {
 }
 
 /*
-Rotates side clockwise
+Rotates the side clockwise
 */
 func (side Side) Rotate(rotations uint) Side {
 	/*
@@ -139,6 +159,44 @@ func (side Side) Rotate(rotations uint) Side {
 
 	var shift = rotations * 2
 	return (side >> shift) | (side << (8 - shift)) // circular bitshift (bitwise rotate) side to the right by {2*rotations} bits
+}
+
+/*
+Mirrors the side:
+TopLeftEdge     <->  BottomLeftEdge
+TopRightEdge    <->  BottomRightEdge
+
+RightTopEdge    <->  LeftTopEdge
+RightBottomEdge <->  LeftBottomEdge
+*/
+func (side Side) Mirror() Side {
+	return side.Rotate(2).FlipSides()
+}
+
+/*
+Flips each part of the side relative to the side's center:
+TopLeftEdge     <->  TopRightEdge
+RightTopEdge    <->  RightBottomEdge
+
+BottomLeftEdge  <->  BottomRightEdge
+LeftTopEdge     <->  LeftBottomEdge
+*/
+func (side Side) FlipSides() Side {
+	// swap bits in each pair (abcdefgh -> badcfehg)
+	return ((side & 0b10101010) >> 1) | ((side & 0b01010101) << 1)
+}
+
+/*
+Flips each part of the side relative to the adjacent corner:
+TopLeftEdge     <->  LeftTopEdge
+TopRightEdge    <->  RightTopEdge
+
+BottomLeftEdge  <->  LeftBottomEdge
+BottomRightEdge <->  RightBottomEdge
+*/
+func (side Side) FlipCorners() Side {
+	// swap bits in each pair, but offset by one (abcdefgh -> hcbedgfa)
+	return ((side & 0b01010100) >> 1) | ((side & 0b00101010) << 1) | ((side & 0b10000000) >> 7) | ((side & 0b00000001) << 7)
 }
 
 /*
