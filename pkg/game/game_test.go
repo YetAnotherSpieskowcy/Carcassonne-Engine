@@ -123,7 +123,7 @@ func TestFullGame(t *testing.T) {
 	}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -192,7 +192,7 @@ func TestFullGame(t *testing.T) {
 }
 
 func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
-	game, err := NewFromTileSet(tilesets.StandardTileSet(), nil)
+	game, err := NewFromTileSet(tilesets.StandardTileSet(), nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -211,7 +211,7 @@ func TestGameSerializedCurrentTileNotSetWhenStackOutOfBounds(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

@@ -90,3 +90,25 @@ jobs:
           make -o build-python .venv install-python
       - name: Run tests
         run: make -o install-python test-python
+
+  end_to_end_temp_test:
+    # should be deleted when when they will start to pass
+    # this job will only do the end to end tests, which are not passing at the moment
+    name: End to GOLang end tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Install gocover-cobertura
+        run: |
+          go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
+      # Install gotestfmt on the VM running the action.
+      - name: Set up gotestfmt
+        uses: GoTestTools/gotestfmt-action@v2            
+      - name: Run tests 
+        # only two tests end-to-end tests
+        run: go test  -run "(Test2PlayerFullGame|Test4PlayerFullGame)" --tags=test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
