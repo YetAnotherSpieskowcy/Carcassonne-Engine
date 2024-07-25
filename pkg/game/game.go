@@ -158,12 +158,15 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 	}
 	for playerID, returnedMeeples := range scoreReport.ReturnedMeeples {
 		player := game.players[playerID]
-		for i, returnedMeepleCount := range returnedMeeples {
-			meepleType := elements.MeepleType(i)
+		for _, meeple := range returnedMeeples {
+			// return meeple to player
 			player.SetMeepleCount(
-				meepleType,
-				player.MeepleCount(meepleType)-returnedMeepleCount,
+				meeple.Type,
+				player.MeepleCount(meeple.Type)+1,
 			)
+
+			// remove meeple from board
+			// TODO
 		}
 	}
 

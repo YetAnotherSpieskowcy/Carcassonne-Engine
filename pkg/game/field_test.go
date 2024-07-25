@@ -87,9 +87,14 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 3,
 	}
-	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
-		1: {0, 1},
+	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
+		1: {elements.NewMeepleWithPosition(
+			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			position.New(1, 0),
+			side.All,
+			feature.Field)},
 	}
+
 	actualReport := field.GetScoreReport()
 
 	if !reflect.DeepEqual(expectedReport, actualReport) {
@@ -185,9 +190,17 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 		1: 6,
 		2: 6,
 	}
-	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
-		1: {0, 1},
-		2: {0, 1},
+	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
+		1: {elements.NewMeepleWithPosition(
+			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			position.New(1, 0),
+			side.All,
+			feature.Field)},
+		2: {elements.NewMeepleWithPosition(
+			elements.Meeple{elements.NormalMeeple, elements.ID(2)},
+			position.New(0, -1),
+			side.BottomRightEdge|side.RightBottomEdge,
+			feature.Field)},
 	}
 	actualReport := field.GetScoreReport()
 

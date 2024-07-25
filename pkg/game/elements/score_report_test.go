@@ -3,7 +3,15 @@ package elements
 import (
 	"reflect"
 	"testing"
+
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
+
+func SimpleMeepleWithPosition(meeple Meeple, position position.Position) MeepleWithPosition {
+	return NewMeepleWithPosition(meeple, position, side.NoSide, feature.NoneType)
+}
 
 func TestUpdateScoreReport(t *testing.T) {
 	report := NewScoreReport()
@@ -11,10 +19,15 @@ func TestUpdateScoreReport(t *testing.T) {
 		1: 10,
 		2: 5,
 	}
-	report.ReturnedMeeples = map[ID][]uint8{
-		1: {1, 0, 1},
-		2: {0, 1, 1},
-		3: {0, 1, 0},
+	report.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {
+			SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(1)}, position.New(0, 1))},
+		2: {
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(2)}, position.New(0, 2)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 3))},
+		3: {
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 4))},
 	}
 
 	otherReport := NewScoreReport()
@@ -22,10 +35,12 @@ func TestUpdateScoreReport(t *testing.T) {
 		1: 10,
 		3: 7,
 	}
-	otherReport.ReturnedMeeples = map[ID][]uint8{
-		1: {1, 0, 0},
-		2: {0, 0, 1},
-		3: {1, 1, 1},
+	otherReport.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 5))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 6))},
+		3: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(3)}, position.New(0, 7)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 8)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(3)}, position.New(0, 9))},
 	}
 
 	expectedReport := NewScoreReport()
@@ -34,10 +49,17 @@ func TestUpdateScoreReport(t *testing.T) {
 		2: 5,
 		3: 7,
 	}
-	expectedReport.ReturnedMeeples = map[ID][]uint8{
-		1: {2, 0, 1},
-		2: {0, 1, 2},
-		3: {1, 2, 1},
+	expectedReport.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(1)}, position.New(0, 1)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 5))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(2)}, position.New(0, 2)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 3)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 6))},
+		3: {SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 4)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(3)}, position.New(0, 7)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 8)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(3)}, position.New(0, 9))},
 	}
 
 	report.Join(otherReport)
@@ -55,10 +77,12 @@ func TestUpdateEmptyScoreReport(t *testing.T) {
 		1: 10,
 		3: 7,
 	}
-	otherReport.ReturnedMeeples = map[ID][]uint8{
-		1: {1, 0, 0},
-		2: {0, 0, 1},
-		3: {1, 1, 1},
+	otherReport.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 1))},
+		3: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(3)}, position.New(0, 2)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 3)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(3)}, position.New(0, 4))},
 	}
 
 	report.Join(otherReport)
@@ -74,10 +98,12 @@ func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
 		1: 10,
 		3: 7,
 	}
-	report.ReturnedMeeples = map[ID][]uint8{
-		1: {1, 0, 0},
-		2: {0, 0, 1},
-		3: {1, 1, 1},
+	report.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 1))},
+		3: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(3)}, position.New(0, 2)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 3)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(3)}, position.New(0, 4))},
 	}
 
 	emptyReport := NewScoreReport()
@@ -87,10 +113,12 @@ func TestUpdateScoreReportWithEmptyReport(t *testing.T) {
 		1: 10,
 		3: 7,
 	}
-	expectedReport.ReturnedMeeples = map[ID][]uint8{
-		1: {1, 0, 0},
-		2: {0, 0, 1},
-		3: {1, 1, 1},
+	expectedReport.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(2)}, position.New(0, 1))},
+		3: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(3)}, position.New(0, 2)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(3)}, position.New(0, 3)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(3), ID(3)}, position.New(0, 4))},
 	}
 
 	report.Join(emptyReport)
@@ -106,8 +134,8 @@ func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 		1: 1,
 		2: 3,
 	}
-	report1.ReturnedMeeples = map[ID][]uint8{
-		1: {1},
+	report1.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0))},
 	}
 
 	report2 := NewScoreReport()
@@ -115,9 +143,11 @@ func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 		1: 2,
 		2: 5,
 	}
-	report2.ReturnedMeeples = map[ID][]uint8{
-		1: {0, 1},
-		2: {0, 2},
+	report2.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 1)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(1)}, position.New(0, 2))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(2)}, position.New(0, 3)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(2)}, position.New(0, 4))},
 	}
 
 	expectedReport := NewScoreReport()
@@ -125,9 +155,12 @@ func TestUpdateScoreReportWithDifferentReturnedMeeplesLength(t *testing.T) {
 		1: 3,
 		2: 8,
 	}
-	expectedReport.ReturnedMeeples = map[ID][]uint8{
-		1: {1, 1},
-		2: {0, 2},
+	expectedReport.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 0)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(1), ID(1)}, position.New(0, 1)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(1)}, position.New(0, 2))},
+		2: {SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(2)}, position.New(0, 3)),
+			SimpleMeepleWithPosition(Meeple{MeepleType(2), ID(2)}, position.New(0, 4))},
 	}
 
 	report1.Join(report2)
