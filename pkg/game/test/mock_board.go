@@ -58,5 +58,5 @@ func (board *BoardMock) PlaceTile(
 	return board.PlaceTileFunc(tile)
 }
 
-func (board *BoardMock) RemoveMeeple(meeple elements.Meeple, position position.Position, side side.Side, featureType feature.Type) {
+func (board *BoardMock) RemoveMeeple(meeple elements.Meeple, pos position.Position, s side.Side, featureType feature.Type) {
 }
