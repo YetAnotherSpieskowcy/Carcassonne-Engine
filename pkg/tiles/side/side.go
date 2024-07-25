@@ -109,11 +109,11 @@ func (side Side) String() string {
 	output := ""
 
 	for _, names := range sideNames {
-		if side&names.primary == names.primary {
+		if side.HasSide(names.primary) {
 			output += names.primaryName
 		} else {
 			for key, value := range names.secondary {
-				if side&key == key {
+				if side.HasSide(key) {
 					output += value
 				}
 			}
@@ -127,9 +127,25 @@ func (side Side) String() string {
 	return output
 }
 
-/*
-Rotates the side clockwise
-*/
+// Returns whether or not the given side has otherSide
+// For example:
+// - (Right|Top).HasSide(Right) == true
+// - (Right|Top).HasSide(TopRightEdge) == true
+// - (Right|Top).HasSide(Left) == false
+func (side Side) HasSide(otherSide Side) bool {
+	return side&otherSide == otherSide
+}
+
+// Returns whether or not the given side overlaps otherSide. The overlap does not need to be exact.
+// For example:
+// - (Right|Top).OverlapsSide(Right|Bottom) == true
+// - (Right|Top).OverlapsSide(TopRightEdge|Bottom|Left) == true
+// - (Right|Top).OverlapsSide(Left|BottomLeftEdge) == false
+func (side Side) OverlapsSide(otherSide Side) bool {
+	return side&otherSide != 0
+}
+
+// Rotates side clockwise
 func (side Side) Rotate(rotations uint) Side {
 	/*
 		TopLeftEdge     0b10000000
@@ -233,7 +249,7 @@ direction must indicate only one cardinal direction!
 func (side Side) GetConnectedOtherCardinalDirection(direction Side) Side {
 	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
 	for _, cardinal := range cardinals {
-		if side&cardinal == cardinal && cardinal != direction {
+		if side.HasSide(cardinal) && cardinal != direction {
 			return cardinal
 		}
 	}
@@ -250,7 +266,7 @@ func (side Side) GetNthCardinalDirection(n uint8) Side {
 	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
 	found := uint8(0)
 	for _, cardinal := range cardinals {
-		if side&cardinal == cardinal {
+		if side.HasSide(cardinal) {
 			found++
 		}
 		if found > n {
@@ -264,7 +280,7 @@ func (side Side) GetCardinalDirectionsLength() int {
 	cardinals := []Side{Top, Left, Right, Bottom}
 	found := int(0)
 	for _, cardinal := range cardinals {
-		if side&cardinal == cardinal {
+		if side.HasSide(cardinal) {
 			found++
 		}
 	}

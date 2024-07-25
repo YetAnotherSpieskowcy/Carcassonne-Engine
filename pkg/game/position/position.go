@@ -38,7 +38,7 @@ position.FromSide(side.BottomLeftEdge) == position.FromSide(side.BottomRightEdge
 func FromSide(checkedSide side.Side) Position {
 	primarySides := 0
 	for _, otherSide := range []side.Side{side.Top, side.Right, side.Left, side.Bottom} {
-		if checkedSide&otherSide != 0 {
+		if checkedSide.OverlapsSide(otherSide) {
 			primarySides++
 		}
 	}
@@ -47,13 +47,13 @@ func FromSide(checkedSide side.Side) Position {
 		return New(0, 0)
 	} else if primarySides == 1 {
 		switch {
-		case checkedSide&side.Top != 0:
+		case checkedSide.OverlapsSide(side.Top):
 			return New(0, 1)
-		case checkedSide&side.Right != 0:
+		case checkedSide.OverlapsSide(side.Right):
 			return New(1, 0)
-		case checkedSide&side.Left != 0:
+		case checkedSide.OverlapsSide(side.Left):
 			return New(-1, 0)
-		case checkedSide&side.Bottom != 0:
+		case checkedSide.OverlapsSide(side.Bottom):
 			return New(0, -1)
 		}
 	}

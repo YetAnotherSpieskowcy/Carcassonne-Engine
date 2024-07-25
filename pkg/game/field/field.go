@@ -137,7 +137,7 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 	neighbours := []fieldKey{}
 
 	for _, side := range sides {
-		if field.feature.Sides&side != 0 {
+		if field.feature.Sides.OverlapsSide(side) {
 			neighbourPosition := field.position.Add(position.FromSide(side))
 
 			tile, tileExists := board.GetTileAt(neighbourPosition)

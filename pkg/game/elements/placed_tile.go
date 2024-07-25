@@ -78,7 +78,7 @@ Return a list of all features of the given type that overlaps the given side. Th
 func (placedTile PlacedTile) GetPlacedFeaturesOverlappingSide(sideToCheck side.Side, featureType feature.Type) []PlacedFeature {
 	features := []PlacedFeature{}
 	for _, feature := range placedTile.Features {
-		if sideToCheck&feature.Sides != 0 && feature.FeatureType == featureType {
+		if sideToCheck.OverlapsSide(feature.Sides) && feature.FeatureType == featureType {
 			features = append(features, feature)
 		}
 	}
@@ -109,7 +109,7 @@ Return the feature of certain type on desired side
 */
 func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
 	for i, feature := range placedTile.Features {
-		if sideToCheck&feature.Sides == sideToCheck && feature.FeatureType == featureType {
+		if feature.Sides.HasSide(sideToCheck) && feature.FeatureType == featureType {
 			return &placedTile.Features[i]
 		}
 	}
