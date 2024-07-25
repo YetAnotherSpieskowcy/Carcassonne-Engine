@@ -217,12 +217,11 @@ func (side Side) FlipCorners() Side {
 
 /*
 Returns other connected side on the same tile.
-It allows getting other side of the rode feature.
+It allows getting other side of the road feature.
 direction must indicate only one cardinal direction!
 */
 func (side Side) GetConnectedOtherCardinalDirection(direction Side) Side {
-	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
-	for _, cardinal := range cardinals {
+	for _, cardinal := range PrimarySides {
 		if side.HasSide(cardinal) && cardinal != direction {
 			return cardinal
 		}
@@ -237,9 +236,8 @@ First cardinal direction would be Top, second Right, third Bottom.
 If nth direction doesn't exist, NoSide is returned.
 */
 func (side Side) GetNthCardinalDirection(n uint8) Side {
-	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
 	found := uint8(0)
-	for _, cardinal := range cardinals {
+	for _, cardinal := range PrimarySides {
 		if side.HasSide(cardinal) {
 			found++
 		}
@@ -251,9 +249,8 @@ func (side Side) GetNthCardinalDirection(n uint8) Side {
 }
 
 func (side Side) GetCardinalDirectionsLength() int {
-	cardinals := []Side{Top, Left, Right, Bottom}
 	found := int(0)
-	for _, cardinal := range cardinals {
+	for _, cardinal := range PrimarySides {
 		if side.HasSide(cardinal) {
 			found++
 		}

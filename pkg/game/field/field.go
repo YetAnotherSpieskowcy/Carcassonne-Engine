@@ -123,20 +123,9 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 // Returns a slice of fieldKey elements containing all features neighbouring a given fieldKey (feature and position)
 // The slice may contain duplicates in some cases (todo?)
 func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
-	sides := []side.Side{
-		side.TopLeftEdge,
-		side.TopRightEdge,
-		side.RightTopEdge,
-		side.RightBottomEdge,
-		side.BottomRightEdge,
-		side.BottomLeftEdge,
-		side.LeftBottomEdge,
-		side.LeftTopEdge,
-	}
-
 	neighbours := []fieldKey{}
 
-	for _, side := range sides {
+	for _, side := range side.EdgeSides {
 		if field.feature.Sides.OverlapsSide(side) {
 			neighbourPosition := field.position.Add(position.FromSide(side))
 
