@@ -15,14 +15,14 @@ type MeepleWithPosition struct {
 
 func NewMeepleWithPosition(
 	meeple Meeple,
-	position position.Position,
-	side side.Side,
+	pos position.Position,
+	s side.Side,
 	featureType feature.Type,
 ) MeepleWithPosition {
 	return MeepleWithPosition{
 		Meeple:      meeple,
-		Position:    position,
-		Side:        side,
+		Position:    pos,
+		Side:        s,
 		FeatureType: featureType,
 	}
 }
