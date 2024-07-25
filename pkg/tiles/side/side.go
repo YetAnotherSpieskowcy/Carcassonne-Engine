@@ -216,32 +216,6 @@ func (side Side) FlipCorners() Side {
 }
 
 /*
-Returns the opposite side of the argument. Side Top will return Bottom, etc.
-Argument indicates only ONE cardinal or edge, otherwise it's ambigous
-*/
-func (side Side) ConnectedOpposite() Side {
-
-	SwapBits := func(number Side, i uint8, j uint8) Side {
-		// check if needs to swap (check xor)
-		if (((number & (1 << i)) >> i) ^ ((number & (1 << j)) >> j)) == 1 {
-			// xor to swap
-			number ^= 1 << i
-			number ^= 1 << j
-		}
-		return number
-	}
-
-	// rotate
-	rotated := side.Rotate(2)
-
-	// mirror edges
-	for i := range 4 {
-		rotated = SwapBits(rotated, uint8(2*i), uint8(2*i+1))
-	}
-	return rotated
-}
-
-/*
 Returns other connected side on the same tile.
 It allows getting other side of the rode feature.
 direction must indicate only one cardinal direction!

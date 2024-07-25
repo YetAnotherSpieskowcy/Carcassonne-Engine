@@ -315,7 +315,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	// do while loop
 	for {
 		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.FromSide(roadSide)))
-		roadSide = roadSide.ConnectedOpposite()
+		roadSide = roadSide.Mirror()
 		// check if tile exists or loop
 		if !tileExists || tile.Position == startTile.Position {
 			// tile does not exist
