@@ -51,7 +51,27 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	tiles[4].Position = position.New(1, 0)
 
 	expectedScores := []uint32{0, 0, 0, 0, 6}
-	expectedMeeples := [][]uint8{nil, nil, nil, nil, {0, 1}}
+	expectedMeeples := [][][]elements.MeepleWithPosition{
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{
+			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
+				elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+				position.New(0, -1),
+				side.Right|side.Left,
+				feature.Road,
+			)},
+
+			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
+				elements.Meeple{elements.NormalMeeple, elements.ID(2)},
+				position.New(-1, 0),
+				side.Right|side.Bottom,
+				feature.Road,
+			)},
+		},
+	}
 
 	// --------------- Placing tile ----------------------
 
@@ -66,8 +86,8 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 				t.Fatalf("placing tile number: %#v failed. expected %+v for player %v, got %+v instead", i, expectedScores[i], playerID, report.ReceivedPoints[playerID])
 			}
 
-			if !reflect.DeepEqual(report.ReturnedMeeples[playerID], expectedMeeples[i]) {
-				t.Fatalf("placing tile number: %#v failed. expected %+v meeples for player %v, got %+v instead", i, expectedMeeples[i], playerID, report.ReturnedMeeples[playerID])
+			if !reflect.DeepEqual(report.ReturnedMeeples[playerID], expectedMeeples[i][playerID-1]) {
+				t.Fatalf("placing tile number: %#v failed. expected %+v meeples for player %v, got %+v instead", i, expectedMeeples[i][playerID-1], playerID, report.ReturnedMeeples[playerID])
 			}
 		}
 	}
