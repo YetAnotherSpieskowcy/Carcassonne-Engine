@@ -1,17 +1,44 @@
 package elements
 
+import (
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+)
+
+type MeepleWithPosition struct {
+	Meeple
+	Position    position.Position
+	Side        side.Side
+	FeatureType feature.Type
+}
+
+func NewMeepleWithPosition(
+	meeple Meeple,
+	position position.Position,
+	side side.Side,
+	featureType feature.Type,
+) MeepleWithPosition {
+	return MeepleWithPosition{
+		Meeple:      meeple,
+		Position:    position,
+		Side:        side,
+		FeatureType: featureType,
+	}
+}
+
 type ScoreReport struct {
 	// ReceivedPoints[playerID (uint8)] = player's received points
 	ReceivedPoints map[ID]uint32
 	// ReturnedMeeples[playerID (uint8)][meeple type (MeepleType)] = number of returned meeples
 	// for reference, see also: player.meepleCounts
-	ReturnedMeeples map[ID][]uint8
+	ReturnedMeeples map[ID][]MeepleWithPosition
 }
 
 func NewScoreReport() ScoreReport {
 	return ScoreReport{
 		ReceivedPoints:  map[ID]uint32{},
-		ReturnedMeeples: map[ID][]uint8{},
+		ReturnedMeeples: map[ID][]MeepleWithPosition{},
 	}
 }
 
@@ -24,19 +51,12 @@ func (report *ScoreReport) Join(otherReport ScoreReport) {
 	for playerID, meeples := range otherReport.ReturnedMeeples {
 		_, keyExists := report.ReturnedMeeples[playerID]
 		if !keyExists {
-			report.ReturnedMeeples[playerID] = []uint8{}
+			report.ReturnedMeeples[playerID] = []MeepleWithPosition{}
 		}
 
-		if len(report.ReturnedMeeples[playerID]) < len(meeples) {
-			// lengthen the meeples array with zeros
-			// this should not be necessary if we assumed that for all reports, report.ReturnedMeeples should be of length = elements.MeepleTypeCount. Todo?
-			zerosNumber := len(meeples) - len(report.ReturnedMeeples[playerID])
-			report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], make([]uint8, zerosNumber)...)
-		}
+		// add meeples
+		report.ReturnedMeeples[playerID] = append(report.ReturnedMeeples[playerID], meeples...)
 
-		for meepleType, meepleCount := range meeples {
-			report.ReturnedMeeples[playerID][meepleType] += meepleCount
-		}
 	}
 }
 
@@ -65,7 +85,7 @@ func GetPlayersWithMostMeeples(meeples map[ID][]uint8) []ID {
 Create score report by checking meeples control on the same Fully Connected Feature (like a whole city/road etc), ignoring not scoring meeples.
 Returns a score report
 */
-func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {
+func CalculateScoreReportOnMeeples(score int, meeples []MeepleWithPosition) ScoreReport {
 	var mostMeeples = uint8(0)
 	var scoredPlayers = []uint8{}
 	playerMeeples := make(map[uint8]uint8)
@@ -98,9 +118,9 @@ func CalculateScoreReportOnMeeples(score int, meeples []Meeple) ScoreReport {
 	for _, meeple := range meeples {
 		_, ok := scoreReport.ReturnedMeeples[meeple.PlayerID]
 		if !ok {
-			scoreReport.ReturnedMeeples[meeple.PlayerID] = []uint8{0, 0}
+			scoreReport.ReturnedMeeples[meeple.PlayerID] = []MeepleWithPosition{}
 		}
-		scoreReport.ReturnedMeeples[meeple.PlayerID][meeple.Type]++
+		scoreReport.ReturnedMeeples[meeple.PlayerID] = append(scoreReport.ReturnedMeeples[meeple.PlayerID], meeple)
 	}
 
 	return scoreReport

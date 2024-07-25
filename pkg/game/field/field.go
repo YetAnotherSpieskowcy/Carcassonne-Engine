@@ -30,16 +30,16 @@ type fieldKey struct {
 
 // Represents a field on the board
 type Field struct {
-	features           map[fieldKey]struct{}   // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
-	neighbouringCities map[int]struct{}        // this is a set of cities' IDs
-	meeples            map[elements.ID][]uint8 // returned meeples for each player ID (same as in elements.ScoreReport)
+	features           map[fieldKey]struct{}         // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
+	neighbouringCities map[int]struct{}              // this is a set of cities' IDs
+	meeples            []elements.MeepleWithPosition // returned meeples for each player ID (same as in elements.ScoreReport)
 }
 
 func New(feature elements.PlacedFeature, position position.Position) Field {
 	features := map[fieldKey]struct{}{
 		{feature: feature, position: position}: {},
 	}
-	return Field{features: features, neighbouringCities: map[int]struct{}{}, meeples: map[elements.ID][]uint8{}}
+	return Field{features: features, neighbouringCities: map[int]struct{}{}, meeples: []elements.MeepleWithPosition{}}
 }
 
 func (field Field) FeaturesCount() int {
@@ -73,11 +73,12 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		// add meeple if it exists
 		meeple := element.feature.Meeple
 		if meeple.Type != elements.NoneMeeple {
-			_, exists := field.meeples[meeple.PlayerID]
-			if !exists {
-				field.meeples[meeple.PlayerID] = make([]uint8, elements.MeepleTypeCount)
-			}
-			field.meeples[meeple.PlayerID][meeple.Type]++
+			field.meeples = append(field.meeples, elements.NewMeepleWithPosition(
+				meeple,
+				element.position,
+				element.feature.Sides,
+				element.feature.FeatureType,
+			))
 		}
 
 		// find neighbouring city features
@@ -148,14 +149,5 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 func (field Field) GetScoreReport() elements.ScoreReport {
 	points := uint32(len(field.neighbouringCities) * 3)
 
-	scoreReport := elements.NewScoreReport()
-
-	scoreReport.ReturnedMeeples = field.meeples
-
-	scoredPlayers := elements.GetPlayersWithMostMeeples(field.meeples)
-	for _, player := range scoredPlayers {
-		scoreReport.ReceivedPoints[player] = points
-	}
-
-	return scoreReport
+	return elements.CalculateScoreReportOnMeeples(int(points), field.meeples)
 }
