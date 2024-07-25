@@ -7,6 +7,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	positionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -194,6 +195,11 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	return scoreReport, err
 }
 
+func (board *board) RemoveMeeple(meeple elements.Meeple, position position.Position, side side.Side, featureType feature.Type) {
+	placedTile := board.tilesMap[position]
+	placedTile.GetPlacedFeatureAtSide(side, featureType).Meeple = elements.Meeple{elements.NoneMeeple, elements.ID(0)}
+}
+
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	tileIndex := slices.Index(board.placeablePositions, tile.Position)
 	if tileIndex == -1 {
@@ -225,6 +231,7 @@ func (board *board) checkCompleted(
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
+	scoreReport.Join(board.ScoreRoads(tile))
 	return scoreReport, nil
 }
 
