@@ -195,9 +195,9 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	return scoreReport, err
 }
 
-func (board *board) RemoveMeeple(meeple elements.Meeple, position position.Position, side side.Side, featureType feature.Type) {
-	placedTile := board.tilesMap[position]
-	placedTile.GetPlacedFeatureAtSide(side, featureType).Meeple = elements.Meeple{elements.NoneMeeple, elements.ID(0)}
+func (board *board) RemoveMeeple(meeple elements.Meeple, pos position.Position, s side.Side, featureType feature.Type) {
+	placedTile := board.tilesMap[pos]
+	placedTile.GetPlacedFeatureAtSide(s, featureType).Meeple = elements.Meeple{elements.NoneMeeple, elements.ID(0)}
 }
 
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {

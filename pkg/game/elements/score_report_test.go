@@ -9,8 +9,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-func SimpleMeepleWithPosition(meeple Meeple, position position.Position) MeepleWithPosition {
-	return NewMeepleWithPosition(meeple, position, side.NoSide, feature.NoneType)
+func SimpleMeepleWithPosition(meeple Meeple, pos position.Position) MeepleWithPosition {
+	return NewMeepleWithPosition(meeple, pos, side.NoSide, feature.NoneType)
 }
 
 func TestUpdateScoreReport(t *testing.T) {
