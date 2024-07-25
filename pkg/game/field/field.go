@@ -14,7 +14,7 @@ import (
 /*
 Assumptions:
  - if there is only one field feature on a tile, it neighbours ALL cities on this tile
- - if the field feature doesn't have any sides (i.e. its sides==side.None), it neighbours ALL cities on this tile
+ - if the field feature doesn't have any sides (i.e. its sides==side.NoSide), it neighbours ALL cities on this tile
    (this rule is only applicable to tiles from the expansions, as there are no such tiles in the base game)
  - in other cases, fields neighbour all cities they share a common tile corner with
 

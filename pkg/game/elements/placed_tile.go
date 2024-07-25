@@ -33,6 +33,12 @@ type PlacedFeature struct {
 	Meeple
 }
 
+// Represents a legal move (tile placement and meeple placement) on the board
+type PlacedTile struct {
+	TileWithMeeple
+	Position position.Position
+}
+
 func (placedTile PlacedTile) Rotate(rotations uint) PlacedTile {
 	_ = rotations
 	panic("Rotate() not supported on PlacedTile")
@@ -72,9 +78,7 @@ func (placedTile PlacedTile) GetFeaturesOfType(featureType feature.Type) []Place
 	return features
 }
 
-/*
-Return a list of all features of the given type that overlaps the given side. The overlap does not need to be exact.
-*/
+// Return a list of all features of the given type that overlap the given side. The overlap does not need to be exact.
 func (placedTile PlacedTile) GetPlacedFeaturesOverlappingSide(sideToCheck side.Side, featureType feature.Type) []PlacedFeature {
 	features := []PlacedFeature{}
 	for _, feature := range placedTile.Features {
@@ -85,10 +89,14 @@ func (placedTile PlacedTile) GetPlacedFeaturesOverlappingSide(sideToCheck side.S
 	return features
 }
 
-// represents a legal move (tile placement and meeple placement) on the board
-type PlacedTile struct {
-	TileWithMeeple
-	Position position.Position
+// Return the feature of certain type on desired side
+func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
+	for i, feature := range placedTile.Features {
+		if feature.Sides.HasSide(sideToCheck) && feature.FeatureType == featureType {
+			return &placedTile.Features[i]
+		}
+	}
+	return nil
 }
 
 func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
@@ -98,18 +106,6 @@ func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
 func (placedTile PlacedTile) Monastery() *PlacedFeature {
 	for i, feat := range placedTile.Features {
 		if feat.FeatureType == feature.Monastery {
-			return &placedTile.Features[i]
-		}
-	}
-	return nil
-}
-
-/*
-Return the feature of certain type on desired side
-*/
-func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
-	for i, feature := range placedTile.Features {
-		if feature.Sides.HasSide(sideToCheck) && feature.FeatureType == featureType {
 			return &placedTile.Features[i]
 		}
 	}
