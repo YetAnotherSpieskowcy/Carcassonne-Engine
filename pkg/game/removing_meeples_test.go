@@ -73,7 +73,7 @@ func TestRemoveSingleMeeple(t *testing.T) {
 	// ------ Check if meeple was removed --------
 	ptile, _ = game.board.GetTileAt(position.New(-1, 0))
 	meeple := ptile.GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple
-	var expectedMeeple = elements.Meeple{elements.NoneMeeple, elements.ID(0)}
+	var expectedMeeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
 	if meeple != expectedMeeple {
 		t.Fatalf("Removing meeple failed! \nFound: \n%#v,\nexpected:\n%#v", meeple, expectedMeeple)
 	}

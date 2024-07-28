@@ -192,12 +192,12 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 	}
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(1, 0),
 			side.All,
 			feature.Field)},
 		2: {elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(2)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
 			position.New(0, -1),
 			side.BottomRightEdge|side.RightBottomEdge,
 			feature.Field)},
