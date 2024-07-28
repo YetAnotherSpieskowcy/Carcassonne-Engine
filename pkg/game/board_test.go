@@ -190,7 +190,7 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	}
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(0, 1),
 			side.NoSide,
 			feature.Monastery)},
@@ -293,7 +293,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	}
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(0, 2),
 			side.NoSide,
 			feature.Monastery)},
