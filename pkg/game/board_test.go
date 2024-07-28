@@ -298,7 +298,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 			side.NoSide,
 			feature.Monastery)},
 		2: {elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(2)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
 			position.New(1, 2),
 			side.NoSide,
 			feature.Monastery)},
