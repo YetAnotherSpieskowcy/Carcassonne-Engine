@@ -174,7 +174,7 @@ func TestRemoveTwoMeeples(t *testing.T) {
 	ptile, _ = game.board.GetTileAt(position.New(1, 0))
 
 	var meeple = ptile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple
-	var expectedMeeple = elements.Meeple{elements.NoneMeeple, elements.ID(0)}
+	var expectedMeeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
 	if meeple != expectedMeeple {
 		t.Fatalf("Removing first meeple failed! \nFound: \n%#v,\nexpected:\n%#v", meeple, expectedMeeple)
 	}

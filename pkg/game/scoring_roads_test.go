@@ -58,14 +58,14 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
 		{
 			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
-				elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 				position.New(0, -1),
 				side.Right|side.Left,
 				feature.Road,
 			)},
 
 			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
-				elements.Meeple{elements.NormalMeeple, elements.ID(2)},
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
 				position.New(-1, 0),
 				side.Right|side.Bottom,
 				feature.Road,
@@ -130,7 +130,7 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 		[]elements.MeepleWithPosition(nil),
 		[]elements.MeepleWithPosition(nil),
 		[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(0, -1),
 			side.Right|side.Bottom,
 			feature.Road,
@@ -185,7 +185,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	expectedMeeples := [][]elements.MeepleWithPosition{
 		[]elements.MeepleWithPosition(nil),
 		[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
-			elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(-1, 0),
 			side.Right,
 			feature.Road,
@@ -251,12 +251,12 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 		[]elements.MeepleWithPosition(nil),
 		[]elements.MeepleWithPosition{
 			elements.NewMeepleWithPosition(
-				elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 				position.New(1, 0),
 				side.Left,
 				feature.Road),
 			elements.NewMeepleWithPosition(
-				elements.Meeple{elements.NormalMeeple, elements.ID(1)},
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 				position.New(0, -1),
 				side.Left,
 				feature.Road),
