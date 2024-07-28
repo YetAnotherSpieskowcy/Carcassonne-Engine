@@ -244,7 +244,7 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 	tiles[3].Position = position.New(-1, 0)
 
 	expectedScores := []uint32{0, 0, 0, 5}
-	//expectedMeeples := [][]uint8{nil, nil, nil, {0, 2}}
+	// expectedMeeples := [][]uint8{nil, nil, nil, {0, 2}}
 	expectedMeeples := [][]elements.MeepleWithPosition{
 		[]elements.MeepleWithPosition(nil),
 		[]elements.MeepleWithPosition(nil),

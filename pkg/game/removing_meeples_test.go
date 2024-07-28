@@ -166,8 +166,10 @@ func TestRemoveTwoMeeples(t *testing.T) {
 	ptile = elements.ToPlacedTile(tile.Rotate(3))
 
 	ptile.Position = position.New(-1, 0)
-	game.PlayTurn(ptile)
-
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	// ------ Check if meeples were removed --------
 	ptile, _ = game.board.GetTileAt(position.New(1, 0))
 

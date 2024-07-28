@@ -17,5 +17,5 @@ type Board interface {
 	GetLegalMovesFor(tile PlacedTile) []PlacedTile
 	CanBePlaced(tile PlacedTile) bool
 	PlaceTile(tile PlacedTile) (ScoreReport, error)
-	RemoveMeeple(meeple Meeple, pos position.Position, s side.Side, featureType feature.Type)
+	RemoveMeeple(pos position.Position, s side.Side, featureType feature.Type)
 }
