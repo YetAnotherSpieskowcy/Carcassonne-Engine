@@ -20,6 +20,8 @@ Simple road using two monasteries.
 	M1 - 0 - M2
 */
 func TestRemoveSingleMeeple(t *testing.T) {
+	var tile tiles.Tile
+
 	// ------ create tileset --------
 	var tiles []tiles.Tile
 
@@ -39,22 +41,34 @@ func TestRemoveSingleMeeple(t *testing.T) {
 	}
 
 	// ------ first turn --------
-	var tile, _ = game.GetCurrentTile()
+
+	tile, err = game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	var player = game.CurrentPlayer()
 	var ptile = elements.ToPlacedTile(tile.Rotate(3)) // make road to right
 
 	ptile.Position = position.New(-1, 0)
-	ptile.GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{elements.NormalMeeple, elements.ID(player.ID())}
-	game.PlayTurn(ptile)
+	ptile.GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: player.ID()}
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	// ------ second turn --------
 
-	tile, _ = game.GetCurrentTile()
-	player = game.CurrentPlayer()
+	tile, err = game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	ptile = elements.ToPlacedTile(tile.Rotate(1)) // make road to left
 
 	ptile.Position = position.New(1, 0)
-	game.PlayTurn(ptile)
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	// ------ Check if meeple was removed --------
 	ptile, _ = game.board.GetTileAt(position.New(-1, 0))
@@ -76,6 +90,7 @@ Simple road using two monasteries and two road turns.
 	3 -	2
 */
 func TestRemoveTwoMeeples(t *testing.T) {
+	var tile tiles.Tile
 	// ------ create tileset --------
 	var tiles []tiles.Tile
 
@@ -100,33 +115,54 @@ func TestRemoveTwoMeeples(t *testing.T) {
 	}
 
 	// ------ first turn --------
-	var tile, _ = game.GetCurrentTile()
+	tile, err = game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	var player = game.CurrentPlayer()
 	var ptile = elements.ToPlacedTile(tile.Rotate(1)) // make road to left
 
 	ptile.Position = position.New(1, 0)
-	ptile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = elements.Meeple{elements.NormalMeeple, elements.ID(player.ID())}
-	game.PlayTurn(ptile)
+	ptile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: player.ID()}
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	// ------ second turn --------
 
-	tile, _ = game.GetCurrentTile()
+	tile, err = game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	player = game.CurrentPlayer()
 	ptile = elements.ToPlacedTile(tile.Rotate(1)) // make road to left
 
 	ptile.Position = position.New(0, -1)
-	ptile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = elements.Meeple{elements.NormalMeeple, elements.ID(player.ID())}
-	game.PlayTurn(ptile)
+	ptile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: player.ID()}
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	// ------ third turn --------
-	tile, _ = game.GetCurrentTile()
+	tile, err = game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	ptile = elements.ToPlacedTile(tile.Rotate(2))
 
 	ptile.Position = position.New(-1, -1)
-	game.PlayTurn(ptile)
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	// ------ fourth turn --------
-	tile, _ = game.GetCurrentTile()
+	tile, err = game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	ptile = elements.ToPlacedTile(tile.Rotate(3))
 
 	ptile.Position = position.New(-1, 0)
@@ -134,6 +170,7 @@ func TestRemoveTwoMeeples(t *testing.T) {
 
 	// ------ Check if meeples were removed --------
 	ptile, _ = game.board.GetTileAt(position.New(1, 0))
+
 	var meeple = ptile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple
 	var expectedMeeple = elements.Meeple{elements.NoneMeeple, elements.ID(0)}
 	if meeple != expectedMeeple {
