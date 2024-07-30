@@ -14,7 +14,7 @@ import (
 /*
 Assumptions:
  - if there is only one field feature on a tile, it neighbours ALL cities on this tile
- - if the field feature doesn't have any sides (i.e. its sides==side.None), it neighbours ALL cities on this tile
+ - if the field feature doesn't have any sides (i.e. its sides==side.NoSide), it neighbours ALL cities on this tile
    (this rule is only applicable to tiles from the expansions, as there are no such tiles in the base game)
  - in other cases, fields neighbour all cities they share a common tile corner with
 
@@ -123,21 +123,10 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 // Returns a slice of fieldKey elements containing all features neighbouring a given fieldKey (feature and position)
 // The slice may contain duplicates in some cases (todo?)
 func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
-	sides := []side.Side{
-		side.TopLeftEdge,
-		side.TopRightEdge,
-		side.RightTopEdge,
-		side.RightBottomEdge,
-		side.BottomRightEdge,
-		side.BottomLeftEdge,
-		side.LeftBottomEdge,
-		side.LeftTopEdge,
-	}
-
 	neighbours := []fieldKey{}
 
-	for _, side := range sides {
-		if field.feature.Sides&side != 0 {
+	for _, side := range side.EdgeSides {
+		if field.feature.Sides.OverlapsSide(side) {
 			neighbourPosition := field.position.Add(position.FromSide(side))
 
 			tile, tileExists := board.GetTileAt(neighbourPosition)

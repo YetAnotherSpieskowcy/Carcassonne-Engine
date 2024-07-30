@@ -107,7 +107,7 @@ func (board *board) testSide(position positionMod.Position, expectedSide side.Si
 	}
 	for _, tileFeature := range tile.Features {
 		if tileFeature.FeatureType == expectedFeatureType {
-			if tileFeature.Sides&expectedSide == expectedSide {
+			if tileFeature.Sides.HasSide(expectedSide) {
 				return true
 			}
 		}
@@ -141,8 +141,7 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	for _, f := range tile.Features {
 		s := side.Top
 		for range 4 {
-			if f.Sides&s == s &&
-				!board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
+			if f.Sides.HasSide(s) && !board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
 				return false
 			}
 			s = s.Rotate(1)
@@ -316,7 +315,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	// do while loop
 	for {
 		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.FromSide(roadSide)))
-		roadSide = roadSide.ConnectedOpposite()
+		roadSide = roadSide.Mirror()
 		// check if tile exists or loop
 		if !tileExists || tile.Position == startTile.Position {
 			// tile does not exist
@@ -418,7 +417,7 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 
 	for _, road := range roads {
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
-		if checkedRoadSides&road.Sides == 0 {
+		if !checkedRoadSides.OverlapsSide(road.Sides) {
 			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
 			scoreReport.Join(scoreReportTemp)
 			checkedRoadSides |= roadSide
