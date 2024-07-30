@@ -372,7 +372,6 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 }
 
 func TestGetCity(t *testing.T) {
-
 	manager := NewCityManager()
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
