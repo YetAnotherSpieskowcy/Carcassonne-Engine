@@ -286,7 +286,8 @@ func checkNinethTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, -1)
-	end_tests.MakeTurn(game, t, pos, 1, elements.NormalMeeple, side.Right, feature.City)	
+	println("----------------TENTH TURN----------------")
+	end_tests.MakeTurn(game, t, pos, 1, elements.NormalMeeple, side.Right, feature.City)
 
 	end_tests.VerifyMeepleExistence(t, game, position.New(2, -1), side.Right, feature.City, false, 10) // removed meeple
 	end_tests.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 10)

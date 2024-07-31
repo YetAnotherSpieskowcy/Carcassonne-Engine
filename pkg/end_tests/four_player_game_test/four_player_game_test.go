@@ -430,8 +430,8 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 	end_tests.MakeTurn(game, t, pos, 1, elements.NormalMeeple, side.NoSide, feature.Monastery)
 
 	end_tests.VerifyMeepleExistence(t, game, position.New(1, 1), side.Right, feature.Road, false, 10) // removed meeple
-	end_tests.VerifyMeepleExistence(t, game, pos, side.NoSide, feature.Field, true, 10)
-	end_tests.CheckMeeplesAndScore(game, t, []uint32{0, 4, 4, 3}, []uint8{4, 5, 6, 6}, 10)
+	end_tests.VerifyMeepleExistence(t, game, pos, side.NoSide, feature.Monastery, true, 10)
+	end_tests.CheckMeeplesAndScore(game, t, []uint32{0, 4, 4, 4}, []uint8{4, 5, 6, 6}, 10)
 }
 
 /*
@@ -463,13 +463,13 @@ player1 and player4 score 4 points for their roads
 |
 */
 func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
-	pos := position.New(3, 1)
-	end_tests.MakeTurn(game, t, pos, 3, elements.NormalMeeple, side.NoSide, feature.Monastery)
+	pos := position.New(-1, -1)
+	end_tests.MakeTurn(game, t, pos, 3, elements.NormalMeeple, side.Bottom, feature.Road)
 
 	end_tests.VerifyMeepleExistence(t, game, position.New(-1, 0), side.Bottom, feature.Road, false, 11) // removed meeple
-	end_tests.VerifyMeepleExistence(t, game, position.New(0, 1), side.Bottom, feature.Road, false, 11)  // removed meeple
-	end_tests.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.City, true, 11)
-	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 4, 4, 7}, []uint8{5, 5, 5, 7}, 11)
+	end_tests.VerifyMeepleExistence(t, game, position.New(1, 0), side.Bottom, feature.Road, false, 11)  // removed meeple
+	end_tests.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true, 11)
+	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 4, 4, 8}, []uint8{5, 5, 5, 7}, 11)
 }
 
 /*
@@ -505,7 +505,7 @@ func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
 	end_tests.MakeTurn(game, t, pos, 0, elements.NormalMeeple, side.Right, feature.Road)
 
 	end_tests.VerifyMeepleExistence(t, game, pos, side.Right, feature.Road, true, 12)
-	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 4, 4, 7}, []uint8{5, 5, 5, 6}, 12)
+	end_tests.CheckMeeplesAndScore(game, t, []uint32{4, 4, 4, 8}, []uint8{5, 5, 5, 6}, 12)
 }
 
 /*
@@ -529,7 +529,7 @@ func checkFinalResult(game *gameMod.Game, t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	var expectedScores = []uint32{4 + 15, 4 + 2, 4 + 2, 7 + 1}
+	var expectedScores = []uint32{4 + 15, 4 + 2, 4 + 2, 8 + 1}
 
 	for i := range 4 {
 		if scores.ReceivedPoints[elements.ID(i)] != expectedScores[i] {
