@@ -112,12 +112,12 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 				}
 			}
 			for bitIndex, bitMask := range connectionMasks {
-				bitMask = bitMask << int64(bitOffset)
+				bitMask <<= int64(bitOffset)
 				if tmpBits&bitMask == bitMask {
 					tmpBits = setBit(tmpBits, bitOffset+bitIndex+connectionBitOffset)
 				}
 			}
-			bits = bits | tmpBits
+			bits |= tmpBits
 
 		} else if feature.FeatureType == featureMod.Field {
 			if feature.Sides == side.NoSide {
@@ -140,12 +140,12 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 					}
 				}
 				for bitIndex, bitMask := range connectionMasks {
-					bitMask = bitMask << int64(bitOffset)
+					bitMask <<= int64(bitOffset)
 					if tmpBits&bitMask == bitMask {
 						tmpBits = setBit(tmpBits, bitOffset+bitIndex+connectionBitOffset)
 					}
 				}
-				bits = bits | tmpBits
+				bits |= tmpBits
 			}
 		}
 	}
