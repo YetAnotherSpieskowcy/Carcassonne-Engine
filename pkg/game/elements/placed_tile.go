@@ -25,7 +25,7 @@ type Meeple struct {
 
 type TileWithMeeple struct {
 	Features  []PlacedFeature
-	HasShield bool
+	HasShield bool // todo should be removed
 }
 
 type PlacedFeature struct {
