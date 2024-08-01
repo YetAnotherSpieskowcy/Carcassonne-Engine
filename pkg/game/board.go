@@ -195,9 +195,14 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	return scoreReport, err
 }
 
-func (board *board) RemoveMeeple(pos position.Position, s side.Side, featureType feature.Type) {
+func (board *board) RemoveMeeple(pos position.Position) {
 	placedTile := board.tilesMap[pos]
-	placedTile.GetPlacedFeatureAtSide(s, featureType).Meeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
+	for _, feature := range placedTile.Features {
+		if feature.Meeple.Type != elements.NoneMeeple {
+			feature.Meeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
+			break
+		}
+	}
 }
 
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {
@@ -269,10 +274,8 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		scoreReport.ReceivedPoints[monasteryFeature.PlayerID] = score
 		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = []elements.MeepleWithPosition{
 			elements.MeepleWithPosition{
-				Meeple:      monasteryFeature.Meeple,
-				Position:    tile.Position,
-				Side:        monasteryFeature.Sides,
-				FeatureType: feature.Monastery,
+				Meeple:   monasteryFeature.Meeple,
+				Position: tile.Position,
 			},
 		}
 

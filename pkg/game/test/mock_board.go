@@ -4,8 +4,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 type BoardMock struct {
@@ -58,8 +56,6 @@ func (board *BoardMock) PlaceTile(
 	return board.PlaceTileFunc(tile)
 }
 
-func (board *BoardMock) RemoveMeeple(pos position.Position, s side.Side, featureType feature.Type) {
+func (board *BoardMock) RemoveMeeple(pos position.Position) {
 	_ = pos
-	_ = s
-	_ = featureType
 }

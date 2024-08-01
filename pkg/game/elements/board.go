@@ -3,8 +3,6 @@ package elements
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 // mutable type
@@ -17,5 +15,5 @@ type Board interface {
 	GetLegalMovesFor(tile PlacedTile) []PlacedTile
 	CanBePlaced(tile PlacedTile) bool
 	PlaceTile(tile PlacedTile) (ScoreReport, error)
-	RemoveMeeple(pos position.Position, s side.Side, featureType feature.Type)
+	RemoveMeeple(pos position.Position)
 }
