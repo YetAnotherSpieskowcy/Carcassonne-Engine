@@ -55,3 +55,7 @@ func (board *BoardMock) PlaceTile(
 	}
 	return board.PlaceTileFunc(tile)
 }
+
+func (board *BoardMock) RemoveMeeple(pos position.Position) {
+	_ = pos
+}

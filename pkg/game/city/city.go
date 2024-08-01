@@ -60,18 +60,16 @@ func (city *City) SetScored(scored bool) {
 // Calculates score value of the city and
 // determines players that should receive points.
 func (city *City) GetScoreReport() elements.ScoreReport {
-	scoreReport := elements.NewScoreReport()
+	var returnedMeeples = []elements.MeepleWithPosition{}
 	var totalScore uint32
 	// calculate total value of the city and get all meeples
 	for pos, features := range city.features {
 		for _, feature := range features {
 			if feature.Meeple.Type != elements.NoneMeeple {
-				if _, ok := scoreReport.ReturnedMeeples[feature.PlayerID]; ok {
-					scoreReport.ReturnedMeeples[feature.PlayerID][feature.Meeple.Type]++
-				} else {
-					scoreReport.ReturnedMeeples[feature.PlayerID] = make([]uint8, elements.MeepleTypeCount)
-					scoreReport.ReturnedMeeples[feature.PlayerID][feature.Meeple.Type] = 1
-				}
+				returnedMeeples = append(returnedMeeples, elements.NewMeepleWithPosition(
+					feature.Meeple,
+					pos,
+				))
 			}
 		}
 		totalScore += 2
@@ -84,15 +82,7 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 		totalScore /= 2
 	}
 
-	// determine winning players
-	winningPlayers := elements.GetPlayersWithMostMeeples(scoreReport.ReturnedMeeples)
-
-	// award points
-	for _, player := range winningPlayers {
-		scoreReport.ReceivedPoints[player] = totalScore
-	}
-
-	return scoreReport
+	return elements.CalculateScoreReportOnMeeples(int(totalScore), returnedMeeples)
 }
 
 // Returns all features from a tile at a given position that are part of a city

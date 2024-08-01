@@ -186,8 +186,11 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 5,
 	}
-	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
-		1: {0, 1},
+	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
+		1: {elements.NewMeepleWithPosition(
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+			position.New(0, 1),
+		)},
 	}
 
 	if !reflect.DeepEqual(report, expectedReport) {
@@ -285,9 +288,15 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 		1: 9,
 		2: 9,
 	}
-	expectedReport.ReturnedMeeples = map[elements.ID][]uint8{
-		1: {0, 1},
-		2: {0, 1},
+	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
+		1: {elements.NewMeepleWithPosition(
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+			position.New(0, 2),
+		)},
+		2: {elements.NewMeepleWithPosition(
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
+			position.New(1, 2),
+		)},
 	}
 	if !reflect.DeepEqual(report, expectedReport) {
 		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expectedReport, report)
