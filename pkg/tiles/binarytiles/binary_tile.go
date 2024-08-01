@@ -66,7 +66,7 @@ var connectionMasks = []int64{
 }
 
 func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
-	var bits int64
+	var binaryTile BinaryTile
 	var owner elements.ID
 
 	for _, feature := range features {
@@ -83,10 +83,10 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 			bitOffset = roadStartBit
 
 		case featureMod.Monastery:
-			bits = setBit(bits, monasteryBit)
+			binaryTile.setBit(monasteryBit)
 			if feature.Meeple.Type != elements.NoneMeeple {
 				owner = feature.Meeple.PlayerID
-				bits = setBit(bits, meepleEndBit-1) // last bit is meeple in the center
+				binaryTile.setBit(meepleEndBit - 1) // last meeple bit is meeple in the center
 			}
 
 		default:
@@ -94,67 +94,67 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 		}
 
 		if feature.FeatureType == featureMod.Road || feature.FeatureType == featureMod.City {
-			var tmpBits int64
+			var tmpBinaryTile BinaryTile
 			for bitIndex, side := range orthogonalFeaturesBits {
 				if feature.Sides.HasSide(side) {
-					tmpBits = setBit(tmpBits, bitOffset+bitIndex)
+					tmpBinaryTile.setBit(bitOffset + bitIndex)
 
 					// todo add more feature modifiers when they are implemented
 					if feature.ModifierType == modifier.Shield {
-						tmpBits = setBit(tmpBits, shieldStartBit+bitIndex)
+						tmpBinaryTile.setBit(shieldStartBit + bitIndex)
 					}
 
 					// todo add more meeple types when they are implemented
 					if feature.Meeple.Type != elements.NoneMeeple {
 						owner = feature.Meeple.PlayerID
-						tmpBits = setBit(tmpBits, meepleStartBit+bitIndex)
+						tmpBinaryTile.setBit(meepleStartBit + bitIndex)
 					}
 				}
 			}
 			for bitIndex, bitMask := range connectionMasks {
 				bitMask <<= int64(bitOffset)
-				if tmpBits&bitMask == bitMask {
-					tmpBits = setBit(tmpBits, bitOffset+bitIndex+connectionBitOffset)
+				if int64(tmpBinaryTile)&bitMask == bitMask {
+					tmpBinaryTile.setBit(bitOffset + bitIndex + connectionBitOffset)
 				}
 			}
-			bits |= tmpBits
+			binaryTile |= tmpBinaryTile
 
 		} else if feature.FeatureType == featureMod.Field {
 			if feature.Sides == side.NoSide {
-				bits = setBit(bits, unconnectedFieldBit)
+				binaryTile.setBit(unconnectedFieldBit)
 				if feature.Meeple.Type != elements.NoneMeeple {
 					owner = feature.Meeple.PlayerID
-					bits = setBit(bits, meepleEndBit-1) // last bit is meeple in the center
+					binaryTile.setBit(meepleEndBit - 1) // last meeple bit is meeple in the center
 				}
 			} else {
-				var tmpBits int64
+				var tmpBinaryTile BinaryTile
 				for bitIndex, side := range diagonalFeaturesBits {
 					if feature.Sides.OverlapsSide(side) {
-						tmpBits = setBit(tmpBits, bitOffset+bitIndex)
+						tmpBinaryTile.setBit(bitOffset + bitIndex)
 
 						// todo add more meeple types when they are implemented
 						if feature.Meeple.Type != elements.NoneMeeple {
 							owner = feature.Meeple.PlayerID
-							tmpBits = setBit(tmpBits, meepleStartBit+bitIndex+diagonalMeepleOffset)
+							tmpBinaryTile.setBit(meepleStartBit + bitIndex + diagonalMeepleOffset)
 						}
 					}
 				}
 				for bitIndex, bitMask := range connectionMasks {
 					bitMask <<= int64(bitOffset)
-					if tmpBits&bitMask == bitMask {
-						tmpBits = setBit(tmpBits, bitOffset+bitIndex+connectionBitOffset)
+					if int64(tmpBinaryTile)&bitMask == bitMask {
+						tmpBinaryTile.setBit(bitOffset + bitIndex + connectionBitOffset)
 					}
 				}
-				bits |= tmpBits
+				binaryTile |= tmpBinaryTile
 			}
 		}
 	}
 
 	if owner != 0 {
-		bits = setBit(bits, playerStartBit+int(owner)-1)
+		binaryTile.setBit(playerStartBit + int(owner) - 1)
 	}
 
-	return BinaryTile(bits)
+	return binaryTile
 }
 
 func FromTile(tile tiles.Tile) BinaryTile {
@@ -168,6 +168,6 @@ func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
 	return binaryTile
 }
 
-func setBit(number int64, bitIndex int) int64 {
-	return number | (1 << bitIndex)
+func (tile *BinaryTile) setBit(bitIndex int) {
+	*tile |= (1 << bitIndex)
 }
