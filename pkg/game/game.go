@@ -167,7 +167,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 			)
 
 			// remove meeple from board
-			game.board.RemoveMeeple(meeple.Position, meeple.Side, meeple.FeatureType)
+			game.board.RemoveMeeple(meeple.Position)
 		}
 	}
 

@@ -8,9 +8,7 @@ import (
 
 type MeepleWithPosition struct {
 	Meeple
-	Position    position.Position
-	Side        side.Side
-	FeatureType feature.Type
+	Position position.Position
 }
 
 func NewMeepleWithPosition(
@@ -20,10 +18,8 @@ func NewMeepleWithPosition(
 	featureType feature.Type,
 ) MeepleWithPosition {
 	return MeepleWithPosition{
-		Meeple:      meeple,
-		Position:    pos,
-		Side:        s,
-		FeatureType: featureType,
+		Meeple:   meeple,
+		Position: pos,
 	}
 }
 
