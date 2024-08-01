@@ -10,6 +10,22 @@ import (
 
 type BinaryTile int64
 
+// interpreting BinaryTile's bits:
+//        0000000000000000001_000000011_00_0011_0000010011_0001001100_1000001110
+//         owner (playerID)    meeple   ^    ^     city       road      field
+//                                      |    |
+//   monastery and unconnected field bits    city shield
+//
+// counting from right to left (from least to most significant bit):
+//  - first four bits of the field section are the corners, starting from top-right, clockwise
+//  - first four bits of the roads, cities and shields sections are the sides, starting from top, clockwise
+//  - remaining six bits of fields, roads and cities are the connection between pairs
+//    of the previous four bits (first and second, second and third, etc.)
+//  - first four bits of the meeple section are the sides (same as with shields)
+//  - next four meeple bits are the corners (same as with fields)
+//  - the last meeple bit is the center
+//  - the owner bits is just one-hot-encoded player ID. (ID(1) = 00...001, ID(2) = 00...010, etc.)
+
 const (
 	featureBitSize  = 10
 	modifierBitSize = 4
@@ -56,7 +72,7 @@ var diagonalFeaturesBits = []side.Side{
 	side.LeftTopEdge | side.TopLeftEdge,
 }
 
-var connectionMasks = []int64{
+var connectionMasks = []BinaryTile{
 	0b0011,
 	0b0110,
 	0b1100,
@@ -123,6 +139,7 @@ func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
 	return binaryTile
 }
 
+// Sets all necessary bits in the binary tile for a diagonal feature (field)
 func (binaryTile *BinaryTile) addDiagonalFeature(feature elements.PlacedFeature, bitOffset int) {
 	var tmpBinaryTile BinaryTile
 
@@ -138,14 +155,15 @@ func (binaryTile *BinaryTile) addDiagonalFeature(feature elements.PlacedFeature,
 		}
 	}
 	for bitIndex, bitMask := range connectionMasks {
-		bitMask <<= int64(bitOffset)
-		if int64(tmpBinaryTile)&bitMask == bitMask {
+		bitMask <<= bitOffset
+		if tmpBinaryTile&bitMask == bitMask {
 			tmpBinaryTile.setBit(bitOffset + bitIndex + connectionBitOffset)
 		}
 	}
 	*binaryTile |= tmpBinaryTile
 }
 
+// Sets all necessary bits in the binary tile for an orthogonal feature (city, road). Also handles city shields
 func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeature, bitOffset int) {
 	var tmpBinaryTile BinaryTile
 
@@ -166,14 +184,15 @@ func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeatur
 		}
 	}
 	for bitIndex, bitMask := range connectionMasks {
-		bitMask <<= int64(bitOffset)
-		if int64(tmpBinaryTile)&bitMask == bitMask {
+		bitMask <<= bitOffset
+		if tmpBinaryTile&bitMask == bitMask {
 			tmpBinaryTile.setBit(bitOffset + bitIndex + connectionBitOffset)
 		}
 	}
 	*binaryTile |= tmpBinaryTile
 }
 
+// Sets the appropriate owner bit in the binary tile, if the owner ID is not 0
 func (binaryTile *BinaryTile) setOwner(ownerID elements.ID) {
 	if ownerID != 0 {
 		binaryTile.setBit(playerStartBit + int(ownerID) - 1)
@@ -181,6 +200,7 @@ func (binaryTile *BinaryTile) setOwner(ownerID elements.ID) {
 	}
 }
 
+// Sets the bit at the specified index to 1
 func (binaryTile *BinaryTile) setBit(bitIndex int) {
 	*binaryTile |= (1 << bitIndex)
 }
