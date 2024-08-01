@@ -345,9 +345,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 		if road.Meeple.Type != elements.NoneMeeple {
 			meeples = append(meeples, elements.NewMeepleWithPosition(
 				road.Meeple,
-				tile.Position,
-				road.Sides,
-				feature.Road),
+				tile.Position),
 			)
 		}
 
@@ -391,16 +389,12 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	if roadLeft.Meeple.Type != elements.NoneMeeple {
 		meeples = append(meeples, elements.NewMeepleWithPosition(
 			roadLeft.Meeple,
-			tile.Position,
-			roadLeft.Sides,
-			feature.Road),
+			tile.Position),
 		)
 	} else if roadRight != nil && roadRight.Meeple.Type != elements.NoneMeeple {
 		meeples = append(meeples, elements.NewMeepleWithPosition(
 			roadRight.Meeple,
-			tile.Position,
-			roadRight.Sides,
-			feature.Road),
+			tile.Position),
 		)
 	}
 

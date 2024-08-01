@@ -2,8 +2,6 @@ package elements
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 type MeepleWithPosition struct {
@@ -14,8 +12,6 @@ type MeepleWithPosition struct {
 func NewMeepleWithPosition(
 	meeple Meeple,
 	pos position.Position,
-	s side.Side,
-	featureType feature.Type,
 ) MeepleWithPosition {
 	return MeepleWithPosition{
 		Meeple:   meeple,

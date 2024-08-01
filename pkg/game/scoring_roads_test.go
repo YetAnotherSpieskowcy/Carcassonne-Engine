@@ -60,15 +60,11 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
 				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 				position.New(0, -1),
-				side.Right|side.Left,
-				feature.Road,
 			)},
 
 			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
 				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
 				position.New(-1, 0),
-				side.Right|side.Bottom,
-				feature.Road,
 			)},
 		},
 	}
@@ -132,8 +128,6 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 		[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(0, -1),
-			side.Right|side.Bottom,
-			feature.Road,
 		)}}
 
 	// --------------- Placing tile ----------------------
@@ -187,8 +181,6 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 		[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(-1, 0),
-			side.Right,
-			feature.Road,
 		)}}
 
 	// --------------- Placing tile ----------------------
@@ -252,14 +244,10 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 		[]elements.MeepleWithPosition{
 			elements.NewMeepleWithPosition(
 				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-				position.New(1, 0),
-				side.Left,
-				feature.Road),
+				position.New(1, 0)),
 			elements.NewMeepleWithPosition(
 				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-				position.New(0, -1),
-				side.Left,
-				feature.Road),
+				position.New(0, -1)),
 		}}
 
 	// --------------- Placing tile ----------------------

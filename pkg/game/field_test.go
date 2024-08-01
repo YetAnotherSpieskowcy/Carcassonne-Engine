@@ -90,9 +90,7 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-			position.New(1, 0),
-			side.All,
-			feature.Field)},
+			position.New(1, 0))},
 	}
 
 	actualReport := field.GetScoreReport()
@@ -193,14 +191,10 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-			position.New(1, 0),
-			side.All,
-			feature.Field)},
+			position.New(1, 0))},
 		2: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
-			position.New(0, -1),
-			side.BottomRightEdge|side.RightBottomEdge,
-			feature.Field)},
+			position.New(0, -1))},
 	}
 	actualReport := field.GetScoreReport()
 

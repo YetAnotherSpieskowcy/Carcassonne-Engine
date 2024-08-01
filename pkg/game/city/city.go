@@ -69,8 +69,6 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 				returnedMeeples = append(returnedMeeples, elements.NewMeepleWithPosition(
 					feature.Meeple,
 					pos,
-					feature.Sides,
-					feature.FeatureType,
 				))
 			}
 		}
