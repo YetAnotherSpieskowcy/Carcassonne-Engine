@@ -12,7 +12,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-func MakeTurn(game *gameMod.Game, t *testing.T, tilePosition position.Position, rotations uint, meeple elements.MeepleType, featureSide side.Side, featureType feature.Type) {
+func MakeTurn(game *gameMod.Game, t *testing.T, tilePosition position.Position, rotations uint, meeple elements.MeepleType, featureSide side.Side, featureType feature.Type, correctMove bool, turnNumber uint) {
 	tile, err := game.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -30,8 +30,11 @@ func MakeTurn(game *gameMod.Game, t *testing.T, tilePosition position.Position, 
 	}
 
 	err = game.PlayTurn(ptile)
-	if err != nil {
+
+	if err != nil && correctMove {
 		t.Fatal(err.Error())
+	} else if err == nil && !correctMove {
+		t.Fatalf("Turn %d: Wrongly placed meeple wasn't detected by engine!", turnNumber)
 	}
 }
 
