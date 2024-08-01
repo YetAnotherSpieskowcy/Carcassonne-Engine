@@ -197,9 +197,9 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 
 func (board *board) RemoveMeeple(pos position.Position) {
 	placedTile := board.tilesMap[pos]
-	for _, feature := range placedTile.Features {
+	for featureIndex, feature := range placedTile.Features {
 		if feature.Meeple.Type != elements.NoneMeeple {
-			feature.Meeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
+			placedTile.Features[featureIndex].Meeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
 			break
 		}
 	}
