@@ -27,7 +27,7 @@ func TestFromPlacedTile(t *testing.T) {
 	}
 
 	// tile with cities on all sides, the left one having a shield, and a field in the middle.
-	//      on the middle shield is a meeple belonging to player 1
+	//      On the middle field is a meeple belonging to player 1
 	tile = elements.ToPlacedTile(tiles.Tile{
 		Features: []feature.Feature{
 			{
