@@ -7,6 +7,7 @@ import (
 
 // mutable type
 type Board interface {
+	DeepClone() Board
 	TileCount() int
 	Tiles() []PlacedTile
 	GetTileAt(pos position.Position) (PlacedTile, bool)

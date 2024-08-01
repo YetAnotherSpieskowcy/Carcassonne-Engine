@@ -70,6 +70,21 @@ func NewFromDeck(
 	return game, nil
 }
 
+func (game Game) DeepClone() *Game {
+	game.board = game.board.DeepClone()
+	game.deck = game.deck.DeepClone()
+
+	players := make([]elements.Player, len(game.players))
+	for i, player := range game.players {
+		players[i] = player.DeepClone()
+	}
+
+	nullLogger := logger.New(io.Discard)
+	game.log = &nullLogger
+
+	return &game
+}
+
 func (game *Game) Serialized() SerializedGame {
 	serialized := SerializedGame{
 		CurrentPlayer: game.CurrentPlayer(),

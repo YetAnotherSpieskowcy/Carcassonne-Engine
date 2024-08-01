@@ -7,6 +7,7 @@ const (
 )
 
 type Player interface {
+	DeepClone() Player
 	ID() ID
 	MeepleCount(meepleType MeepleType) uint8
 	SetMeepleCount(meepleType MeepleType, value uint8)

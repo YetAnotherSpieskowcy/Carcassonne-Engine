@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
@@ -56,6 +57,21 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 		},
 		cityManager: cityManager,
 	}
+}
+
+func (board board) DeepClone() elements.Board {
+	// note: skipped board.tileSet because TileSet is immutable
+
+	// PlacedTile is not mutated after it's placed
+	board.tiles = slices.Clone(board.tiles)
+	board.tilesMap = maps.Clone(board.tilesMap)
+
+	// Position is immutable
+	board.placeablePositions = slices.Clone(board.placeablePositions)
+
+	board.cityManager = board.cityManager.DeepClone()
+
+	return &board
 }
 
 func (board *board) TileCount() int {

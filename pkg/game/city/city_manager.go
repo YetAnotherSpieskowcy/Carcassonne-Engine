@@ -21,6 +21,11 @@ func NewCityManager() Manager {
 	}
 }
 
+func (manager Manager) DeepClone() Manager {
+	manager.cities = slices.Clone(manager.cities)
+	return manager
+}
+
 // Returns a pointer to a City that has the given feature at the given position, and its index in the city manager
 // Returns nil if no such city exists
 func (manager Manager) GetCity(position position.Position, feature elements.PlacedFeature) (*City, int) {

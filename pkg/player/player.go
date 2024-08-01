@@ -1,6 +1,8 @@
 package player
 
 import (
+	"slices"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 )
 
@@ -19,6 +21,11 @@ func New(id elements.ID) elements.Player {
 		meepleCounts: meepleCounts,
 		score:        0,
 	}
+}
+
+func (player player) DeepClone() elements.Player {
+	player.meepleCounts = slices.Clone(player.meepleCounts)
+	return &player
 }
 
 func (player player) ID() elements.ID {
