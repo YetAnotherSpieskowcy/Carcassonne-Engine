@@ -11,6 +11,11 @@ type BoardMock struct {
 	PlaceTileFunc func(tile elements.PlacedTile) (elements.ScoreReport, error)
 }
 
+func (board BoardMock) DeepClone() elements.Board {
+	// nothing to clone
+	return &board
+}
+
 func (board *BoardMock) TileCount() int {
 	if board.TileCountFunc == nil {
 		return 0

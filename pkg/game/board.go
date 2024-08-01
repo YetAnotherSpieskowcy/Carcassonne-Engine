@@ -145,12 +145,12 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.PlacedTile {
-	// TODO for future tasks:
-	// - implement generation of legal moves
-	// - to be implemented after #18, #19 and #20 to avoid code duplication
-	return []elements.PlacedTile{}
+func (board *board) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+	// create initial move list without any meeple placed
+	moves := []elements.PlacedTile{placement}
+	// TODO:
+	// - implement generation of legal moves *with* meeples
+	return moves
 }
 
 func (board *board) isPositionValid(tile elements.PlacedTile) bool {

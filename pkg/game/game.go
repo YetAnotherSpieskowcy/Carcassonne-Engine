@@ -78,6 +78,7 @@ func (game Game) DeepClone() *Game {
 	for i, player := range game.players {
 		players[i] = player.DeepClone()
 	}
+	game.players = players
 
 	nullLogger := logger.New(io.Discard)
 	game.log = &nullLogger
@@ -104,12 +105,24 @@ func (game *Game) GetCurrentTile() (tiles.Tile, error) {
 	return game.deck.Peek()
 }
 
+func (game *Game) GetRemainingTiles() []tiles.Tile {
+	return game.deck.GetRemaining()
+}
+
 func (game *Game) CurrentPlayer() elements.Player {
 	return game.players[game.currentPlayer]
 }
 
 func (game *Game) PlayerCount() int {
 	return len(game.players)
+}
+
+func (game *Game) GetTilePlacementsFor(tile tiles.Tile) []elements.PlacedTile {
+	return game.board.GetTilePlacementsFor(tile)
+}
+
+func (game *Game) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+	return game.board.GetLegalMovesFor(placement)
 }
 
 func (game *Game) ensureCurrentTileHasValidPlacement() error {
