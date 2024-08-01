@@ -90,9 +90,7 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 			}
 			mask = mask.Rotate(1)
 		}
-		if len(cToJoin) > 0 {
-			citiesToJoin[cityFeature] = cToJoin
-		}
+		citiesToJoin[cityFeature] = cToJoin
 	}
 	return citiesToJoin
 }
@@ -107,16 +105,18 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 		// join cities
 		for f, cToJoin := range citiesToJoin {
 			if len(cToJoin) == 0 {
-				panic("No cities to join.")
-			}
-			if len(cToJoin) > 1 {
-				for _, cityIndex := range cToJoin[1:] {
-					manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
-					citiesToRemove = append(citiesToRemove, cityIndex)
+				toAppend := []elements.PlacedFeature{f}
+				manager.cities = append(manager.cities, NewCity(tile.Position, toAppend, tile.HasShield))
+			} else {
+				if len(cToJoin) > 1 {
+					for _, cityIndex := range cToJoin[1:] {
+						manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
+						citiesToRemove = append(citiesToRemove, cityIndex)
+					}
 				}
+				toAdd := []elements.PlacedFeature{f}
+				manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, f.ModifierType == modifier.Shield)
 			}
-			toAdd := []elements.PlacedFeature{f}
-			manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, f.ModifierType == modifier.Shield)
 		}
 		// remove cities that were merged into another city
 		if len(citiesToRemove) > 0 {

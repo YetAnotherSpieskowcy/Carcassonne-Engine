@@ -67,6 +67,21 @@ func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 	}
 }
 
+func TestUpdateCitiesWhenOneCityClosedSeconedOpen(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = position.New(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	b.Position = position.New(1, 2)
+	manager.UpdateCities(b)
+
+	if len(manager.cities) != 2 {
+		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
+}
+
 func TestJoinCitiesOnAdd(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.Position = position.New(1, 1)
