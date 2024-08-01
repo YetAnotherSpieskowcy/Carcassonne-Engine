@@ -8,8 +8,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -192,8 +190,7 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(0, 1),
-			side.NoSide,
-			feature.Monastery)},
+		)},
 	}
 
 	if !reflect.DeepEqual(report, expectedReport) {
@@ -295,13 +292,11 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
 			position.New(0, 2),
-			side.NoSide,
-			feature.Monastery)},
+		)},
 		2: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
 			position.New(1, 2),
-			side.NoSide,
-			feature.Monastery)},
+		)},
 	}
 	if !reflect.DeepEqual(report, expectedReport) {
 		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expectedReport, report)

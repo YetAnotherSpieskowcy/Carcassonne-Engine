@@ -76,8 +76,6 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 			field.meeples = append(field.meeples, elements.NewMeepleWithPosition(
 				meeple,
 				element.position,
-				element.feature.Sides,
-				element.feature.FeatureType,
 			))
 		}
 

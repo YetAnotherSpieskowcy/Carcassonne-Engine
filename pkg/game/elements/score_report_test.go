@@ -5,12 +5,10 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 func SimpleMeepleWithPosition(meeple Meeple, pos position.Position) MeepleWithPosition {
-	return NewMeepleWithPosition(meeple, pos, side.NoSide, feature.NoneType)
+	return NewMeepleWithPosition(meeple, pos)
 }
 
 func TestUpdateScoreReport(t *testing.T) {
