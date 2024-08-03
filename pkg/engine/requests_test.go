@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -9,6 +10,61 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
+
+// --- early failure (before worker receives the request) tests ---
+
+func TestGameEngineSendPlayTurnBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	engine.Shutdown()
+
+	requests := []*PlayTurnRequest{{GameID: 123}}
+	resp := engine.SendPlayTurnBatch(requests)[0]
+	if resp.Err() == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(resp.Err(), ErrCommunicatorClosed) {
+		t.Fatal(resp.Err().Error())
+	}
+}
+
+func TestGameEngineSendGetRemainingTilesBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	engine.Shutdown()
+
+	requests := []*GetRemainingTilesRequest{{BaseGameID: 123}}
+	resp := engine.SendGetRemainingTilesBatch(requests)[0]
+	if resp.Err() == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(resp.Err(), ErrCommunicatorClosed) {
+		t.Fatal(resp.Err().Error())
+	}
+}
+
+func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	engine.Shutdown()
+
+	requests := []*GetLegalMovesRequest{{BaseGameID: 123}}
+	resp := engine.SendGetLegalMovesBatch(requests)[0]
+	if resp.Err() == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(resp.Err(), ErrCommunicatorClosed) {
+		t.Fatal(resp.Err().Error())
+	}
+}
+
+// --- logic tests ---
 
 func TestGameEngineSendPlayTurnBatchReceivesCorrectResponsesAfterWorkerRequests(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
