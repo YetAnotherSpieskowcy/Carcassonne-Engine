@@ -12,6 +12,21 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+func TestPlayerDeepClone(t *testing.T) {
+	meepleType := elements.NormalMeeple
+
+	original := player.New(1)
+	expected := original.MeepleCount(meepleType)
+	clone := original.DeepClone()
+
+	clone.SetMeepleCount(meepleType, expected+1)
+	actual := original.MeepleCount(meepleType)
+
+	if actual != expected {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
 func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testing.T) {
 	player := player.New(1)
 	input := []elements.PlacedTile{test.GetTestPlacedTile()}

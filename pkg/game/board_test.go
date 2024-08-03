@@ -2,6 +2,7 @@ package game
 
 import (
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -11,6 +12,52 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
+
+func TestBoardDeepClone(t *testing.T) {
+	oldPos := position.New(0, 1)
+	newPos := position.New(0, 2) // just one of new positions
+	newTile := test.GetTestPlacedTile()
+
+	original := NewBoard(tilesets.StandardTileSet()).(*board)
+	clone := original.DeepClone().(*board)
+
+	_, err := clone.PlaceTile(newTile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// --- placeablePositions check ---
+	if !slices.Contains(original.placeablePositions, oldPos) {
+		t.Fatalf("expected to find %#v in %#v", oldPos, original.placeablePositions)
+	}
+	// just to confirm that `oldPos` actually makes sense
+	if slices.Contains(clone.placeablePositions, oldPos) {
+		t.Fatalf("expected NOT to find %#v in %#v", oldPos, clone.placeablePositions)
+	}
+
+	if !slices.Contains(clone.placeablePositions, newPos) {
+		t.Fatalf("expected to find %#v in %#v", newPos, clone.placeablePositions)
+	}
+	// just to confirm that `newPos` actually makes sense
+	if slices.Contains(original.placeablePositions, newPos) {
+		t.Fatalf("expected NOT to find %#v in %#v", newPos, original.placeablePositions)
+	}
+
+	// --- tiles check ---
+	cmpFunc := func(v elements.PlacedTile) bool {
+		return slices.Equal(v.Features, newTile.Features)
+	}
+
+	originalTiles := original.Tiles()
+	if slices.ContainsFunc(originalTiles, cmpFunc) {
+		t.Fatalf("expected NOT to find %#v in %#v", newTile, originalTiles)
+	}
+
+	cloneTiles := clone.Tiles()
+	if !slices.ContainsFunc(cloneTiles, cmpFunc) {
+		t.Fatalf("expected to find %#v in %#v", newTile, cloneTiles)
+	}
+}
 
 func TestBoardTileCountReturnsOnlyPlacedTiles(t *testing.T) {
 	// starting tile has a city on top, we want to close it with a single city tile
