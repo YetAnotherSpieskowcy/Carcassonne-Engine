@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
@@ -57,6 +58,21 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 		},
 		cityManager: cityManager,
 	}
+}
+
+func (board board) DeepClone() elements.Board {
+	// note: skipped board.tileSet because TileSet is immutable
+
+	// PlacedTile is not mutated after it's placed
+	board.tiles = slices.Clone(board.tiles)
+	board.tilesMap = maps.Clone(board.tilesMap)
+
+	// Position is immutable
+	board.placeablePositions = slices.Clone(board.placeablePositions)
+
+	board.cityManager = board.cityManager.DeepClone()
+
+	return &board
 }
 
 func (board *board) TileCount() int {
@@ -130,12 +146,12 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.PlacedTile {
-	// TODO for future tasks:
-	// - implement generation of legal moves
-	// - to be implemented after #18, #19 and #20 to avoid code duplication
-	return []elements.PlacedTile{}
+func (board *board) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+	// create initial move list without any meeple placed
+	moves := []elements.PlacedTile{placement}
+	// TODO:
+	// - implement generation of legal moves *with* meeples
+	return moves
 }
 
 func (board *board) isPositionValid(tile elements.PlacedTile) bool {

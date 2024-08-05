@@ -10,6 +10,32 @@ type Tile struct {
 	id int
 }
 
+func TestDeepClone(t *testing.T) {
+	tiles := []Tile{{0}, {1}, {2}, {3}}
+
+	original := NewOrdered(tiles)
+	expected := original.GetRemainingTileCount()
+	clone := original.DeepClone()
+
+	actual := clone.GetRemainingTileCount()
+	if actual != expected {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+
+	if _, err := clone.Next(); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	actual = clone.GetRemainingTileCount()
+	if actual != expected-1 {
+		t.Fatalf("expected %#v, got %#v instead", expected-1, actual)
+	}
+	actual = original.GetRemainingTileCount()
+	if actual != expected {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestStandardOrder(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
 	stack := NewOrdered(tiles)

@@ -11,6 +11,27 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
+func TestDeepClone(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = position.New(1, 1)
+	original := NewCityManager()
+	original.UpdateCities(a)
+
+	clone := original.DeepClone()
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	b.Position = position.New(1, 2)
+	clone.UpdateCities(b)
+
+	if reflect.DeepEqual(original.cities[0], clone.cities[0]) {
+		t.Fatalf(
+			"cities from original manager (%v) and cloned manager (%v) should not be equal",
+			original.cities[0],
+			clone.cities[0],
+		)
+	}
+}
+
 func TestUpdateCitiesWhenNoCities(t *testing.T) {
 	manager := NewCityManager()
 

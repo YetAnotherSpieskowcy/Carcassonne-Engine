@@ -48,6 +48,12 @@ func NewOrdered[T interface{}](tiles []T) Stack[T] {
 	return stack
 }
 
+func (s Stack[T]) DeepClone() Stack[T] {
+	// the only state in Stack is turnNo which is already copied
+	// due to usage of a value receiver
+	return s
+}
+
 func (s Stack[T]) GetRemaining() []T {
 	tiles := []T{}
 	for _, i := range s.order[s.turnNo:] {

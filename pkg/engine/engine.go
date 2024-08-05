@@ -143,6 +143,60 @@ func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest)
 	return concreteResponses
 }
 
+// Due to limitations of Python bindings generator with []interface return type,
+// this wraps sendBatch() and limits the return type to only one Response type.
+func (engine *GameEngine) SendGetRemainingTilesBatch(concreteRequests []*GetRemainingTilesRequest) []*GetRemainingTilesResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*GetRemainingTilesResponse, len(responses))
+	for i := range responses {
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*GetRemainingTilesResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &GetRemainingTilesResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
+	}
+	return concreteResponses
+}
+
+// Due to limitations of Python bindings generator with []interface return type,
+// this wraps sendBatch() and limits the return type to only one Response type.
+func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMovesRequest) []*GetLegalMovesResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*GetLegalMovesResponse, len(responses))
+	for i := range responses {
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*GetLegalMovesResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &GetLegalMovesResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
+	}
+	return concreteResponses
+}
+
 // API for handling the sent requests using background workers.
 // The order and types of returned responses correspond to the requests slice.
 //

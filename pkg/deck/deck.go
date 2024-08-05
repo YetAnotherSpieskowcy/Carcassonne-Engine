@@ -11,6 +11,12 @@ type Deck struct {
 	StartingTile tiles.Tile
 }
 
+func (deck Deck) DeepClone() Deck {
+	stack := deck.Stack.DeepClone()
+	deck.Stack = &stack
+	return deck
+}
+
 func (deck Deck) TileSet() tilesets.TileSet {
 	return tilesets.TileSet{
 		Tiles:        deck.GetTiles(),
