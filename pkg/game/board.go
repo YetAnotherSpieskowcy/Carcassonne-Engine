@@ -172,11 +172,34 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	return true
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
-	// TODO for future tasks:
-	// - implement generation of legal moves
-	// - to be implemented after #18, #19 and #20 to avoid code duplication
+	return board.TileHasValidPlacement(elements.ToTile(tile)) &&
+		board.cityCanBePlaced(tile) &&
+		board.fieldCanBePlaced(tile) &&
+		board.monasteryCanBePlaced(tile) &&
+		board.roadCanBePlaced(tile)
+}
+
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
+func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
+	// TODO: implement validity of meeple placement
+	return true
+}
+
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
+func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
+	// TODO: implement validity of meeple placement
+	return true
+}
+
+func (board *board) monasteryCanBePlaced(_ elements.PlacedTile) bool {
+	// meeple can always be placed on a monastery
+	return true
+}
+
+//revive:disable-next-line:unused-parameter Until the TODO is finished.
+func (board *board) roadCanBePlaced(tile elements.PlacedTile) bool {
+	// TODO: implement validity of meeple placement
 	return true
 }
 
