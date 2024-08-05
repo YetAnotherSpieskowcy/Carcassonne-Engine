@@ -117,11 +117,18 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
-func (board *board) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elements.PlacedTile {
 	// create initial move list without any meeple placed
-	moves := []elements.PlacedTile{placement}
-	// TODO:
-	// - implement generation of legal moves *with* meeples
+	moves := []elements.PlacedTile{basePlacement}
+	meepleTypes := []elements.MeepleType{elements.NormalMeeple}
+	for i := range basePlacement.Features {
+		for _, meepleType := range meepleTypes {
+			placement := basePlacement
+			placement.Features = slices.Clone(basePlacement.Features)
+			placement.Features[i].Meeple = elements.Meeple{Type: meepleType}
+			moves = append(moves, placement)
+		}
+	}
 	return moves
 }
 

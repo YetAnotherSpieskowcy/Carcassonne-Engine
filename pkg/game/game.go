@@ -133,7 +133,26 @@ func (game *Game) GetTilePlacementsFor(tile tiles.Tile) []elements.PlacedTile {
 }
 
 func (game *Game) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
-	return game.board.GetLegalMovesFor(placement)
+	moves := []elements.PlacedTile{}
+	player := game.CurrentPlayer()
+
+outer:
+	for _, move := range game.board.GetLegalMovesFor(placement) {
+		for i, feat := range move.Features {
+			if feat.Meeple.Type != elements.NoneMeeple {
+				if player.MeepleCount(feat.Meeple.Type) == 0 {
+					// filter out moves that the current player cannot perform
+					continue outer
+				}
+				feat.Meeple.PlayerID = game.CurrentPlayer().ID()
+				move.Features[i] = feat
+			}
+		}
+
+		moves = append(moves, move)
+	}
+
+	return moves
 }
 
 func (game *Game) ensureCurrentTileHasValidPlacement() error {
