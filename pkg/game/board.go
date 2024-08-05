@@ -8,6 +8,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	positionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -145,11 +146,18 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
-func (board *board) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elements.PlacedTile {
 	// create initial move list without any meeple placed
-	moves := []elements.PlacedTile{placement}
-	// TODO:
-	// - implement generation of legal moves *with* meeples
+	moves := []elements.PlacedTile{basePlacement}
+	meepleTypes := []elements.MeepleType{elements.NormalMeeple}
+	for i := range basePlacement.Features {
+		for _, meepleType := range meepleTypes {
+			placement := basePlacement
+			placement.Features = slices.Clone(basePlacement.Features)
+			placement.Features[i].Meeple = elements.Meeple{Type: meepleType}
+			moves = append(moves, placement)
+		}
+	}
 	return moves
 }
 
@@ -167,11 +175,81 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	return true
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
-	// TODO for future tasks:
-	// - implement generation of legal moves
-	// - to be implemented after #18, #19 and #20 to avoid code duplication
+	return board.TileHasValidPlacement(elements.ToTile(tile)) &&
+		board.cityCanBePlaced(tile) &&
+		board.fieldCanBePlaced(tile) &&
+		board.monasteryCanBePlaced(tile) &&
+		board.roadCanBePlaced(tile)
+}
+
+func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
+	return board.cityManager.CanBePlaced(tile)
+}
+
+func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
+	if true {
+		return true
+	}
+
+	// TODO: figure out how to implement this properly
+	// - there can be multiple field features that could expand into one
+	//   but there doesn't seem to be a good way to detect this
+	for _, feat := range tile.Features {
+		if feat.FeatureType != feature.Field {
+			continue
+		}
+		field := field.New(feat, tile.Position)
+		field.Expand(board, board.cityManager)
+
+		// score report function checks the whole field for placed meeples
+		// and reports any meeples that would be returned which we can use here
+		scoreReport := field.GetScoreReport()
+		if len(scoreReport.ReturnedMeeples) != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (board *board) monasteryCanBePlaced(_ elements.PlacedTile) bool {
+	// meeple can always be placed on a monastery
+	return true
+}
+
+func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile) bool {
+	for _, checkedRoad := range elements.ToTile(checkedTile).Roads() {
+		// get the two sides connected by the road which we will use to
+		// score roads on the neighbouring tiles (but not the tile itself)
+		sides := []side.Side{
+			checkedRoad.Sides.GetNthCardinalDirection(0), // 1st side
+			checkedRoad.Sides.GetNthCardinalDirection(1), // 2nd side
+		}
+		for _, checkedRoadSide := range sides {
+			neighbourTile, exists := board.GetTileAt(
+				checkedTile.Position.Add(positionMod.FromSide(checkedRoadSide)),
+			)
+			if !exists {
+				// no existing tile found on this side of the road
+				continue
+			}
+
+			// an existing tile found on this side of the road - we need to check,
+			// if they have *any* meeple placed
+			neighbourRoadSide := checkedRoadSide.ConnectedOpposite()
+			neighbourRoad := neighbourTile.GetPlacedFeatureAtSide(neighbourRoadSide, feature.Road)
+			// score function checks the whole road for placed meeples
+			// and reports any meeples that would be returned which we can use here
+			scoreReport, _ := board.ScoreRoadCompletion(
+				neighbourTile,
+				neighbourRoad.Feature,
+			)
+			if len(scoreReport.ReturnedMeeples) != 0 {
+				return false
+			}
+		}
+	}
+
 	return true
 }
 
@@ -181,9 +259,11 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			"Board's tiles capacity exceeded, logic error?",
 		)
 	}
-	// TODO for future tasks:
-	// - determine if the tile can placed at a given position,
-	//   or return ErrInvalidMove otherwise
+
+	if !board.CanBePlaced(tile) {
+		return elements.ScoreReport{}, elements.ErrInvalidPosition
+	}
+
 	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
