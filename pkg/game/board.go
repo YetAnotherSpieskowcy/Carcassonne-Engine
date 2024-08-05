@@ -190,9 +190,39 @@ func (board *board) monasteryCanBePlaced(_ elements.PlacedTile) bool {
 	return true
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) roadCanBePlaced(tile elements.PlacedTile) bool {
-	// TODO: implement validity of meeple placement
+func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile) bool {
+	for _, checkedRoad := range elements.ToTile(checkedTile).Roads() {
+		// get the two sides connected by the road which we will use to
+		// score roads on the neighbouring tiles (but not the tile itself)
+		sides := []side.Side{
+			checkedRoad.Sides.GetNthCardinalDirection(0), // 1st side
+			checkedRoad.Sides.GetNthCardinalDirection(1), // 2nd side
+		}
+		for _, checkedRoadSide := range sides {
+			neighbourTile, exists := board.GetTileAt(
+				checkedTile.Position.Add(positionMod.FromSide(checkedRoadSide)),
+			)
+			if !exists {
+				// no existing tile found on this side of the road
+				continue
+			}
+
+			// an existing tile found on this side of the road - we need to check,
+			// if they have *any* meeple placed
+			neighbourRoadSide := checkedRoadSide.ConnectedOpposite()
+			neighbourRoad := neighbourTile.GetPlacedFeatureAtSide(neighbourRoadSide, feature.Road)
+			// score function checks the whole road for placed meeples
+			// and reports any meeples that would be returned which we can use here
+			scoreReport, _ := board.ScoreRoadCompletion(
+				neighbourTile,
+				neighbourRoad.Feature,
+			)
+			if len(scoreReport.ReturnedMeeples) != 0 {
+				return false
+			}
+		}
+	}
+
 	return true
 }
 
