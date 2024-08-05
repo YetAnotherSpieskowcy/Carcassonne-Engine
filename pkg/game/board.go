@@ -180,10 +180,8 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 		board.roadCanBePlaced(tile)
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
-	// TODO: implement validity of meeple placement
-	return true
+	return board.cityManager.CanBePlaced(tile)
 }
 
 //revive:disable-next-line:unused-parameter Until the TODO is finished.

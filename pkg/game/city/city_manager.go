@@ -110,6 +110,44 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 	return citiesToJoin
 }
 
+// Checks whether the tile can be placed at given position taking into account
+// the meeples placed on the given tile and the meeples that are already placed on
+// any city that the tile's features would join.
+func (manager *Manager) CanBePlaced(tile elements.PlacedTile) bool {
+	foundCities := manager.findCities(tile.Position)
+
+	if len(foundCities) == 0 {
+		// no existing cities found in tile's neighbourhood - the tile either has
+		// no City features or only has a completely new city
+		return true
+	}
+	citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
+	for _, feature := range tile.Features {
+		if feature.Meeple.Type == elements.NoneMeeple {
+			// no meeple
+			continue
+		}
+		cToJoin, exists := citiesToJoin[feature]
+		if !exists {
+			// no existing cities found in feature's neighbourhood - the feature is either
+			// not a City feature or it is a completely new city
+			continue
+		}
+		// existing city/cities found in feature's neighbourhood - we need to check,
+		// if they have *any* meeple placed
+		for _, cityIndex := range cToJoin {
+			// score report function checks the whole city for placed meeples
+			// and reports any meeples that would be returned which we can use here
+			scoreReport := manager.cities[cityIndex].GetScoreReport()
+			if len(scoreReport.ReturnedMeeples) != 0 {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 // Performs required operations to add a new city feature.
 func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 	foundCities := manager.findCities(tile.Position)
