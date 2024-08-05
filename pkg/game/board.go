@@ -8,6 +8,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	positionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -179,9 +180,28 @@ func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
 	return board.cityManager.CanBePlaced(tile)
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
-	// TODO: implement validity of meeple placement
+	if true {
+		return true
+	}
+
+	// TODO: figure out how to implement this properly
+	// - there can be multiple field features that could expand into one
+	//   but there doesn't seem to be a good way to detect this
+	for _, feat := range tile.Features {
+		if feat.FeatureType != feature.Field {
+			continue
+		}
+		field := field.New(feat, tile.Position)
+		field.Expand(board, board.cityManager)
+
+		// score report function checks the whole field for placed meeples
+		// and reports any meeples that would be returned which we can use here
+		scoreReport := field.GetScoreReport()
+		if len(scoreReport.ReturnedMeeples) != 0 {
+			return false
+		}
+	}
 	return true
 }
 
