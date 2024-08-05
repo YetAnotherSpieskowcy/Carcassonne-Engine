@@ -136,7 +136,7 @@ func TestScoreOneTileCity(t *testing.T) {
 		t.Fatalf("expected player id not in the map")
 	}
 
-	numMeeples := meeples[expectedMeepleType]
+	numMeeples := len(meeples)
 	if numMeeples != 1 {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
@@ -174,7 +174,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 		t.Fatalf("expected player id not in the map")
 	}
 
-	numMeeples := meeples[expectedMeepleType]
+	numMeeples := len(meeples)
 	if numMeeples != 1 {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
@@ -237,7 +237,7 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 		t.Fatalf("expected player id not in the map")
 	}
 
-	numMeeples := meeples[expectedMeepleType]
+	numMeeples := len(meeples)
 	if numMeeples != 1 {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
