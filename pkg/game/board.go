@@ -269,9 +269,11 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			"Board's tiles capacity exceeded, logic error?",
 		)
 	}
-	// TODO for future tasks:
-	// - determine if the tile can placed at a given position,
-	//   or return ErrInvalidMove otherwise
+
+	if !board.CanBePlaced(tile) {
+		return elements.ScoreReport{}, elements.ErrInvalidPosition
+	}
+
 	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
