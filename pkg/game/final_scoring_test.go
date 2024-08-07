@@ -12,6 +12,10 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+/*
+  All tests contains the board visualization. Each tile is represented by 5x5 ascii characters
+*/
+
 func makeTurn(game *Game, t *testing.T, tilePosition position.Position, rotations uint, meeple elements.MeepleType, featureSide side.Side, featureType feature.Type) {
 	tile, err := game.GetCurrentTile()
 	if err != nil {
