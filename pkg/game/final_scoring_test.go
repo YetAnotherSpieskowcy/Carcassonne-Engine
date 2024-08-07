@@ -3,8 +3,10 @@ package game
 import (
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -61,7 +63,10 @@ func TestFinalScoreRoad(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -114,7 +119,10 @@ func TestFinalScoreMultipleRoads(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -158,7 +166,10 @@ func TestFinalScoreMonastery(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -206,7 +217,10 @@ func TestFinalScoreMonasteries(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -254,7 +268,10 @@ func TestFinalScoreCity(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -303,7 +320,10 @@ func TestFinalScoreCities(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -351,7 +371,10 @@ func TestFinalScoreField(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
