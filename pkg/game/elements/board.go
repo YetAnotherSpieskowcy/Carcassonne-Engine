@@ -16,4 +16,5 @@ type Board interface {
 	CanBePlaced(tile PlacedTile) bool
 	PlaceTile(tile PlacedTile) (ScoreReport, error)
 	RemoveMeeple(pos position.Position)
+	ScoreFinalMeeples() ScoreReport
 }

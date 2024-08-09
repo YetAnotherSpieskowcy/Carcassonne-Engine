@@ -7,6 +7,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	positionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
@@ -236,7 +237,8 @@ func (board *board) checkCompleted(
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
-	scoreReport.Join(board.ScoreRoads(tile))
+	scoreReport.Join(board.ScoreRoads(tile, false))
+	scoreReport.Join(board.ScoreMonasteries(tile, false))
 	return scoreReport, nil
 }
 
@@ -369,7 +371,7 @@ Calculates score for road.
 
 returns: ScoreReport, checked sides of the start tile (also including loop)
 */
-func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature) (elements.ScoreReport, side.Side) {
+func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature, forceScore bool) (elements.ScoreReport, side.Side) {
 	var meeples = []elements.MeepleWithPosition{}
 	var leftSide, rightSide side.Side
 	var score = 1
@@ -413,7 +415,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	}
 
 	// -------- start counting -------------
-	if roadFinished {
+	if roadFinished || forceScore {
 		if loopResult {
 			return elements.CalculateScoreReportOnMeeples(score, meeples), leftSide | rightSide | loopSide
 		}
@@ -429,7 +431,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 /*
 Calculates summary score report from all roads on a tile
 */
-func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreReport {
+func (board *board) ScoreRoads(placedTile elements.PlacedTile, forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 	var tile = elements.ToTile(placedTile)
 	var roads = tile.Roads()
@@ -439,11 +441,47 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 	for _, road := range roads {
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
 		if !checkedRoadSides.OverlapsSide(road.Sides) {
-			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
+			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road, forceScore)
 			scoreReport.Join(scoreReportTemp)
 			checkedRoadSides |= roadSide
 		}
 		checkedRoadSides |= road.Sides
 	}
 	return scoreReport
+}
+
+func (board *board) ScoreFinalMeeples() elements.ScoreReport {
+	meeplesReport := elements.NewScoreReport()
+
+	// score cities first (because they have their own manager)
+	meeplesReport.Join(board.cityManager.ScoreCities(true))
+
+	// score meeples left on the board (fields, monasteries, roads)
+	for _, pTile := range board.Tiles() {
+		for _, feat := range pTile.Features {
+			miniReport := elements.NewScoreReport()
+			if feat.Meeple.PlayerID != 0 {
+				switch feat.FeatureType {
+				case feature.Road:
+					miniReport.Join(board.ScoreRoads(pTile, true))
+				case feature.Field:
+					field := field.New(feat, pTile.Position)
+					field.Expand(board, board.cityManager)
+					miniReport.Join(field.GetScoreReport())
+				case feature.Monastery:
+					miniReport.Join(board.ScoreMonasteries(pTile, true))
+				}
+			}
+
+			// remove meeples from board
+			for _, returnedMeeples := range miniReport.ReturnedMeeples {
+				for _, meeple := range returnedMeeples {
+					board.RemoveMeeple(meeple.Position)
+				}
+			}
+			meeplesReport.Join(miniReport)
+		}
+	}
+
+	return meeplesReport
 }
