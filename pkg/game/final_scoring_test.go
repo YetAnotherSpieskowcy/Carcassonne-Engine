@@ -591,22 +591,22 @@ func TestFinalScoreFields3(t *testing.T) {
 	// start with inner single city edges (starting from top) (tiles 1-4)
 	for _, rotation := range rotations {
 		if rotation == 2 {
-			makeTurn(game, t, position.New(0, 1).Rotate(rotation), uint(rotation), elements.NormalMeeple, side.Top, feature.Field)
+			makeTurn(game, t, position.New(0, 1).Rotate(rotation), rotation, elements.NormalMeeple, side.Top, feature.Field)
 		} else {
-			makeTurn(game, t, position.New(0, 1).Rotate(rotation), uint(rotation), elements.NoneMeeple, side.NoSide, feature.NoneType)
+			makeTurn(game, t, position.New(0, 1).Rotate(rotation), rotation, elements.NoneMeeple, side.NoSide, feature.NoneType)
 		}
 	}
 
 	// Now outer single city edges (starting from top) (tiles 5-G)
 	for _, rotation := range rotations {
 		for _, offset := range offsets {
-			makeTurn(game, t, position.New(0, 2).Rotate(rotation).Add(offset.Rotate(rotation)), uint(rotation+2), elements.NoneMeeple, side.NoSide, feature.NoneType)
+			makeTurn(game, t, position.New(0, 2).Rotate(rotation).Add(offset.Rotate(rotation)), rotation+2, elements.NoneMeeple, side.NoSide, feature.NoneType)
 		}
 	}
 
 	// Inner corners
 	for _, rotation := range rotations {
-		makeTurn(game, t, position.New(1, 1).Rotate(rotation), uint(rotation), elements.NoneMeeple, side.NoSide, feature.NoneType)
+		makeTurn(game, t, position.New(1, 1).Rotate(rotation), rotation, elements.NoneMeeple, side.NoSide, feature.NoneType)
 	}
 
 	// Outer corners

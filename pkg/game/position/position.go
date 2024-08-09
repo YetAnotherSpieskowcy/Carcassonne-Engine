@@ -29,7 +29,7 @@ func (pos Position) Add(other Position) Position {
 }
 
 func (pos Position) Rotate(rotations uint) Position {
-	rotations = rotations % 4
+	rotations %= 4
 
 	for range rotations {
 		pos = New(pos.y, -pos.x)
