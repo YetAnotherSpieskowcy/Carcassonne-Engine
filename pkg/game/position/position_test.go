@@ -163,3 +163,17 @@ func TestPositionUnmarshalTextWithNegativeCoords(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expectedY, actual)
 	}
 }
+
+func TestPositionRotate(t *testing.T) {
+	position := New(2, 3)
+
+	expected := New(3, -2)
+	actual := position.Rotate(5)
+
+	if actual.X() != expected.X() {
+		t.Fatalf("expected %#v, got %#v instead", expected.X(), actual)
+	}
+	if actual.Y() != expected.Y() {
+		t.Fatalf("expected %#v, got %#v instead", expected.Y(), actual)
+	}
+}

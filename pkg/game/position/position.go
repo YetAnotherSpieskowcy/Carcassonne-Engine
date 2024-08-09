@@ -28,6 +28,15 @@ func (pos Position) Add(other Position) Position {
 	return New(pos.x+other.x, pos.y+other.y)
 }
 
+func (pos Position) Rotate(rotations uint) Position {
+	rotations = rotations % 4
+
+	for range rotations {
+		pos = New(pos.y, -pos.x)
+	}
+	return pos
+}
+
 /*
 Returns position neighbouring (0,0) from the given side.
 Valid sides are either a single half-edge side (e.g. side.TopLeftEdge) or a single primary side (e.g. side.Right)
