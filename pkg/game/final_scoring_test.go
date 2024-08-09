@@ -552,6 +552,7 @@ func TestFinalScoreFields2(t *testing.T) {
 
 	Field surrounded be cities! 8 cities in total.
 	For nice loops starting tile is changed for monastery field.
+	One meeple inside(!) and one meeple outside (@)
 */
 func TestFinalScoreFields3(t *testing.T) {
 	// ------ create tileset --------
