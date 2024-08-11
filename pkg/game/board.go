@@ -475,6 +475,13 @@ func (board *board) ScoreFinalMeeples() elements.ScoreReport {
 	// score cities first (because they have their own manager)
 	meeplesReport.Join(board.cityManager.ScoreCities(true))
 
+	// remove city meeples from board
+	for _, returnedMeeples := range meeplesReport.ReturnedMeeples {
+		for _, meeple := range returnedMeeples {
+			board.RemoveMeeple(meeple.Position)
+		}
+	}
+
 	// score meeples left on the board (fields, monasteries, roads)
 	for _, pTile := range board.Tiles() {
 		for _, feat := range pTile.Features {
