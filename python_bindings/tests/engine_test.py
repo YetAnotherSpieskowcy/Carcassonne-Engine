@@ -36,7 +36,7 @@ def test_game_engine_send_batch_receives_correct_responses_after_worker_requests
         expected = requests[idx].GameID
         actual = resp.GameID()
         assert actual == expected
-    engine.Shutdown()
+    engine.Close()
 
 
 def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
@@ -68,7 +68,7 @@ def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
     actual = responses[1].GameID()
     assert expected == actual
 
-    engine.Shutdown()
+    engine.Close()
 
 
 def test_game_engine_send_batch_returns_failures_when_communicator_closed(
@@ -83,7 +83,7 @@ def test_game_engine_send_batch_returns_failures_when_communicator_closed(
         PlayTurnRequest(GameID=game.ID, Move=game.Game.ValidTilePlacements[0])
         for game in games
     ]
-    engine.Shutdown()
+    engine.Close()
 
     responses = engine.SendPlayTurnBatch(Slice_Ptr_engine_PlayTurnRequest(requests))
     for idx, resp in enumerate(responses):
@@ -113,7 +113,7 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
         Slice_Ptr_engine_GetRemainingTilesRequest([request])
     )
     resp.Err()  # the binding would raise if this returned an error
-    engine.Shutdown()
+    engine.Close()
 
     for tile_prob in resp.TileProbabilities:
         for tile in tiles:
@@ -143,7 +143,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
         Slice_Ptr_engine_GetLegalMovesRequest([request])
     )
     resp.Err()  # the binding would raise if this returned an error
-    engine.Shutdown()
+    engine.Close()
 
     # Monastery with no roads is symmetrical both horizontally and vertically
     assert len(resp.Moves) == 1
@@ -170,7 +170,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
         Slice_Ptr_engine_GetLegalMovesRequest([request])
     )
     resp.Err()  # the binding would raise if this returned an error
-    engine.Shutdown()
+    engine.Close()
 
     # Monastery with single road can only be placed at (0, -1)
     # but in 3 different rotations (only field connected with road is invalid)

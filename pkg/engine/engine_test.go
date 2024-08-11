@@ -27,13 +27,13 @@ func (req *testRequest) execute(game *game.Game) Response {
 	return &testResponse{BaseResponse{gameID: req.gameID()}}
 }
 
-func TestGameEngineDoubleShutdownDoesNotPanic(t *testing.T) {
+func TestGameEngineDoubleCloseDoesNotPanic(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	engine.Shutdown()
-	engine.Shutdown()
+	engine.Close()
+	engine.Close()
 }
 
 func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testing.T) {
@@ -66,7 +66,7 @@ func TestGameEngineSendBatchReceivesCorrectResponsesAfterWorkerRequests(t *testi
 			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
 		}
 	}
-	engine.Shutdown()
+	engine.Close()
 }
 
 func TestGameEngineSendBatchReturnsFailureWhenGameIDNotFound(t *testing.T) {
@@ -113,7 +113,7 @@ func TestGameEngineSendBatchReturnsFailureWhenGameIDNotFound(t *testing.T) {
 	if expected != actual {
 		t.Fatalf("expected %v game ID, got %v instead", expected, actual)
 	}
-	engine.Shutdown()
+	engine.Close()
 }
 
 func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) {
@@ -133,7 +133,7 @@ func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) 
 		req := &testRequest{GameID: g.ID}
 		requests = append(requests, req)
 	}
-	engine.Shutdown()
+	engine.Close()
 
 	responses := engine.sendBatch(requests)
 	for i, resp := range responses {

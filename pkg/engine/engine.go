@@ -46,7 +46,7 @@ func newCommunicator() *communicator {
 	}
 }
 
-func (comm *communicator) Shutdown() {
+func (comm *communicator) Close() {
 	if comm.closed {
 		comm.workGroup.Wait()
 		return
@@ -69,6 +69,7 @@ type GameEngine struct {
 	games         map[int]*game.Game
 	nextGameID    int
 	nextRequestID int
+	closed        bool
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -92,8 +93,16 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 	return engine, nil
 }
 
-func (engine *GameEngine) Shutdown() {
-	engine.comm.Shutdown()
+func (engine *GameEngine) IsClosed() bool {
+	return engine.closed
+}
+
+func (engine *GameEngine) Close() {
+	if engine.closed {
+		return
+	}
+	engine.closed = true
+	engine.comm.Close()
 }
 
 // Generate a random game from the given tileset.

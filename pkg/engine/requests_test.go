@@ -18,7 +18,7 @@ func TestGameEngineSendPlayTurnBatchReturnsFailureWhenCommunicatorClosed(t *test
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	engine.Shutdown()
+	engine.Close()
 
 	requests := []*PlayTurnRequest{{GameID: 123}}
 	resp := engine.SendPlayTurnBatch(requests)[0]
@@ -35,7 +35,7 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsFailureWhenCommunicatorClose
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	engine.Shutdown()
+	engine.Close()
 
 	requests := []*GetRemainingTilesRequest{{BaseGameID: 123}}
 	resp := engine.SendGetRemainingTilesBatch(requests)[0]
@@ -52,7 +52,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenCommunicatorClosed(t 
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	engine.Shutdown()
+	engine.Close()
 
 	requests := []*GetLegalMovesRequest{{BaseGameID: 123}}
 	resp := engine.SendGetLegalMovesBatch(requests)[0]
@@ -103,7 +103,7 @@ func TestGameEngineSendPlayTurnBatchReceivesCorrectResponsesAfterWorkerRequests(
 			t.Fatalf("expected %#v serialized game, got %#v instead", expectedGame, actualGame)
 		}
 	}
-	engine.Shutdown()
+	engine.Close()
 }
 
 func TestGameEngineSendGetRemainingTilesBatchReturnsRemainingTiles(t *testing.T) {
@@ -153,7 +153,7 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsRemainingTiles(t *testing.T)
 		}
 	}
 
-	engine.Shutdown()
+	engine.Close()
 }
 
 func TestGameEngineSendGetLegalMovesBatchReturnsNoDuplicates(t *testing.T) {
@@ -198,7 +198,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsNoDuplicates(t *testing.T) {
 		}
 	}
 
-	engine.Shutdown()
+	engine.Close()
 }
 
 func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) {
@@ -259,5 +259,5 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 		}
 	}
 
-	engine.Shutdown()
+	engine.Close()
 }
