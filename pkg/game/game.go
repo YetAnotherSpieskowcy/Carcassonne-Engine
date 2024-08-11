@@ -190,17 +190,21 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 
 	// Score features and update meeple counts
 	for playerID, receivedPoints := range scoreReport.ReceivedPoints {
-		player := game.players[playerID]
+		player := game.players[playerID-1]
 		player.SetScore(player.Score() + receivedPoints)
 	}
+
 	for playerID, returnedMeeples := range scoreReport.ReturnedMeeples {
-		player := game.players[playerID]
-		for i, returnedMeepleCount := range returnedMeeples {
-			meepleType := elements.MeepleType(i)
+		player := game.players[playerID-1]
+		for _, meeple := range returnedMeeples {
+			// return meeple to player
 			player.SetMeepleCount(
-				meepleType,
-				player.MeepleCount(meepleType)-returnedMeepleCount,
+				meeple.Type,
+				player.MeepleCount(meeple.Type)+1,
 			)
+
+			// remove meeple from board
+			game.board.RemoveMeeple(meeple.Position)
 		}
 	}
 

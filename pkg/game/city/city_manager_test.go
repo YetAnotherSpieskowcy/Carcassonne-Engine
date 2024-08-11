@@ -88,6 +88,21 @@ func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 	}
 }
 
+func TestUpdateCitiesWhenOneCityClosedSeconedOpen(t *testing.T) {
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.Position = position.New(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	b.Position = position.New(1, 2)
+	manager.UpdateCities(b)
+
+	if len(manager.cities) != 2 {
+		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
+}
+
 func TestJoinCitiesOnAdd(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.Position = position.New(1, 1)
@@ -142,7 +157,7 @@ func TestForceScore(t *testing.T) {
 		t.Fatalf("expected player id not in the map")
 	}
 
-	numMeeples := meeples[expectedMeepleType]
+	numMeeples := len(meeples)
 	if numMeeples != 1 {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
@@ -174,7 +189,7 @@ func TestScore(t *testing.T) {
 		t.Fatalf("expected player id not in the map")
 	}
 
-	numMeeples := meeples[expectedMeepleType]
+	numMeeples := len(meeples)
 	if numMeeples != 1 {
 		t.Fatalf("expected %#v meeple, got %#v meeples instead", 1, numMeeples)
 	}
@@ -393,7 +408,6 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 }
 
 func TestGetCity(t *testing.T) {
-
 	manager := NewCityManager()
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())

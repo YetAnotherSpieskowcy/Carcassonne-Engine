@@ -109,11 +109,11 @@ func (side Side) String() string {
 	output := ""
 
 	for _, names := range sideNames {
-		if side&names.primary == names.primary {
+		if side.HasSide(names.primary) {
 			output += names.primaryName
 		} else {
 			for key, value := range names.secondary {
-				if side&key == key {
+				if side.HasSide(key) {
 					output += value
 				}
 			}
@@ -127,9 +127,25 @@ func (side Side) String() string {
 	return output
 }
 
-/*
-Rotates the side clockwise
-*/
+// Returns whether or not the given side has otherSide
+// For example:
+// - (Right|Top).HasSide(Right) == true
+// - (Right|Top).HasSide(TopRightEdge) == true
+// - (Right|Top).HasSide(Left) == false
+func (side Side) HasSide(otherSide Side) bool {
+	return side&otherSide == otherSide
+}
+
+// Returns whether or not the given side overlaps otherSide. The overlap does not need to be exact.
+// For example:
+// - (Right|Top).OverlapsSide(Right|Bottom) == true
+// - (Right|Top).OverlapsSide(TopRightEdge|Bottom|Left) == true
+// - (Right|Top).OverlapsSide(Left|BottomLeftEdge) == false
+func (side Side) OverlapsSide(otherSide Side) bool {
+	return side&otherSide != 0
+}
+
+// Rotates side clockwise
 func (side Side) Rotate(rotations uint) Side {
 	/*
 		TopLeftEdge     0b10000000
@@ -200,40 +216,13 @@ func (side Side) FlipCorners() Side {
 }
 
 /*
-Returns the opposite side of the argument. Side Top will return Bottom, etc.
-Argument indicates only ONE cardinal or edge, otherwise it's ambigous
-*/
-func (side Side) ConnectedOpposite() Side {
-
-	SwapBits := func(number Side, i uint8, j uint8) Side {
-		// check if needs to swap (check xor)
-		if (((number & (1 << i)) >> i) ^ ((number & (1 << j)) >> j)) == 1 {
-			// xor to swap
-			number ^= 1 << i
-			number ^= 1 << j
-		}
-		return number
-	}
-
-	// rotate
-	rotated := side.Rotate(2)
-
-	// mirror edges
-	for i := range 4 {
-		rotated = SwapBits(rotated, uint8(2*i), uint8(2*i+1))
-	}
-	return rotated
-}
-
-/*
 Returns other connected side on the same tile.
-It allows getting other side of the rode feature.
+It allows getting other side of the road feature.
 direction must indicate only one cardinal direction!
 */
 func (side Side) GetConnectedOtherCardinalDirection(direction Side) Side {
-	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
-	for _, cardinal := range cardinals {
-		if side&cardinal == cardinal && cardinal != direction {
+	for _, cardinal := range PrimarySides {
+		if side.HasSide(cardinal) && cardinal != direction {
 			return cardinal
 		}
 	}
@@ -247,10 +236,9 @@ First cardinal direction would be Top, second Right, third Bottom.
 If nth direction doesn't exist, NoSide is returned.
 */
 func (side Side) GetNthCardinalDirection(n uint8) Side {
-	cardinals := []Side{Top, Left, Right, Bottom} // Cardinal directions are checked in this order
 	found := uint8(0)
-	for _, cardinal := range cardinals {
-		if side&cardinal == cardinal {
+	for _, cardinal := range PrimarySides {
+		if side.HasSide(cardinal) {
 			found++
 		}
 		if found > n {
@@ -261,10 +249,9 @@ func (side Side) GetNthCardinalDirection(n uint8) Side {
 }
 
 func (side Side) GetCardinalDirectionsLength() int {
-	cardinals := []Side{Top, Left, Right, Bottom}
 	found := int(0)
-	for _, cardinal := range cardinals {
-		if side&cardinal == cardinal {
+	for _, cardinal := range PrimarySides {
+		if side.HasSide(cardinal) {
 			found++
 		}
 	}

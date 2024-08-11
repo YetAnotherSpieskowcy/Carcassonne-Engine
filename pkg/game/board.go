@@ -8,6 +8,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	positionMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -123,7 +124,7 @@ func (board *board) testSide(position positionMod.Position, expectedSide side.Si
 	}
 	for _, tileFeature := range tile.Features {
 		if tileFeature.FeatureType == expectedFeatureType {
-			if tileFeature.Sides&expectedSide == expectedSide {
+			if tileFeature.Sides.HasSide(expectedSide) {
 				return true
 			}
 		}
@@ -157,8 +158,7 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	for _, f := range tile.Features {
 		s := side.Top
 		for range 4 {
-			if f.Sides&s == s &&
-				!board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
+			if f.Sides.HasSide(s) && !board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
 				return false
 			}
 			s = s.Rotate(1)
@@ -211,6 +211,16 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	return scoreReport, err
 }
 
+func (board *board) RemoveMeeple(pos position.Position) {
+	placedTile := board.tilesMap[pos]
+	for featureIndex, feature := range placedTile.Features {
+		if feature.Meeple.Type != elements.NoneMeeple {
+			placedTile.Features[featureIndex].Meeple = elements.Meeple{Type: elements.NoneMeeple, PlayerID: elements.ID(0)}
+			break
+		}
+	}
+}
+
 func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	tileIndex := slices.Index(board.placeablePositions, tile.Position)
 	if tileIndex == -1 {
@@ -242,6 +252,7 @@ func (board *board) checkCompleted(
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
+	scoreReport.Join(board.ScoreRoads(tile))
 	return scoreReport, nil
 }
 
@@ -264,8 +275,6 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 		return elements.ScoreReport{}, errors.New("ScoreSingleMonastery() called on a tile without a meeple")
 	}
 
-	var meepleType = monasteryFeature.Meeple.Type
-
 	var score uint32
 	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
 		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
@@ -277,12 +286,14 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 	}
 
 	if score == 9 || forceScore {
-		var returnedMeeples = make([]uint8, elements.MeepleTypeCount)
-		returnedMeeples[meepleType] = 1
-
 		scoreReport := elements.NewScoreReport()
 		scoreReport.ReceivedPoints[monasteryFeature.PlayerID] = score
-		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = returnedMeeples
+		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = []elements.MeepleWithPosition{
+			elements.MeepleWithPosition{
+				Meeple:   monasteryFeature.Meeple,
+				Position: tile.Position,
+			},
+		}
 
 		return scoreReport, nil
 	}
@@ -321,8 +332,8 @@ param roadSide: always indicates only one cardinal direction!
 returns: road_finished, score, [meeples on road], loop, sideFinishedOn
 sideFinishedOn matters only if loop is True. Variable used to prevent checking the same road twice in ScoreRoads function
 */
-func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.Meeple, bool, side.Side) {
-	var meeples = []elements.Meeple{}
+func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.MeepleWithPosition, bool, side.Side) {
+	var meeples = []elements.MeepleWithPosition{}
 	var tile = startTile
 	var tileExists bool
 	var score = 0
@@ -332,7 +343,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	// do while loop
 	for {
 		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.FromSide(roadSide)))
-		roadSide = roadSide.ConnectedOpposite()
+		roadSide = roadSide.Mirror()
 		// check if tile exists or loop
 		if !tileExists || tile.Position == startTile.Position {
 			// tile does not exist
@@ -348,7 +359,10 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 
 		// check if there is meeple on the feature
 		if road.Meeple.Type != elements.NoneMeeple {
-			meeples = append(meeples, road.Meeple)
+			meeples = append(meeples, elements.NewMeepleWithPosition(
+				road.Meeple,
+				tile.Position),
+			)
 		}
 
 		if road.Sides.GetCardinalDirectionsLength() == 1 {
@@ -372,7 +386,7 @@ Calculates score for road.
 returns: ScoreReport, checked sides of the start tile (also including loop)
 */
 func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.Feature) (elements.ScoreReport, side.Side) {
-	var meeples = []elements.Meeple{}
+	var meeples = []elements.MeepleWithPosition{}
 	var leftSide, rightSide side.Side
 	var score = 1
 	leftSide = road.Sides.GetNthCardinalDirection(0)  // first side
@@ -381,7 +395,7 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	var roadFinishedResult bool
 	var scoreResult int
-	var meeplesResult []elements.Meeple
+	var meeplesResult []elements.MeepleWithPosition
 	var loopResult bool
 	var loopSide side.Side
 
@@ -389,9 +403,15 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	var roadLeft = tile.GetPlacedFeatureAtSide(leftSide, feature.Road)
 	var roadRight = tile.GetPlacedFeatureAtSide(rightSide, feature.Road)
 	if roadLeft.Meeple.Type != elements.NoneMeeple {
-		meeples = append(meeples, roadLeft.Meeple)
+		meeples = append(meeples, elements.NewMeepleWithPosition(
+			roadLeft.Meeple,
+			tile.Position),
+		)
 	} else if roadRight != nil && roadRight.Meeple.Type != elements.NoneMeeple {
-		meeples = append(meeples, roadRight.Meeple)
+		meeples = append(meeples, elements.NewMeepleWithPosition(
+			roadRight.Meeple,
+			tile.Position),
+		)
 	}
 
 	// check road in "left" direction
@@ -434,14 +454,12 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile) elements.ScoreRep
 
 	for _, road := range roads {
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
-		if checkedRoadSides&road.Sides == 0 {
+		if !checkedRoadSides.OverlapsSide(road.Sides) {
 			scoreReportTemp, roadSide := board.ScoreRoadCompletion(placedTile, road)
 			scoreReport.Join(scoreReportTemp)
 			checkedRoadSides |= roadSide
-			println(checkedRoadSides)
 		}
 		checkedRoadSides |= road.Sides
-		println(checkedRoadSides)
 	}
 	return scoreReport
 }

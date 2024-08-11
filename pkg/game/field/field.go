@@ -14,7 +14,7 @@ import (
 /*
 Assumptions:
  - if there is only one field feature on a tile, it neighbours ALL cities on this tile
- - if the field feature doesn't have any sides (i.e. its sides==side.None), it neighbours ALL cities on this tile
+ - if the field feature doesn't have any sides (i.e. its sides==side.NoSide), it neighbours ALL cities on this tile
    (this rule is only applicable to tiles from the expansions, as there are no such tiles in the base game)
  - in other cases, fields neighbour all cities they share a common tile corner with
 
@@ -30,16 +30,16 @@ type fieldKey struct {
 
 // Represents a field on the board
 type Field struct {
-	features           map[fieldKey]struct{}   // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
-	neighbouringCities map[int]struct{}        // this is a set of cities' IDs
-	meeples            map[elements.ID][]uint8 // returned meeples for each player ID (same as in elements.ScoreReport)
+	features           map[fieldKey]struct{}         // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
+	neighbouringCities map[int]struct{}              // this is a set of cities' IDs
+	meeples            []elements.MeepleWithPosition // returned meeples for each player ID (same as in elements.ScoreReport)
 }
 
 func New(feature elements.PlacedFeature, position position.Position) Field {
 	features := map[fieldKey]struct{}{
 		{feature: feature, position: position}: {},
 	}
-	return Field{features: features, neighbouringCities: map[int]struct{}{}, meeples: map[elements.ID][]uint8{}}
+	return Field{features: features, neighbouringCities: map[int]struct{}{}, meeples: []elements.MeepleWithPosition{}}
 }
 
 func (field Field) FeaturesCount() int {
@@ -73,11 +73,10 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		// add meeple if it exists
 		meeple := element.feature.Meeple
 		if meeple.Type != elements.NoneMeeple {
-			_, exists := field.meeples[meeple.PlayerID]
-			if !exists {
-				field.meeples[meeple.PlayerID] = make([]uint8, elements.MeepleTypeCount)
-			}
-			field.meeples[meeple.PlayerID][meeple.Type]++
+			field.meeples = append(field.meeples, elements.NewMeepleWithPosition(
+				meeple,
+				element.position,
+			))
 		}
 
 		// find neighbouring city features
@@ -123,21 +122,10 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 // Returns a slice of fieldKey elements containing all features neighbouring a given fieldKey (feature and position)
 // The slice may contain duplicates in some cases (todo?)
 func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
-	sides := []side.Side{
-		side.TopLeftEdge,
-		side.TopRightEdge,
-		side.RightTopEdge,
-		side.RightBottomEdge,
-		side.BottomRightEdge,
-		side.BottomLeftEdge,
-		side.LeftBottomEdge,
-		side.LeftTopEdge,
-	}
-
 	neighbours := []fieldKey{}
 
-	for _, side := range sides {
-		if field.feature.Sides&side != 0 {
+	for _, side := range side.EdgeSides {
+		if field.feature.Sides.OverlapsSide(side) {
 			neighbourPosition := field.position.Add(position.FromSide(side))
 
 			tile, tileExists := board.GetTileAt(neighbourPosition)
@@ -159,14 +147,5 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 func (field Field) GetScoreReport() elements.ScoreReport {
 	points := uint32(len(field.neighbouringCities) * 3)
 
-	scoreReport := elements.NewScoreReport()
-
-	scoreReport.ReturnedMeeples = field.meeples
-
-	scoredPlayers := elements.GetPlayersWithMostMeeples(field.meeples)
-	for _, player := range scoredPlayers {
-		scoreReport.ReceivedPoints[player] = points
-	}
-
-	return scoreReport
+	return elements.CalculateScoreReportOnMeeples(int(points), field.meeples)
 }

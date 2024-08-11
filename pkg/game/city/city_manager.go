@@ -60,7 +60,7 @@ func (manager Manager) findCities(pos position.Position) map[side.Side]int {
 			features, ok := c.GetFeaturesFromTile(pos)
 			if ok {
 				for _, f := range features {
-					if f.Feature.Sides&s.Rotate(2) == s.Rotate(2) {
+					if f.Feature.Sides.HasSide(s.Rotate(2)) {
 						foundCities[s] = idx
 						cityFound = true
 						break
@@ -87,7 +87,7 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 		sides := cityFeature.Feature.Sides
 		mask := side.Top
 		for range 4 {
-			if sides&mask == mask {
+			if sides.HasSide(mask) {
 				c, ok := foundCities[mask]
 				if ok {
 					cToJoin = append(cToJoin, c)
@@ -95,9 +95,7 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 			}
 			mask = mask.Rotate(1)
 		}
-		if len(cToJoin) > 0 {
-			citiesToJoin[cityFeature] = cToJoin
-		}
+		citiesToJoin[cityFeature] = cToJoin
 	}
 	return citiesToJoin
 }
@@ -112,16 +110,18 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 		// join cities
 		for f, cToJoin := range citiesToJoin {
 			if len(cToJoin) == 0 {
-				panic("No cities to join.")
-			}
-			if len(cToJoin) > 1 {
-				for _, cityIndex := range cToJoin[1:] {
-					manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
-					citiesToRemove = append(citiesToRemove, cityIndex)
+				toAppend := []elements.PlacedFeature{f}
+				manager.cities = append(manager.cities, NewCity(tile.Position, toAppend, tile.HasShield))
+			} else {
+				if len(cToJoin) > 1 {
+					for _, cityIndex := range cToJoin[1:] {
+						manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
+						citiesToRemove = append(citiesToRemove, cityIndex)
+					}
 				}
+				toAdd := []elements.PlacedFeature{f}
+				manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, f.ModifierType == modifier.Shield)
 			}
-			toAdd := []elements.PlacedFeature{f}
-			manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, f.ModifierType == modifier.Shield)
 		}
 		// remove cities that were merged into another city
 		if len(citiesToRemove) > 0 {
