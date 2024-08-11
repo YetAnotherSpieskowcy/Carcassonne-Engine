@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"slices"
 	"sort"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
@@ -134,13 +135,14 @@ func (req *GetRemainingTilesRequest) execute(baseGame *game.Game) Response {
 			}
 			return true
 		})
-		if i == n {
-			probabilities = append(
+		if i < n && probabilities[i].Tile.ExactEquals(tile) {
+			probabilities[i].Probability++
+		} else {
+			probabilities = slices.Insert(
 				probabilities,
+				i,
 				TileProbability{Tile: tile, Probability: 1.0},
 			)
-		} else {
-			probabilities[i].Probability++
 		}
 	}
 	for i := range probabilities {
