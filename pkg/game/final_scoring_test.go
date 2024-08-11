@@ -568,7 +568,7 @@ func TestFinalScoreFields2(t *testing.T) {
 	For nice loops starting tile is changed for monastery field.
 	One meeple inside(!) and one meeple outside (@)
 */
-func TestFinalScoreFields3(t *testing.T) {
+func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 	// ------ create tileset --------
 	rotations := []uint{0, 1, 2, 3}
 	var tiles []tiles.Tile
