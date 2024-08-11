@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"errors"
 	"fmt"
 	"path"
 	"slices"
@@ -9,6 +10,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
@@ -31,6 +33,14 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 	count := len(req.ReservedIDs)
 	clones := make([]*game.Game, count)
 	resp := &cloneGameResponse{BaseResponse: BaseResponse{gameID: req.GameID}}
+
+	if req.LogDir == "" {
+		for i := range req.ReservedIDs {
+			clones[i] = g.DeepClone()
+		}
+		resp.Clones = clones
+		return resp
+	}
 
 	for i, id := range req.ReservedIDs {
 		logFile := path.Join(req.LogDir, fmt.Sprintf("%v.jsonl", id))
@@ -60,6 +70,15 @@ type PlayTurnResponse struct {
 type PlayTurnRequest struct {
 	GameID int
 	Move   elements.PlacedTile
+}
+
+func (resp *PlayTurnResponse) canRemoveGame() bool {
+	err := resp.Err()
+	return err != nil && errors.Is(err, stack.ErrStackOutOfBounds)
+}
+
+func (resp *PlayTurnResponse) canRemoveChildGames() bool {
+	return resp.Err() == nil
 }
 
 func (req *PlayTurnRequest) gameID() int {

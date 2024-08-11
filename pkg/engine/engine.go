@@ -70,6 +70,7 @@ type GameEngine struct {
 	nextGameID    int
 	nextRequestID int
 	closed        bool
+	childGames    map[int][]int
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -129,15 +130,56 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 // returning the IDs of the cloned games.
 // Intended use: Allowing multiple agents to play the same game scenario.
 func (engine *GameEngine) CloneGame(gameID int, count int) ([]int, error) {
+	return engine.cloneGame(gameID, count, true)
+}
+
+// Clone the game with the given ID `count` times and track the clones as the children
+// to the given game. All of the game's children should be cleaned up before a turn is
+// played on the parent game, otherwise a warning is issued.
+//
+// Returns the IDs of the cloned games.
+//
+// Intended use: Allowing a single agent to expand the game tree through child games
+// until it's ready to make its turn.
+func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
+	ret, err := engine.cloneGame(gameID, count, false)
+	if err != nil {
+		return ret, err
+	}
+	engine.childGames[gameID] = append(engine.childGames[gameID], ret...)
+	return ret, nil
+}
+
+// Delete games with the given IDs.
+func (engine *GameEngine) DeleteGames(gameIDs []int) {
+	for _, gameID := range gameIDs {
+		if len(engine.childGames[gameID]) != 0 {
+			// since we don't know whether the agent isn't actually using these,
+			// just settle on a warning
+			fmt.Printf(
+				"WARN: children of the game with ID %v have not been cleaned up:%#v\n",
+				gameID,
+				engine.childGames[gameID],
+			)
+		}
+		delete(engine.games, gameID)
+		delete(engine.childGames, gameID)
+	}
+}
+
+func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, error) {
 	reservedIDs := make([]int, count)
 	for i := range count {
 		reservedIDs[i] = engine.nextGameID
 		engine.nextGameID++
 	}
 
-	responses := engine.sendBatch(
-		[]Request{&cloneGameRequest{GameID: gameID, ReservedIDs: reservedIDs}},
-	)
+	logDir := ""
+	if full {
+		logDir = engine.logDir
+	}
+	req := &cloneGameRequest{GameID: gameID, ReservedIDs: reservedIDs, LogDir: logDir}
+	responses := engine.sendBatch([]Request{req})
 	if err := responses[0].Err(); err != nil {
 		return nil, err
 	}
@@ -246,6 +288,8 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputReqIndexesLock := sync.RWMutex{}
 
 	games := map[int]*game.Game{}
+	removableGames := map[int]struct{}{}
+	parentsWithRemovableChildren := map[int]struct{}{}
 	responses := make([]Response, len(requests))
 	outputBuffer := make(chan workerOutput, len(requests))
 	waitGroup := sync.WaitGroup{}
@@ -258,6 +302,18 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 			i := outputReqIndexes[output.requestID]
 			outputReqIndexesLock.RUnlock()
 			responses[i] = output.resp
+
+			if respGameRemovable, ok := output.resp.(ResponseGameRemovable); ok {
+				if respGameRemovable.canRemoveGame() {
+					removableGames[output.resp.GameID()] = struct{}{}
+				}
+			}
+
+			if respChildGamesRemovable, ok := output.resp.(ResponseChildGamesRemovable); ok {
+				if respChildGamesRemovable.canRemoveChildGames() {
+					parentsWithRemovableChildren[output.resp.GameID()] = struct{}{}
+				}
+			}
 		}
 		outputWaitGroup.Done()
 	}()
@@ -285,7 +341,24 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	// prepareWorkerInput removes games from the map to avoid concurrent
 	// requests to the same game. Now it's time to add them back.
 	for gameID, game := range games {
-		engine.games[gameID] = game
+		_, canRemove := removableGames[gameID]
+		_, canRemoveChildren := parentsWithRemovableChildren[gameID]
+
+		if (canRemove || canRemoveChildren) && len(engine.childGames[gameID]) != 0 {
+			// since we don't know whether the agent isn't actually using these,
+			// just settle on a warning
+			fmt.Printf(
+				"WARN: children of the game with ID %v have not been cleaned up:%#v\n",
+				gameID,
+				engine.childGames[gameID],
+			)
+		}
+
+		if canRemove {
+			delete(engine.childGames, gameID)
+		} else {
+			engine.games[gameID] = game
+		}
 	}
 
 	return responses
