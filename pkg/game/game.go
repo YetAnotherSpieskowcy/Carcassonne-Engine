@@ -86,6 +86,15 @@ func (game Game) DeepClone() *Game {
 	return &game
 }
 
+func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
+	clone := game.DeepClone()
+	if err := game.log.CopyTo(log); err != nil {
+		return nil, err
+	}
+	clone.log = log
+	return clone, nil
+}
+
 func (game *Game) Serialized() SerializedGame {
 	serialized := SerializedGame{
 		CurrentPlayer: game.CurrentPlayer(),

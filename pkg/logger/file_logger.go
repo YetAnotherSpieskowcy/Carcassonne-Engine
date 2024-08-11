@@ -50,3 +50,23 @@ func (fl FileLogger) ReadLogs() <-chan Entry {
 
 	return channel
 }
+
+func (fl *FileLogger) CopyTo(dst Logger) error {
+	currentOffset, err := fl.file.Seek(0, io.SeekCurrent)
+	if err != nil {
+		return err
+	}
+
+	if _, err = fl.file.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
+
+	writer := dst.AsWriter()
+	if _, err = io.CopyN(writer, fl.file, currentOffset); err != nil {
+		return err
+	}
+
+	_, err = fl.file.Seek(currentOffset, io.SeekStart)
+
+	return err
+}

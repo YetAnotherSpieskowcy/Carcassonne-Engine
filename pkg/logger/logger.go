@@ -2,11 +2,16 @@ package logger
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 )
 
+var ErrCopyToNotImplemented = errors.New("the type does not implement the CopyTo() method")
+
 type Logger interface {
+	AsWriter() io.Writer // only meant to be called by other (i.e. public) methods
 	LogEvent(EventType, interface{}) error
+	CopyTo(Logger) error
 }
 
 type BaseLogger struct {
@@ -15,6 +20,10 @@ type BaseLogger struct {
 
 func New(writer io.Writer) BaseLogger {
 	return BaseLogger{writer}
+}
+
+func (logger *BaseLogger) AsWriter() io.Writer {
+	return logger.writer
 }
 
 func (logger *BaseLogger) LogEvent(eventName EventType, event interface{}) error {
@@ -39,4 +48,9 @@ func (logger *BaseLogger) LogEvent(eventName EventType, event interface{}) error
 	}
 
 	return nil
+}
+
+func (logger *BaseLogger) CopyTo(dst Logger) error {
+	_ = dst
+	return ErrCopyToNotImplemented
 }

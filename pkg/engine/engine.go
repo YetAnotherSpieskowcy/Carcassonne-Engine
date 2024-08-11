@@ -125,6 +125,31 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 
+// *Fully* clone the game (including its log) with the given ID `count` times
+// returning the IDs of the cloned games.
+// Intended use: Allowing multiple agents to play the same game scenario.
+func (engine *GameEngine) CloneGame(gameID int, count int) ([]int, error) {
+	reservedIDs := make([]int, count)
+	for i := range count {
+		reservedIDs[i] = engine.nextGameID
+		engine.nextGameID++
+	}
+
+	responses := engine.sendBatch(
+		[]Request{&cloneGameRequest{GameID: gameID, ReservedIDs: reservedIDs}},
+	)
+	if err := responses[0].Err(); err != nil {
+		return nil, err
+	}
+
+	resp := responses[0].(*cloneGameResponse)
+	for i, game := range resp.Clones {
+		engine.games[reservedIDs[i]] = game
+	}
+
+	return reservedIDs, nil
+}
+
 // Due to limitations of Python bindings generator with []interface return type,
 // this wraps sendBatch() and limits the return type to only one Response type.
 func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest) []*PlayTurnResponse {

@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"io"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
@@ -21,6 +22,14 @@ type TestLogger struct {
 func (l *TestLogger) LogEvent(_ logger.EventType, _ interface{}) error {
 	l.callCount++
 	return nil
+}
+
+func (l *TestLogger) AsWriter() io.Writer {
+	return io.Discard
+}
+
+func (l *TestLogger) CopyTo(_ logger.Logger) error {
+	return logger.ErrCopyToNotImplemented
 }
 
 func TestDeepClone(t *testing.T) {

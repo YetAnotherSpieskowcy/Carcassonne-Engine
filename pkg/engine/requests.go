@@ -1,13 +1,57 @@
 package engine
 
 import (
+	"fmt"
+	"path"
 	"slices"
 	"sort"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
+
+// internal worker request used by GameEngine.CloneGame()
+type cloneGameResponse struct {
+	BaseResponse
+	Clones []*game.Game
+}
+type cloneGameRequest struct {
+	GameID      int
+	ReservedIDs []int
+	LogDir      string
+}
+
+func (req *cloneGameRequest) gameID() int {
+	return req.GameID
+}
+
+func (req *cloneGameRequest) execute(g *game.Game) Response {
+	count := len(req.ReservedIDs)
+	clones := make([]*game.Game, count)
+	resp := &cloneGameResponse{BaseResponse: BaseResponse{gameID: req.GameID}}
+
+	for i, id := range req.ReservedIDs {
+		logFile := path.Join(req.LogDir, fmt.Sprintf("%v.jsonl", id))
+		logger, err := logger.NewFromFile(logFile)
+		if err != nil {
+			resp.err = err
+			return resp
+		}
+
+		clone, err := g.DeepCloneWithLog(&logger)
+		if err != nil {
+			resp.err = err
+			return resp
+		}
+
+		clones[i] = clone
+	}
+
+	resp.Clones = clones
+	return resp
+}
 
 type PlayTurnResponse struct {
 	BaseResponse
