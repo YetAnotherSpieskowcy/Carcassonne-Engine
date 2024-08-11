@@ -3,6 +3,7 @@ package engine
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"sync"
@@ -17,7 +18,11 @@ var (
 	ErrGameNotFound       = errors.New("game with the given ID was not found")
 )
 
-const inputBufferSize = 10_000_000
+const (
+	inputBufferSize            = 10_000_000
+	childrenCleanupWarnMsg     = "WARN: children of the game with ID %v have not been cleaned up"
+	childrenCleanupWarnFullMsg = childrenCleanupWarnMsg + ": %#v\n"
+)
 
 func worker(comm *communicator) {
 	defer comm.workGroup.Done()
@@ -70,7 +75,9 @@ type GameEngine struct {
 	nextGameID    int
 	nextRequestID int
 	closed        bool
-	childGames    map[int][]int
+	childGames    map[int]map[int]struct{}
+	parentGames   map[int]int
+	appLogger     *log.Logger
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -84,6 +91,9 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 		games:         map[int]*game.Game{},
 		nextGameID:    1,
 		nextRequestID: 1,
+		childGames:    map[int]map[int]struct{}{},
+		parentGames:   map[int]int{},
+		appLogger:     log.New(os.Stderr, "", log.LstdFlags),
 	}
 
 	for range workerCount {
@@ -146,7 +156,17 @@ func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
 	if err != nil {
 		return ret, err
 	}
-	engine.childGames[gameID] = append(engine.childGames[gameID], ret...)
+
+	childGames, ok := engine.childGames[gameID]
+	if !ok {
+		childGames = map[int]struct{}{}
+		engine.childGames[gameID] = childGames
+	}
+
+	for _, childID := range ret {
+		childGames[childID] = struct{}{}
+		engine.parentGames[childID] = gameID
+	}
 	return ret, nil
 }
 
@@ -156,14 +176,18 @@ func (engine *GameEngine) DeleteGames(gameIDs []int) {
 		if len(engine.childGames[gameID]) != 0 {
 			// since we don't know whether the agent isn't actually using these,
 			// just settle on a warning
-			fmt.Printf(
-				"WARN: children of the game with ID %v have not been cleaned up:%#v\n",
+			engine.appLogger.Printf(
+				childrenCleanupWarnFullMsg,
 				gameID,
 				engine.childGames[gameID],
 			)
 		}
 		delete(engine.games, gameID)
 		delete(engine.childGames, gameID)
+		parentID := engine.parentGames[gameID]
+		if parentID != 0 {
+			delete(engine.childGames[parentID], gameID)
+		}
 	}
 }
 
@@ -347,8 +371,8 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 		if (canRemove || canRemoveChildren) && len(engine.childGames[gameID]) != 0 {
 			// since we don't know whether the agent isn't actually using these,
 			// just settle on a warning
-			fmt.Printf(
-				"WARN: children of the game with ID %v have not been cleaned up:%#v\n",
+			engine.appLogger.Printf(
+				childrenCleanupWarnFullMsg,
 				gameID,
 				engine.childGames[gameID],
 			)
@@ -356,6 +380,10 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 
 		if canRemove {
 			delete(engine.childGames, gameID)
+			parentID := engine.parentGames[gameID]
+			if parentID != 0 {
+				delete(engine.childGames[parentID], gameID)
+			}
 		} else {
 			engine.games[gameID] = game
 		}
