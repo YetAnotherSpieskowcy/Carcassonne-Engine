@@ -3,122 +3,119 @@ from pathlib import Path
 import pytest
 from pytest import approx
 
-from carcassonne_engine import (
-    GetRemainingTilesRequest,
+from carcassonne_engine import GameEngine
+from carcassonne_engine import models, tiletemplates
+from carcassonne_engine.requests import (
     GetLegalMovesRequest,
+    GetRemainingTilesRequest,
     PlayTurnRequest,
-    Slice_tiles_Tile,
-    Slice_Ptr_engine_PlayTurnRequest,
-    Slice_Ptr_engine_GetLegalMovesRequest,
-    Slice_Ptr_engine_GetRemainingTilesRequest,
-    StartGameEngine,
-    tiletemplates,
 )
-from carcassonne_engine.tilesets import StandardTileSet, TileSet
+from carcassonne_engine.tilesets import standard_tile_set, TileSet
 
 
 def test_game_engine_send_batch_receives_correct_responses_after_worker_requests(
     tmp_path: Path
 ) -> None:
-    engine = StartGameEngine(4, str(tmp_path))
+    engine = GameEngine(4, tmp_path)
     request_count = 100
 
-    tile_set = StandardTileSet()
-    games = [engine.GenerateGame(tile_set) for _ in range(request_count)]
+    tile_set = standard_tile_set()
+    games = [engine.generate_game(tile_set) for _ in range(request_count)]
     requests = [
-        PlayTurnRequest(GameID=game.ID, Move=game.Game.ValidTilePlacements[0])
+        PlayTurnRequest(
+            game_id=game.id,
+            move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+        )
         for game in games
     ]
 
-    responses = engine.SendPlayTurnBatch(Slice_Ptr_engine_PlayTurnRequest(requests))
+    responses = engine.send_play_turn_batch(requests)
     for idx, resp in enumerate(responses):
-        resp.Err()  # the binding would raise if this returned an error
-        expected = requests[idx].GameID
-        actual = resp.GameID()
+        assert resp.exception is None
+        expected = requests[idx].game_id
+        actual = resp.game_id
         assert actual == expected
-    engine.Close()
+    engine.close()
 
 
 def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
     tmp_path: Path
 ) -> None:
-    engine = StartGameEngine(4, str(tmp_path))
+    engine = GameEngine(4, tmp_path)
     requests = []
 
-    game = engine.GenerateGame(StandardTileSet())
+    game = engine.generate_game(standard_tile_set())
 
     successful_req = PlayTurnRequest(
-        GameID=game.ID, Move=game.Game.ValidTilePlacements[0]
+        game_id=game.id,
+        move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
     )
     requests.append(successful_req)
 
-    wrong_id = game.ID + 2
-    failed_req = PlayTurnRequest(GameID=wrong_id, Move=game.Game.ValidTilePlacements[0])
+    wrong_id = game.id + 2
+    failed_req = PlayTurnRequest(
+        game_id=wrong_id,
+        move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+    )
     requests.append(failed_req)
 
-    responses = engine.SendPlayTurnBatch(Slice_Ptr_engine_PlayTurnRequest(requests))
-    responses[0].Err()  # the binding would raise if this returned an error
-    expected = game.ID
-    actual = responses[0].GameID()
+    responses = engine.send_play_turn_batch(requests)
+    assert responses[0].exception is None
+    expected = game.id
+    actual = responses[0].game_id
     assert expected == actual
 
-    with pytest.raises(RuntimeError):
-        responses[1].Err()
+    assert isinstance(responses[1].exception, Exception)
     expected = wrong_id
-    actual = responses[1].GameID()
+    actual = responses[1].game_id
     assert expected == actual
 
-    engine.Close()
+    engine.close()
 
 
-def test_game_engine_send_batch_returns_failures_when_communicator_closed(
+def test_game_engine_send_batch_raises_when_communicator_closed(
     tmp_path: Path
 ) -> None:
-    engine = StartGameEngine(4, str(tmp_path))
+    engine = GameEngine(4, tmp_path)
     request_count = 5
 
-    tile_set = StandardTileSet()
-    games = [engine.GenerateGame(tile_set) for _ in range(request_count)]
+    tile_set = standard_tile_set()
+    games = [engine.generate_game(tile_set) for _ in range(request_count)]
     requests = [
-        PlayTurnRequest(GameID=game.ID, Move=game.Game.ValidTilePlacements[0])
+        PlayTurnRequest(
+            game_id=game.id,
+            move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+        )
         for game in games
     ]
-    engine.Close()
+    engine.close()
 
-    responses = engine.SendPlayTurnBatch(Slice_Ptr_engine_PlayTurnRequest(requests))
-    for idx, resp in enumerate(responses):
-        with pytest.raises(RuntimeError):
-            resp.Err()
-        expected = requests[idx].GameID
-        actual = resp.GameID()
-        assert actual == expected
+    with pytest.raises(RuntimeError):
+        responses = engine.send_play_turn_batch(requests)
 
 
 def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
     tmp_path: Path
 ) -> None:
-    t1 = tiletemplates.MonasteryWithSingleRoad()
-    t2 = tiletemplates.RoadsTurn()
+    t1 = tiletemplates.monastery_with_single_road()
+    t2 = tiletemplates.roads_turn()
     tiles = [t1, t2, t1]
-    tile_set = TileSet(
-        StartingTile=tiletemplates.SingleCityEdgeStraightRoads(),
-        Tiles=Slice_tiles_Tile(tiles),
+    tile_set = TileSet.from_tiles(
+        tiles,
+        starting_tile=tiletemplates.single_city_edge_straight_roads(),
     )
 
-    engine = StartGameEngine(1, str(tmp_path))
-    game = engine.GenerateGame(tile_set)
+    with GameEngine(1, tmp_path) as engine:
+        game = engine.generate_game(tile_set)
 
-    request = GetRemainingTilesRequest(BaseGameID=game.ID)
-    resp, = engine.SendGetRemainingTilesBatch(
-        Slice_Ptr_engine_GetRemainingTilesRequest([request])
-    )
-    resp.Err()  # the binding would raise if this returned an error
-    engine.Close()
+        request = GetRemainingTilesRequest(base_game_id=game.id)
+        resp, = engine.send_get_remaining_tiles_batch([request])
+        assert resp.exception is None
 
-    for tile_prob in resp.TileProbabilities:
+    for tile_prob in resp.tile_probabilities:
         for tile in tiles:
-            if tile_prob.Tile.Equals(tile):
-                assert tile_prob.Probability == approx(tiles.count(tile) / len(tiles))
+            if tile_prob.tile == tile:
+                assert tile_prob.probability == approx(tiles.count(tile) / len(tiles))
                 break
         else:
             assert False, (
@@ -129,66 +126,57 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
 def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
     tmp_path: Path
 ) -> None:
-    tile = tiletemplates.MonasteryWithoutRoads()
-    tile_set = TileSet(
-        StartingTile=tiletemplates.SingleCityEdgeStraightRoads(),
-        Tiles=Slice_tiles_Tile([tile]),
+    tile = tiletemplates.monastery_without_roads()
+    tile_set = TileSet.from_tiles(
+        [tile],
+        starting_tile=tiletemplates.single_city_edge_straight_roads(),
     )
 
-    engine = StartGameEngine(1, str(tmp_path))
-    game = engine.GenerateGame(tile_set)
+    with GameEngine(1, tmp_path) as engine:
+        game = engine.generate_game(tile_set)
 
-    request = GetLegalMovesRequest(BaseGameID=game.ID, TileToPlace=tile)
-    resp, = engine.SendGetLegalMovesBatch(
-        Slice_Ptr_engine_GetLegalMovesRequest([request])
-    )
-    resp.Err()  # the binding would raise if this returned an error
-    engine.Close()
+        request = GetLegalMovesRequest(base_game_id=game.id, tile_to_place=tile)
+        resp, = engine.send_get_legal_moves_batch([request])
+        assert resp.exception is None
 
     # Monastery with no roads is symmetrical both horizontally and vertically
-    assert len(resp.Moves) == 1
-    assert resp.Moves[0].Move.Position.X() == 0
-    assert resp.Moves[0].Move.Position.Y() == -1
-    for a, b in zip(tile.Features, resp.Moves[0].Move.Features, strict=True):
-        assert a.Equals(b)
+    assert len(resp.moves) == 1
+    assert resp.moves[0].move.position.x == 0
+    assert resp.moves[0].move.position.y == -1
+    assert tile.exact_equals(resp.moves[0].move.to_tile())
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
     tmp_path: Path
 ) -> None:
-    tile = tiletemplates.MonasteryWithSingleRoad()
-    tile_set = TileSet(
-        StartingTile=tiletemplates.SingleCityEdgeStraightRoads(),
-        Tiles=Slice_tiles_Tile([tile]),
+    tile = tiletemplates.monastery_with_single_road()
+    tile_set = TileSet.from_tiles(
+        [tile],
+        starting_tile=tiletemplates.single_city_edge_straight_roads(),
     )
 
-    engine = StartGameEngine(1, str(tmp_path))
-    game = engine.GenerateGame(tile_set)
+    with GameEngine(1, tmp_path) as engine:
+        game = engine.generate_game(tile_set)
 
-    request = GetLegalMovesRequest(BaseGameID=game.ID, TileToPlace=tile)
-    resp, = engine.SendGetLegalMovesBatch(
-        Slice_Ptr_engine_GetLegalMovesRequest([request])
-    )
-    resp.Err()  # the binding would raise if this returned an error
-    engine.Close()
+        request = GetLegalMovesRequest(base_game_id=game.id, tile_to_place=tile)
+        resp, = engine.send_get_legal_moves_batch([request])
+        assert resp.exception is None
 
     # Monastery with single road can only be placed at (0, -1)
     # but in 3 different rotations (only field connected with road is invalid)
-    assert len(resp.Moves) == 3
-    for move_state in resp.Moves:
-        assert move_state.Move.Position.X() == 0
-        assert move_state.Move.Position.Y() == -1
+    assert len(resp.moves) == 3
+    for move_state in resp.moves:
+        assert move_state.move.position.x == 0
+        assert move_state.move.position.y == -1
 
     # starting tile has a field at the bottom so expected values are:
     expected = [
         # road at the bottom
         tile,
         # road on the left
-        tile.Rotate(1),
+        models.Tile(tile._go_obj.Rotate(1)),
         # road on the right
-        tile.Rotate(3),
+        models.Tile(tile._go_obj.Rotate(3)),
     ]
-    for idx, move_state in enumerate(resp.Moves):
-        assert len(move_state.Move.Features) == len(tile.Features)
-        for a, b in zip(expected[idx].Features, move_state.Move.Features, strict=True):
-            assert a.Equals(b)
+    for idx, move_state in enumerate(resp.moves):
+        assert expected[idx].exact_equals(move_state.move.to_tile())
