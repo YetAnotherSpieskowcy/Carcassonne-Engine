@@ -82,20 +82,16 @@ func (state *GameState) with(
 	}
 }
 
-// represents a legal move with partial information about probability
-// (just the numerator of a fraction)
-type MoveNumerator struct {
-	Tile      tiles.Tile
-	Numerator uint16
+// represents a tile and its probability to be drawn from the deck
+type TileProbability struct {
+	Tile        tiles.Tile
+	Probability float32
 }
 
-// legal moves have probabilities represented as fraction
-// where the denominator is common between moves and numerator
-// depends on the move
+// tiles have probabilities represented as a 32-bit float
 type GetRemainingTilesResponse struct {
 	BaseResponse
-	MoveNumerators []MoveNumerator
-	Denominator    uint16
+	TileProbabilities []TileProbability
 }
 type GetRemainingTilesRequest struct {
 	BaseGameID   int
@@ -115,16 +111,16 @@ func (req *GetRemainingTilesRequest) execute(baseGame *game.Game) Response {
 	}
 
 	remaining := game.GetRemainingTiles()
-	total := len(remaining)
-	numerators := []MoveNumerator{}
+	total := float32(len(remaining))
+	probabilities := []TileProbability{}
 	for _, tile := range remaining {
-		n := len(numerators)
+		n := len(probabilities)
 		i := sort.Search(n, func(i int) bool {
-			if len(numerators[i].Tile.Features) != len(tile.Features) {
-				return len(numerators[i].Tile.Features) > len(tile.Features)
+			if len(probabilities[i].Tile.Features) != len(tile.Features) {
+				return len(probabilities[i].Tile.Features) > len(tile.Features)
 			}
 			for j := range tile.Features {
-				a := numerators[i].Tile.Features[j]
+				a := probabilities[i].Tile.Features[j]
 				b := tile.Features[j]
 				if a.FeatureType != b.FeatureType {
 					return a.FeatureType > b.FeatureType
@@ -139,14 +135,19 @@ func (req *GetRemainingTilesRequest) execute(baseGame *game.Game) Response {
 			return true
 		})
 		if i == n {
-			numerators = append(numerators, MoveNumerator{Tile: tile, Numerator: 1})
+			probabilities = append(
+				probabilities,
+				TileProbability{Tile: tile, Probability: 1.0},
+			)
 		} else {
-			numerators[i].Numerator++
+			probabilities[i].Probability++
 		}
 	}
+	for i := range probabilities {
+		probabilities[i].Probability /= total
+	}
 
-	resp.MoveNumerators = numerators
-	resp.Denominator = uint16(total)
+	resp.TileProbabilities = probabilities
 
 	return resp
 }

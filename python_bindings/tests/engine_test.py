@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pytest import approx
 
 from carcassonne_engine import (
     GetRemainingTilesRequest,
@@ -114,14 +115,15 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
     resp.Err()  # the binding would raise if this returned an error
     engine.Shutdown()
 
-    assert resp.Denominator == len(tiles)
-    for move_num in resp.MoveNumerators:
+    for tile_prob in resp.TileProbabilities:
         for tile in tiles:
-            if move_num.Tile.Equals(tile):
-                assert move_num.Numerator == tiles.count(tile)
+            if tile_prob.Tile.Equals(tile):
+                assert tile_prob.Probability == approx(tiles.count(tile) / len(tiles))
                 break
         else:
-            assert False, f"could not find a tile matching the move numerator {move_num}"
+            assert False, (
+                f"could not find a tile matching the move probability {tile_prob}"
+            )
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(

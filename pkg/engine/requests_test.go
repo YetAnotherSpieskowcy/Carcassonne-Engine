@@ -110,7 +110,8 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsRemainingTiles(t *testing.T)
 	t1 := tiletemplates.MonasteryWithSingleRoad()
 	t2 := tiletemplates.RoadsTurn()
 	allTiles := []tiles.Tile{t1, t2, t1}
-	expectedCounts := map[uint16]tiles.Tile{2: t1, 1: t2}
+	total := float32(len(allTiles))
+	expectedCounts := map[float32]tiles.Tile{2.0 / total: t1, 1.0 / total: t2}
 	tileSet := tilesets.TileSet{
 		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
 		Tiles:        allTiles,
@@ -132,18 +133,15 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsRemainingTiles(t *testing.T)
 		t.Fatal(resp.Err().Error())
 	}
 
-	if int(resp.Denominator) != len(allTiles) {
-		t.Fatalf("expected %v denominator, got %v instead", len(allTiles), resp.Denominator)
-	}
-	for _, moveNumerator := range resp.MoveNumerators {
+	for _, tileProbability := range resp.TileProbabilities {
 		found := false
 		for expected, tile := range expectedCounts {
-			if moveNumerator.Tile.Equals(tile) {
-				if moveNumerator.Numerator != expected {
+			if tileProbability.Tile.Equals(tile) {
+				if tileProbability.Probability != expected {
 					t.Fatalf(
-						"expected %v numerator, got %v instead",
+						"expected %v probability, got %v instead",
 						expected,
-						moveNumerator.Numerator,
+						tileProbability.Probability,
 					)
 				}
 				found = true
@@ -151,7 +149,7 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsRemainingTiles(t *testing.T)
 			}
 		}
 		if !found {
-			t.Fatalf("could not find a tile matching the move numerator %#v", moveNumerator)
+			t.Fatalf("could not find a tile matching the tile probability %#v", tileProbability)
 		}
 	}
 
