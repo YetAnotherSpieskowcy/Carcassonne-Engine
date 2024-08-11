@@ -318,30 +318,44 @@ param roadSide: always indicates only one cardinal direction!
 returns: road_finished, score, [meeples on road], loop, sideFinishedOn
 sideFinishedOn matters only if loop is True. Variable used to prevent checking the same road twice in ScoreRoads function
 */
-func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.MeepleWithPosition, bool, side.Side) {
+func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.PlacedTile) (bool, int, []elements.MeepleWithPosition, bool, side.Side, position.Position) {
 	var meeples = []elements.MeepleWithPosition{}
 	var tile = startTile
 	var tileExists bool
 	var score = 0
 	var road *elements.PlacedFeature
 	var finished bool
+	var position = startTile.Position
+	startRoadSide := roadSide
 	// check finished on way
 	// do while loop
 	for {
-		tile, tileExists = board.GetTileAt(tile.Position.Add(positionMod.FromSide(roadSide)))
+		position = tile.Position.Add(positionMod.FromSide(roadSide))
+		tile, tileExists = board.GetTileAt(position)
 		roadSide = roadSide.Mirror()
-		// check if tile exists or loop
-		if !tileExists || tile.Position == startTile.Position {
+		// check if tile exists
+		if !tileExists {
 			// tile does not exist
-			// or loop found
+			break
+		}
+
+		// Get road feature
+		road = tile.GetPlacedFeatureAtSide(roadSide, feature.Road)
+
+		// check if loop
+		if tile.Position == startTile.Position {
+			// before finishing check for meeple on potentialy other side of crossroad
+			if !road.Sides.HasSide(startRoadSide) && road.Meeple.Type != elements.NoneMeeple {
+				meeples = append(meeples, elements.NewMeepleWithPosition(
+					road.Meeple,
+					tile.Position),
+				)
+			}
 			// so finish
 			break
 		}
 
 		score++
-
-		// Get road feature
-		road = tile.GetPlacedFeatureAtSide(roadSide, feature.Road)
 
 		// check if there is meeple on the feature
 		if road.Meeple.Type != elements.NoneMeeple {
@@ -363,7 +377,7 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 	looped := (tile.Position == startTile.Position)
 	finished = tileExists && (road.Sides.GetCardinalDirectionsLength() == 1 || looped)
 
-	return finished, score, meeples, looped, roadSide
+	return finished, score, meeples, looped, roadSide, position
 }
 
 /*
@@ -401,17 +415,22 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 	}
 
 	// check road in "left" direction
-	roadFinishedResult, scoreResult, meeplesResult, loopResult, loopSide = board.CheckRoadInDirection(leftSide, tile)
+	roadFinishedResult, scoreResult, meeplesResult, loopResult, loopSide, finishedPosLeft := board.CheckRoadInDirection(leftSide, tile)
 	score += scoreResult
 	roadFinished = roadFinished && roadFinishedResult
 	meeples = append(meeples, meeplesResult...)
 
 	// check road in "right" direction
 	if !loopResult && rightSide != side.NoSide {
-		roadFinishedResult, scoreResult, meeplesResult, _, _ = board.CheckRoadInDirection(rightSide, tile)
+		roadFinishedResult, scoreResult, meeplesResult, _, _, finishedPosRight := board.CheckRoadInDirection(rightSide, tile)
 		score += scoreResult
 		roadFinished = roadFinished && roadFinishedResult
 		meeples = append(meeples, meeplesResult...)
+
+		// check if loop is on different tile
+		if finishedPosLeft == finishedPosRight {
+			score--
+		}
 	}
 
 	// -------- start counting -------------
