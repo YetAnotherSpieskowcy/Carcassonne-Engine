@@ -1,7 +1,10 @@
 package engine
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
@@ -33,6 +36,76 @@ func TestGameEngineDoubleCloseDoesNotPanic(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	engine.Close()
+	engine.Close()
+}
+
+func TestGameEngineSubCloneGameReturnsGamesMarkedAsChildren(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	buf := bytes.Buffer{}
+	engine.appLogger.SetOutput(&buf)
+
+	g, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	_, err = engine.SubCloneGame(g.ID, 15)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	req := &PlayTurnRequest{GameID: g.ID, Move: g.Game.ValidTilePlacements[0]}
+	engine.SendPlayTurnBatch([]*PlayTurnRequest{req})
+
+	logs := buf.String()
+	expected := fmt.Sprintf(childrenCleanupWarnMsg, g.ID)
+	if !strings.Contains(logs, expected) {
+		t.Fatalf(
+			"expected logs to contain %#v but they did not. full logs below:\n%v",
+			expected,
+			logs,
+		)
+	}
+
+	engine.Close()
+}
+
+func TestGameEngineSendPlayTurnBatchDoesNotWarnAboutRemovedChildren(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	buf := bytes.Buffer{}
+	engine.appLogger.SetOutput(&buf)
+
+	g, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ids, err := engine.SubCloneGame(g.ID, 15)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	engine.DeleteGames(ids)
+
+	req := &PlayTurnRequest{GameID: g.ID, Move: g.Game.ValidTilePlacements[0]}
+	engine.SendPlayTurnBatch([]*PlayTurnRequest{req})
+
+	logs := buf.String()
+	if len(logs) > 0 {
+		t.Fatalf(
+			"expected logs to be empty but they weren't. full logs below:\n%v",
+			logs,
+		)
+	}
+
 	engine.Close()
 }
 
