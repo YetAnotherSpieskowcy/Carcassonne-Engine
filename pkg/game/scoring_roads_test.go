@@ -109,7 +109,7 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 		test.GetTestCustomPlacedTile(tiletemplates.TCrossRoad().Rotate(2)),
 	}
 
-	// add meeple to first road
+	// add meeple to last road
 	tiles[3].GetPlacedFeatureAtSide(side.Top, feature.Road).Meeple.PlayerID = 1
 	tiles[3].GetPlacedFeatureAtSide(side.Top, feature.Road).Meeple.Type = elements.NormalMeeple
 
