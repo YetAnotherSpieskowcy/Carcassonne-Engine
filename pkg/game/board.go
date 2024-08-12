@@ -356,7 +356,9 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 					tile.Position),
 				)
 			}
-			// so finish
+			// We're back at the start tile which means we reached a loop or a crossroad.
+			// Nothing more to do - the score for the start tile is counted by the caller
+			// and the meeples have been counted appropriately by us and the caller already.
 			break
 		}
 
