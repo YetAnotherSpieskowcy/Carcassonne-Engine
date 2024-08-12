@@ -434,7 +434,13 @@ func (board *board) ScoreRoadCompletion(tile elements.PlacedTile, road feature.F
 		roadFinished = roadFinished && roadFinishedResult
 		meeples = append(meeples, meeplesResult...)
 
-		// check if loop is on different tile
+		// Decrement the score to prevent counting the tile twice
+		// when its road features (two different ones) are both the start
+		// and the end of the road (as is the case for crossroads).
+		//
+		// Note that this is a different scenario than a literal loop (i.e. an actual circle
+		// with no end or beginning) where we don't fall into this `if` branch at all
+		// due to `loopResult` being `true`.
 		if finishedPosLeft == finishedPosRight {
 			score--
 		}
