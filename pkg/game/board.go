@@ -344,7 +344,12 @@ func (board *board) CheckRoadInDirection(roadSide side.Side, startTile elements.
 
 		// check if loop
 		if tile.Position == startTile.Position {
-			// before finishing check for meeple on potentialy other side of crossroad
+			// While the meeples on a start tile are already counted by the caller (ScoreRoadCompletion),
+			// it only checks sides that together create that single feature on the tile.
+			// If the start tile has two distinct (unconnected) roads, as is the case for crossroads,
+			// a finished road may end up connecting them resulting in some sides being unchecked.
+			// Therefore, we need to add any meeple present on the other side of the road,
+			// if it is not part of the feature we started in.
 			if !road.Sides.HasSide(startRoadSide) && road.Meeple.Type != elements.NoneMeeple {
 				meeples = append(meeples, elements.NewMeepleWithPosition(
 					road.Meeple,
