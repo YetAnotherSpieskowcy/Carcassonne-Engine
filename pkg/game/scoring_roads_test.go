@@ -51,7 +51,23 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	tiles[4].Position = position.New(1, 0)
 
 	expectedScores := []uint32{0, 0, 0, 0, 6}
-	expectedMeeples := [][]uint8{nil, nil, nil, nil, {0, 1}}
+	expectedMeeples := [][][]elements.MeepleWithPosition{
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{[]elements.MeepleWithPosition(nil), []elements.MeepleWithPosition(nil)},
+		{
+			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+				position.New(0, -1),
+			)},
+
+			[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
+				position.New(-1, 0),
+			)},
+		},
+	}
 
 	// --------------- Placing tile ----------------------
 
@@ -60,14 +76,14 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
-		report = board.ScoreRoads(tiles[i])
+		report = board.ScoreRoads(tiles[i], false)
 		for _, playerID := range []elements.ID{1, 2} {
 			if report.ReceivedPoints[playerID] != expectedScores[i] {
 				t.Fatalf("placing tile number: %#v failed. expected %+v for player %v, got %+v instead", i, expectedScores[i], playerID, report.ReceivedPoints[playerID])
 			}
 
-			if !reflect.DeepEqual(report.ReturnedMeeples[playerID], expectedMeeples[i]) {
-				t.Fatalf("placing tile number: %#v failed. expected %+v meeples for player %v, got %+v instead", i, expectedMeeples[i], playerID, report.ReturnedMeeples[playerID])
+			if !reflect.DeepEqual(report.ReturnedMeeples[playerID], expectedMeeples[i][playerID-1]) {
+				t.Fatalf("placing tile number: %#v failed. expected %+v meeples for player %v, got %+v instead", i, expectedMeeples[i][playerID-1], playerID, report.ReturnedMeeples[playerID])
 			}
 		}
 	}
@@ -82,7 +98,6 @@ Roads:
   - 4 -	3
 */
 func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
-	var report elements.ScoreReport
 	var boardInterface interface{} = NewBoard(tilesets.StandardTileSet())
 	board := boardInterface.(*board)
 
@@ -94,9 +109,9 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 		test.GetTestCustomPlacedTile(tiletemplates.TCrossRoad().Rotate(2)),
 	}
 
-	// add meeple to first road
-	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.PlayerID = 1
-	tiles[0].GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple.Type = elements.NormalMeeple
+	// add meeple to last road
+	tiles[3].GetPlacedFeatureAtSide(side.Top, feature.Road).Meeple.PlayerID = 1
+	tiles[3].GetPlacedFeatureAtSide(side.Top, feature.Road).Meeple.Type = elements.NormalMeeple
 
 	// set positions
 	tiles[0].Position = position.New(0, -1)
@@ -105,24 +120,30 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 	tiles[3].Position = position.New(0, -2)
 
 	expectedScores := []uint32{0, 0, 0, 4}
-	expectedMeeples := [][]uint8{nil, nil, nil, {0, 1}}
+	expectedMeeples := [][]elements.MeepleWithPosition{
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+			position.New(0, -2),
+		)}}
 
 	// --------------- Placing tile ----------------------
 
 	for i := range 4 {
 		println(i, ":")
-		_, err := board.PlaceTile(tiles[i])
+		report, err := board.PlaceTile(tiles[i])
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
-		report = board.ScoreRoads(tiles[i])
 
 		if report.ReceivedPoints[1] != expectedScores[i] {
 			t.Fatalf("placing tile number: %#v failed. expected %+v for player %v, got %+v instead", i, expectedScores[i], 1, report.ReceivedPoints[1])
 		}
 
 		if !reflect.DeepEqual(report.ReturnedMeeples[1], expectedMeeples[i]) {
-			t.Fatalf("placing tile number: %#v failed. expected %+v meeples for player %v, got %+v instead", i, expectedMeeples[i], 1, report.ReturnedMeeples[1])
+			t.Fatalf("placing tile number: %#v failed. expected %#v meeples for player %v, got %#v instead", i, expectedMeeples[i], 1, report.ReturnedMeeples[1])
 		}
 
 	}
@@ -153,7 +174,12 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	tiles[1].Position = position.New(1, 0)
 
 	expectedScores := []uint32{0, 3}
-	expectedMeeples := [][]uint8{nil, {0, 1}} // expected zero Nones, and 1 normal meeple
+	expectedMeeples := [][]elements.MeepleWithPosition{
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition{elements.NewMeepleWithPosition(
+			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+			position.New(-1, 0),
+		)}}
 
 	// --------------- Placing tile ----------------------
 
@@ -165,7 +191,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		report = board.ScoreRoads(tiles[i])
+		report = board.ScoreRoads(tiles[i], false)
 		if report.ReceivedPoints[1] != expectedScores[i] {
 			t.Fatalf("placing tile number: %#v failed. expected %+v, got %+v instead", i, expectedScores[i], report.ReceivedPoints[1])
 		}
@@ -208,7 +234,19 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 	tiles[3].Position = position.New(-1, 0)
 
 	expectedScores := []uint32{0, 0, 0, 5}
-	expectedMeeples := [][]uint8{nil, nil, nil, {0, 2}}
+	// expectedMeeples := [][]uint8{nil, nil, nil, {0, 2}}
+	expectedMeeples := [][]elements.MeepleWithPosition{
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition(nil),
+		[]elements.MeepleWithPosition{
+			elements.NewMeepleWithPosition(
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+				position.New(1, 0)),
+			elements.NewMeepleWithPosition(
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+				position.New(0, -1)),
+		}}
 
 	// --------------- Placing tile ----------------------
 	for i := range len(tiles) {
@@ -218,7 +256,7 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		report = board.ScoreRoads(tiles[i])
+		report = board.ScoreRoads(tiles[i], false)
 		if report.ReceivedPoints[1] != expectedScores[i] {
 			t.Fatalf("placing tile number: %#v failed. expected %+v, got %+v instead", i, expectedScores[i], report.ReceivedPoints[1])
 		}

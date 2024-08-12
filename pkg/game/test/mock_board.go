@@ -55,3 +55,11 @@ func (board *BoardMock) PlaceTile(
 	}
 	return board.PlaceTileFunc(tile)
 }
+
+func (board *BoardMock) RemoveMeeple(pos position.Position) {
+	_ = pos
+}
+
+func (board *BoardMock) ScoreFinalMeeples() elements.ScoreReport {
+	return elements.NewScoreReport()
+}
