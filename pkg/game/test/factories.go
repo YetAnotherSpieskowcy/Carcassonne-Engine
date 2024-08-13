@@ -23,7 +23,7 @@ func GetTestScoreReport() elements.ScoreReport {
 	}
 }
 
-func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile {
+func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile { // todo do we need this function? There is already elements.ToPlacedTile
 	var placedFeatures []elements.PlacedFeature
 
 	// convert features to placedFeature
