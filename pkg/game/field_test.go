@@ -7,7 +7,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -35,14 +34,14 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)),
-		test.GetTestCustomPlacedTile(tiletemplates.XCrossRoad()),
-		test.GetTestCustomPlacedTile(tiletemplates.StraightRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.StraightRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn()),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(2)),
-		test.GetTestCustomPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)),
+		elements.ToPlacedTile(tiletemplates.XCrossRoad()),
+		elements.ToPlacedTile(tiletemplates.StraightRoads()),
+		elements.ToPlacedTile(tiletemplates.StraightRoads()),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn()),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
 	}
 
 	// add meeple to the field
@@ -127,17 +126,17 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)),
-		test.GetTestCustomPlacedTile(tiletemplates.XCrossRoad()),
-		test.GetTestCustomPlacedTile(tiletemplates.StraightRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.StraightRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn()),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(2)),
-		test.GetTestCustomPlacedTile(tiletemplates.TwoCityEdgesCornerNotConnected()),
-		test.GetTestCustomPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
-		test.GetTestCustomPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
-		test.GetTestCustomPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3)),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)),
+		elements.ToPlacedTile(tiletemplates.XCrossRoad()),
+		elements.ToPlacedTile(tiletemplates.StraightRoads()),
+		elements.ToPlacedTile(tiletemplates.StraightRoads()),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn()),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerNotConnected()),
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3)),
 	}
 
 	// add meeple to the fields

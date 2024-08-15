@@ -22,22 +22,3 @@ func GetTestScoreReport() elements.ScoreReport {
 		ReturnedMeeples: map[elements.ID][]elements.MeepleWithPosition{},
 	}
 }
-
-func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile { // todo do we need this function? There is already elements.ToPlacedTile
-	var placedFeatures []elements.PlacedFeature
-
-	// convert features to placedFeature
-	for _, feature := range tileTemplate.Features {
-		placedFeatures = append(placedFeatures, elements.PlacedFeature{
-			Feature: feature,
-			Meeple: elements.Meeple{
-				Type:     elements.NoneMeeple,
-				PlayerID: elements.NonePlayer},
-		})
-	}
-
-	return elements.PlacedTile{
-		Features: placedFeatures,
-		Position: position.New(0, 0),
-	}
-}
