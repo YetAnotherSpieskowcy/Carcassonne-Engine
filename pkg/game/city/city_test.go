@@ -153,9 +153,9 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield())
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
-	for _, tmp := range aFeatures {
-		tmp.PlayerID = expectedPlayerID
-		tmp.Meeple.Type = expectedMeepleType
+	for i, _ := range aFeatures {
+		aFeatures[i].PlayerID = expectedPlayerID
+		aFeatures[i].Meeple.Type = expectedMeepleType
 	}
 	city := NewCity(position.New(1, 1), aFeatures)
 
@@ -183,9 +183,9 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	aFeatures := a.GetFeaturesOfType(feature.City)
-	for _, tmp := range a.Features {
-		tmp.PlayerID = expectedPlayerID
-		tmp.Meeple.Type = expectedMeepleType
+	for i, _ := range a.Features {
+		aFeatures[i].PlayerID = expectedPlayerID
+		aFeatures[i].Meeple.Type = expectedMeepleType
 	}
 	city := NewCity(position.New(1, 1), aFeatures)
 
