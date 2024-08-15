@@ -487,7 +487,6 @@ func TwoCityEdgesCornerConnected() tiles.Tile {
 /*
 returns tiles.Tile having city edges on top and right. Connected and shield
 */
-
 func TwoCityEdgesCornerConnectedShield() tiles.Tile {
 	return tiles.Tile{
 		Features: []feature.Feature{

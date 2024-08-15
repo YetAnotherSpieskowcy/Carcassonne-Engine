@@ -37,10 +37,7 @@ func GetTestCustomPlacedTile(tileTemplate tiles.Tile) elements.PlacedTile { // t
 	}
 
 	return elements.PlacedTile{
-		TileWithMeeple: elements.TileWithMeeple{
-			Features:  placedFeatures,
-			HasShield: false,
-		},
+		Features: placedFeatures,
 		Position: position.New(0, 0),
 	}
 }
