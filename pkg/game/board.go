@@ -192,15 +192,12 @@ func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
 }
 
 func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
-	if true {
+	if !tile.HasMeeple() {
 		return true
 	}
 
-	// TODO: figure out how to implement this properly
-	// - there can be multiple field features that could expand into one
-	//   but there doesn't seem to be a good way to detect this
 	for _, feat := range tile.Features {
-		if feat.FeatureType != feature.Field {
+		if feat.FeatureType != feature.Field || feat.Meeple.Type == elements.NoneMeeple {
 			continue
 		}
 		field := field.New(feat, tile.Position)
@@ -209,7 +206,12 @@ func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
 		// score report function checks the whole field for placed meeples
 		// and reports any meeples that would be returned which we can use here
 		scoreReport := field.GetScoreReport()
-		if len(scoreReport.ReturnedMeeples) != 0 {
+
+		fieldMeepleCount := 0
+		for _, returnedMeeples := range scoreReport.ReturnedMeeples {
+			fieldMeepleCount += len(returnedMeeples)
+		}
+		if fieldMeepleCount > 1 { // one meeple is okay, as it can be the one we just placed
 			return false
 		}
 	}
