@@ -23,10 +23,10 @@ def test_game_engine_send_batch_receives_correct_responses_after_worker_requests
     games = [engine.generate_game(tile_set) for _ in range(request_count)]
     requests = [
         PlayTurnRequest(
-            game_id=game.id,
-            move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+            game_id=generated_game.id,
+            move=models.PlacedTile(generated_game.game._go_obj.ValidTilePlacements[0]),
         )
-        for game in games
+        for generated_game in games
     ]
 
     responses = engine.send_play_turn_batch(requests)
@@ -44,24 +44,24 @@ def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
     engine = GameEngine(4, tmp_path)
     requests = []
 
-    game = engine.generate_game(standard_tile_set())
+    game_id, game = engine.generate_game(standard_tile_set())
 
     successful_req = PlayTurnRequest(
-        game_id=game.id,
-        move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+        game_id=game_id,
+        move=models.PlacedTile(game._go_obj.ValidTilePlacements[0]),
     )
     requests.append(successful_req)
 
-    wrong_id = game.id + 2
+    wrong_id = game_id + 2
     failed_req = PlayTurnRequest(
         game_id=wrong_id,
-        move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+        move=models.PlacedTile(game._go_obj.ValidTilePlacements[0]),
     )
     requests.append(failed_req)
 
     responses = engine.send_play_turn_batch(requests)
     assert responses[0].exception is None
-    expected = game.id
+    expected = game_id
     actual = responses[0].game_id
     assert expected == actual
 
@@ -83,10 +83,10 @@ def test_game_engine_send_batch_raises_when_communicator_closed(
     games = [engine.generate_game(tile_set) for _ in range(request_count)]
     requests = [
         PlayTurnRequest(
-            game_id=game.id,
-            move=models.PlacedTile(game._go_obj.Game.ValidTilePlacements[0]),
+            game_id=generated_game.id,
+            move=models.PlacedTile(generated_game.game._go_obj.ValidTilePlacements[0]),
         )
-        for game in games
+        for generated_game in games
     ]
     engine.close()
 
@@ -106,9 +106,9 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
     )
 
     with GameEngine(1, tmp_path) as engine:
-        game = engine.generate_game(tile_set)
+        game_id, game = engine.generate_game(tile_set)
 
-        request = GetRemainingTilesRequest(base_game_id=game.id)
+        request = GetRemainingTilesRequest(base_game_id=game_id)
         (resp,) = engine.send_get_remaining_tiles_batch([request])
         assert resp.exception is None
 
@@ -133,9 +133,9 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
     )
 
     with GameEngine(1, tmp_path) as engine:
-        game = engine.generate_game(tile_set)
+        game_id, game = engine.generate_game(tile_set)
 
-        request = GetLegalMovesRequest(base_game_id=game.id, tile_to_place=tile)
+        request = GetLegalMovesRequest(base_game_id=game_id, tile_to_place=tile)
         (resp,) = engine.send_get_legal_moves_batch([request])
         assert resp.exception is None
 
@@ -156,9 +156,9 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
     )
 
     with GameEngine(1, tmp_path) as engine:
-        game = engine.generate_game(tile_set)
+        game_id, game = engine.generate_game(tile_set)
 
-        request = GetLegalMovesRequest(base_game_id=game.id, tile_to_place=tile)
+        request = GetLegalMovesRequest(base_game_id=game_id, tile_to_place=tile)
         (resp,) = engine.send_get_legal_moves_batch([request])
         assert resp.exception is None
 

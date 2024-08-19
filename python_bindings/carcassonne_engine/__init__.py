@@ -5,7 +5,7 @@ from typing import Self
 
 from . import requests
 from ._bindings import engine as _go_engine
-from .models import SerializedGame
+from .models import SerializedGame, SerializedGameWithID
 from .tilesets import TileSet
 
 __all__ = ("GameEngine",)
@@ -55,7 +55,7 @@ class GameEngine:
     ) -> None:
         self.close()
 
-    def generate_game(self, tileset: TileSet) -> SerializedGame:
+    def generate_game(self, tileset: TileSet) -> SerializedGameWithID:
         self._check_closed()
         try:
             go_obj = self._go_game_engine.GenerateGame(tileset._unwrap())
@@ -66,7 +66,7 @@ class GameEngine:
             # to a tighter API contract.
             # TODO: map exceptions once we migrate from gopy to manually-written bindings
             raise Exception(str(exc)) from None
-        return SerializedGame(go_obj)
+        return SerializedGameWithID(go_obj.ID, SerializedGame(go_obj.Game))
 
     def clone_game(self, game_id: int, count: int) -> list[int]:
         self._check_closed()

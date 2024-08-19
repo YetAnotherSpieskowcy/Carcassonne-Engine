@@ -1,6 +1,9 @@
+from typing import NamedTuple
+
 from ._bindings import (
     elements as _go_elements,
     engine as _go_engine,
+    game as _go_game,
     position as _go_position,
     tiles as _go_tiles,
 )
@@ -25,26 +28,6 @@ class GameState:
 
     def _unwrap(self) -> _go_engine.GameState:
         return self._go_obj
-
-
-class SerializedGame:
-    """
-    A serialized game consisting of its ID and serialized state.
-
-    This class is not meant to be instantiated by users directly
-    and should be considered read-only.
-
-    The instances of this class are provided by the `GameEngine` objects.
-    """
-
-    __slots__ = ("_go_obj",)
-
-    def __init__(self, go_obj: _go_engine.SerializedGameWithID) -> None:
-        self._go_obj = go_obj
-
-    @property
-    def id(self) -> int:
-        return self._go_obj.ID
 
 
 class Tile:
@@ -79,6 +62,36 @@ class Tile:
         if not isinstance(other, self.__class__):
             return NotImplemented
         return self._go_obj.ExactEquals(other._go_obj)
+
+
+class SerializedGame:
+    """
+    A serialized state of a game.
+
+    This class is not meant to be instantiated by users directly
+    and should be considered read-only.
+
+    The instances of this class are provided by the `GameEngine` objects.
+    """
+
+    __slots__ = ("_go_obj",)
+
+    def __init__(self, go_obj: _go_game.SerializedGame) -> None:
+        self._go_obj = go_obj
+
+
+class SerializedGameWithID(NamedTuple):
+    """
+    A serialized game consisting of its ID and serialized state.
+
+    This class is not meant to be instantiated by users directly
+    and should be considered read-only.
+
+    The instances of this class are provided by the `GameEngine` objects.
+    """
+
+    id: int
+    game: SerializedGame
 
 
 class Position:
