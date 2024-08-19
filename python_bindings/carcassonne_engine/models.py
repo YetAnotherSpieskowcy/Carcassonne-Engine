@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Self
 
 from ._bindings import (
     elements as _go_elements,
@@ -100,25 +100,15 @@ class SerializedGameWithID(NamedTuple):
     game: SerializedGame
 
 
-class Position:
-    """
-    Position of a tile on the board.
-    """
+class Position(NamedTuple):
+    """Position of a tile on the board."""
 
-    __slots__ = ("_go_obj", "_x", "_y")
+    x: int
+    y: int
 
-    def __init__(self, go_obj: _go_position.Position) -> None:
-        self._go_obj = go_obj
-        self._x = go_obj.X()
-        self._y = go_obj.Y()
-
-    @property
-    def x(self) -> int:
-        return self._x
-
-    @property
-    def y(self) -> int:
-        return self._y
+    @classmethod
+    def _from_go_obj(cls, go_obj: _go_position.Position) -> Self:
+        return cls(go_obj.X(), go_obj.Y())
 
 
 class PlacedTile:
@@ -135,7 +125,7 @@ class PlacedTile:
 
     def __init__(self, go_obj: _go_elements.PlacedTile) -> None:
         self._go_obj = go_obj
-        self._position = Position(go_obj.Position)
+        self._position = Position._from_go_obj(go_obj.Position)
 
     def _unwrap(self) -> _go_elements.PlacedTile:
         return self._go_obj
