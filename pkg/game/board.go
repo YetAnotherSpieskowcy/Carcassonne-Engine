@@ -181,6 +181,8 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 	return board.TileHasValidPlacement(elements.ToTile(tile)) &&
+		// TODO: since `tile` can be user input, we need to check
+		// that legal number of meeples (i.e. just one) has been placed
 		board.cityCanBePlaced(tile) &&
 		board.fieldCanBePlaced(tile) &&
 		board.monasteryCanBePlaced(tile) &&
