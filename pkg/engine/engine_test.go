@@ -94,6 +94,45 @@ func TestFullGame(t *testing.T) {
 	}
 }
 
+func TestConcurrentReadRequests(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	tileSet := tilesets.StandardTileSet()
+
+	gameWithID, err := engine.GenerateGame(tileSet)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	game, gameID := gameWithID.Game, gameWithID.ID
+
+	legalMovesReq := &GetLegalMovesRequest{
+		BaseGameID: gameID, TileToPlace: *game.CurrentTile,
+	}
+	legalMovesResp := engine.SendGetLegalMovesBatch(
+		[]*GetLegalMovesRequest{legalMovesReq},
+	)[0]
+	if legalMovesResp.Err() != nil {
+		t.Fatal(legalMovesResp.Err().Error())
+	}
+
+	requests := make([]*GetRemainingTilesRequest, len(legalMovesResp.Moves))
+	for i, moveWithState := range legalMovesResp.Moves {
+		requests[i] = &GetRemainingTilesRequest{
+			BaseGameID: gameID, StateToCheck: moveWithState.State,
+		}
+	}
+	responses := engine.SendGetRemainingTilesBatch(requests)
+
+	for _, resp := range responses {
+		err := resp.Err()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func TestGameEngineDoubleCloseDoesNotPanic(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {

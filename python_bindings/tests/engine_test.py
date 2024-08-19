@@ -61,6 +61,31 @@ def test_full_game(tmp_path: Path) -> None:
     assert game.current_tile is None
 
 
+def test_concurrent_read_requests(tmp_path: Path) -> None:
+    engine = GameEngine(4, tmp_path)
+    tile_set = standard_tile_set()
+
+    game_id, game = engine.generate_game(tile_set)
+
+    legal_moves_req = GetLegalMovesRequest(
+        base_game_id=game_id, tile_to_place=game.current_tile
+    )
+    (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
+    assert legal_moves_resp.exception is None
+
+    requests = []
+    for move_with_state in legal_moves_resp.moves:
+        requests.append(
+            GetRemainingTilesRequest(
+                base_game_id=game_id, state_to_check=move_with_state.state
+            )
+        )
+    responses = engine.send_get_remaining_tiles_batch(requests)
+
+    for resp in responses:
+        assert resp.exception is None
+
+
 def test_game_engine_send_batch_receives_correct_responses_after_worker_requests(
     tmp_path: Path,
 ) -> None:
