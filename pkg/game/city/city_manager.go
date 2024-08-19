@@ -22,7 +22,11 @@ func NewCityManager() Manager {
 }
 
 func (manager Manager) DeepClone() Manager {
-	manager.cities = slices.Clone(manager.cities)
+	cities := make([]City, len(manager.cities))
+	for i, city := range manager.cities {
+		cities[i] = city.DeepClone()
+	}
+	manager.cities = cities
 	return manager
 }
 
