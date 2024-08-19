@@ -192,28 +192,32 @@ func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
 }
 
 func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
-	if !tile.HasMeeple() {
-		return true
-	}
-
+	// While placing a tile, the player can only put a single meeple on a field.
+	// This means we don't have to care about whether our field expands into
+	// a different feature on our tile - we will only expand the feature
+	// if it has a meeple and that only happens once.
 	for _, feat := range tile.Features {
 		if feat.FeatureType != feature.Field || feat.Meeple.Type == elements.NoneMeeple {
 			continue
 		}
+
+		// unset the Meeple in our copy of the feature
+		feat.Meeple = elements.Meeple{}
+
+		// TODO: potential problem: Field instance cannot expand to another feature
+		// on the tile checked by this method since it's not part of the board.
 		field := field.New(feat, tile.Position)
 		field.Expand(board, board.cityManager)
 
 		// score report function checks the whole field for placed meeples
 		// and reports any meeples that would be returned which we can use here
 		scoreReport := field.GetScoreReport()
-
-		fieldMeepleCount := 0
-		for _, returnedMeeples := range scoreReport.ReturnedMeeples {
-			fieldMeepleCount += len(returnedMeeples)
-		}
-		if fieldMeepleCount > 1 { // one meeple is okay, as it can be the one we just placed
+		if len(scoreReport.ReturnedMeeples) != 0 {
 			return false
 		}
+
+		// a single tile can only have one meeple on a field
+		break
 	}
 	return true
 }
