@@ -106,9 +106,7 @@ class GameEngine:
             req._unwrap() for req in concrete_requests
         )
         go_obj = self._go_game_engine.SendPlayTurnBatch(go_requests)
-        return [
-            requests.PlayTurnResponse(go_resp) for go_resp in go_obj
-        ]
+        return [requests.PlayTurnResponse(go_resp) for go_resp in go_obj]
 
     def send_get_remaining_tiles_batch(
         self, concrete_requests: list[requests.GetRemainingTilesRequest]
@@ -118,9 +116,7 @@ class GameEngine:
             req._unwrap() for req in concrete_requests
         )
         go_obj = self._go_game_engine.SendGetRemainingTilesBatch(go_requests)
-        return [
-            requests.GetRemainingTilesResponse(go_resp) for go_resp in go_obj
-        ]
+        return [requests.GetRemainingTilesResponse(go_resp) for go_resp in go_obj]
 
     def send_get_legal_moves_batch(
         self, concrete_requests: list[requests.GetLegalMovesRequest]
@@ -130,6 +126,4 @@ class GameEngine:
             req._unwrap() for req in concrete_requests
         )
         go_obj = self._go_game_engine.SendGetLegalMovesBatch(go_requests)
-        return [
-            requests.GetLegalMovesResponse(go_resp) for go_resp in go_obj
-        ]
+        return [requests.GetLegalMovesResponse(go_resp) for go_resp in go_obj]

@@ -43,9 +43,7 @@ class PlayTurnRequest:
     __slots__ = ("_go_obj", "_game_id", "_move")
 
     def __init__(self, *, game_id: int, move: PlacedTile) -> None:
-        self._go_obj = _go_engine.PlayTurnRequest(
-            GameID=game_id, Move=move._unwrap()
-        )
+        self._go_obj = _go_engine.PlayTurnRequest(GameID=game_id, Move=move._unwrap())
         self._game_id = game_id
         self._move = move
 
@@ -128,10 +126,14 @@ class GetRemainingTilesResponse(BaseResponse):
 
     def __init__(self, go_obj: _go_engine.GetRemainingTilesResponse) -> None:
         super().__init__(go_obj)
-        self.tile_probabilities = [
-            TileProbability(go_probability)
-            for go_probability in go_obj.TileProbabilities
-        ] if not self.exception else None
+        self.tile_probabilities = (
+            [
+                TileProbability(go_probability)
+                for go_probability in go_obj.TileProbabilities
+            ]
+            if not self.exception
+            else None
+        )
 
 
 class TileProbability:
@@ -212,9 +214,11 @@ class GetLegalMovesResponse(BaseResponse):
 
     def __init__(self, go_obj: _go_engine.GetLegalMovesResponse) -> None:
         super().__init__(go_obj)
-        self.moves = [
-            MoveWithState(go_move) for go_move in go_obj.Moves
-        ] if not self.exception else None
+        self.moves = (
+            [MoveWithState(go_move) for go_move in go_obj.Moves]
+            if not self.exception
+            else None
+        )
 
 
 class MoveWithState:

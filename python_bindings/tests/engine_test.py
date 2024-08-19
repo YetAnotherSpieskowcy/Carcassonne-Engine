@@ -14,7 +14,7 @@ from carcassonne_engine.tilesets import standard_tile_set, TileSet
 
 
 def test_game_engine_send_batch_receives_correct_responses_after_worker_requests(
-    tmp_path: Path
+    tmp_path: Path,
 ) -> None:
     engine = GameEngine(4, tmp_path)
     request_count = 100
@@ -39,7 +39,7 @@ def test_game_engine_send_batch_receives_correct_responses_after_worker_requests
 
 
 def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
-    tmp_path: Path
+    tmp_path: Path,
 ) -> None:
     engine = GameEngine(4, tmp_path)
     requests = []
@@ -74,7 +74,7 @@ def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
 
 
 def test_game_engine_send_batch_raises_when_communicator_closed(
-    tmp_path: Path
+    tmp_path: Path,
 ) -> None:
     engine = GameEngine(4, tmp_path)
     request_count = 5
@@ -95,7 +95,7 @@ def test_game_engine_send_batch_raises_when_communicator_closed(
 
 
 def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
-    tmp_path: Path
+    tmp_path: Path,
 ) -> None:
     t1 = tiletemplates.monastery_with_single_road()
     t2 = tiletemplates.roads_turn()
@@ -109,7 +109,7 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
         game = engine.generate_game(tile_set)
 
         request = GetRemainingTilesRequest(base_game_id=game.id)
-        resp, = engine.send_get_remaining_tiles_batch([request])
+        (resp,) = engine.send_get_remaining_tiles_batch([request])
         assert resp.exception is None
 
     for tile_prob in resp.tile_probabilities:
@@ -118,13 +118,13 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
                 assert tile_prob.probability == approx(tiles.count(tile) / len(tiles))
                 break
         else:
-            assert False, (
-                f"could not find a tile matching the move probability {tile_prob}"
-            )
+            assert (
+                False
+            ), f"could not find a tile matching the move probability {tile_prob}"
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
-    tmp_path: Path
+    tmp_path: Path,
 ) -> None:
     tile = tiletemplates.monastery_without_roads()
     tile_set = TileSet.from_tiles(
@@ -136,7 +136,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
         game = engine.generate_game(tile_set)
 
         request = GetLegalMovesRequest(base_game_id=game.id, tile_to_place=tile)
-        resp, = engine.send_get_legal_moves_batch([request])
+        (resp,) = engine.send_get_legal_moves_batch([request])
         assert resp.exception is None
 
     # Monastery with no roads is symmetrical both horizontally and vertically
@@ -147,7 +147,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
-    tmp_path: Path
+    tmp_path: Path,
 ) -> None:
     tile = tiletemplates.monastery_with_single_road()
     tile_set = TileSet.from_tiles(
@@ -159,7 +159,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
         game = engine.generate_game(tile_set)
 
         request = GetLegalMovesRequest(base_game_id=game.id, tile_to_place=tile)
-        resp, = engine.send_get_legal_moves_batch([request])
+        (resp,) = engine.send_get_legal_moves_batch([request])
         assert resp.exception is None
 
     # Monastery with single road can only be placed at (0, -1)
