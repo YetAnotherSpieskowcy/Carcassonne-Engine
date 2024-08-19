@@ -25,6 +25,9 @@ class TileSet:
     def __init__(self, go_obj: _go_tilesets.TileSet) -> None:
         self._go_obj = go_obj
 
+    def __len__(self) -> int:
+        return len(self._go_obj.Tiles) + 1
+
     @classmethod
     def from_tiles(cls, tiles: list[Tile], *, starting_tile: Tile) -> Self:
         go_obj = _go_tilesets.TileSet(
