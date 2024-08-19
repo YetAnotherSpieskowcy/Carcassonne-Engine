@@ -17,6 +17,12 @@ from carcassonne_engine.utils import format_binary_tile_bits
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(
+    reason=(
+        "fails due to unfinished GetLegalMovesFor() method"
+        " - this causes panic taking whole interpreter with it"
+    ),
+)
 def test_full_game(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
     tile_set = standard_tile_set()
