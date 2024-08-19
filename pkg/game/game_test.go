@@ -115,7 +115,7 @@ func TestDeepClone(t *testing.T) {
 func TestFullGame(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{
-		tiletemplates.SingleCityEdgeNoRoads(),
+		tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
 		tiletemplates.StraightRoads(),
 	}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
@@ -131,7 +131,7 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = position.New(0, -1)
+	ptile.Position = position.New(0, 1)
 	err = game.PlayTurn(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -140,7 +140,7 @@ func TestFullGame(t *testing.T) {
 	// incorrect move - try placing tile 0 when 1 should be placed
 	tile = tileSet.Tiles[0]
 	ptile = elements.ToPlacedTile(tile)
-	ptile.Position = position.New(0, 1)
+	ptile.Position = position.New(0, -1)
 	err = game.PlayTurn(ptile)
 	if err == nil {
 		t.Fatal("expected error to occur")
@@ -155,7 +155,7 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	ptile = elements.ToPlacedTile(tile)
-	ptile.Position = position.New(0, 1)
+	ptile.Position = position.New(0, -1)
 	err = game.PlayTurn(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
