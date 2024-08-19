@@ -20,12 +20,17 @@ type testResponse struct {
 	BaseResponse
 }
 type testRequest struct {
-	GameID      int
-	executeFunc func(req *testRequest, game *game.Game) Response
+	GameID        int
+	RequiresWrite bool
+	executeFunc   func(req *testRequest, game *game.Game) Response
 }
 
 func (req *testRequest) gameID() int {
 	return req.GameID
+}
+
+func (req *testRequest) requiresWrite() bool {
+	return req.RequiresWrite
 }
 
 func (req *testRequest) execute(game *game.Game) Response {

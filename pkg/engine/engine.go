@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	ErrCommunicatorClosed = errors.New("communicator is closed")
-	ErrGameNotFound       = errors.New("game with the given ID was not found")
+	ErrCommunicatorClosed  = errors.New("communicator is closed")
+	ErrGameNotFound        = errors.New("game with the given ID was not found")
+	ErrLockAlreadyAcquired = errors.New("lock for game with this ID is already acquired")
 )
 
 const (
@@ -72,6 +73,7 @@ type GameEngine struct {
 	comm          *communicator
 	logDir        string
 	games         map[int]*game.Game
+	gameMutexes   map[int]*sync.RWMutex
 	nextGameID    int
 	nextRequestID int
 	closed        bool
@@ -89,6 +91,7 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 		comm:          comm,
 		logDir:        logDir,
 		games:         map[int]*game.Game{},
+		gameMutexes:   map[int]*sync.RWMutex{},
 		nextGameID:    1,
 		nextRequestID: 1,
 		childGames:    map[int]map[int]struct{}{},
@@ -133,6 +136,7 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 	}
 
 	engine.games[id] = g
+	engine.gameMutexes[id] = &sync.RWMutex{}
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 
@@ -183,6 +187,7 @@ func (engine *GameEngine) DeleteGames(gameIDs []int) {
 			)
 		}
 		delete(engine.games, gameID)
+		delete(engine.gameMutexes, gameID)
 		delete(engine.childGames, gameID)
 		parentID := engine.parentGames[gameID]
 		if parentID != 0 {
@@ -211,6 +216,7 @@ func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, er
 	resp := responses[0].(*cloneGameResponse)
 	for i, game := range resp.Clones {
 		engine.games[reservedIDs[i]] = game
+		engine.gameMutexes[reservedIDs[i]] = &sync.RWMutex{}
 	}
 
 	return reservedIDs, nil
@@ -308,8 +314,8 @@ func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMov
 // to avoid concurrent writes by the workers on different threads.
 // You will receive `ErrGameNotFound` error, if you try doing so.
 func (engine *GameEngine) sendBatch(requests []Request) []Response {
-	outputReqIndexes := map[int]int{}
-	outputReqIndexesLock := sync.RWMutex{}
+	outputItems := map[int]outputItemInfo{}
+	outputItemsLock := sync.RWMutex{}
 
 	games := map[int]*game.Game{}
 	removableGames := map[int]struct{}{}
@@ -322,20 +328,26 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputWaitGroup.Add(1)
 	go func() {
 		for output := range outputBuffer {
-			outputReqIndexesLock.RLock()
-			i := outputReqIndexes[output.requestID]
-			outputReqIndexesLock.RUnlock()
-			responses[i] = output.resp
+			outputItemsLock.RLock()
+			outputInfo := outputItems[output.requestID]
+			outputItemsLock.RUnlock()
+			responses[outputInfo.RequestIndex] = output.resp
+
+			if outputInfo.AcquiredWrite {
+				engine.gameMutexes[outputInfo.GameID].Unlock()
+			} else {
+				engine.gameMutexes[outputInfo.GameID].RUnlock()
+			}
 
 			if respGameRemovable, ok := output.resp.(ResponseGameRemovable); ok {
 				if respGameRemovable.canRemoveGame() {
-					removableGames[output.resp.GameID()] = struct{}{}
+					removableGames[outputInfo.GameID] = struct{}{}
 				}
 			}
 
 			if respChildGamesRemovable, ok := output.resp.(ResponseChildGamesRemovable); ok {
 				if respChildGamesRemovable.canRemoveChildGames() {
-					parentsWithRemovableChildren[output.resp.GameID()] = struct{}{}
+					parentsWithRemovableChildren[outputInfo.GameID] = struct{}{}
 				}
 			}
 		}
@@ -343,15 +355,18 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	}()
 
 	for i, req := range requests {
+		gameID := req.gameID()
 		input, err := engine.prepareWorkerInput(&waitGroup, outputBuffer, req)
 		if err != nil {
-			responses[i] = &SyncResponse{BaseResponse{gameID: req.gameID(), err: err}}
+			responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: err}}
 			continue
 		}
-		games[req.gameID()] = input.game
-		outputReqIndexesLock.Lock()
-		outputReqIndexes[input.requestID] = i
-		outputReqIndexesLock.Unlock()
+		games[gameID] = input.game
+		outputItemsLock.Lock()
+		outputItems[input.requestID] = outputItemInfo{
+			GameID: gameID, RequestIndex: i, AcquiredWrite: input.canWrite,
+		}
+		outputItemsLock.Unlock()
 		engine.send(input)
 	}
 
@@ -362,9 +377,8 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	close(outputBuffer)
 	outputWaitGroup.Wait()
 
-	// prepareWorkerInput removes games from the map to avoid concurrent
-	// requests to the same game. Now it's time to add them back.
-	for gameID, game := range games {
+	// remove games for which we got information that we can remove them
+	for gameID := range games {
 		_, canRemove := removableGames[gameID]
 		_, canRemoveChildren := parentsWithRemovableChildren[gameID]
 
@@ -379,13 +393,13 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 		}
 
 		if canRemove {
+			delete(engine.games, gameID)
+			delete(engine.gameMutexes, gameID)
 			delete(engine.childGames, gameID)
 			parentID := engine.parentGames[gameID]
 			if parentID != 0 {
 				delete(engine.childGames[parentID], gameID)
 			}
-		} else {
-			engine.games[gameID] = game
 		}
 	}
 
@@ -410,9 +424,15 @@ func (engine *GameEngine) prepareWorkerInput(
 	if !ok {
 		return workerInput{}, ErrGameNotFound
 	}
-	// Delete the game to avoid concurrent requests to it
-	// This needs to be added back by the caller when the requests finishes.
-	delete(engine.games, gameID)
+	mutex := engine.gameMutexes[gameID]
+	canWrite := req.requiresWrite()
+	if canWrite {
+		if !mutex.TryLock() {
+			return workerInput{}, ErrLockAlreadyAcquired
+		}
+	} else if !mutex.TryRLock() {
+		return workerInput{}, ErrLockAlreadyAcquired
+	}
 
 	requestID := engine.nextRequestID
 	engine.nextRequestID++
@@ -422,6 +442,7 @@ func (engine *GameEngine) prepareWorkerInput(
 		outputBuffer: outputBuffer,
 		game:         game,
 		request:      req,
+		canWrite:     canWrite,
 	}, nil
 }
 

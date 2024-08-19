@@ -14,12 +14,19 @@ type workerInput struct {
 	waitGroup    *sync.WaitGroup
 	game         *game.Game
 	request      Request
+	canWrite     bool
 }
 
 // Internal struct returned by the worker function through the received output buffer.
 type workerOutput struct {
 	requestID int
 	resp      Response
+}
+
+type outputItemInfo struct {
+	GameID        int
+	RequestIndex  int
+	AcquiredWrite bool
 }
 
 // The base interface of a response returned by the API.
@@ -45,6 +52,8 @@ type Request interface {
 	// gameID() is a private getter -> classes from Python
 	// create a new request object using the `GameID` field directly
 	gameID() int
+	// indicates, if the request requires exclusive write access to the game
+	requiresWrite() bool
 	// method that will be executed by the worker
 	execute(*game.Game) Response
 }

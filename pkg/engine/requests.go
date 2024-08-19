@@ -29,6 +29,10 @@ func (req *cloneGameRequest) gameID() int {
 	return req.GameID
 }
 
+func (req *cloneGameRequest) requiresWrite() bool {
+	return false
+}
+
 func (req *cloneGameRequest) execute(g *game.Game) Response {
 	count := len(req.ReservedIDs)
 	clones := make([]*game.Game, count)
@@ -83,6 +87,10 @@ func (resp *PlayTurnResponse) canRemoveChildGames() bool {
 
 func (req *PlayTurnRequest) gameID() int {
 	return req.GameID
+}
+
+func (req *PlayTurnRequest) requiresWrite() bool {
+	return true
 }
 
 func (req *PlayTurnRequest) execute(game *game.Game) Response {
@@ -166,6 +174,10 @@ func (req *GetRemainingTilesRequest) gameID() int {
 	return req.BaseGameID
 }
 
+func (req *GetRemainingTilesRequest) requiresWrite() bool {
+	return false
+}
+
 func (req *GetRemainingTilesRequest) execute(baseGame *game.Game) Response {
 	resp := &GetRemainingTilesResponse{BaseResponse: BaseResponse{gameID: req.gameID()}}
 	game, err := req.StateToCheck.resolve(baseGame)
@@ -234,6 +246,10 @@ type GetLegalMovesRequest struct {
 
 func (req *GetLegalMovesRequest) gameID() int {
 	return req.BaseGameID
+}
+
+func (req *GetLegalMovesRequest) requiresWrite() bool {
+	return false
 }
 
 func (req *GetLegalMovesRequest) execute(baseGame *game.Game) Response {
