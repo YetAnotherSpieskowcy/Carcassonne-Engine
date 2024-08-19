@@ -1,6 +1,7 @@
 from typing import NamedTuple, Self
 
 from ._bindings import (
+    binarytiles as _go_binarytiles,
     elements as _go_elements,
     engine as _go_engine,
     game as _go_game,
@@ -62,6 +63,9 @@ class Tile:
         if not isinstance(other, self.__class__):
             return NotImplemented
         return self._go_obj.ExactEquals(other._go_obj)
+
+    def to_bits(self) -> int:
+        return _go_binarytiles.FromTile(self._go_obj)
 
 
 class SerializedGame:
@@ -136,3 +140,6 @@ class PlacedTile:
 
     def to_tile(self) -> Tile:
         return Tile(_go_elements.ToTile(self._go_obj))
+
+    def to_bits(self) -> int:
+        return _go_binarytiles.FromPlacedTile(self._go_obj)
