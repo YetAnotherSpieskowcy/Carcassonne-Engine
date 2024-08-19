@@ -33,8 +33,11 @@ func (l *TestLogger) CopyTo(_ logger.Logger) error {
 }
 
 func TestDeepClone(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
+
 	originalLogger := &TestLogger{}
-	original, err := NewFromTileSet(tilesets.StandardTileSet(), originalLogger)
+	original, err := NewFromTileSet(tileSet, originalLogger)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
