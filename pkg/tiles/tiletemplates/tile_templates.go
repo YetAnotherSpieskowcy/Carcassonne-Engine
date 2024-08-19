@@ -429,8 +429,8 @@ func TwoCityEdgesUpAndDownConnected() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides: side.BottomLeftEdge |
-					side.BottomRightEdge,
+				Sides: side.RightTopEdge |
+					side.RightBottomEdge,
 			},
 		},
 	}
