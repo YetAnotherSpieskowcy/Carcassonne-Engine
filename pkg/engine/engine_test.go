@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -31,6 +33,59 @@ func (req *testRequest) execute(game *game.Game) Response {
 		return req.executeFunc(req, game)
 	}
 	return &testResponse{BaseResponse{gameID: req.gameID()}}
+}
+
+func TestFullGame(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	tileSet := tilesets.StandardTileSet()
+
+	gameWithID, err := engine.GenerateGame(tileSet)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	game, gameID := gameWithID.Game, gameWithID.ID
+
+	t.Logf("before loop: %s\n", time.Now())
+	for i := range len(tileSet.Tiles) {
+		t.Logf(
+			"iteration %v start: %v\n", i, binarytiles.FromTile(*game.CurrentTile),
+		)
+		legalMovesReq := &GetLegalMovesRequest{
+			BaseGameID: gameID, TileToPlace: *game.CurrentTile,
+		}
+		legalMovesResp := engine.SendGetLegalMovesBatch(
+			[]*GetLegalMovesRequest{legalMovesReq},
+		)[0]
+		if legalMovesResp.Err() != nil {
+			t.Fatal(legalMovesResp.Err().Error())
+		}
+		t.Logf("iteration %v got moves\n", i)
+
+		move := legalMovesResp.Moves[0].Move
+		t.Logf(
+			"iteration %v selecting move: %v at position %v\n",
+			i,
+			binarytiles.FromPlacedTile(move),
+			move.Position,
+		)
+		playTurnReq := &PlayTurnRequest{GameID: gameID, Move: move}
+		playTurnResp := engine.SendPlayTurnBatch([]*PlayTurnRequest{playTurnReq})[0]
+		if playTurnResp.Err() != nil {
+			t.Fatal(playTurnResp.Err().Error())
+		}
+		t.Logf("iteration %v played turn\n", i)
+
+		game = playTurnResp.Game
+		gameID = playTurnResp.GameID()
+		t.Logf("iteration %v end: %s\n", i, time.Now())
+	}
+
+	if game.CurrentTile != nil {
+		t.Fatalf("expected current tile to be nil, got %#v instead", game.CurrentTile)
+	}
 }
 
 func TestGameEngineDoubleCloseDoesNotPanic(t *testing.T) {
