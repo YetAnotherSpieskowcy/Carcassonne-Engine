@@ -243,7 +243,7 @@ func TestIsPositionValidWhenPositionIsValid(t *testing.T) {
 	}
 }
 
-func TestBoardScoreInclompleteMonastery(t *testing.T) {
+func TestBoardScoreIncompleteMonastery(t *testing.T) {
 	var report elements.ScoreReport
 	var extendedTileSet = tilesets.StandardTileSet()
 	for range 3 {
@@ -264,10 +264,10 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	tiles[0].Monastery().Meeple.Type = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = position.New(0, 1)
-	tiles[1].Position = position.New(1, 1)
-	tiles[2].Position = position.New(0, 2)
-	tiles[3].Position = position.New(1, 2)
+	tiles[0].Position = position.New(0, -1)
+	tiles[1].Position = position.New(1, -1)
+	tiles[2].Position = position.New(0, -2)
+	tiles[3].Position = position.New(1, -2)
 
 	// place tiles
 	for i, tile := range tiles {
@@ -292,7 +292,7 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-			position.New(0, 1),
+			position.New(0, -1),
 		)},
 	}
 
@@ -304,17 +304,17 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	/*
 		the board setup is as follows:
+		 S
 		FFFF
 		FMMF
 		FFFF
-		 S
 
 		F - field
 		M - monastery
 		S - starting tile
 
-		left monastery is at (0,2)
-		right monastery is at (1,2)
+		left monastery is at (0,-2)
+		right monastery is at (1,-2)
 		right monastery is placed as the last tile
 	*/
 
@@ -349,23 +349,23 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	tiles[11].Monastery().Meeple.Type = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = position.New(0, 1)
-	tiles[1].Position = position.New(0, 2)
-	tiles[2].Position = position.New(0, 3)
+	tiles[0].Position = position.New(0, -1)
+	tiles[1].Position = position.New(0, -2)
+	tiles[2].Position = position.New(0, -3)
 
-	tiles[3].Position = position.New(-1, 1)
-	tiles[4].Position = position.New(-1, 2)
-	tiles[5].Position = position.New(-1, 3)
+	tiles[3].Position = position.New(-1, -1)
+	tiles[4].Position = position.New(-1, -2)
+	tiles[5].Position = position.New(-1, -3)
 
-	tiles[6].Position = position.New(1, 1)
+	tiles[6].Position = position.New(1, -1)
 
-	tiles[7].Position = position.New(2, 1)
-	tiles[8].Position = position.New(2, 2)
-	tiles[9].Position = position.New(2, 3)
+	tiles[7].Position = position.New(2, -1)
+	tiles[8].Position = position.New(2, -2)
+	tiles[9].Position = position.New(2, -3)
 
-	tiles[10].Position = position.New(1, 3)
+	tiles[10].Position = position.New(1, -3)
 
-	tiles[11].Position = position.New(1, 2)
+	tiles[11].Position = position.New(1, -2)
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
@@ -394,11 +394,11 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-			position.New(0, 2),
+			position.New(0, -2),
 		)},
 		2: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
-			position.New(1, 2),
+			position.New(1, -2),
 		)},
 	}
 	if !reflect.DeepEqual(report, expectedReport) {
