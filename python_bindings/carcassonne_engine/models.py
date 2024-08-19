@@ -74,10 +74,16 @@ class SerializedGame:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj",)
+    __slots__ = ("_go_obj", "_current_tile")
 
     def __init__(self, go_obj: _go_game.SerializedGame) -> None:
         self._go_obj = go_obj
+        go_tile_obj = go_obj.CurrentTile
+        self._current_tile = go_tile_obj and Tile(go_tile_obj)
+
+    @property
+    def current_tile(self) -> Tile | None:
+        return self._current_tile
 
 
 class SerializedGameWithID(NamedTuple):
