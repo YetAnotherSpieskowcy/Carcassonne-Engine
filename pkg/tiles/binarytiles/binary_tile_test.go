@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
@@ -14,7 +13,7 @@ import (
 
 func TestFromPlacedTileCityWithShield(t *testing.T) {
 	// tile with city on top and right, with shield in the city and meeple belonging to player 4
-	tile := test.GetTestCustomPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	tile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple =
 		elements.Meeple{PlayerID: 4, Type: elements.NormalMeeple}
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).ModifierType = modifier.Shield
@@ -68,7 +67,7 @@ func TestFromPlacedTileUnconnectedField(t *testing.T) {
 
 func TestFromPlacedTileMonastery(t *testing.T) {
 	// monastery with a single road, with a meeple in the monastery belonging to player 2
-	tile := test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	tile.Monastery().Meeple = elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
 
 	expected := BinaryTile(0b0000000000000000010_100000000_01_0000_0000000000_0000000100_1111111111)
