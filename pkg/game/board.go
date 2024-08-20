@@ -138,14 +138,36 @@ func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.Placed
 	return []elements.PlacedTile{}
 }
 
+// Returns true if the tile placement position is valid, i.e. if all existing neighbouring tiles have matching features.
+// (for example, city feature directly neighbouring road or field is not valid)
+// Does not take meeples into account.
 func (board *board) isPositionValid(tile elements.PlacedTile) bool {
-	for _, f := range tile.Features {
-		s := side.Top
-		for range 4 {
-			if f.Sides.HasSide(s) && !board.testSide(tile.Position, s.Rotate(2), f.FeatureType) {
+	for _, tileFeature := range tile.Features {
+		for _, side := range side.EdgeSides {
+			if tileFeature.Sides.HasSide(side) {
+				neighbourPosition := position.FromSide(side).Add(tile.Position)
+				neighbouringTile, exists := board.GetTileAt(neighbourPosition)
+				if exists && neighbouringTile.GetPlacedFeatureAtSide(side.Mirror(), tileFeature.FeatureType) == nil {
+					fmt.Printf("\n\n >>>>> returning false: %#v does not have a %#v feature at side %#v \n\n", neighbourPosition, tileFeature.FeatureType, side.Mirror().String())
+					return false
+				}
+			}
+
+		}
+	}
+	// roads are checked separately because when placing a tile with fields neighbouring a tile with roads,
+	//  features checked from this tile to the neighbour are still matching (every field has a corresponding field on the neighbour tile),
+	//  but roads from the other tile might still not have a corresponding road in this one, despite the previous check returning true
+	//
+	// TODO: figure out a cleaner way to do this
+	// TODO: rivers will probably have the same problems as roads, when they are implemented
+	for _, side := range side.PrimarySides {
+		neighbourPosition := position.FromSide(side).Add(tile.Position)
+		neighbouringTile, exists := board.GetTileAt(neighbourPosition)
+		if exists && neighbouringTile.GetPlacedFeatureAtSide(side.Mirror(), feature.Road) != nil {
+			if tile.GetPlacedFeatureAtSide(side, feature.Road) == nil {
 				return false
 			}
-			s = s.Rotate(1)
 		}
 	}
 	return true
