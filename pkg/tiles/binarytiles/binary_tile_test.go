@@ -15,7 +15,7 @@ import (
 
 func TestFromPlacedTileCityWithShield(t *testing.T) {
 	// tile with city on top and right, with shield in the city and meeple belonging to player 3
-	tile := test.GetTestCustomPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	tile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple =
 		elements.Meeple{PlayerID: 3, Type: elements.NormalMeeple}
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).ModifierType = modifier.Shield
@@ -71,7 +71,7 @@ func TestFromPlacedTileUnconnectedField(t *testing.T) {
 
 func TestFromPlacedTileMonastery(t *testing.T) {
 	// monastery with a single road, with a meeple in the monastery belonging to player 2
-	tile := test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	tile.Monastery().Meeple = elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
 	tile.Position = position.New(-128, 127)
 

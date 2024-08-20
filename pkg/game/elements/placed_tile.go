@@ -23,11 +23,6 @@ type Meeple struct {
 	PlayerID ID
 }
 
-type TileWithMeeple struct {
-	Features  []PlacedFeature
-	HasShield bool // todo should be removed
-}
-
 type PlacedFeature struct {
 	feature.Feature
 	Meeple
@@ -35,7 +30,7 @@ type PlacedFeature struct {
 
 // Represents a legal move (tile placement and meeple placement) on the board
 type PlacedTile struct {
-	TileWithMeeple
+	Features []PlacedFeature
 	Position position.Position
 }
 
@@ -46,21 +41,19 @@ func (placedTile PlacedTile) Rotate(rotations uint) PlacedTile {
 
 func ToPlacedTile(tile tiles.Tile) PlacedTile {
 	features := []PlacedFeature{}
-	for _, n := range tile.Features {
-		features = append(features, PlacedFeature{n, Meeple{NoneMeeple, NonePlayer}})
+	for _, feature := range tile.Features {
+		features = append(features, PlacedFeature{feature, Meeple{NoneMeeple, NonePlayer}})
 	}
 	return PlacedTile{
-		TileWithMeeple: TileWithMeeple{
-			Features: features,
-		},
+		Features: features,
 		Position: position.New(0, 0),
 	}
 }
 
 func ToTile(tile PlacedTile) tiles.Tile {
 	features := []feature.Feature{}
-	for _, n := range tile.Features {
-		features = append(features, n.Feature)
+	for _, feature := range tile.Features {
+		features = append(features, feature.Feature)
 	}
 	return tiles.Tile{
 		Features: features,

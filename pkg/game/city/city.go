@@ -3,6 +3,7 @@ package city
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -14,12 +15,18 @@ type City struct {
 	shields   map[position.Position]bool
 }
 
-func NewCity(pos position.Position, cityFeature []elements.PlacedFeature, hasShield bool) City {
+func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City {
+	hasShield := false
+	for _, feat := range cityFeatures {
+		if feat.ModifierType == modifier.Shield {
+			hasShield = true
+		}
+	}
 	return City{
 		completed: false,
 		scored:    false,
 		features: map[position.Position][]elements.PlacedFeature{
-			pos: cityFeature,
+			pos: cityFeatures,
 		},
 		shields: map[position.Position]bool{
 			pos: hasShield,
@@ -92,7 +99,13 @@ func (city City) GetFeaturesFromTile(pos position.Position) ([]elements.PlacedFe
 	return cities, ok
 }
 
-func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedFeature, hasShield bool) {
+func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedFeature) {
+	hasShield := false
+	for _, feat := range cityFeatures {
+		if feat.ModifierType == modifier.Shield {
+			hasShield = true
+		}
+	}
 	city.features[pos] = cityFeatures
 	city.shields[pos] = hasShield
 	city.checkCompleted()
