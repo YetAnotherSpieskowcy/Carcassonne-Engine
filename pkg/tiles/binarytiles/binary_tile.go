@@ -65,11 +65,11 @@ const (
 	playerStartBit = meepleEndBit
 	playerEndBit   = playerStartBit + maxPlayers
 
-	//positionXStartBit = playerEndBit
-	//positionXEndBit   = positionXStartBit + 8
+	// positionXStartBit = playerEndBit
+	// positionXEndBit   = positionXStartBit + 8
 
-	//positionYStartBit = positionXEndBit
-	//positionYEndBit   = positionYStartBit + 8
+	// positionYStartBit = positionXEndBit
+	// positionYEndBit   = positionYStartBit + 8
 )
 
 var orthogonalFeaturesBits = []side.Side{
