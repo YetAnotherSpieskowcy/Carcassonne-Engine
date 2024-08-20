@@ -148,7 +148,6 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 				neighbourPosition := position.FromSide(side).Add(tile.Position)
 				neighbouringTile, exists := board.GetTileAt(neighbourPosition)
 				if exists && neighbouringTile.GetPlacedFeatureAtSide(side.Mirror(), tileFeature.FeatureType) == nil {
-					fmt.Printf("\n\n >>>>> returning false: %#v does not have a %#v feature at side %#v \n\n", neighbourPosition, tileFeature.FeatureType, side.Mirror().String())
 					return false
 				}
 			}
