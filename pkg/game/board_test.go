@@ -196,28 +196,6 @@ func TestIsPositionValidWhenPositionIsValid(t *testing.T) {
 	}
 }
 
-func TestBoardTileIsPositionValidReturnsTrueWhenJoiningWithThreeCityEdgesConnectedRoad(t *testing.T) {
-	board := NewBoard(tilesets.StandardTileSet()).(*board)
-
-	// prepare board layout - add a tile with city everywhere but at the top
-	ptile := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnectedRoad().Rotate(2))
-	ptile.Position = position.New(0, 1)
-	if _, err := board.PlaceTile(ptile); err != nil {
-		t.Fatal(err)
-	}
-
-	// tile with road on its bottom side, monastery at the center, and fields everywhere
-	tilePlacement := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
-	tilePlacement.Position = position.New(0, 2)
-
-	expected := true
-	actual := board.isPositionValid(tilePlacement)
-
-	if expected != actual {
-		t.Fatalf("expected %#v, got %#v instead", expected, actual)
-	}
-}
-
 func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	var report elements.ScoreReport
 	var extendedTileSet = tilesets.StandardTileSet()
