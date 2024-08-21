@@ -204,7 +204,8 @@ func TestGameEngineSendGetLegalMovesBatchReturnsNoDuplicates(t *testing.T) {
 func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) {
 	tile := tiletemplates.MonasteryWithSingleRoad()
 	tileSet := tilesets.TileSet{
-		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+		// non-default starting tile - limits number of possible positions to one
+		StartingTile: tiletemplates.ThreeCityEdgesConnected(),
 		Tiles:        []tiles.Tile{tile},
 	}
 
@@ -226,8 +227,15 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 
 	// Monastery with single road can only be placed at (0, -1)
 	// but in 3 different orientations (only field connected with road is invalid)
-	if len(resp.Moves) != 3 {
-		t.Fatalf("expected %v as number of available moves, got %v instead", 3, resp.Moves)
+	// For each orientation, there are 4 valid meeple placements:
+	// - no meeple
+	// - meeple on monastery
+	// - meeple on field
+	// - meeple on road
+	// For now, meeple placement is not handled so last number is 1 instead of 4 below
+	expectedMoveCount := 1 * 3 * 1
+	if len(resp.Moves) != expectedMoveCount {
+		t.Fatalf("expected %v as number of available moves, got %v instead", expectedMoveCount, resp.Moves)
 	}
 
 	for _, moveState := range resp.Moves {
