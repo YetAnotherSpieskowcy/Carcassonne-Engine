@@ -6,7 +6,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
@@ -115,7 +114,7 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 		for f, cToJoin := range citiesToJoin {
 			if len(cToJoin) == 0 {
 				toAppend := []elements.PlacedFeature{f}
-				manager.cities = append(manager.cities, NewCity(tile.Position, toAppend, tile.HasShield))
+				manager.cities = append(manager.cities, NewCity(tile.Position, toAppend))
 			} else {
 				if len(cToJoin) > 1 {
 					for _, cityIndex := range cToJoin[1:] {
@@ -124,7 +123,7 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 					}
 				}
 				toAdd := []elements.PlacedFeature{f}
-				manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd, f.ModifierType == modifier.Shield)
+				manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd)
 			}
 		}
 		// remove cities that were merged into another city
@@ -140,7 +139,7 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 	} else {
 		for _, f := range tile.GetFeaturesOfType(feature.City) {
 			toAppend := []elements.PlacedFeature{f}
-			manager.cities = append(manager.cities, NewCity(tile.Position, toAppend, tile.HasShield))
+			manager.cities = append(manager.cities, NewCity(tile.Position, toAppend))
 		}
 	}
 }

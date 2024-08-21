@@ -7,8 +7,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
@@ -17,7 +15,7 @@ func TestNewAndIsCompleted(t *testing.T) {
 	cities := a.GetFeaturesOfType(feature.City)
 	pos := position.New(1, 1)
 
-	city := NewCity(pos, cities, false)
+	city := NewCity(pos, cities)
 
 	completed := city.IsCompleted()
 	if completed {
@@ -30,7 +28,7 @@ func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	cities := a.GetFeaturesOfType(feature.City)
 	pos := position.New(1, 1)
 
-	city := NewCity(pos, cities, false)
+	city := NewCity(pos, cities)
 
 	features, ok := city.GetFeaturesFromTile(pos)
 
@@ -51,12 +49,12 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
-	city := NewCity(position.New(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures)
 
 	bFeatures := b.GetFeaturesOfType(feature.City)
 
 	pos := position.New(1, 2)
-	city.AddTile(pos, bFeatures, false)
+	city.AddTile(pos, bFeatures)
 
 	features, ok := city.GetFeaturesFromTile(pos)
 
@@ -78,12 +76,12 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
-	city := NewCity(position.New(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures)
 
 	bFeatures := b.GetFeaturesOfType(feature.City)
 
 	pos := position.New(1, 2)
-	city.AddTile(pos, bFeatures, false)
+	city.AddTile(pos, bFeatures)
 
 	var expected = true
 	var actual = city.IsCompleted()
@@ -98,12 +96,12 @@ func TestCheckCompletedWhenOpen(t *testing.T) {
 	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
-	city := NewCity(position.New(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures)
 
 	bFeatures := b.GetFeaturesOfType(feature.City)
 
 	pos := position.New(1, 2)
-	city.AddTile(pos, bFeatures, false)
+	city.AddTile(pos, bFeatures)
 
 	var expected = false
 	var actual = city.IsCompleted()
@@ -128,7 +126,7 @@ func TestScoreOneTileCity(t *testing.T) {
 			aFeatures = append(aFeatures, tmp)
 		}
 	}
-	city := NewCity(position.New(1, 1), aFeatures, false)
+	city := NewCity(position.New(1, 1), aFeatures)
 
 	scoreReport := city.GetScoreReport()
 	meeples, ok := scoreReport.ReturnedMeeples[expectedPlayerID]
@@ -154,19 +152,12 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 
 	a := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield())
 
-	aFeatures := []elements.PlacedFeature{}
-	shield := false
-	for _, tmp := range a.Features {
-		if tmp.FeatureType == feature.City {
-			tmp.PlayerID = expectedPlayerID
-			tmp.Meeple.Type = expectedMeepleType
-			aFeatures = append(aFeatures, tmp)
-			if tmp.ModifierType == modifier.Shield {
-				shield = true
-			}
-		}
+	aFeatures := a.GetFeaturesOfType(feature.City)
+	for i := range aFeatures {
+		aFeatures[i].PlayerID = expectedPlayerID
+		aFeatures[i].Meeple.Type = expectedMeepleType
 	}
-	city := NewCity(position.New(1, 1), aFeatures, shield)
+	city := NewCity(position.New(1, 1), aFeatures)
 
 	scoreReport := city.GetScoreReport()
 	meeples, ok := scoreReport.ReturnedMeeples[expectedPlayerID]
@@ -190,46 +181,21 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
 	var expectedPlayerID elements.ID = 1
 
-	shield := false
-
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
-	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
-	aFeatures := []elements.PlacedFeature{}
-	for _, tmp := range a.Features {
-		if tmp.FeatureType == feature.City {
-			aFeatures = append(aFeatures, tmp)
-			if tmp.ModifierType == modifier.Shield {
-				shield = true
-			}
-		}
+	aFeatures := a.GetFeaturesOfType(feature.City)
+	for i := range aFeatures {
+		aFeatures[i].PlayerID = expectedPlayerID
+		aFeatures[i].Meeple.Type = expectedMeepleType
 	}
-	city := NewCity(position.New(1, 1), aFeatures, shield)
-	shield = false
+	city := NewCity(position.New(1, 1), aFeatures)
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
-	bFeatures := []elements.PlacedFeature{}
-	for _, tmp := range b.Features {
-		if tmp.FeatureType == feature.City {
-			bFeatures = append(bFeatures, tmp)
-			if tmp.ModifierType == modifier.Shield {
-				shield = true
-			}
-		}
-	}
-	city.AddTile(position.New(2, 2), bFeatures, shield)
+	bFeatures := b.GetFeaturesOfType(feature.City)
+	city.AddTile(position.New(2, 2), bFeatures)
 
 	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
-	cFeatures := []elements.PlacedFeature{}
-	for _, tmp := range c.Features {
-		if tmp.FeatureType == feature.City {
-			cFeatures = append(cFeatures, tmp)
-			if tmp.ModifierType == modifier.Shield {
-				shield = true
-			}
-		}
-	}
-	city.AddTile(position.New(1, 2), cFeatures, shield)
+	cFeatures := c.GetFeaturesOfType(feature.City)
+	city.AddTile(position.New(1, 2), cFeatures)
 
 	report := city.GetScoreReport()
 	meeples, ok := report.ReturnedMeeples[expectedPlayerID]

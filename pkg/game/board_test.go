@@ -197,10 +197,10 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
 	}
 
 	// add meeple to the monastery
@@ -271,18 +271,18 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.TestOnlyField()),
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithoutRoads()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.TestOnlyField()),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithoutRoads()),
 	}
 
 	// add meeple to the monastery

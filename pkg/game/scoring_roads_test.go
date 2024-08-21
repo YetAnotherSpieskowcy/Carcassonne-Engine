@@ -6,7 +6,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -28,12 +27,12 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.StraightRoads()),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.StraightRoads()),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(2)),
 
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(1)),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn()),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(1)),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn()),
 	}
 
 	// add meeple to first road
@@ -102,11 +101,11 @@ func TestBoardScoreRoadLoopCrossroad(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(0)),
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(1)),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(0)),
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(1)),
 
-		test.GetTestCustomPlacedTile(tiletemplates.TCrossRoad().Rotate(2)),
+		elements.ToPlacedTile(tiletemplates.TCrossRoad().Rotate(2)),
 	}
 
 	// add meeple to last road
@@ -162,8 +161,8 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(3)), // monastery to right
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // monastery to left
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(3)), // monastery to right
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // monastery to left
 	}
 
 	// add meeple to first road
@@ -215,10 +214,10 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 	board := boardInterface.(*board)
 
 	tiles := []elements.PlacedTile{
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // on the right
-		test.GetTestCustomPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // below
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(2)),               // on the left bottom
-		test.GetTestCustomPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),               // on the left
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // on the right
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // below
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(2)),               // on the left bottom
+		elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(3)),               // on the left
 	}
 
 	// add meeples to monastery roads
