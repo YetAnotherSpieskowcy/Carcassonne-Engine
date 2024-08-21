@@ -87,6 +87,13 @@ func TestFullGame(t *testing.T) {
 		game = playTurnResp.Game
 		gameID = playTurnResp.GameID()
 		t.Logf("iteration %v end: %s\n", i, time.Now())
+
+		if game.CurrentTile == nil {
+			// number of tiles in the tile set and number of tiles that you actually
+			// get to place can differ, if a tile that's next in the stack happens to
+			// not have any position to place available
+			break
+		}
 	}
 
 	if game.CurrentTile != nil {
