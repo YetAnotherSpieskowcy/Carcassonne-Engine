@@ -629,11 +629,11 @@ func ThreeCityEdgesConnectedRoad() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.LeftBottomEdge,
+				Sides:       side.BottomLeftEdge,
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.BottomLeftEdge,
+				Sides:       side.BottomRightEdge,
 			},
 		},
 	}
@@ -658,11 +658,11 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.LeftBottomEdge,
+				Sides:       side.BottomLeftEdge,
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.BottomLeftEdge,
+				Sides:       side.BottomRightEdge,
 			},
 		},
 	}
