@@ -13,7 +13,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
-
 func TestTileTemplateSidesOverlapInValidWays(t *testing.T) {
 	tiles := []func() tiles.Tile{
 		tiletemplates.MonasteryWithoutRoads,
@@ -50,7 +49,7 @@ func TestTileTemplateSidesOverlapInValidWays(t *testing.T) {
 			runtime.FuncForPC(reflect.ValueOf(tileTemplateFunc).Pointer()).Name(),
 			".",
 		)
-		templateName := funcNameParts[len(funcNameParts) - 1]
+		templateName := funcNameParts[len(funcNameParts)-1]
 
 		t.Run(templateName, func(t *testing.T) {
 			tile := tileTemplateFunc()
