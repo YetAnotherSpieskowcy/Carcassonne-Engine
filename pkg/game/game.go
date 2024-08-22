@@ -16,7 +16,7 @@ import (
 type SerializedGame struct {
 	CurrentTile         *tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
-	CurrentPlayerId     elements.ID
+	CurrentPlayerID     elements.ID
 	Players             []elements.Player
 	PlayerCount         int
 	Tiles               []elements.PlacedTile
@@ -98,7 +98,7 @@ func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
 
 func (game *Game) Serialized() SerializedGame {
 	serialized := SerializedGame{
-		CurrentPlayerId: game.CurrentPlayer().ID(),
+		CurrentPlayerID: game.CurrentPlayer().ID(),
 		Players:         game.players,
 		PlayerCount:     game.PlayerCount(),
 		Tiles:           game.board.Tiles(),
