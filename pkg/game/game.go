@@ -16,7 +16,8 @@ import (
 type SerializedGame struct {
 	CurrentTile         *tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
-	CurrentPlayer       elements.Player
+	CurrentPlayerId     elements.ID
+	Players             []elements.Player
 	PlayerCount         int
 	Tiles               []elements.PlacedTile
 	TileSet             tilesets.TileSet
@@ -97,10 +98,11 @@ func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
 
 func (game *Game) Serialized() SerializedGame {
 	serialized := SerializedGame{
-		CurrentPlayer: game.CurrentPlayer(),
-		PlayerCount:   game.PlayerCount(),
-		Tiles:         game.board.Tiles(),
-		TileSet:       game.deck.TileSet(),
+		CurrentPlayerId: game.CurrentPlayer().ID(),
+		Players:         game.players,
+		PlayerCount:     game.PlayerCount(),
+		Tiles:           game.board.Tiles(),
+		TileSet:         game.deck.TileSet(),
 	}
 
 	if tile, err := game.GetCurrentTile(); err == nil {
