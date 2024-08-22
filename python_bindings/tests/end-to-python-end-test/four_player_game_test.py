@@ -1,0 +1,556 @@
+''''''
+'''
+ diagonal edges represent cities, dots fields, straight lines roads.
+ Player meeples will be represented as !@#$ signs ( you know, writing number but with shift!) 1->!, 2->@ and so on
+ Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number in hex :/)
+
+|				  0	   1    2    3
+|
+|
+|               |   |...............
+|               .\ /............[ ].
+|1              ..2....4----9---[A].
+|               ./ \...|.../ \..[ ].
+|               |   |..|..|   |.....
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........|.../ \.
+|          ..|.........|..|   |
+|          ..|.........|..|   |
+|          ..|.........|...\ /
+|-1        ..B----6----5....7..
+|          ..|............./ \.
+|          ..|............|   |
+|               .....
+|               .....
+|-2             --C--
+|               .....
+|               .....
+'''
+import logging
+
+from carcassonne_engine.models import Position
+from utils import make_turn, TurnParams
+from pathlib import Path
+
+import pytest
+from pytest import approx
+
+from carcassonne_engine import GameEngine, SerializedGame
+from carcassonne_engine import models, tiletemplates
+from carcassonne_engine.requests import (
+    GetLegalMovesRequest,
+    GetRemainingTilesRequest,
+    PlayTurnRequest,
+)
+from carcassonne_engine.tilesets import mini_tile_set, TileSet
+from carcassonne_engine.utils import format_binary_tile_bits
+
+log = logging.getLogger(__name__)
+
+
+def test_four_player_game(tmp_path: Path) -> None:
+    engine = GameEngine(4, tmp_path)
+    tile_set = mini_tile_set()
+
+    game_id, game = engine.generate_ordered_game(tile_set) # TODO generate four player game?
+
+    game_id, game = check_first_turn(engine, game, game_id)
+    game_id, game = check_second_turn(engine, game, game_id)
+    game_id, game = check_third_turn(engine, game, game_id)
+    game_id, game = check_fourth_turn(engine, game, game_id)
+    game_id, game = check_fifth_turn(engine, game, game_id)
+    game_id, game = check_sixth_turn(engine, game, game_id)
+    game_id, game = check_seventh_turn(engine, game, game_id)
+    game_id, game = check_eighth_turn(engine, game, game_id)
+    game_id, game = check_nineth_turn(engine, game, game_id)
+    game_id, game = check_tenth_turn(engine, game, game_id)
+    game_id, game = check_eleventh_turn(engine, game, game_id)
+    game_id, game = check_twelfth_turn(engine, game, game_id)
+
+    assert game.current_tile is None
+
+
+'''
+// player1 places T Cross road with meeple on a bottom road
+|				  0	   1    2    3
+|
+|
+|
+|
+|1
+|
+|
+|               |   |..|..
+|               .\ /...|..
+|0              --0----1..
+|               .......!..
+|               .......|..
+|
+|
+|-1
+|
+|
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=1, y=0),
+        tile=tiletemplates.t_cross_road(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// player2 places Two city edges not connected, and a meeple on a closing city
+|				  0	   1    2    3
+|
+|
+|               |   |
+|               .\ /.
+|1              ..2..
+|               ./ \.
+|               |   |
+|               |   |..|..
+|               .\ /...|..
+|0              --0----1..
+|               .......!..
+|               .......|..
+|
+|
+|-1
+|
+|
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=0, y=1),
+        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player3 places Two city edges not connected and a meeple on bottom city
+|				  0	   1    2    3
+|
+|
+|               |   |
+|               .\ /.
+|1              ..2..
+|               ./ \.
+|               |   |
+|               |   |..|..|   |
+|               .\ /...|...\ /.
+|0              --0----1....3..
+|               .......!.../ \.
+|               .......|..| # | 
+|
+|
+|-1
+|
+|
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=2, y=0),
+        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player4 places Road turn with a meeple on a road
+|				  0	   1    2    3
+|
+|
+|               |   |.....
+|               .\ /......
+|1              ..2....4-$
+|               ./ \...|..
+|               |   |..|..
+|               |   |..|..|   |
+|               .\ /...|...\ /.
+|0              --0----1....3..
+|               .......!.../ \.
+|               .......|..| # |
+|
+|
+|-1
+|
+|
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=1, y=1),
+        tile=tiletemplates.roads_turn(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player1 places Road turn with a farmer on the right bototn
+|				  0	   1    2    3
+|
+|
+|               |   |.....
+|               .\ /......
+|1              ..2....4-$
+|               ./ \...|..
+|               |   |..|..
+|               |   |..|..|   |
+|               .\ /...|...\ /.
+|0              --0----1....3..
+|               .......!.../ \.
+|               .......|..| # |
+|                    ..|..
+|                    ..|..
+|-1                  --5..
+|                    ...!.
+|                    .....
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=1, y=-1),
+        tile=tiletemplates.roads_turn(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player2 places Straight Road with a meeple on a top field
+|				  0	   1    2    3
+|
+|
+|               |   |.....
+|               .\ /......
+|1              ..2....4-$
+|               ./ \...|..
+|               |   |..|..
+|               |   |..|..|   |
+|               .\ /...|...\ /.
+|0              --0----1....3..
+|               .......!.../ \.
+|               .......|..| # |
+|               ..@....|..
+|               .......|..
+|-1             --6----5..
+|               ........!.
+|               ..........
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    # invalid turn
+    turn_params = TurnParams(
+        pos=Position(x=0, y=-1),
+        tile=tiletemplates.straight_roads(),
+        valid_turn=False)
+
+    # valid turn
+    turn_params = TurnParams(
+        pos=Position(x=0, y=1),
+        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player3 places Two city edges not connected, finishing own city, and placing a meeple on a new one
+|				  0	   1    2    3
+|
+|
+|               |   |.....
+|               .\ /......
+|1              ..2....4-$
+|               ./ \...|..
+|               |   |..|..
+|               |   |..|..|   |
+|               .\ /...|...\ /.
+|0              --0----1....3..
+|               .......!.../ \.
+|               .......|..|   |
+|               ..@....|..|   |
+|               .......|...\ /
+|-1             --6----5....7..
+|               ........!../ \.
+|               ..........| # |
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=2, y=-1),
+        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
+        valid_turn=False)
+
+    turn_params = TurnParams(
+        pos=Position(x=2, y=-1),
+        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player4 places Road turn and a meeple on a road
+|				  0	   1    2    3
+|
+|
+|               |   |.....
+|               .\ /......
+|1              ..2....4-$
+|               ./ \...|..
+|               |   |..|..
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........!.../ \.
+|          ..$.........|..|   |
+|               ..@....|..|   |
+|               .......|...\ /
+|-1             --6----5....7..
+|               ........!../ \.
+|               ..........| # |
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=0, y=-1),
+        tile=tiletemplates.roads_turn(),
+        valid_turn=True)
+
+    turn_params = TurnParams(
+        pos=Position(x=0, y=-1),
+        tile=tiletemplates.roads_turn(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player1 places Straight road with city edge and places a meeple on the upper field.
+No one scores for the finished city
+|				  0	   1    2    3
+|
+|
+|               |   |.......!..
+|               .\ /...........
+|1              ..2....4-$--9--
+|               ./ \...|.../ \.
+|               |   |..|..|   |
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........!.../ \.
+|          ..$.........|..|   |
+|               ..@....|..|   |
+|               .......|...\ /
+|-1             --6----5....7..
+|               ........!../ \.
+|               ..........| # |
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=2, y=1),
+        tile=tiletemplates.single_city_edge_straight_roads(),
+        valid_turn=True)
+
+    turn_params = TurnParams(
+        pos=Position(x=2, y=1),
+        tile=tiletemplates.single_city_edge_straight_roads(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player2 places Monastery with road, with a meeple on a monastery.
+Player4 scores 3 points for finished road
+|				  0	   1    2    3
+|
+|
+|               |   |.......!.......
+|               .\ /............[ ].
+|1              ..2....4----9---[A].
+|               ./ \...|.../ \..[@].
+|               |   |..|..|   |.....
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........!.../ \.
+|          ..$.........|..|   |
+|               ..@....|..|   |
+|               .......|...\ /
+|-1             --6----5....7..
+|               ........!../ \.
+|               ..........| # |
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=3, y=1),
+        tile=tiletemplates.monastery_with_single_road(),
+        valid_turn=True)
+
+    turn_params = TurnParams(
+        pos=Position(x=3, y=1),
+        tile=tiletemplates.monastery_with_single_road(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player3 places T cross road, with a meeple on a bottom road
+player1 and player4 score 4 points for their roads
+|				  0	   1    2    3
+|
+|
+|               |   |.......!.......
+|               .\ /............[ ].
+|1              ..2....4----9---[A].
+|               ./ \...|.../ \..[@].
+|               |   |..|..|   |.....
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........|.../ \.
+|          ..|.........|..|   |
+|          ..|....@....|..|   |
+|          ..|.........|...\ /
+|-1        ..B----6----5....7..
+|          ..|..........!../ \.
+|          ..#............| # |
+|
+|
+|-2
+|
+|
+'''
+
+
+def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=-1, y=-1),
+        tile=tiletemplates.t_cross_road(),
+        valid_turn=True)
+
+    turn_params = TurnParams(
+        pos=Position(x=-1, y=-1),
+        tile=tiletemplates.t_cross_road(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)
+
+
+'''
+// Player4 places Straight road with a meeple on a road
+|				  0	   1    2    3
+|
+|
+|               |   |.......!.......
+|               .\ /............[ ].
+|1              ..2....4----9---[A].
+|               ./ \...|.../ \..[@].
+|               |   |..|..|   |.....
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........|.../ \.
+|          ..|.........|..|   |
+|          ..|....@....|..|   |
+|          ..|.........|...\ /
+|-1        ..B----6----5....7..
+|          ..|..........!../ \.
+|          ..#............| # |
+|               .....
+|               .....
+|-2             --C-$
+|               .....
+|               .....
+'''
+
+
+def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    turn_params = TurnParams(
+        pos=Position(x=0, y=-2),
+        tile=tiletemplates.straight_roads(),
+        valid_turn=True)
+
+    turn_params = TurnParams(
+        pos=Position(x=0, y=-2),
+        tile=tiletemplates.straight_roads(),
+        valid_turn=True)
+
+    return make_turn(engine, game, game_id, turn_params)

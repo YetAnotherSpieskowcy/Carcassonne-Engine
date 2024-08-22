@@ -141,3 +141,76 @@ func StandardTileSet() TileSet { //nolint:gocyclo // shallow loops for adding ti
 		Tiles:        tiles,
 	}
 }
+
+func MiniTileSet() TileSet {
+	var tiles = []tiles.Tile{}
+	// mini simple set containing (12 tiles in total):
+	// 1 monastery with road
+	// 2 straight roads
+	// 1 straight road with city
+	// 3 road turns
+	// 2 T crossroads
+	// 3 city edges up and down not connected
+
+	// 1 monastery with road
+	tiles = append(tiles, tiletemplates.MonasteryWithSingleRoad())
+
+	// 2 straight roads
+	tiles = append(tiles, tiletemplates.StraightRoads())
+	tiles = append(tiles, tiletemplates.StraightRoads())
+
+	// 1 straight road with city
+	tiles = append(tiles, tiletemplates.SingleCityEdgeStraightRoads())
+
+	// 3 road turns
+	tiles = append(tiles, tiletemplates.RoadsTurn())
+	tiles = append(tiles, tiletemplates.RoadsTurn())
+	tiles = append(tiles, tiletemplates.RoadsTurn())
+
+	// 2 T crossroads
+	tiles = append(tiles, tiletemplates.TCrossRoad())
+	tiles = append(tiles, tiletemplates.TCrossRoad())
+
+	// 3 city edges up and down not connected
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	return TileSet{
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+		Tiles:        tiles,
+	}
+}
+
+func EveryTileOnceTileSet() TileSet { //nolint:gocyclo // shallow loops for adding tiles
+	var tiles = []tiles.Tile{}
+
+	tiles = append(tiles, tiletemplates.MonasteryWithoutRoads())
+	tiles = append(tiles, tiletemplates.MonasteryWithSingleRoad())
+	tiles = append(tiles, tiletemplates.StraightRoads())
+	tiles = append(tiles, tiletemplates.RoadsTurn())
+	tiles = append(tiles, tiletemplates.TCrossRoad())
+	tiles = append(tiles, tiletemplates.XCrossRoad())
+	tiles = append(tiles, tiletemplates.SingleCityEdgeNoRoads())
+	tiles = append(tiles, tiletemplates.SingleCityEdgeStraightRoads())
+	tiles = append(tiles, tiletemplates.SingleCityEdgeLeftRoadTurn())
+	tiles = append(tiles, tiletemplates.SingleCityEdgeRightRoadTurn())
+	tiles = append(tiles, tiletemplates.SingleCityEdgeCrossRoad())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesCornerNotConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownConnectedShield())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesCornerConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesCornerConnectedShield())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesCornerConnectedRoadTurnShield())
+	tiles = append(tiles, tiletemplates.ThreeCityEdgesConnected())
+	tiles = append(tiles, tiletemplates.ThreeCityEdgesConnectedShield())
+	tiles = append(tiles, tiletemplates.ThreeCityEdgesConnectedRoad())
+	tiles = append(tiles, tiletemplates.ThreeCityEdgesConnectedRoadShield())
+	tiles = append(tiles, tiletemplates.FourCityEdgesConnectedShield())
+
+	return TileSet{
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+		Tiles:        tiles,
+	}
+}
