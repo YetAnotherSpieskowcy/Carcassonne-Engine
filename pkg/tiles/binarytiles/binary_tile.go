@@ -14,12 +14,14 @@ import (
 type BinaryTile uint64
 
 // interpreting BinaryTile's bits:
-//      00000000_00000000_001_000000011_00_0011_0000010011_0001001100_1000001110
-//       Y pos    X pos    ^   meeple   ^    ^     city       road      field
-//                         |            |    |
-//          owner (playerID)            |    |
-//                                      |    |
-//   monastery and unconnected field bits    city shield
+//      00000000_00000000_1_01_000000011_00_0011_0000010011_0001001100_1000001110
+//       Y pos    X pos   ^ ^   meeple   ^    ^     city       road      field
+//                       /  |            |    |
+//                      / owner playerID |    |
+//                     /                 |    |
+//             is placed                 |    |
+//                                       |    |
+//    monastery and unconnected field bits    city shield
 //
 // counting from right to left (from least to most significant bit):
 //  - first four bits of the field section are the corners, starting from top-right, clockwise
@@ -30,13 +32,14 @@ type BinaryTile uint64
 //  - next four meeple bits are the corners (same as with fields)
 //  - the last meeple bit is the center
 //  - the owner bits is just one-hot-encoded player ID. (ID(1) = 00...001, ID(2) = 00...010, etc.)
+//  - is placed bit is always 1 on all placed tiles, and 0 on the non-placed tiles
 //  - position bits are 8-bit reptesentations of tile position + 128, so that there are no negative numbers
 
 const (
 	featureBitSize  = 10
 	modifierBitSize = 4
 	meepleBitSize   = 9
-	maxPlayers      = 3
+	maxPlayers      = 2
 
 	connectionBitOffset  = 4
 	diagonalMeepleOffset = 4
@@ -65,7 +68,10 @@ const (
 	playerStartBit = meepleEndBit
 	playerEndBit   = playerStartBit + maxPlayers
 
-	// positionXStartBit = playerEndBit
+	isPlacedBit    = playerEndBit
+	isPlacedEndBit = isPlacedBit + 1
+
+	// positionXStartBit = isPlacedEndBit
 	// positionXEndBit   = positionXStartBit + 8
 
 	// positionYStartBit = positionXEndBit
@@ -151,6 +157,8 @@ func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
 	binaryTile := fromPlacedFeatures(tile.Features)
 
 	binaryTile.addPosition(tile.Position)
+
+	binaryTile.setBit(isPlacedBit)
 
 	return binaryTile
 }
