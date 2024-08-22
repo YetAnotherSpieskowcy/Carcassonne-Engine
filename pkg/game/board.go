@@ -136,9 +136,12 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 
 		}
 	}
-	// roads are checked separately because when placing a tile with fields neighbouring a tile with roads,
-	//  features checked from this tile to the neighbour are still matching (every field has a corresponding field on the neighbour tile),
-	//  but roads from the other tile might still not have a corresponding road in this one, despite the previous check returning true
+	// Phase 2:
+	// Since some features may overlap other features, it is also necessary to check
+	// that none of the neighbours have an (overlapping) feature that doesn't have
+	// a matching counterpart on the given tile.
+	// Currently, overlap can only occur between roads and fields. Since roads
+	// are always accompanied by fields, we only need to check roads.
 	//
 	// TODO: figure out a cleaner way to do this
 	// TODO: rivers will probably have the same problems as roads, when they are implemented
