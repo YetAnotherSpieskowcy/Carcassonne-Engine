@@ -25,7 +25,7 @@ type Meeple struct {
 
 type PlacedFeature struct {
 	feature.Feature
-	Meeple
+	Meeple Meeple
 }
 
 // Represents a legal move (tile placement and meeple placement) on the board

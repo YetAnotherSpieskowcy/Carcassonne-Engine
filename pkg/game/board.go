@@ -289,8 +289,8 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 
 	if score == 9 || forceScore {
 		scoreReport := elements.NewScoreReport()
-		scoreReport.ReceivedPoints[monasteryFeature.PlayerID] = score
-		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = []elements.MeepleWithPosition{
+		scoreReport.ReceivedPoints[monasteryFeature.Meeple.PlayerID] = score
+		scoreReport.ReturnedMeeples[monasteryFeature.Meeple.PlayerID] = []elements.MeepleWithPosition{
 			elements.MeepleWithPosition{
 				Meeple:   monasteryFeature.Meeple,
 				Position: tile.Position,
