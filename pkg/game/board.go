@@ -143,8 +143,7 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	// Currently, overlap can only occur between roads and fields. Since roads
 	// are always accompanied by fields, we only need to check roads.
 	//
-	// TODO: figure out a cleaner way to do this
-	// TODO: rivers will probably have the same problems as roads, when they are implemented
+	// TODO: rivers will probably have the same problems as roads, if they are implemented
 	for _, side := range side.PrimarySides {
 		neighbourPosition := position.FromSide(side).Add(tile.Position)
 		neighbouringTile, exists := board.GetTileAt(neighbourPosition)
