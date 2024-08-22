@@ -109,9 +109,16 @@ func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.Placed
 	return []elements.PlacedTile{}
 }
 
-// Returns true if the tile placement position is valid, i.e. if all existing neighbouring tiles have matching features.
-// (for example, city feature directly neighbouring road or field is not valid)
-// Does not take meeples into account.
+/*
+Returns true if the tile placement position is valid, i.e. if all existing neighbouring tiles have matching features.
+(for example, city feature directly neighbouring road or field is not valid)
+
+Only checks the validity of the tile placement based on the tile features and their neighbors. It does not take into account:
+- The placement of meeples
+- Whether the tile is being placed on an already occupied position
+- Whether the tile is not neighboring any tiles
+- Whether the tile has already been placed somewhere else on the board
+*/
 func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	for _, tileFeature := range tile.Features {
 		for _, side := range side.EdgeSides {
