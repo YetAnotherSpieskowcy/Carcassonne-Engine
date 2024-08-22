@@ -21,14 +21,18 @@ def get_placed_tile(placed_tiles: list[PlacedTile], turnParams:TurnParams) -> Pl
         # if exact placement
         if ptile.to_tile().exact_equals(turnParams.tile) and ptile.position == turnParams.pos:
             if turnParams.meepleType == MeepleType.NoneMeeple:
+                meepleExists = False
                 # check if there is no meeple on a tile
                 for feature in ptile._go_obj.Features:
-                    # TODO missing meeple checking?
-                    pass
+                    if feature.Meeple.Type != MeepleType.NoneMeeple:
+                        meepleExists = True
+                        break
+                if not meepleExists:
+                    return ptile
             else:
                 # check if meeple in desired position
-                feature = ptile._go_obj.GetPlacedFeatureAtSide(sideToCheck=turnParams.side, featureType=turnParams.featureType)
-            return ptile
+                if ptile._go_obj.GetPlacedFeatureAtSide(sideToCheck=turnParams.side, featureType=turnParams.featureType).Meeple.Type == turnParams.meepleType:
+                    return ptile
 
     raise KeyError("did not find the specified tile")
 
@@ -56,5 +60,4 @@ def make_turn(engine: GameEngine, game: SerializedGame, game_id: int, turn_param
 
 def check_points(engine: GameEngine, game_id: int):
     # TODO access scores
-    engine.
     return
