@@ -120,6 +120,10 @@ Only checks the validity of the tile placement based on the tile features and th
 - Whether the tile has already been placed somewhere else on the board
 */
 func (board *board) isPositionValid(tile elements.PlacedTile) bool {
+	// Phase 1:
+	// For all of the given tile's features, we need to check that all of its sides
+	// have either a matching counterpart on the side's neighbouring tile
+	// or are left unconnected.
 	for _, tileFeature := range tile.Features {
 		for _, side := range side.EdgeSides {
 			if tileFeature.Sides.HasSide(side) {
