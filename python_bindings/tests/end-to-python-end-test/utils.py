@@ -2,7 +2,7 @@ from typing import NamedTuple
 
 from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine.models import PlacedTile, Tile, Position
-from carcassonne_engine.requests import PlayTurnRequest, GetLegalMovesRequest
+from carcassonne_engine.requests import PlayTurnRequest, GetLegalMovesRequest, MoveWithState
 from carcassonne_engine._bindings.side import Side
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
@@ -16,23 +16,23 @@ class TurnParams(NamedTuple):
     featureType: FeatureType
 
 
-def get_placed_tile(placed_tiles: list[PlacedTile], turnParams:TurnParams) -> PlacedTile:
-    for ptile in placed_tiles:
+def get_placed_tile(moves: list[MoveWithState], turnParams:TurnParams) -> PlacedTile:
+    for move in moves:
         # if exact placement
-        if ptile.to_tile().exact_equals(turnParams.tile) and ptile.position == turnParams.pos:
+        if move.move.to_tile().exact_equals(turnParams.tile) and move.position == turnParams.pos:
             if turnParams.meepleType == MeepleType.NoneMeeple:
                 meepleExists = False
                 # check if there is no meeple on a tile
-                for feature in ptile._go_obj.Features:
+                for feature in move._go_obj.Features:
                     if feature.Meeple.Type != MeepleType.NoneMeeple:
                         meepleExists = True
                         break
                 if not meepleExists:
-                    return ptile
+                    return move
             else:
                 # check if meeple in desired position
-                if ptile._go_obj.GetPlacedFeatureAtSide(sideToCheck=turnParams.side, featureType=turnParams.featureType).Meeple.Type == turnParams.meepleType:
-                    return ptile
+                if move._go_obj.GetPlacedFeatureAtSide(sideToCheck=turnParams.side, featureType=turnParams.featureType).Meeple.Type == turnParams.meepleType:
+                    return move
 
     raise KeyError("did not find the specified tile")
 
@@ -45,7 +45,7 @@ def make_turn(engine: GameEngine, game: SerializedGame, game_id: int, turn_param
     (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
 
     # find the desired one
-    move = get_placed_tile(legal_moves_resp.moves, turn_params.tile, turn_params.pos)
+    move = get_placed_tile(legal_moves_resp.moves, turn_params)
 
     # play turn
     play_turn_req = PlayTurnRequest(game_id=game_id, move=move)
@@ -58,6 +58,8 @@ def make_turn(engine: GameEngine, game: SerializedGame, game_id: int, turn_param
     return play_turn_resp.game_id, play_turn_resp.game
 
 
-def check_points(engine: GameEngine, game_id: int):
-    # TODO access scores
+def check_points(game: SerializedGame, scores: list[int]):
+    for player in game._go_obj.Players:
+        assert player.Score() == scores[player.ID()-1], (f"Player:{ player.ID()} has {player.Score()} points, should "
+                                                         f"have {scores[player.ID()-1]}")
     return

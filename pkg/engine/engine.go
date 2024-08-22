@@ -214,6 +214,7 @@ func (engine *GameEngine) GenerateOrderedGame(tileSet tilesets.TileSet) (Seriali
 	}
 
 	engine.games[id] = g
+	engine.gameMutexes[id] = &sync.RWMutex{}
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 

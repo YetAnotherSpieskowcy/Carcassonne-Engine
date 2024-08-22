@@ -30,7 +30,7 @@ from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine import tiletemplates
 from carcassonne_engine.models import Position
 from carcassonne_engine.tilesets import mini_tile_set
-from utils import make_turn, TurnParams
+from utils import make_turn, TurnParams, check_points
 from carcassonne_engine._bindings.side import Side
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
@@ -56,6 +56,8 @@ def test_two_player_game(tmp_path: Path) -> None:
     game_id, game = check_tenth_turn(engine, game, game_id)
     game_id, game = check_eleventh_turn(engine, game, game_id)
     game_id, game = check_twelfth_turn(engine, game, game_id)
+
+    # TODO check final score
 
     assert game.current_tile is None
 
@@ -94,9 +96,10 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         featureType=FeatureType.City
     )
 
-    # TODO check scores
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 0])
 
-    return make_turn(engine, game, game_id, turn_params)
+    return game_id, game
 
 
 '''
@@ -132,7 +135,10 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         featureType=FeatureType.Road
     )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 0])
+
+    return game_id, game
 
 
 '''
@@ -167,7 +173,10 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.TopLeftEdge,
         featureType=FeatureType.Field)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 0])
+
+    return game_id, game
 
 
 '''
@@ -202,7 +211,10 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.Bottom,
         featureType=FeatureType.Road)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 0])
+
+    return game_id, game
 
 
 '''
@@ -238,7 +250,10 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.NoSide,
         featureType=FeatureType.Monastery)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 2])
+
+    return game_id, game
 
 
 '''
@@ -273,7 +288,10 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.Right,
         featureType=FeatureType.City)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 2])
+
+    return game_id, game
 
 
 '''
@@ -309,7 +327,10 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         side=Side.Right,
         featureType=FeatureType.City)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 6])
+
+    return game_id, game
 
 
 '''
@@ -344,7 +365,10 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.Bottom,
         featureType=FeatureType.Road)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 6])
+
+    return game_id, game
 
 
 '''
@@ -373,7 +397,6 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 
 
 def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
-
     turn_params = TurnParams(
         pos=Position(x=-1, y=1),
         tile=tiletemplates.t_cross_road().rotate(3),
@@ -381,7 +404,10 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.TopRightEdge,
         featureType=FeatureType.Field)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 12])
+
+    return game_id, game
 
 
 '''
@@ -417,7 +443,10 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.Right,
         featureType=FeatureType.City)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [8, 12])
+
+    return game_id, game
 
 
 '''
@@ -451,7 +480,10 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
         side=Side.NoSide,
         featureType=FeatureType.NoneType)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [8, 12])
+
+    return game_id, game
 
 
 '''
@@ -485,4 +517,7 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         side=Side.NoSide,
         featureType=FeatureType.NoneType)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [8, 12])
+
+    return game_id, game

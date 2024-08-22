@@ -1,4 +1,7 @@
 ''''''
+from carcassonne_engine._bindings.elements import MeepleType
+from carcassonne_engine._bindings.side import Side
+
 '''
  diagonal edges represent cities, dots fields, straight lines roads.
  Player meeples will be represented as !@#$ signs ( you know, writing number but with shift!) 1->!, 2->@ and so on
@@ -39,6 +42,7 @@ from pytest import approx
 
 from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine import models, tiletemplates
+from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
     GetRemainingTilesRequest,
@@ -68,6 +72,8 @@ def test_four_player_game(tmp_path: Path) -> None:
     game_id, game = check_tenth_turn(engine, game, game_id)
     game_id, game = check_eleventh_turn(engine, game, game_id)
     game_id, game = check_twelfth_turn(engine, game, game_id)
+
+    # TODO check final score
 
     assert game.current_tile is None
 
@@ -103,8 +109,10 @@ def test_four_player_game(tmp_path: Path) -> None:
 def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=0),
-        tile=tiletemplates.t_cross_road(),
-        valid_turn=True)
+        tile=tiletemplates.t_cross_road().rotate(1),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Bottom,
+        featureType=FeatureType.Road)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -141,7 +149,9 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     turn_params = TurnParams(
         pos=Position(x=0, y=1),
         tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
-        valid_turn=True)
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Bottom,
+        featureType=FeatureType.City)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -178,7 +188,9 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     turn_params = TurnParams(
         pos=Position(x=2, y=0),
         tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
-        valid_turn=True)
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Bottom,
+        featureType=FeatureType.City)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -214,8 +226,10 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=1),
-        tile=tiletemplates.roads_turn(),
-        valid_turn=True)
+        tile=tiletemplates.roads_turn().rotate(3),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Right,
+        featureType=FeatureType.Road)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -251,8 +265,10 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=-1),
-        tile=tiletemplates.roads_turn(),
-        valid_turn=True)
+        tile=tiletemplates.roads_turn().rotate(1),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.BottomRightEdge,
+        featureType=FeatureType.Field)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -286,17 +302,12 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 
 def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
-    # invalid turn
-    turn_params = TurnParams(
-        pos=Position(x=0, y=-1),
-        tile=tiletemplates.straight_roads(),
-        valid_turn=False)
-
-    # valid turn
     turn_params = TurnParams(
         pos=Position(x=0, y=1),
-        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
-        valid_turn=True)
+        tile=tiletemplates.straight_roads(),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.TopRightEdge,
+        featureType=FeatureType.Field)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -330,15 +341,13 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 
 def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
-    turn_params = TurnParams(
-        pos=Position(x=2, y=-1),
-        tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
-        valid_turn=False)
 
     turn_params = TurnParams(
         pos=Position(x=2, y=-1),
         tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
-        valid_turn=True)
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Bottom,
+        featureType=FeatureType.City)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -374,13 +383,12 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
 def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=0, y=-1),
-        tile=tiletemplates.roads_turn(),
-        valid_turn=True)
+        tile=tiletemplates.roads_turn().rotate(3),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Bottom,
+        featureType=FeatureType.Road)
 
-    turn_params = TurnParams(
-        pos=Position(x=0, y=-1),
-        tile=tiletemplates.roads_turn(),
-        valid_turn=True)
+
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -417,13 +425,11 @@ No one scores for the finished city
 def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=2, y=1),
-        tile=tiletemplates.single_city_edge_straight_roads(),
-        valid_turn=True)
+        tile=tiletemplates.single_city_edge_straight_roads().rotate(2),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.TopRightEdge,
+        featureType=FeatureType.Field)
 
-    turn_params = TurnParams(
-        pos=Position(x=2, y=1),
-        tile=tiletemplates.single_city_edge_straight_roads(),
-        valid_turn=True)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -460,13 +466,11 @@ Player4 scores 3 points for finished road
 def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=3, y=1),
-        tile=tiletemplates.monastery_with_single_road(),
-        valid_turn=True)
+        tile=tiletemplates.monastery_with_single_road().rotate(1),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.Monastery)
 
-    turn_params = TurnParams(
-        pos=Position(x=3, y=1),
-        tile=tiletemplates.monastery_with_single_road(),
-        valid_turn=True)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -503,13 +507,11 @@ player1 and player4 score 4 points for their roads
 def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=-1, y=-1),
-        tile=tiletemplates.t_cross_road(),
-        valid_turn=True)
+        tile=tiletemplates.t_cross_road().rotate(3),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Bottom,
+        featureType=FeatureType.Road)
 
-    turn_params = TurnParams(
-        pos=Position(x=-1, y=-1),
-        tile=tiletemplates.t_cross_road(),
-        valid_turn=True)
 
     return make_turn(engine, game, game_id, turn_params)
 
@@ -546,11 +548,8 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     turn_params = TurnParams(
         pos=Position(x=0, y=-2),
         tile=tiletemplates.straight_roads(),
-        valid_turn=True)
-
-    turn_params = TurnParams(
-        pos=Position(x=0, y=-2),
-        tile=tiletemplates.straight_roads(),
-        valid_turn=True)
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Right,
+        featureType=FeatureType.Road)
 
     return make_turn(engine, game, game_id, turn_params)
