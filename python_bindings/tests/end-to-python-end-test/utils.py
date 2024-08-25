@@ -63,3 +63,9 @@ def check_points(game: SerializedGame, scores: list[int]):
         assert player.Score() == scores[player.ID()-1], (f"Player:{ player.ID()} has {player.Score()} points, should "
                                                          f"have {scores[player.ID()-1]}")
     return
+
+
+def check_final_points(scores: list[int]):
+    # there is no engine request for game finalizing
+    # TODO might be similar to check_points function
+    return

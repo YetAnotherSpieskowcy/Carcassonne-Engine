@@ -34,7 +34,7 @@ from carcassonne_engine._bindings.side import Side
 import logging
 
 from carcassonne_engine.models import Position
-from utils import make_turn, TurnParams
+from utils import make_turn, TurnParams, check_points, check_final_points
 from pathlib import Path
 
 import pytest
@@ -54,11 +54,11 @@ from carcassonne_engine.utils import format_binary_tile_bits
 log = logging.getLogger(__name__)
 
 
-def test_four_player_game(tmp_path: Path) -> None:
+def test_two_player_game2(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
     tile_set = mini_tile_set()
 
-    game_id, game = engine.generate_ordered_game(tile_set) # TODO generate four player game?
+    game_id, game = engine.generate_ordered_game(tile_set)
 
     game_id, game = check_first_turn(engine, game, game_id)
     game_id, game = check_second_turn(engine, game, game_id)
@@ -74,6 +74,7 @@ def test_four_player_game(tmp_path: Path) -> None:
     game_id, game = check_twelfth_turn(engine, game, game_id)
 
     # TODO check final score
+    game_id, game = finalize(engine, game, game_id)
 
     assert game.current_tile is None
 
@@ -114,7 +115,10 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.Bottom,
         featureType=FeatureType.Road)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 0])
+
+    return game_id, game
 
 
 '''
@@ -153,11 +157,14 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.Bottom,
         featureType=FeatureType.City)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 4])
+
+    return game_id, game
 
 
 '''
-// Player3 places Two city edges not connected and a meeple on bottom city
+// Player1 places Two city edges not connected and a meeple on bottom city
 |				  0	   1    2    3
 |
 |
@@ -170,7 +177,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 |               .\ /...|...\ /.
 |0              --0----1....3..
 |               .......!.../ \.
-|               .......|..| # | 
+|               .......|..| ! | 
 |
 |
 |-1
@@ -192,24 +199,27 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.Bottom,
         featureType=FeatureType.City)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 4])
+
+    return game_id, game
 
 
 '''
-// Player4 places Road turn with a meeple on a road
+// Player2 places Road turn with a meeple(@) on a road
 |				  0	   1    2    3
 |
 |
 |               |   |.....
 |               .\ /......
-|1              ..2....4-$
+|1              ..2....4-@
 |               ./ \...|..
 |               |   |..|..
 |               |   |..|..|   |
 |               .\ /...|...\ /.
 |0              --0----1....3..
 |               .......!.../ \.
-|               .......|..| # |
+|               .......|..| ! |
 |
 |
 |-1
@@ -231,11 +241,14 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.Right,
         featureType=FeatureType.Road)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 4])
+
+    return game_id, game
 
 
 '''
-// Player1 places Road turn with a farmer on the right bototn
+// Player1 places Road turn with a farmer(!) on the right bottom
 |				  0	   1    2    3
 |
 |
@@ -248,7 +261,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 |               .\ /...|...\ /.
 |0              --0----1....3..
 |               .......!.../ \.
-|               .......|..| # |
+|               .......|..| ! |
 |                    ..|..
 |                    ..|..
 |-1                  --5..
@@ -270,7 +283,10 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.BottomRightEdge,
         featureType=FeatureType.Field)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 4])
+
+    return game_id, game
 
 
 '''
@@ -287,7 +303,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |               .\ /...|...\ /.
 |0              --0----1....3..
 |               .......!.../ \.
-|               .......|..| # |
+|               .......|..| ! |
 |               ..@....|..
 |               .......|..
 |-1             --6----5..
@@ -309,11 +325,15 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.TopRightEdge,
         featureType=FeatureType.Field)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 4])
+
+    return game_id, game
 
 
 '''
-// Player3 places Two city edges not connected, finishing own city, and placing a meeple on a new one
+// Player1 places Two city edges not connected, finishing own city, and placing a meeple on a new one
+// player1 scores 4 points for a city
 |				  0	   1    2    3
 |
 |
@@ -331,7 +351,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |               .......|...\ /
 |-1             --6----5....7..
 |               ........!../ \.
-|               ..........| # |
+|               ..........| ! |
 |
 |
 |-2
@@ -341,7 +361,6 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 
 def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
-
     turn_params = TurnParams(
         pos=Position(x=2, y=-1),
         tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
@@ -349,29 +368,32 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         side=Side.Bottom,
         featureType=FeatureType.City)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 4])
+
+    return game_id, game
 
 
 '''
-// Player4 places Road turn and a meeple on a road
+// Player2 places Road turn and a meeple on a road
 |				  0	   1    2    3
 |
 |
 |               |   |.....
 |               .\ /......
-|1              ..2....4-$
+|1              ..2....4-@
 |               ./ \...|..
 |               |   |..|..
 |          .....|   |..|..|   |
 |          ......\ /...|...\ /.
 |0         ..8----0----1....3..
 |          ..|.........!.../ \.
-|          ..$.........|..|   |
+|          ..@.........|..|   |
 |               ..@....|..|   |
 |               .......|...\ /
 |-1             --6----5....7..
 |               ........!../ \.
-|               ..........| # |
+|               ..........| ! |
 |
 |
 |-2
@@ -388,9 +410,10 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.Bottom,
         featureType=FeatureType.Road)
 
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 4])
 
-
-    return make_turn(engine, game, game_id, turn_params)
+    return game_id, game
 
 
 '''
@@ -401,19 +424,19 @@ No one scores for the finished city
 |
 |               |   |.......!..
 |               .\ /...........
-|1              ..2....4-$--9--
+|1              ..2....4-@--9--
 |               ./ \...|.../ \.
 |               |   |..|..|   |
 |          .....|   |..|..|   |
 |          ......\ /...|...\ /.
 |0         ..8----0----1....3..
 |          ..|.........!.../ \.
-|          ..$.........|..|   |
+|          ..@.........|..|   |
 |               ..@....|..|   |
 |               .......|...\ /
 |-1             --6----5....7..
 |               ........!../ \.
-|               ..........| # |
+|               ..........| ! |
 |
 |
 |-2
@@ -430,13 +453,15 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         side=Side.TopRightEdge,
         featureType=FeatureType.Field)
 
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 4])
 
-    return make_turn(engine, game, game_id, turn_params)
+    return game_id, game
 
 
 '''
 // Player2 places Monastery with road, with a meeple on a monastery.
-Player4 scores 3 points for finished road
+Player2 scores 3 points for finished road
 |				  0	   1    2    3
 |
 |
@@ -449,7 +474,7 @@ Player4 scores 3 points for finished road
 |          ......\ /...|...\ /.
 |0         ..8----0----1....3..
 |          ..|.........!.../ \.
-|          ..$.........|..|   |
+|          ..@.........|..|   |
 |               ..@....|..|   |
 |               .......|...\ /
 |-1             --6----5....7..
@@ -471,12 +496,14 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         side=Side.NoSide,
         featureType=FeatureType.Monastery)
 
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [4, 7])
 
-    return make_turn(engine, game, game_id, turn_params)
+    return game_id, game
 
 
 '''
-// Player3 places T cross road, with a meeple on a bottom road
+// Player1 places T cross road, with a meeple on a bottom road
 player1 and player4 score 4 points for their roads
 |				  0	   1    2    3
 |
@@ -495,7 +522,7 @@ player1 and player4 score 4 points for their roads
 |          ..|.........|...\ /
 |-1        ..B----6----5....7..
 |          ..|..........!../ \.
-|          ..#............| # |
+|          ..!............| # |
 |
 |
 |-2
@@ -512,12 +539,14 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
         side=Side.Bottom,
         featureType=FeatureType.Road)
 
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [8, 11])
 
-    return make_turn(engine, game, game_id, turn_params)
+    return game_id, game
 
 
 '''
-// Player4 places Straight road with a meeple on a road
+// Player2 places Straight road with a meeple on a road
 |				  0	   1    2    3
 |
 |
@@ -538,7 +567,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
 |          ..#............| # |
 |               .....
 |               .....
-|-2             --C-$
+|-2             --C-@
 |               .....
 |               .....
 '''
@@ -552,4 +581,49 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         side=Side.Right,
         featureType=FeatureType.Road)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [8, 11])
+
+    return game_id, game
+
+
+'''
+player1 scores 12 points in total:
+    - 2*3points for farmer on 9 tile
+    - 2*3points for meeple on 5 tile    
+
+player2 scores 6 points in total:
+    - 1 point for road on B tile
+    - 1 point for road on C tile
+    - 3 points for monastery on A tile
+    - 1 point for city on 7 tile
+
+|				  0	   1    2    3
+|
+|
+|               |   |.......!.......
+|               .\ /............[ ].
+|1              ..2....4----9---[A].
+|               ./ \...|.../ \..[@].
+|               |   |..|..|   |.....
+|          .....|   |..|..|   |
+|          ......\ /...|...\ /.
+|0         ..8----0----1....3..
+|          ..|.........|.../ \.
+|          ..|.........|..|   |
+|          ..|....@....|..|   |
+|          ..|.........|...\ /
+|-1        ..B----6----5....7..
+|          ..|..........!../ \.
+|          ..#............| # |
+|               .....
+|               .....
+|-2             --C-@
+|               .....
+|               .....
+'''
+
+
+def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    check_final_points([8 + 12, 11 + 6])
+    return

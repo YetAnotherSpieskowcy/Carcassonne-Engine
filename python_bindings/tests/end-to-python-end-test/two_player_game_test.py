@@ -30,7 +30,7 @@ from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine import tiletemplates
 from carcassonne_engine.models import Position
 from carcassonne_engine.tilesets import mini_tile_set
-from utils import make_turn, TurnParams, check_points
+from utils import make_turn, TurnParams, check_points, check_final_points
 from carcassonne_engine._bindings.side import Side
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
@@ -58,6 +58,7 @@ def test_two_player_game(tmp_path: Path) -> None:
     game_id, game = check_twelfth_turn(engine, game, game_id)
 
     # TODO check final score
+    game_id, game = finalize(engine, game, game_id)
 
     assert game.current_tile is None
 
@@ -90,7 +91,7 @@ def test_two_player_game(tmp_path: Path) -> None:
 def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=0, y=1),
-        tile=tiletemplates.t_cross_road().rotate(2),
+        tile=tiletemplates.single_city_edge_straight_roads().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.City
@@ -351,7 +352,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
            ..|............          
            ..|..     -...--...-     
            .[ ].      \./  \./     
--1         .[5].       6    7     
+-1         .[5].       6    7 !   
            .[!].      /.\  /.\      
            .....     -...--   -   
 '''
@@ -390,7 +391,7 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
            ..|............          
            ..|..     -...--...-     
            .[ ].      \./  \./     
--1         .[5].       6    7     
+-1         .[5].       6    7 !    
            .[!].      /.\  /.\      
            .....     -...--   -     
 '''
@@ -466,7 +467,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
            ..|.................     
            ..|..     -...--...--...-
            .[ ].      \./  \./  \./
--1         .[5].       6    7    A
+-1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
            .....     -...--   --...-
 '''
@@ -503,7 +504,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
            ..|......................
            ..|..     -...--...--...-
            .[ ].      \|/  \./  \./
--1         .[5].       6    7    A
+-1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
            .....     -...--   --...-
 '''
@@ -521,3 +522,39 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     check_points(game, [8, 12])
 
     return game_id, game
+
+
+'''
+player1 scores 11 points in total:
+    - 2*3points for farmer on 9 tile
+    - 3 points for farmer on 3 tile
+    - 2 points for monastery on 5 tile  
+
+player2 scores 4 points in total:
+    - 3 points for road on 8 tile
+    - 1 point for city on A tile    
+
+            -1    0    1    2    3
+
+
+           ..|.!............|..     
+           ..|..............|..     
+1          ..9----1----2....8..     
+           ..|.../ \...|....|..     
+           ..|..|   |..|....@..     
+           ..|..|   |..|....|.......
+           ..|...\ /.!.|....|.......
+0          ..4----0----3....B----C--
+           ..|......................
+           ..|......................
+           ..|..     -...--...--...-
+           .[ ].      \|/  \./  \./
+-1         .[5].       6    7    A @
+           .[!].      /.\  /.\  /.\ 
+           .....     -...--   --...-
+'''
+
+
+def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    check_final_points([8 + 11, 12 + 4])
+    return

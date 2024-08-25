@@ -53,7 +53,7 @@ from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine import tiletemplates
 from carcassonne_engine.models import Position
 from carcassonne_engine.tilesets import mini_tile_set
-from utils import make_turn, TurnParams
+from utils import make_turn, TurnParams, check_points, check_final_points
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ def test_all_tiles_game(tmp_path: Path) -> None:
     game_id, game = check_turn_1(engine, game, game_id)
 
     # TODO check final score
+    game_id, game = finalize(engine, game, game_id)
 
     assert game.current_tile is None
 
@@ -119,7 +120,10 @@ def check_turn_1(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         featureType=FeatureType.Monastery
     )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 0])
+
+    return game_id, game
 
 
 '''
@@ -165,12 +169,15 @@ player2 places meeple(@) on a monastery
 def check_turn_2(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=0),
-        tile=tiletemplates.monastery_with_single_road(),
+        tile=tiletemplates.monastery_with_single_road().rotate(1),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City)
+        side=Side.NoSide,
+        featureType=FeatureType.Monastery)
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 0])
+
+    return game_id, game
 
 
 '''
@@ -217,11 +224,14 @@ def check_turn_3(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         pos=Position(x=-1, y=0),
         tile=tiletemplates.straight_roads(),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.Left,
+        featureType=FeatureType.Road
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 0])
+
+    return game_id, game
 
 
 '''
@@ -267,13 +277,16 @@ player2 places meeple on a field
 def check_turn_4(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=-2, y=0),
-        tile=tiletemplates.roads_turn(),
+        tile=tiletemplates.roads_turn().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        featureType=FeatureType.Field
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [0, 0])
+
+    return game_id, game
 
 
 '''
@@ -319,13 +332,16 @@ player1 scores 5 points
 def check_turn_5(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=-2, y=1),
-        tile=tiletemplates.t_cross_road(),
+        tile=tiletemplates.t_cross_road().rotate(1),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.Top,
+        featureType=FeatureType.Road
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [5, 0])
+
+    return game_id, game
 
 
 '''
@@ -375,11 +391,14 @@ def check_turn_6(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         pos=Position(x=-2, y=2),
         tile=tiletemplates.x_cross_road(),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.Right,
+        featureType=FeatureType.Road
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [5, 0])
+
+    return game_id, game
 
 
 '''
@@ -425,13 +444,16 @@ player 1 places meeple(!) on a city
 def check_turn_7(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=2, y=-1),
-        tile=tiletemplates.single_city_edge_no_roads(),
+        tile=tiletemplates.single_city_edge_no_roads().rotate(1),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
+        side=Side.Right,
         featureType=FeatureType.City
-        )
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [5, 0])
+
+    return game_id, game
 
 
 '''
@@ -477,17 +499,20 @@ player2 places meeple(@) on a city
 def check_turn_8(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=-1, y=2),
-        tile=tiletemplates.single_city_edge_straight_roads(),
+        tile=tiletemplates.single_city_edge_straight_roads().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.City
-        )
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [5, 0])
+
+    return game_id, game
 
 
-# TODO place meeple if possible
 '''
+player1 places meeple(!) on a upper field
 player1 closes city 
 player1 scores 4 points
        -3   -2   -1    0    1    2    3
@@ -518,7 +543,7 @@ player1 scores 4 points
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -530,13 +555,16 @@ player1 scores 4 points
 def check_turn_9(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=2, y=-1),
-        tile=tiletemplates.single_city_edge_left_road_turn(),
+        tile=tiletemplates.single_city_edge_left_road_turn().rotate(3),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.TopRightEdge,
+        featureType=FeatureType.Field
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 0])
+
+    return game_id, game
 
 
 '''
@@ -569,7 +597,7 @@ player2 places meeple on a city
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -581,13 +609,16 @@ player2 places meeple on a city
 def check_turn_A(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=0, y=2),
-        tile=tiletemplates.single_city_edge_right_road_turn(),
+        tile=tiletemplates.single_city_edge_right_road_turn().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.City
-        )
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 0])
+
+    return game_id, game
 
 
 '''
@@ -621,7 +652,7 @@ player 2 scores 4 points
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -635,11 +666,14 @@ def check_turn_B(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         pos=Position(x=0, y=3),
         tile=tiletemplates.single_city_edge_cross_road(),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.BottomRightEdge,
+        featureType=FeatureType.Field
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 0])
+
+    return game_id, game
 
 
 '''
@@ -671,7 +705,7 @@ def check_turn_B(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -684,12 +718,15 @@ def check_turn_C(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=2),
         tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
-        meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        meepleType=MeepleType.NoneMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.NoneType
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 0])
+
+    return game_id, game
 
 
 '''
@@ -722,7 +759,7 @@ player 1 places meeple(!) on a city
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -738,9 +775,12 @@ def check_turn_D(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.City
-        )
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 0])
+
+    return game_id, game
 
 
 '''
@@ -773,7 +813,7 @@ player 2 places meeple(@) on a city
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -789,9 +829,12 @@ def check_turn_E(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.City
-        )
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 0])
+
+    return game_id, game
 
 
 '''
@@ -826,7 +869,7 @@ player2 scores 4 points
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -840,11 +883,14 @@ def check_turn_F(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         pos=Position(x=-1, y=1),
         tile=tiletemplates.two_city_edges_corner_not_connected(),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.Left,
+        featureType=FeatureType.Field
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -877,7 +923,7 @@ player2 places meeple(@) on a field
 0          ..4----3----0---[2].
            ................[ ].
            ..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -889,13 +935,16 @@ player2 places meeple(@) on a field
 def check_turn_G(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=3, y=1),
-        tile=tiletemplates.two_city_edges_corner_connected(),
+        tile=tiletemplates.two_city_edges_corner_connected().rotate(3),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        featureType=FeatureType.Field
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -928,7 +977,7 @@ player1 places meeple(!) on a city
 0     * H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -940,13 +989,16 @@ player1 places meeple(!) on a city
 def check_turn_H(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=-3, y=0),
-        tile=tiletemplates.two_city_edges_corner_connected_shield(),
+        tile=tiletemplates.two_city_edges_corner_connected_shield().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.City
-        )
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -981,7 +1033,7 @@ player2 places meeple(@) on a road
 0    *  H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -993,13 +1045,16 @@ player2 places meeple(@) on a road
 def check_turn_I(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=3),
-        tile=tiletemplates.two_city_edges_corner_connected_road_turn(),
+        tile=tiletemplates.two_city_edges_corner_connected_road_turn().rotate(1),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.Top,
+        featureType=FeatureType.Road
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -1033,7 +1088,7 @@ player1 places meeple(!) on a road
 0     * H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -1045,13 +1100,16 @@ player1 places meeple(!) on a road
 def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=3, y=3),
-        tile=tiletemplates.two_city_edges_corner_connected_road_turn_shield(),
+        tile=tiletemplates.two_city_edges_corner_connected_road_turn_shield().rotate(2),
         meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        side=Side.Right,
+        featureType=FeatureType.Road
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -1083,7 +1141,7 @@ def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 0     * H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -1095,13 +1153,16 @@ def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 def check_turn_K(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=2, y=3),
-        tile=tiletemplates.three_city_edges_connected(),
-        meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        tile=tiletemplates.three_city_edges_connected().rotate(2),
+        meepleType=MeepleType.NoneMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.NoneType
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -1133,7 +1194,7 @@ def check_turn_K(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 0     * H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -1146,12 +1207,15 @@ def check_turn_L(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=1),
         tile=tiletemplates.three_city_edges_connected_shield(),
-        meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        meepleType=MeepleType.NoneMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.NoneType
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -1183,7 +1247,7 @@ def check_turn_L(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 0     * H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -1196,12 +1260,15 @@ def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=2, y=1),
         tile=tiletemplates.three_city_edges_connected_road(),
-        meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        meepleType=MeepleType.NoneMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.NoneType
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
@@ -1233,7 +1300,7 @@ def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 0     * H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -1245,16 +1312,24 @@ def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 def check_turn_N(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=0, y=4),
-        tile=tiletemplates.three_city_edges_connected_road_shield(),
-        meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        tile=tiletemplates.three_city_edges_connected_road_shield().rotate(2),
+        meepleType=MeepleType.NoneMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.NoneType
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 4])
+
+    return game_id, game
 
 
 '''
+player1 scores nothing because player2 has meeples in the city
+player2 scores: 13*2 + 3*2 = 26+6=32
+    13 tile city
+    3 shield in a city
+
        -3   -2   -1    0    1    2    3
 
 
@@ -1272,7 +1347,7 @@ def check_turn_N(engine: GameEngine, game, game_id) -> (int, SerializedGame):
            ..|.........|...\ /..\ /..\ /.
 2          --6----8----A....C...|D|..|E|.
            ..|.../ \../ \../ \../ \../ \.
-           ..|..|   ||   ||   || ! || @ |
+           ..|..|   || @ ||   || ! || @ |
            ..|..|   |                   |
            ..|...\ /        *          /.
 1          --5..!.F    O    L    M    G..
@@ -1283,7 +1358,7 @@ def check_turn_N(engine: GameEngine, game, game_id) -> (int, SerializedGame):
 0    *  H....4----3----0---[2].
        ! \.................[ ].
           |..@.................
-                     .........--....
+                     .........--...!
                      .[!]..../  \... 
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
@@ -1296,9 +1371,68 @@ def check_turn_O(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=0, y=1),
         tile=tiletemplates.four_city_edges_connected_shield(),
-        meepleType=MeepleType.NormalMeeple,
-        side=Side.Bottom,
-        featureType=FeatureType.City
-        )
+        meepleType=MeepleType.NoneMeeple,
+        side=Side.NoSide,
+        featureType=FeatureType.NoneType
+    )
 
-    return make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+    check_points(game, [9, 36])
+
+    return game_id, game
+
+
+'''
+player1 scores 20 points in total:
+    - 1+1 points for a city with shield on H tile
+    - 5 points for monastery on 1 tile
+    - 3 points for farmer on 9 tile
+    - 2*3points for farmer on F tile
+    - 3 points for farmer on B tile
+    - 1 point for road on J tile
+    
+player2 scores 19 points in total:   
+    - 2*3points for farmer on 4 tile
+    - 8 points for monastery on 2 tile
+    - 3 points for farmer on G tile
+    - 2 points for road on I tile 
+
+       -3   -2   -1    0    1    2    3
+
+
+                     -.|.-
+                      \|/ 
+4                    * N    
+
+
+                     |   |..@.--...--.|..    
+                     .\ /...|/  \./  \|..  
+3                    --B----I    K    J-! 
+                     ..|.../         * \.
+                     ..|.!|             |
+           ..|.........|..|   ||   || * |
+           ..|.........|...\ /..\ /..\ /.
+2          --6----8----A....C...|D|..|E|.
+           ..|.../ \../ \../ \../ \../ \.
+           ..|..|   ||   ||   ||   ||   |
+           ..|..|   |                   |
+           ..|...\ /        *          /.
+1          --5..!.F    O    L    M    G..
+           ..|.....\       /.\  /|\  /...
+           ..|......-     -...--.|.--..@.
+      -......|.......|   |.....
+       \.....|........\ /..[@].
+0    *  H....4----3----0---[2].
+       ! \.................[ ].
+          |..@.................
+                     .........--...!
+                     .[!]..../  \... 
+-1                   .[1]...7    9--     
+                     .[ ]....\  /|..
+                     .........--.|..
+'''
+
+
+def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+    check_final_points([9 + 20, 36 + 19])
+    return
