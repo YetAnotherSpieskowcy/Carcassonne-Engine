@@ -1,4 +1,4 @@
-package performanceTests
+package performancetests
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ func TestSingleExtraLongRoad(t *testing.T) {
 	roadEnd := time.Now()
 
 	fieldStart := time.Now()
-	PlayNTileGame(tileCount, fieldTile, true)
+	err = PlayNTileGame(tileCount, fieldTile, true)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}

@@ -1,4 +1,4 @@
-package performanceTests
+package performancetests
 
 import (
 	"fmt"
