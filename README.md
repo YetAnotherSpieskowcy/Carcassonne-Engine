@@ -124,8 +124,8 @@ docker run -e "VALIDATE_ALL_CODEBASE=true" -e "DEFAULT_BRANCH=origin/main" -e "V
 To run the performance tests, go needs to be built with build tag.
 Build tags in visual studio code can be set in .vscode/setting.json,
 which looks like this:
-{    
+{
     "go.buildTags": "test,performanceTest"
 }
 ("test" tag is for end tests)
-Tag is made to prevent running long tests on github
+Tag is made to prevent running long tests on GitHub
