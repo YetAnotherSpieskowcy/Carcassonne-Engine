@@ -84,7 +84,16 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 			if sides.HasSide(mask) {
 				c, ok := foundCities[mask]
 				if ok {
-					cToJoin = append(cToJoin, c)
+					notConsidered := true
+					for _, val := range cToJoin {
+						if val == c {
+							notConsidered = false
+							break
+						}
+					}
+					if notConsidered {
+						cToJoin = append(cToJoin, c)
+					}
 				}
 			}
 			mask = mask.Rotate(1)
