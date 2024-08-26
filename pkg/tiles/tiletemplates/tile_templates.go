@@ -455,8 +455,8 @@ func TwoCityEdgesUpAndDownConnectedShield() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides: side.BottomLeftEdge |
-					side.BottomRightEdge,
+				Sides: side.RightTopEdge |
+					side.RightBottomEdge,
 			},
 		},
 	}
@@ -582,8 +582,8 @@ func ThreeCityEdgesConnected() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides: side.LeftBottomEdge |
-					side.BottomLeftEdge,
+				Sides: side.BottomLeftEdge |
+					side.BottomRightEdge,
 			},
 		},
 	}
@@ -604,8 +604,8 @@ func ThreeCityEdgesConnectedShield() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides: side.LeftBottomEdge |
-					side.BottomLeftEdge,
+				Sides: side.BottomLeftEdge |
+					side.BottomRightEdge,
 			},
 		},
 	}
@@ -629,11 +629,11 @@ func ThreeCityEdgesConnectedRoad() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.LeftBottomEdge,
+				Sides:       side.BottomLeftEdge,
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.BottomLeftEdge,
+				Sides:       side.BottomRightEdge,
 			},
 		},
 	}
@@ -658,11 +658,11 @@ func ThreeCityEdgesConnectedRoadShield() tiles.Tile {
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.LeftBottomEdge,
+				Sides:       side.BottomLeftEdge,
 			},
 			{
 				FeatureType: feature.Field,
-				Sides:       side.BottomLeftEdge,
+				Sides:       side.BottomRightEdge,
 			},
 		},
 	}

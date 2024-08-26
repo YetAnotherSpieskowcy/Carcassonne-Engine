@@ -187,6 +187,62 @@ func TestBoardPlaceTilePlacesTwoTilesOfSameTypeProperly(t *testing.T) {
 	}
 }
 
+func TestIsPositionValidWhenPositionIsInvalid(t *testing.T) {
+	boardInterface := NewBoard(tilesets.StandardTileSet())
+	board := boardInterface.(*board)
+
+	tiles := []elements.PlacedTile{
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)), // field adjacent to city
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad()),           // road adjacent to city
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(2)), // road adjacent to field
+
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(1)), // city adjacent to road
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads()),           // field adjacent to road
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads()),           // city adjacent to field
+	}
+
+	// set positions
+	tiles[0].Position = position.New(0, 1)
+	tiles[1].Position = position.New(0, 1)
+	tiles[2].Position = position.New(0, -1)
+
+	tiles[3].Position = position.New(-1, 0)
+	tiles[4].Position = position.New(-1, 0)
+	tiles[5].Position = position.New(0, -1)
+
+	// place tiles
+	for i, tile := range tiles {
+		valid := board.isPositionValid(tile)
+		if valid == true {
+			t.Fatalf("expected invalid position when placing tile number: %#v", i)
+		}
+	}
+}
+
+func TestIsPositionValidWhenPositionIsValid(t *testing.T) {
+	boardInterface := NewBoard(tilesets.StandardTileSet())
+	board := boardInterface.(*board)
+
+	tiles := []elements.PlacedTile{
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(1)),
+		elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad()),
+		elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2)),
+	}
+
+	// set positions
+	tiles[0].Position = position.New(1, 0)
+	tiles[1].Position = position.New(0, -1)
+	tiles[2].Position = position.New(0, 1)
+
+	// place tiles
+	for i, tile := range tiles {
+		valid := board.isPositionValid(tile)
+		if valid == false {
+			t.Fatalf("expected valid position when placing tile number: %#v", i)
+		}
+	}
+}
+
 func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	var report elements.ScoreReport
 	var extendedTileSet = tilesets.StandardTileSet()
