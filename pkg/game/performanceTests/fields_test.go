@@ -1,4 +1,4 @@
-package performance_tests
+package performanceTests
 
 import (
 	"fmt"
@@ -18,11 +18,17 @@ func TestLongField(t *testing.T) {
 	fieldTile := tiletemplates.TestOnlyField()
 
 	fieldStart := time.Now()
-	PlayNTileGame(tileCount, fieldTile, true)
+	err := PlayNTileGame(tileCount, fieldTile, true)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	fieldEnd := time.Now()
 
 	emptyStart := time.Now()
-	PlayNTileGame(tileCount, fieldTile, false)
+	err = PlayNTileGame(tileCount, fieldTile, false)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	emptyEnd := time.Now()
 
 	fieldGameDuration := fieldEnd.Sub(fieldStart)
@@ -45,13 +51,19 @@ func TestManySmallFields(t *testing.T) {
 
 	fieldStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, fieldTile, true)
+		err := PlayNTileGame(tileCount, fieldTile, true)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	fieldEnd := time.Now()
 
 	emptyStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, fieldTile, false)
+		err := PlayNTileGame(tileCount, fieldTile, false)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	emptyEnd := time.Now()
 

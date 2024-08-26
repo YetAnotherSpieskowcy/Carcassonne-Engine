@@ -1,4 +1,4 @@
-package performance_tests
+package performanceTests
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"

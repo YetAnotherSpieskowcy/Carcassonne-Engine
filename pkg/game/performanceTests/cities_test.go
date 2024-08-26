@@ -1,4 +1,4 @@
-package performance_tests
+package performanceTests
 
 import (
 	"fmt"
@@ -18,11 +18,17 @@ func TestLongCity(t *testing.T) {
 	cityTile := tiletemplates.FourCityEdgesConnectedShield()
 
 	cityStart := time.Now()
-	PlayNTileGame(tileCount, cityTile, true)
+	err := PlayNTileGame(tileCount, cityTile, true)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	cityEnd := time.Now()
 
 	emptyStart := time.Now()
-	PlayNTileGame(tileCount, cityTile, false)
+	err = PlayNTileGame(tileCount, cityTile, false)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	emptyEnd := time.Now()
 
 	cityGameDuration := cityEnd.Sub(cityStart)
@@ -45,13 +51,19 @@ func TestManySmallCities(t *testing.T) {
 
 	cityStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, cityTile, true)
+		err := PlayNTileGame(tileCount, cityTile, true)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	cityEnd := time.Now()
 
 	emptyStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, cityTile, false)
+		err := PlayNTileGame(tileCount, cityTile, false)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	emptyEnd := time.Now()
 

@@ -1,4 +1,4 @@
-package performance_tests
+package performanceTests
 
 import (
 	"fmt"
@@ -18,11 +18,17 @@ func TestLongMonastery(t *testing.T) {
 	monasteryTile := tiletemplates.MonasteryWithoutRoads()
 
 	monasteryStart := time.Now()
-	PlayNTileGame(tileCount, monasteryTile, true)
+	err := PlayNTileGame(tileCount, monasteryTile, true)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	monasteryEnd := time.Now()
 
 	emptyStart := time.Now()
-	PlayNTileGame(tileCount, monasteryTile, false)
+	err = PlayNTileGame(tileCount, monasteryTile, false)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	emptyEnd := time.Now()
 
 	monasteryGameDuration := monasteryEnd.Sub(monasteryStart)
@@ -45,13 +51,19 @@ func TestManySmallMonasteries(t *testing.T) {
 
 	monasteryStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, monasteryTile, true)
+		err := PlayNTileGame(tileCount, monasteryTile, true)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	monasteryEnd := time.Now()
 
 	emptyStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, monasteryTile, false)
+		err := PlayNTileGame(tileCount, monasteryTile, false)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	emptyEnd := time.Now()
 

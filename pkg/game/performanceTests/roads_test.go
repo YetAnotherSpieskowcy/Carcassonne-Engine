@@ -1,4 +1,4 @@
-package performance_tests
+package performanceTests
 
 import (
 	"fmt"
@@ -19,11 +19,17 @@ func TestSingleExtraLongRoad(t *testing.T) {
 	fieldTile := tiletemplates.TestOnlyField()
 
 	roadStart := time.Now()
-	PlayNTileGame(tileCount, roadTile, true)
+	err := PlayNTileGame(tileCount, roadTile, true)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	roadEnd := time.Now()
 
 	fieldStart := time.Now()
 	PlayNTileGame(tileCount, fieldTile, true)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	fieldEnd := time.Now()
 
 	roadGameDuration := roadEnd.Sub(roadStart)
@@ -46,13 +52,19 @@ func TestManyShortRoads(t *testing.T) {
 
 	roadStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, roadTile, true)
+		err := PlayNTileGame(tileCount, roadTile, true)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	roadEnd := time.Now()
 
 	emptyStart := time.Now()
 	for range gameCount {
-		PlayNTileGame(tileCount, roadTile, false)
+		err := PlayNTileGame(tileCount, roadTile, false)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 	}
 	emptyEnd := time.Now()
 
