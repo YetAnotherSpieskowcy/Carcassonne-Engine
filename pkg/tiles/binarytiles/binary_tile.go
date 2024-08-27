@@ -15,7 +15,7 @@ type BinaryTile uint64
 
 // interpreting BinaryTile's bits:
 //      00000000_00000000_1_01_000000011_00_0011_0000010011_0001001100_1000001110
-//       Y pos    X pos   ^ ^   meeple   ^    ^     city       road      field
+//       X pos    Y pos   ^ ^   meeple   ^    ^     city       road      field
 //                       /  |            |    |
 //                      / owner playerID |    |
 //                     /                 |    |
