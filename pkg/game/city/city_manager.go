@@ -77,28 +77,26 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 	citiesToJoin := map[elements.PlacedFeature][]int{}
 	cityFeatures := tile.GetFeaturesOfType(feature.City)
 	for _, cityFeature := range cityFeatures {
-		var cToJoin = []int{}
+		var cityIndexesToJoin = []int{}
 		sides := cityFeature.Feature.Sides
-		mask := side.Top
-		for range 4 {
+		for _, mask := range side.PrimarySides {
 			if sides.HasSide(mask) {
-				c, ok := foundCities[mask]
+				neighbourCityIndex, ok := foundCities[mask]
 				if ok {
-					notConsidered := true
-					for _, val := range cToJoin {
-						if val == c {
-							notConsidered = false
+					alreadyChecked := false
+					for _, cityIndex := range cityIndexesToJoin {
+						if cityIndex == neighbourCityIndex {
+							alreadyChecked = true
 							break
 						}
 					}
-					if notConsidered {
-						cToJoin = append(cToJoin, c)
+					if !alreadyChecked {
+						cityIndexesToJoin = append(cityIndexesToJoin, neighbourCityIndex)
 					}
 				}
 			}
-			mask = mask.Rotate(1)
 		}
-		citiesToJoin[cityFeature] = cToJoin
+		citiesToJoin[cityFeature] = cityIndexesToJoin
 	}
 	return citiesToJoin
 }
@@ -111,19 +109,19 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 		citiesToRemove := make([]int, 0)
 		citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
 		// join cities
-		for f, cToJoin := range citiesToJoin {
-			if len(cToJoin) == 0 {
+		for f, cityIndexesToJoin := range citiesToJoin {
+			if len(cityIndexesToJoin) == 0 {
 				toAppend := []elements.PlacedFeature{f}
 				manager.cities = append(manager.cities, NewCity(tile.Position, toAppend))
 			} else {
-				if len(cToJoin) > 1 {
-					for _, cityIndex := range cToJoin[1:] {
-						manager.cities[cToJoin[0]].JoinCities(manager.cities[cityIndex])
+				if len(cityIndexesToJoin) > 1 {
+					for _, cityIndex := range cityIndexesToJoin[1:] {
+						manager.cities[cityIndexesToJoin[0]].JoinCities(manager.cities[cityIndex])
 						citiesToRemove = append(citiesToRemove, cityIndex)
 					}
 				}
 				toAdd := []elements.PlacedFeature{f}
-				manager.cities[cToJoin[0]].AddTile(tile.Position, toAdd)
+				manager.cities[cityIndexesToJoin[0]].AddTile(tile.Position, toAdd)
 			}
 		}
 		// remove cities that were merged into another city
