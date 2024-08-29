@@ -10,7 +10,7 @@ env:
 
 permissions: read-all
 jobs:
-  go-tests:
+  performance-tests:
     name: Tests
     runs-on: ubuntu-latest
 
