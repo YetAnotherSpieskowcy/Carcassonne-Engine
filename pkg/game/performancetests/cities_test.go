@@ -1,4 +1,3 @@
-//go:build performanceTest
 
 package performancetests
 

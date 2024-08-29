@@ -20,9 +20,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: "${{ env.GO_VERSION }}"
-      - name: Install gocover-cobertura
-        run: |
-          go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
       # Install gotestfmt on the VM running the action.
       - name: Set up gotestfmt
         uses: GoTestTools/gotestfmt-action@v2            
