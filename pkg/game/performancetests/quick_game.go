@@ -1,6 +1,8 @@
 package performancetests
 
 import (
+	"testing"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -14,7 +16,7 @@ import (
 Quick function for playing a simple game in a straight line.
 Arugment playGame is used for cases when empty game needs to be measured.
 */
-func PlayNTileGame(tileCount int, tile tiles.Tile, playGame bool) error {
+func PlayNTileGame(tileCount int, tile tiles.Tile, b *testing.B) error {
 
 	tileSet := tilesets.TileSet{}
 	tileSet.StartingTile = tile
@@ -30,15 +32,16 @@ func PlayNTileGame(tileCount int, tile tiles.Tile, playGame bool) error {
 	}
 	ptile := elements.ToPlacedTile(tile)
 
-	if playGame {
-		// play game
-		for i := range tileCount {
-			ptile.Position = position.New(int16(i+1), 0)
-			err = Game.PlayTurn(ptile)
-			if err != nil {
-				return err
-			}
+	// play game
+	b.StartTimer()
+	for i := range tileCount {
+		ptile.Position = position.New(int16(i+1), 0)
+		err = Game.PlayTurn(ptile)
+		if err != nil {
+			return err
 		}
 	}
+	b.StopTimer()
+
 	return nil
 }

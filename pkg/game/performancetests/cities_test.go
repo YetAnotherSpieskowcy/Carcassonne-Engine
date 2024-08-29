@@ -17,25 +17,7 @@ func BenchmarkLongCity(b *testing.B) {
 	cityTile := tiletemplates.FourCityEdgesConnectedShield()
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, cityTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkLongCitySetup(b *testing.B) {
-	b.StopTimer()
-	tileCount := 5000
-	cityTile := tiletemplates.FourCityEdgesConnectedShield()
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, cityTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, cityTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}
@@ -53,25 +35,7 @@ func BenchmarkManySmallCities(b *testing.B) {
 	cityTile := tiletemplates.FourCityEdgesConnectedShield()
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, cityTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkManySmallCitiesSetup(b *testing.B) {
-	b.StopTimer()
-	tileCount := 10
-	cityTile := tiletemplates.FourCityEdgesConnectedShield()
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, cityTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, cityTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}

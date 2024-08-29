@@ -17,25 +17,7 @@ func BenchmarkLongField(b *testing.B) {
 	fieldTile := tiletemplates.TestOnlyField()
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, fieldTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkLongFieldSetup(b *testing.B) {
-	b.StopTimer()
-	tileCount := 5000
-	fieldTile := tiletemplates.TestOnlyField()
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, fieldTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, fieldTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}
@@ -53,26 +35,7 @@ func BenchmarkManySmallFields(b *testing.B) {
 	fieldTile := tiletemplates.TestOnlyField()
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, fieldTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkManySmallFieldsSetup(b *testing.B) {
-	b.StopTimer()
-	tileCount := 10
-	fieldTile := tiletemplates.TestOnlyField()
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, fieldTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, fieldTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}

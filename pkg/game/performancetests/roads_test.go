@@ -17,25 +17,9 @@ func BenchmarkSingleExtraLongRoad(b *testing.B) {
 	tileCount := 5000
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, roadTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
 
-// similar test to above, but only measuring the creating process of game
-func BenchmarkSingleExtraLongRoadSetup(b *testing.B) {
-	b.StopTimer()
-	roadTile := tiletemplates.TestOnlyStraightRoads()
-	tileCount := 5000
+		err := PlayNTileGame(tileCount, roadTile, b)
 
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, roadTile, false)
-		b.StopTimer()
 		if err != nil {
 			b.Fatalf(err.Error())
 		}
@@ -54,26 +38,7 @@ func BenchmarkManyShortRoads(b *testing.B) {
 	tileCount := 10
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, roadTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkManyShortRoadsSetup(b *testing.B) {
-
-	b.StopTimer()
-	roadTile := tiletemplates.TestOnlyStraightRoads()
-	tileCount := 10
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, roadTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, roadTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}

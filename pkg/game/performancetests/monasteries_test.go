@@ -17,25 +17,7 @@ func BenchmarkLongMonastery(b *testing.B) {
 	monasteryTile := tiletemplates.TestOnlyMonastery()
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, monasteryTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkLongMonasterySetup(b *testing.B) {
-	b.StopTimer()
-	tileCount := 5000
-	monasteryTile := tiletemplates.TestOnlyMonastery()
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, monasteryTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, monasteryTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}
@@ -53,25 +35,7 @@ func BenchmarkManySmallMonasteries(b *testing.B) {
 	monasteryTile := tiletemplates.TestOnlyMonastery()
 
 	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, monasteryTile, true)
-		b.StopTimer()
-		if err != nil {
-			b.Fatalf(err.Error())
-		}
-	}
-}
-
-// similar test to above, but only measuring the creating process of game
-func BenchmarkManySmallMonasteriesSetup(b *testing.B) {
-	b.StopTimer()
-	tileCount := 10
-	monasteryTile := tiletemplates.TestOnlyMonastery()
-
-	for range b.N {
-		b.StartTimer()
-		err := PlayNTileGame(tileCount, monasteryTile, false)
-		b.StopTimer()
+		err := PlayNTileGame(tileCount, monasteryTile, b)
 		if err != nil {
 			b.Fatalf(err.Error())
 		}
