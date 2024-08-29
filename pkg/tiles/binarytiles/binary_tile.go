@@ -39,6 +39,7 @@ const (
 	featureBitSize  = 10
 	modifierBitSize = 4
 	meepleBitSize   = 9
+	positionBitSize = 8
 	maxPlayers      = 2
 
 	connectionBitOffset  = 4
@@ -71,11 +72,11 @@ const (
 	isPlacedBit    = playerEndBit
 	isPlacedEndBit = isPlacedBit + 1
 
-	// positionXStartBit = isPlacedEndBit
-	// positionXEndBit   = positionXStartBit + 8
+	positionXStartBit = isPlacedEndBit
+	positionXEndBit   = positionXStartBit + positionBitSize
 
 	// positionYStartBit = positionXEndBit
-	// positionYEndBit   = positionYStartBit + 8
+	// positionYEndBit   = positionYStartBit + positionBitSize
 )
 
 var orthogonalFeaturesBits = []side.Side{
@@ -234,9 +235,9 @@ func (binaryTile *BinaryTile) addPosition(position position.Position) {
 	}
 	var tmpBinaryTile BinaryTile
 	tmpBinaryTile |= BinaryTile(uint8(position.X() + 128))
-	tmpBinaryTile <<= 8
+	tmpBinaryTile <<= positionBitSize
 	tmpBinaryTile |= BinaryTile(uint8(position.Y() + 128))
-	tmpBinaryTile <<= 48
+	tmpBinaryTile <<= positionXStartBit
 	*binaryTile |= tmpBinaryTile
 }
 
