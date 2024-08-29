@@ -33,7 +33,7 @@ type BinaryTile uint64
 //  - the last meeple bit is the center
 //  - the owner bits is just one-hot-encoded player ID. (ID(1) = 00...001, ID(2) = 00...010, etc.)
 //  - is placed bit is always 1 on all placed tiles, and 0 on the non-placed tiles
-//  - position bits are 8-bit reptesentations of tile position + 128, so that there are no negative numbers
+//  - position bits are 8-bit reptesentations of tile position
 
 const (
 	featureBitSize  = 10
@@ -234,9 +234,9 @@ func (binaryTile *BinaryTile) addPosition(position position.Position) {
 		panic(fmt.Sprintf("position %#v out of range for binary tile. Allowed range: [-128, 127]", position))
 	}
 	var tmpBinaryTile BinaryTile
-	tmpBinaryTile |= BinaryTile(uint8(position.X() + 128))
+	tmpBinaryTile |= BinaryTile(uint8(position.X()))
 	tmpBinaryTile <<= positionBitSize
-	tmpBinaryTile |= BinaryTile(uint8(position.Y() + 128))
+	tmpBinaryTile |= BinaryTile(uint8(position.Y()))
 	tmpBinaryTile <<= positionXStartBit
 	*binaryTile |= tmpBinaryTile
 }
