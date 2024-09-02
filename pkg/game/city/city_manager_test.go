@@ -141,6 +141,68 @@ func TestJoinCitiesOnAddCityNotClosed(t *testing.T) {
 	}
 }
 
+func TestJoinCitiesFourEdgeCity(t *testing.T) {
+	a1 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
+	a1.Position = position.New(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a1)
+
+	a2 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield().Rotate(1))
+	a2.Position = position.New(1, 2)
+	manager.UpdateCities(a2)
+
+	a3 := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnectedShield())
+	a3.Position = position.New(2, 1)
+	manager.UpdateCities(a3)
+
+	d := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected())
+	d.Position = position.New(1, 3)
+	manager.UpdateCities(d)
+
+	e := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	e.Position = position.New(2, 2)
+	manager.UpdateCities(e)
+
+	if len(manager.cities) != 2 {
+		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
+}
+
+func TestJoinCitiesFourEdgeCityTwoCitiesConnected(t *testing.T) {
+	a1 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
+	a1.Position = position.New(1, 1)
+	manager := NewCityManager()
+	manager.UpdateCities(a1)
+
+	a2 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield().Rotate(1))
+	a2.Position = position.New(1, 2)
+	manager.UpdateCities(a2)
+
+	a3 := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnectedShield())
+	a3.Position = position.New(2, 1)
+	manager.UpdateCities(a3)
+
+	b1 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
+	b1.Position = position.New(2, 3)
+	manager.UpdateCities(b1)
+
+	b2 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(2))
+	b2.Position = position.New(3, 3)
+	manager.UpdateCities(b2)
+
+	b3 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(3))
+	b3.Position = position.New(3, 2)
+	manager.UpdateCities(b3)
+
+	e := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	e.Position = position.New(2, 2)
+	manager.UpdateCities(e)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+}
+
 func TestForceScore(t *testing.T) {
 	var expectedScore uint32 = 1
 	var expectedMeepleType elements.MeepleType = elements.NormalMeeple
