@@ -1,20 +1,27 @@
 package binarytiles
 
 import (
+	"fmt"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-type BinaryTile int64
+type BinaryTile uint64
 
 // interpreting BinaryTile's bits:
-//        0000000000000000001_000000011_00_0011_0000010011_0001001100_1000001110
-//         owner (playerID)    meeple   ^    ^     city       road      field
-//                                      |    |
-//   monastery and unconnected field bits    city shield
+//      00000000_00000000_1_01_000000011_00_0011_0000010011_0001001100_1000001110
+//       X pos    Y pos   ^ ^   meeple   ^    ^     city       road      field
+//                       /  |            |    |
+//                      / owner playerID |    |
+//                     /                 |    |
+//             is placed                 |    |
+//                                       |    |
+//    monastery and unconnected field bits    city shield
 //
 // counting from right to left (from least to most significant bit):
 //  - first four bits of the field section are the corners, starting from top-right, clockwise
@@ -25,11 +32,15 @@ type BinaryTile int64
 //  - next four meeple bits are the corners (same as with fields)
 //  - the last meeple bit is the center
 //  - the owner bits is just one-hot-encoded player ID. (ID(1) = 00...001, ID(2) = 00...010, etc.)
+//  - is placed bit is always 1 on all placed tiles, and 0 on the non-placed tiles
+//  - position bits are 8-bit reptesentations of tile position
 
 const (
 	featureBitSize  = 10
 	modifierBitSize = 4
 	meepleBitSize   = 9
+	positionBitSize = 8
+	maxPlayers      = 2
 
 	connectionBitOffset  = 4
 	diagonalMeepleOffset = 4
@@ -56,6 +67,16 @@ const (
 	meepleEndBit   = meepleStartBit + meepleBitSize
 
 	playerStartBit = meepleEndBit
+	playerEndBit   = playerStartBit + maxPlayers
+
+	isPlacedBit    = playerEndBit
+	isPlacedEndBit = isPlacedBit + 1
+
+	positionXStartBit = isPlacedEndBit
+	positionXEndBit   = positionXStartBit + positionBitSize
+
+	// positionYStartBit = positionXEndBit
+	// positionYEndBit   = positionYStartBit + positionBitSize
 )
 
 var orthogonalFeaturesBits = []side.Side{
@@ -136,6 +157,10 @@ func FromTile(tile tiles.Tile) BinaryTile {
 func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
 	binaryTile := fromPlacedFeatures(tile.Features)
 
+	binaryTile.addPosition(tile.Position)
+
+	binaryTile.setBit(isPlacedBit)
+
 	return binaryTile
 }
 
@@ -192,12 +217,28 @@ func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeatur
 	*binaryTile |= tmpBinaryTile
 }
 
-// Sets the appropriate owner bit in the binary tile, if the owner ID is not 0
+// Sets the appropriate owner bit in the binary tile, if the owner ID is not 0. Panics if ownerID is greater than maxPlayers
 func (binaryTile *BinaryTile) setOwner(ownerID elements.ID) {
 	if ownerID != 0 {
+		if ownerID > maxPlayers {
+			panic(fmt.Sprintf("cannot use player ID = %#v in binary tile. Max number of players = %#v", ownerID, maxPlayers))
+		}
 		binaryTile.setBit(playerStartBit + int(ownerID) - 1)
 		// -1 because we don't want an empty bit (always zero) for the "NonePlayer" owner
 	}
+}
+
+// Sets the position X and position Y bits in the binary tile
+func (binaryTile *BinaryTile) addPosition(position position.Position) {
+	if position.X() > 127 || position.Y() > 127 || position.X() < -128 || position.Y() < -128 {
+		panic(fmt.Sprintf("position %#v out of range for binary tile. Allowed range: [-128, 127]", position))
+	}
+	var tmpBinaryTile BinaryTile
+	tmpBinaryTile |= BinaryTile(uint8(position.X()))
+	tmpBinaryTile <<= positionBitSize
+	tmpBinaryTile |= BinaryTile(uint8(position.Y()))
+	tmpBinaryTile <<= positionXStartBit
+	*binaryTile |= tmpBinaryTile
 }
 
 // Sets the bit at the specified index to 1
