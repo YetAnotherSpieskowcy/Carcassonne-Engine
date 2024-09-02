@@ -58,6 +58,12 @@ def test_full_game(tmp_path: Path) -> None:
         game_id = play_turn_resp.game_id
         log.info("iteration %s end", i)
 
+        if game.current_tile is None:
+            # number of tiles in the tile set and number of tiles that you actually
+            # get to place can differ, if a tile that's next in the stack happens to
+            # not have any position to place available
+            break
+
     assert game.current_tile is None
 
 
@@ -225,7 +231,8 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
     tile = tiletemplates.monastery_with_single_road()
     tile_set = TileSet.from_tiles(
         [tile],
-        starting_tile=tiletemplates.single_city_edge_straight_roads(),
+        # non-default starting tile - limits number of possible positions to one
+        starting_tile=tiletemplates.three_city_edges_connected(),
     )
 
     with GameEngine(1, tmp_path) as engine:
@@ -236,8 +243,16 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
         assert resp.exception is None
 
     # Monastery with single road can only be placed at (0, -1)
-    # but in 3 different rotations (only field connected with road is invalid)
-    assert len(resp.moves) == 3
+    # but in 3 different orientations (only field connected with road is invalid)
+    # For each orientation, there are 4 valid meeple placements:
+    # - no meeple
+    # - meeple on monastery
+    # - meeple on field
+    # - meeple on road
+    # For now, meeple placement is not handled so last number is 1 instead of 4 below
+    expected_move_count = 1 * 3 * 1
+
+    assert len(resp.moves) == expected_move_count
     for move_state in resp.moves:
         assert move_state.move.position.x == 0
         assert move_state.move.position.y == -1
