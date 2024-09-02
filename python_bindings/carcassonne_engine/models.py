@@ -83,7 +83,9 @@ class SerializedGame:
     def __init__(self, go_obj: _go_game.SerializedGame) -> None:
         self._go_obj = go_obj
         go_tile_obj = go_obj.CurrentTile
-        self._current_tile = go_tile_obj and Tile(go_tile_obj)
+        self._current_tile: Tile | None = None
+        if go_tile_obj.Features:
+            self._current_tile = Tile(go_tile_obj)
 
     @property
     def current_tile(self) -> Tile | None:

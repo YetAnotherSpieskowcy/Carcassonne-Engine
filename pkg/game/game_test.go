@@ -214,7 +214,7 @@ func TestGameSerializedCurrentTileNilWhenStackOutOfBounds(t *testing.T) {
 	}
 
 	serialized := game.Serialized()
-	if serialized.CurrentTile != nil {
+	if len(serialized.CurrentTile.Features) != 0 {
 		t.Fatalf("expected nil, got %v instead", serialized.CurrentTile)
 	}
 }

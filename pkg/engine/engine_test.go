@@ -57,10 +57,10 @@ func TestFullGame(t *testing.T) {
 	t.Logf("before loop: %s\n", time.Now())
 	for i := range len(tileSet.Tiles) {
 		t.Logf(
-			"iteration %v start: %v\n", i, binarytiles.FromTile(*game.CurrentTile),
+			"iteration %v start: %v\n", i, binarytiles.FromTile(game.CurrentTile),
 		)
 		legalMovesReq := &GetLegalMovesRequest{
-			BaseGameID: gameID, TileToPlace: *game.CurrentTile,
+			BaseGameID: gameID, TileToPlace: game.CurrentTile,
 		}
 		legalMovesResp := engine.SendGetLegalMovesBatch(
 			[]*GetLegalMovesRequest{legalMovesReq},
@@ -88,7 +88,7 @@ func TestFullGame(t *testing.T) {
 		gameID = playTurnResp.GameID()
 		t.Logf("iteration %v end: %s\n", i, time.Now())
 
-		if game.CurrentTile == nil {
+		if len(game.CurrentTile.Features) == 0 {
 			// number of tiles in the tile set and number of tiles that you actually
 			// get to place can differ, if a tile that's next in the stack happens to
 			// not have any position to place available
@@ -96,7 +96,7 @@ func TestFullGame(t *testing.T) {
 		}
 	}
 
-	if game.CurrentTile != nil {
+	if len(game.CurrentTile.Features) != 0 {
 		t.Fatalf("expected current tile to be nil, got %#v instead", game.CurrentTile)
 	}
 }
@@ -115,7 +115,7 @@ func TestConcurrentReadRequests(t *testing.T) {
 	game, gameID := gameWithID.Game, gameWithID.ID
 
 	legalMovesReq := &GetLegalMovesRequest{
-		BaseGameID: gameID, TileToPlace: *game.CurrentTile,
+		BaseGameID: gameID, TileToPlace: game.CurrentTile,
 	}
 	legalMovesResp := engine.SendGetLegalMovesBatch(
 		[]*GetLegalMovesRequest{legalMovesReq},

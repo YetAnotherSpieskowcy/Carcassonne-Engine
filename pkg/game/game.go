@@ -14,7 +14,7 @@ import (
 )
 
 type SerializedGame struct {
-	CurrentTile         *tiles.Tile
+	CurrentTile         tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
 	CurrentPlayerID     elements.ID
 	Players             []elements.Player
@@ -106,7 +106,7 @@ func (game *Game) Serialized() SerializedGame {
 	}
 
 	if tile, err := game.GetCurrentTile(); err == nil {
-		serialized.CurrentTile = &tile
+		serialized.CurrentTile = tile
 		serialized.ValidTilePlacements = game.board.GetTilePlacementsFor(tile)
 	}
 	return serialized
