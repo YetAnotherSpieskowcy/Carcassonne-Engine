@@ -27,7 +27,7 @@ import (
 |     ..|.............[ ].
 |     ..|.................
 */
-func TestScoringMidGame(t *testing.T) {
+func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	// ------ create tileset --------
 	var tiles []tiles.Tile
 	var err error
