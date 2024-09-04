@@ -151,7 +151,7 @@ function lint() {
         -e "DEFAULT_BRANCH=origin/main" `
         -e "VALIDATE_GO=false" `
         -e "VALIDATE_PYTHON_PYLINT=false" `
-        -e "FILTER_REGEX_EXCLUDE=.*python_bindings/.*" `
+        -e "FILTER_REGEX_EXCLUDE=.*python_bindings/_bindings/.*" `
         -e "LOG_LEVEL=NOTICE" `
         -e "RUN_LOCAL=true" `
         -v ".:/tmp/lint" `

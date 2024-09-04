@@ -25,6 +25,7 @@ jobs:
           DEFAULT_BRANCH: origin/main
           VALIDATE_GO: false
           VALIDATE_PYTHON_PYLINT: false
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # machine-generated
-          FILTER_REGEX_EXCLUDE: ".*python_bindings/.*"
+          FILTER_REGEX_EXCLUDE: ".*python_bindings/_bindings/.*"
+          # CI-specific
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
