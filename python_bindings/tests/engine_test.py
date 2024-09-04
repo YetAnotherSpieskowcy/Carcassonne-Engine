@@ -23,6 +23,7 @@ def test_full_game(tmp_path: Path) -> None:
     game_id, game = engine.generate_game(tile_set)
 
     for i in range(len(tile_set) - 1):
+        assert game.current_tile is not None
         log.info(
             "iteration %s start: %s",
             i,
@@ -33,6 +34,7 @@ def test_full_game(tmp_path: Path) -> None:
         )
         (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
         assert legal_moves_resp.exception is None
+        assert legal_moves_resp.moves is not None
         log.info("iteration %s got moves", i)
 
         move = legal_moves_resp.moves[0].move
@@ -45,6 +47,7 @@ def test_full_game(tmp_path: Path) -> None:
         play_turn_req = PlayTurnRequest(game_id=game_id, move=move)
         (play_turn_resp,) = engine.send_play_turn_batch([play_turn_req])
         assert play_turn_resp.exception is None
+        assert play_turn_resp.game is not None
         log.info("iteration %s played turn", i)
 
         game = play_turn_resp.game
@@ -65,12 +68,14 @@ def test_concurrent_read_requests(tmp_path: Path) -> None:
     tile_set = standard_tile_set()
 
     game_id, game = engine.generate_game(tile_set)
+    assert game.current_tile is not None
 
     legal_moves_req = GetLegalMovesRequest(
         base_game_id=game_id, tile_to_place=game.current_tile
     )
     (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
     assert legal_moves_resp.exception is None
+    assert legal_moves_resp.moves is not None
 
     requests = []
     for move_with_state in legal_moves_resp.moves:
@@ -183,6 +188,7 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
         request = GetRemainingTilesRequest(base_game_id=game_id)
         (resp,) = engine.send_get_remaining_tiles_batch([request])
         assert resp.exception is None
+        assert resp.tile_probabilities is not None
 
     for tile_prob in resp.tile_probabilities:
         for tile in tiles:
@@ -210,6 +216,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
         request = GetLegalMovesRequest(base_game_id=game_id, tile_to_place=tile)
         (resp,) = engine.send_get_legal_moves_batch([request])
         assert resp.exception is None
+        assert resp.moves is not None
 
     # Monastery with no roads is symmetrical both horizontally and vertically
     assert len(resp.moves) == 1
@@ -234,6 +241,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
         request = GetLegalMovesRequest(base_game_id=game_id, tile_to_place=tile)
         (resp,) = engine.send_get_legal_moves_batch([request])
         assert resp.exception is None
+        assert resp.moves is not None
 
     # Monastery with single road can only be placed at (0, -1)
     # but in 3 different orientations (only field connected with road is invalid)
