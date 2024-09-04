@@ -150,3 +150,13 @@ class GameEngine:
         )
         go_obj = self._go_game_engine.SendGetLegalMovesBatch(go_requests)
         return [requests.GetLegalMovesResponse(go_resp) for go_resp in go_obj]
+
+    def send_get_mid_game_score_batch(
+        self, concrete_requests: list[requests.GetMidGameScoreRequest]
+    ) -> list[requests.GetMidGameScoreResponse]:
+        self._check_closed()
+        go_requests = _go_engine.Slice_Ptr_engine_GetMidGameScoreRequest(
+            req._unwrap() for req in concrete_requests
+        )
+        go_obj = self._go_game_engine.SendGetMidGameScoresBatch(go_requests)
+        return [requests.GetMidGameScoreResponse(go_resp) for go_resp in go_obj]

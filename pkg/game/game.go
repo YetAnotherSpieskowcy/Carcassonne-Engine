@@ -301,7 +301,7 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 /*
 Calculate points as if game has just finished
 */
-func (game *Game) GetMidGamePoints() (elements.ScoreReport, error) {
+func (game *Game) GetMidGameScore() (elements.ScoreReport, error) {
 	playerScores := elements.NewScoreReport()
 
 	// load scores

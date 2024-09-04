@@ -53,7 +53,7 @@ func TestScoringMidGame(t *testing.T) {
 	var expectedScores []uint32
 	// first turn
 	makeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
-	report, err := game.GetMidGamePoints()
+	report, err := game.GetMidGameScore()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -66,7 +66,7 @@ func TestScoringMidGame(t *testing.T) {
 
 	// second turn
 	makeTurn(game, t, position.New(-1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
-	report, err = game.GetMidGamePoints()
+	report, err = game.GetMidGameScore()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -79,7 +79,7 @@ func TestScoringMidGame(t *testing.T) {
 
 	// third turn
 	makeTurn(game, t, position.New(-2, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
-	report, err = game.GetMidGamePoints()
+	report, err = game.GetMidGameScore()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -92,7 +92,7 @@ func TestScoringMidGame(t *testing.T) {
 
 	// fourth turn
 	makeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
-	report, err = game.GetMidGamePoints()
+	report, err = game.GetMidGameScore()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
