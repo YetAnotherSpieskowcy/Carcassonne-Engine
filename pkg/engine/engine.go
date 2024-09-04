@@ -337,6 +337,9 @@ func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMov
 //
 // If a request fails before reaching a worker, a `SyncResponse` type will be
 // be returned in place of the worker response.
+// If a panic occurs during execution of this method, it will be captured
+// and a SyncResponse with ExecutionPanicError will be returned for relevant
+// (or all) requests.
 //
 // Concurrent calls to this function can be made but no more than
 // one request for a *single* game (ID) can be performed at the same time
@@ -353,9 +356,68 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputBuffer := make(chan workerOutput, len(requests))
 	waitGroup := sync.WaitGroup{}
 	outputWaitGroup := sync.WaitGroup{}
+	var outputPanicValue any
+	var outputPanicStack []byte
+
+	cleanupGames := func() {
+		// remove games for which we got information that we can remove them
+		for gameID := range games {
+			_, canRemove := removableGames[gameID]
+			_, canRemoveChildren := parentsWithRemovableChildren[gameID]
+
+			if (canRemove || canRemoveChildren) && len(engine.childGames[gameID]) != 0 {
+				// since we don't know whether the agent isn't actually using these,
+				// just settle on a warning
+				engine.appLogger.Printf(
+					childrenCleanupWarnFullMsg,
+					gameID,
+					engine.childGames[gameID],
+				)
+			}
+
+			if canRemove {
+				delete(engine.games, gameID)
+				delete(engine.gameMutexes, gameID)
+				delete(engine.childGames, gameID)
+				parentID := engine.parentGames[gameID]
+				if parentID != 0 {
+					delete(engine.childGames[parentID], gameID)
+				}
+			}
+		}
+	}
+
+	defer func() {
+		if outputPanicValue == nil {
+			outputPanicValue = recover()
+			if outputPanicValue != nil {
+				outputPanicStack = debug.Stack()
+			}
+		}
+		if outputPanicValue != nil {
+			err := &ExecutionPanicError{
+				panicValue: outputPanicValue, stack: outputPanicStack,
+			}
+			for i, req := range requests {
+				gameID := req.gameID()
+				responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: err}}
+			}
+		}
+		cleanupGames()
+	}()
 
 	outputWaitGroup.Add(1)
 	go func() {
+		defer func() {
+			// one cannot recover from a panic that occurred in another goroutine
+			// so we want to re-panic in the "parent" goroutine instead
+			outputPanicValue = recover()
+			if outputPanicValue != nil {
+				outputPanicStack = debug.Stack()
+			}
+			outputWaitGroup.Done()
+		}()
+
 		for output := range outputBuffer {
 			outputItemsLock.RLock()
 			outputInfo := outputItems[output.requestID]
@@ -380,7 +442,6 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 				}
 			}
 		}
-		outputWaitGroup.Done()
 	}()
 
 	for i, req := range requests {
@@ -406,30 +467,8 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	close(outputBuffer)
 	outputWaitGroup.Wait()
 
-	// remove games for which we got information that we can remove them
-	for gameID := range games {
-		_, canRemove := removableGames[gameID]
-		_, canRemoveChildren := parentsWithRemovableChildren[gameID]
-
-		if (canRemove || canRemoveChildren) && len(engine.childGames[gameID]) != 0 {
-			// since we don't know whether the agent isn't actually using these,
-			// just settle on a warning
-			engine.appLogger.Printf(
-				childrenCleanupWarnFullMsg,
-				gameID,
-				engine.childGames[gameID],
-			)
-		}
-
-		if canRemove {
-			delete(engine.games, gameID)
-			delete(engine.gameMutexes, gameID)
-			delete(engine.childGames, gameID)
-			parentID := engine.parentGames[gameID]
-			if parentID != 0 {
-				delete(engine.childGames[parentID], gameID)
-			}
-		}
+	if outputPanicValue != nil {
+		panic(outputPanicValue)
 	}
 
 	return responses
