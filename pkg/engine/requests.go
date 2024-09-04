@@ -308,3 +308,38 @@ func (req *GetLegalMovesRequest) execute(baseGame *game.Game) Response {
 
 	return resp
 }
+
+type GetMidGameScoreResponse struct {
+	BaseResponse
+	Scores map[elements.ID]uint32
+}
+type GetMidGameScoreRequest struct {
+	BaseGameID   int
+	StateToCheck *GameState
+}
+
+func (req *GetMidGameScoreRequest) gameID() int {
+	return req.BaseGameID
+}
+
+func (req *GetMidGameScoreRequest) requiresWrite() bool {
+	return false
+}
+
+func (req *GetMidGameScoreRequest) execute(baseGame *game.Game) Response {
+	resp := &GetMidGameScoreResponse{BaseResponse: BaseResponse{gameID: req.gameID()}}
+	baseGame, err := req.StateToCheck.resolve(baseGame)
+	if err != nil {
+		resp.err = err
+		return resp
+	}
+
+	report, err := baseGame.GetMidGamePoints()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	resp.Scores = report.ReceivedPoints
+
+	return resp
+}

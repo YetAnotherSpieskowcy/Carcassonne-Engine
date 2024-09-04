@@ -297,3 +297,21 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 
 	return playerScores, nil
 }
+
+/*
+Calculate points as if game has just finished
+*/
+func (game *Game) GetMidGamePoints() (elements.ScoreReport, error) {
+	playerScores := elements.NewScoreReport()
+
+	// load scores
+	for _, player := range game.players {
+		playerScores.ReceivedPoints[player.ID()] = player.Score()
+	}
+
+	// add final score report
+	meeplesReport := game.board.ScoreNotFinalMeeples()
+	playerScores.Join(meeplesReport)
+
+	return playerScores, nil
+}

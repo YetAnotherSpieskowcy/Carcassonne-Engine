@@ -18,4 +18,5 @@ type Board interface {
 	PlaceTile(tile PlacedTile) (ScoreReport, error)
 	RemoveMeeple(pos position.Position)
 	ScoreFinalMeeples() ScoreReport
+	ScoreNotFinalMeeples() ScoreReport
 }

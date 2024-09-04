@@ -358,6 +358,33 @@ func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMov
 	return concreteResponses
 }
 
+// Due to limitations of Python bindings generator with []interface return type,
+// this wraps sendBatch() and limits the return type to only one Response type.
+func (engine *GameEngine) SendGetMidGameScoresBatch(concreteRequests []*GetMidGameScoreRequest) []*GetMidGameScoreResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*GetMidGameScoreResponse, len(responses))
+	for i := range responses {
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*GetMidGameScoreResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &GetMidGameScoreResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
+	}
+	return concreteResponses
+}
+
 // API for handling the sent requests using background workers.
 // The order and types of returned responses correspond to the requests slice.
 //

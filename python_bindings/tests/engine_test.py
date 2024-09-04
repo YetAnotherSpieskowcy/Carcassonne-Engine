@@ -270,3 +270,48 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
             move_state = resp.moves[move_idx]
             assert expected.exact_equals(move_state.move.to_tile())
             move_idx += 1
+
+def test_mid_game_score_request(tmp_path: Path) -> None:
+    engine = GameEngine(4, tmp_path)
+    tile_set = standard_tile_set()
+
+    game_id, game = engine.generate_game(tile_set)
+
+    engine.ge
+
+    for i in range(len(tile_set) - 1):
+        log.info(
+            "iteration %s start: %s",
+            i,
+            format_binary_tile_bits(game.current_tile.to_bits()),
+        )
+        legal_moves_req = GetLegalMovesRequest(
+            base_game_id=game_id, tile_to_place=game.current_tile
+        )
+        (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
+        assert legal_moves_resp.exception is None
+        log.info("iteration %s got moves", i)
+
+        move = legal_moves_resp.moves[0].move
+        log.info(
+            "iteration %s selecting move: %s at position %s",
+            i,
+            format_binary_tile_bits(move.to_bits()),
+            move.position,
+        )
+        play_turn_req = PlayTurnRequest(game_id=game_id, move=move)
+        (play_turn_resp,) = engine.send_play_turn_batch([play_turn_req])
+        assert play_turn_resp.exception is None
+        log.info("iteration %s played turn", i)
+
+        game = play_turn_resp.game
+        game_id = play_turn_resp.game_id
+        log.info("iteration %s end", i)
+
+        if game.current_tile is None:
+            # number of tiles in the tile set and number of tiles that you actually
+            # get to place can differ, if a tile that's next in the stack happens to
+            # not have any position to place available
+            break
+
+    assert game.current_tile is None

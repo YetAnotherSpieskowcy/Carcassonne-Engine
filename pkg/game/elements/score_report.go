@@ -52,6 +52,18 @@ func (report *ScoreReport) Join(otherReport ScoreReport) {
 	}
 }
 
+// TODO move to report
+func (report *ScoreReport) MeepleInReport(testedMeeple MeepleWithPosition) bool {
+	for _, meeplesWithPosition := range report.ReturnedMeeples { // for each player
+		for _, meeple := range meeplesWithPosition {
+			if meeple.Position == testedMeeple.Position {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // Returns a list of IDs of players that have the most meeples in the given map
 func GetPlayersWithMostMeeples(meeples map[ID][]uint8) []ID {
 	var max uint8
