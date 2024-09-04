@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"runtime/debug"
 	"sync"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
@@ -25,11 +26,39 @@ const (
 	childrenCleanupWarnFullMsg = childrenCleanupWarnMsg + ": %#v\n"
 )
 
+type ExecutionPanicError struct {
+	panicValue any
+	stack      []byte
+}
+
+func (err *ExecutionPanicError) Error() string {
+	return fmt.Sprintf(
+		"panic occurred during request execution\n- msg: %#v\n- stack trace:\n%s",
+		err.panicValue,
+		err.stack,
+	)
+}
+
+func processWorkerInput(input *workerInput) (resp Response) {
+	defer func() {
+		if err := recover(); err != nil {
+			resp = &SyncResponse{
+				BaseResponse{
+					gameID: input.request.gameID(),
+					err:    &ExecutionPanicError{panicValue: err, stack: debug.Stack()},
+				},
+			}
+		}
+	}()
+
+	return input.request.execute(input.game)
+}
+
 func worker(comm *communicator) {
 	defer comm.workGroup.Done()
 
 	for input := range comm.inputBuffer {
-		resp := input.request.execute(input.game)
+		resp := processWorkerInput(&input)
 		input.outputBuffer <- workerOutput{
 			requestID: input.requestID,
 			resp:      resp,
