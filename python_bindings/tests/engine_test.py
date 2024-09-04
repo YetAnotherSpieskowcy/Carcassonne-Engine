@@ -164,7 +164,7 @@ def test_game_engine_send_batch_raises_when_communicator_closed(
     engine.close()
 
     with pytest.raises(RuntimeError):
-        responses = engine.send_play_turn_batch(requests)
+        engine.send_play_turn_batch(requests)
 
 
 def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
