@@ -25,6 +25,8 @@ jobs:
           DEFAULT_BRANCH: origin/main
           VALIDATE_GO: false
           VALIDATE_PYTHON_PYLINT: false
+          LINTER_RULES_PATH: .
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
           # machine-generated
           FILTER_REGEX_EXCLUDE: ".*python_bindings/_bindings/.*"
           # CI-specific
