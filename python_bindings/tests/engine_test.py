@@ -4,14 +4,13 @@ from pathlib import Path
 import pytest
 from pytest import approx
 
-from carcassonne_engine import GameEngine
-from carcassonne_engine import models, tiletemplates
+from carcassonne_engine import GameEngine, models, tiletemplates
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
     GetRemainingTilesRequest,
     PlayTurnRequest,
 )
-from carcassonne_engine.tilesets import standard_tile_set, TileSet
+from carcassonne_engine.tilesets import TileSet, standard_tile_set
 from carcassonne_engine.utils import format_binary_tile_bits
 
 log = logging.getLogger(__name__)

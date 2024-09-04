@@ -1,5 +1,5 @@
 from ._bindings import engine as _go_engine
-from .models import GameState, PlacedTile, Tile, SerializedGame
+from .models import GameState, PlacedTile, SerializedGame, Tile
 
 __all__ = (
     "BaseResponse",
