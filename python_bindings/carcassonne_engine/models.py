@@ -1,6 +1,6 @@
 from typing import NamedTuple, Self
 
-from ._bindings import (
+from ._bindings import (  # type: ignore[attr-defined] # no stubs
     binarytiles as _go_binarytiles,
     elements as _go_elements,
     engine as _go_engine,

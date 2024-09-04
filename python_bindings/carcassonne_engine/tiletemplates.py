@@ -1,4 +1,6 @@
-from ._bindings import tiletemplates as _go_tiletemplates
+from ._bindings import (  # type: ignore[attr-defined] # no stubs
+    tiletemplates as _go_tiletemplates,
+)
 from .models import Tile
 
 __all__ = (

@@ -1,4 +1,4 @@
-from ._bindings import engine as _go_engine
+from ._bindings import engine as _go_engine  # type: ignore[attr-defined] # no stubs
 from .models import GameState, PlacedTile, SerializedGame, Tile
 
 __all__ = (

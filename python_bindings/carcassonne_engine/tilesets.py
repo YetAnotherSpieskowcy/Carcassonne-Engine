@@ -1,6 +1,9 @@
 from typing import Self
 
-from ._bindings import engine as _go_engine, tilesets as _go_tilesets
+from ._bindings import (  # type: ignore[attr-defined] # no stubs
+    engine as _go_engine,
+    tilesets as _go_tilesets,
+)
 from .models import Tile
 
 __all__ = ("TileSet", "standard_tile_set")
