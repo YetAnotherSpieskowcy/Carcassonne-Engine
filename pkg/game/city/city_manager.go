@@ -20,6 +20,15 @@ func NewCityManager() Manager {
 	}
 }
 
+func (manager Manager) DeepClone() Manager {
+	cities := make([]City, len(manager.cities))
+	for i, city := range manager.cities {
+		cities[i] = city.DeepClone()
+	}
+	manager.cities = cities
+	return manager
+}
+
 // Returns a pointer to a City that has the given feature at the given position, and its index in the city manager
 // Returns nil if no such city exists
 func (manager Manager) GetCity(position position.Position, feature elements.PlacedFeature) (*City, int) {

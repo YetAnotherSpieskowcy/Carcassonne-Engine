@@ -1,6 +1,8 @@
 package city
 
 import (
+	"maps"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
@@ -32,6 +34,12 @@ func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City 
 			pos: hasShield,
 		},
 	}
+}
+
+func (city City) DeepClone() City {
+	city.features = maps.Clone(city.features)
+	city.shields = maps.Clone(city.shields)
+	return city
 }
 
 func (city City) IsCompleted() bool {

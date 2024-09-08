@@ -2,16 +2,115 @@ package game
 
 import (
 	"errors"
+	"io"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
+
+type TestLogger struct {
+	callCount int
+}
+
+func (l *TestLogger) LogEvent(_ logger.EventType, _ interface{}) error {
+	l.callCount++
+	return nil
+}
+
+func (l *TestLogger) AsWriter() io.Writer {
+	return io.Discard
+}
+
+func (l *TestLogger) CopyTo(_ logger.Logger) error {
+	return logger.ErrCopyToNotImplemented
+}
+
+func TestDeepClone(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
+
+	originalLogger := &TestLogger{}
+	original, err := NewFromTileSet(tileSet, originalLogger)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	originalLogger.callCount = 0
+
+	clone := original.DeepClone()
+	actualTile, err := clone.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ptile := elements.ToPlacedTile(actualTile)
+	ptile.Position = position.New(0, -1)
+	err = clone.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if originalLogger.callCount != 0 {
+		t.Fatal("original game's logger was not expected to be called by the clone")
+	}
+
+	expectedTile, err := original.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if !expectedTile.Equals(actualTile) {
+		t.Fatalf(
+			"expected clone's current tile (%#v) to be identical to original (%#v)",
+			actualTile,
+			expectedTile,
+		)
+	}
+
+	if original.deck.Stack == clone.deck.Stack {
+		// comparison by pointers
+		t.Fatalf(
+			"Original deck's stack (%#v) and clone deck's stack (%#v) are equal",
+			original.deck,
+			clone.deck,
+		)
+	}
+
+	if original.board == clone.board {
+		// comparison by pointers
+		t.Fatalf(
+			"Original board (%#v) and clone board (%#v) are equal",
+			original.board,
+			clone.board,
+		)
+	}
+
+	for i, clonePlayer := range clone.players {
+		// comparison by pointers
+		if original.players[i] == clonePlayer {
+			t.Fatalf(
+				"Original player (%#v) and clone player (%#v) are equal",
+				original.players[i],
+				clonePlayer,
+			)
+		}
+	}
+
+	originalID := original.CurrentPlayer().ID()
+	cloneID := clone.CurrentPlayer().ID()
+	if originalID == cloneID {
+		t.Fatalf(
+			"original's current player ID (%v) == clone's current player ID *after* move (%v)",
+			originalID,
+			cloneID,
+		)
+	}
+}
 
 func TestFullGame(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
@@ -115,7 +214,7 @@ func TestGameSerializedCurrentTileNilWhenStackOutOfBounds(t *testing.T) {
 	}
 
 	serialized := game.Serialized()
-	if serialized.CurrentTile != nil {
+	if len(serialized.CurrentTile.Features) != 0 {
 		t.Fatalf("expected nil, got %v instead", serialized.CurrentTile)
 	}
 }

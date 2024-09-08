@@ -12,6 +12,21 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+func TestPlayerDeepClone(t *testing.T) {
+	meepleType := elements.NormalMeeple
+
+	original := player.New(1)
+	expected := original.MeepleCount(meepleType)
+	clone := original.DeepClone()
+
+	clone.SetMeepleCount(meepleType, expected+1)
+	actual := original.MeepleCount(meepleType)
+
+	if actual != expected {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
 func TestPlayerGetEligibleMovesFromReturnsAllMovesWhenPlayerHasMeeples(t *testing.T) {
 	player := player.New(1)
 	input := []elements.PlacedTile{test.GetTestPlacedTile()}
@@ -43,7 +58,7 @@ func TestPlayerPlaceTileErrorsWhenPlayerHasNoMeeples(t *testing.T) {
 	player := player.New(1)
 	player.SetMeepleCount(elements.NormalMeeple, 0)
 	tile.Features[0].Meeple.Type = elements.NormalMeeple
-	tile.Features[0].PlayerID = player.ID()
+	tile.Features[0].Meeple.PlayerID = player.ID()
 
 	_, err := player.PlaceTile(board, tile)
 	if !errors.Is(err, elements.ErrNoMeepleAvailable) {
@@ -85,7 +100,7 @@ func TestPlayerPlaceTileLowersMeepleCountWhenMeeplePlaced(t *testing.T) {
 	player.SetMeepleCount(elements.NormalMeeple, 2)
 	expectedMeepleCount := uint8(1)
 	tile.Features[0].Meeple.Type = elements.NormalMeeple
-	tile.Features[0].PlayerID = player.ID()
+	tile.Features[0].Meeple.PlayerID = player.ID()
 
 	_, err := player.PlaceTile(board, tile)
 	if err != nil {

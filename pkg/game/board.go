@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
@@ -59,6 +60,21 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 	}
 }
 
+func (board board) DeepClone() elements.Board {
+	// note: skipped board.tileSet because TileSet is immutable
+
+	// PlacedTile is not mutated after it's placed
+	board.tiles = slices.Clone(board.tiles)
+	board.tilesMap = maps.Clone(board.tilesMap)
+
+	// Position is immutable
+	board.placeablePositions = slices.Clone(board.placeablePositions)
+
+	board.cityManager = board.cityManager.DeepClone()
+
+	return &board
+}
+
 func (board *board) TileCount() int {
 	return len(board.tilesMap)
 }
@@ -101,12 +117,12 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
-func (board *board) GetLegalMovesFor(tile elements.PlacedTile) []elements.PlacedTile {
-	// TODO for future tasks:
-	// - implement generation of legal moves
-	// - to be implemented after #18, #19 and #20 to avoid code duplication
-	return []elements.PlacedTile{}
+func (board *board) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+	// create initial move list without any meeple placed
+	moves := []elements.PlacedTile{placement}
+	// TODO:
+	// - implement generation of legal moves *with* meeples
+	return moves
 }
 
 /*
@@ -277,8 +293,8 @@ func (board *board) ScoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 
 	if score == 9 || forceScore {
 		scoreReport := elements.NewScoreReport()
-		scoreReport.ReceivedPoints[monasteryFeature.PlayerID] = score
-		scoreReport.ReturnedMeeples[monasteryFeature.PlayerID] = []elements.MeepleWithPosition{
+		scoreReport.ReceivedPoints[monasteryFeature.Meeple.PlayerID] = score
+		scoreReport.ReturnedMeeples[monasteryFeature.Meeple.PlayerID] = []elements.MeepleWithPosition{
 			elements.MeepleWithPosition{
 				Meeple:   monasteryFeature.Meeple,
 				Position: tile.Position,

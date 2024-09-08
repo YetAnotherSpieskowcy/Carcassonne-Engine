@@ -14,6 +14,7 @@ type workerInput struct {
 	waitGroup    *sync.WaitGroup
 	game         *game.Game
 	request      Request
+	canWrite     bool
 }
 
 // Internal struct returned by the worker function through the received output buffer.
@@ -22,10 +23,28 @@ type workerOutput struct {
 	resp      Response
 }
 
+type outputItemInfo struct {
+	GameID        int
+	RequestIndex  int
+	AcquiredWrite bool
+}
+
 // The base interface of a response returned by the API.
 type Response interface {
 	GameID() int
 	Err() error
+}
+
+// Responses implementing this interface may indicate to the sender
+// that the child games of the game with `GameID()` should be GC-able.
+type ResponseChildGamesRemovable interface {
+	canRemoveChildGames() bool
+}
+
+// Responses implementing this interface may indicate to the sender
+// that the the game with `GameID()` should be removed from the engine.
+type ResponseGameRemovable interface {
+	canRemoveGame() bool
 }
 
 // The base interface of a request returned by the API.
@@ -33,6 +52,8 @@ type Request interface {
 	// gameID() is a private getter -> classes from Python
 	// create a new request object using the `GameID` field directly
 	gameID() int
+	// indicates, if the request requires exclusive write access to the game
+	requiresWrite() bool
 	// method that will be executed by the worker
 	execute(*game.Game) Response
 }

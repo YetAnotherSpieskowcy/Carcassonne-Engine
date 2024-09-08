@@ -4,7 +4,7 @@ import subprocess
 import setuptools
 from setuptools.command.build import build
 
-PY_PACKAGE_DIR = "python_bindings/carcassonne_engine"
+PY_PACKAGE_DIR = "python_bindings/carcassonne_engine/_bindings"
 GO_MOD = "go.mod"
 GO_PKG_DIR = "pkg"
 GO_NAMESPACE = "github.com/YetAnotherSpieskowcy/Carcassonne-Engine"
@@ -48,18 +48,11 @@ class BuildGoCommand(setuptools.Command):
             if pkg[4:] not in GO_EXCLUDED_PACKAGES
         ][1:]
 
-        init_filepath = os.path.join(PY_PACKAGE_DIR, "__init__.py")
-        with open(init_filepath, "rb") as fp:
-            init_contents = fp.read()
         try:
             subprocess.check_call(
                 (
                     "gopy",
                     "build",
-                    # though this would be nicer to work with on Python side,
-                    # it is buggy and converts only some occurrences to camel_case
-                    # breaking the whole library in the process
-                    # "-rename=true",
                     "-output",
                     PY_PACKAGE_DIR,
                     GO_MAIN_PACKAGE,
@@ -67,8 +60,6 @@ class BuildGoCommand(setuptools.Command):
                 )
             )
         finally:
-            with open(init_filepath, "wb") as fp:
-                fp.write(init_contents)
             try:
                 os.remove(os.path.join(PY_PACKAGE_DIR, "build.py"))
             except FileNotFoundError:

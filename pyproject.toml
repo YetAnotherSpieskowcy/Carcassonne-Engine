@@ -41,3 +41,13 @@ exclude = ["tests"]
     # include built shared objects in binary distribution
     "*.so",
 ]
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+known_first_party = ["carcassonne_engine"]
+skip_gitignore = true
+
+[[tool.mypy.overrides]]
+module = "carcassonne_engine._bindings.*"
+ignore_errors = true

@@ -14,6 +14,7 @@ type Tile struct {
 	Features []featureMod.Feature
 }
 
+// checks if two tiles are the same, ignoring their orientation
 func (tile Tile) Equals(other Tile) bool {
 outer:
 	for rotations := range uint(4) {
@@ -29,6 +30,11 @@ outer:
 		return true
 	}
 	return false
+}
+
+// checks if two tiles are the same, including their orientation
+func (tile Tile) ExactEquals(other Tile) bool {
+	return slices.Equal(tile.Features, other.Features)
 }
 
 func (tile Tile) Cities() []featureMod.Feature {

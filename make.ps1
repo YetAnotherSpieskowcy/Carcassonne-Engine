@@ -151,7 +151,9 @@ function lint() {
         -e "DEFAULT_BRANCH=origin/main" `
         -e "VALIDATE_GO=false" `
         -e "VALIDATE_PYTHON_PYLINT=false" `
-        -e "FILTER_REGEX_EXCLUDE=.*python_bindings/.*" `
+        -e "LINTER_RULES_PATH=." `
+        -e "PYTHON_ISORT_CONFIG_FILE=pyproject.toml" `
+        -e "FILTER_REGEX_EXCLUDE=.*python_bindings/_bindings/.*" `
         -e "LOG_LEVEL=NOTICE" `
         -e "RUN_LOCAL=true" `
         -v ".:/tmp/lint" `

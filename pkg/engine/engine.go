@@ -3,6 +3,7 @@ package engine
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"sync"
@@ -13,11 +14,16 @@ import (
 )
 
 var (
-	ErrCommunicatorClosed = errors.New("communicator is closed")
-	ErrGameNotFound       = errors.New("game with the given ID was not found")
+	ErrCommunicatorClosed  = errors.New("communicator is closed")
+	ErrGameNotFound        = errors.New("game with the given ID was not found")
+	ErrLockAlreadyAcquired = errors.New("lock for game with this ID is already acquired")
 )
 
-const inputBufferSize = 10_000_000
+const (
+	inputBufferSize            = 10_000_000
+	childrenCleanupWarnMsg     = "WARN: children of the game with ID %v have not been cleaned up"
+	childrenCleanupWarnFullMsg = childrenCleanupWarnMsg + ": %#v\n"
+)
 
 func worker(comm *communicator) {
 	defer comm.workGroup.Done()
@@ -46,7 +52,7 @@ func newCommunicator() *communicator {
 	}
 }
 
-func (comm *communicator) Shutdown() {
+func (comm *communicator) Close() {
 	if comm.closed {
 		comm.workGroup.Wait()
 		return
@@ -67,8 +73,13 @@ type GameEngine struct {
 	comm          *communicator
 	logDir        string
 	games         map[int]*game.Game
+	gameMutexes   map[int]*sync.RWMutex
 	nextGameID    int
 	nextRequestID int
+	closed        bool
+	childGames    map[int]map[int]struct{}
+	parentGames   map[int]int
+	appLogger     *log.Logger
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -80,8 +91,12 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 		comm:          comm,
 		logDir:        logDir,
 		games:         map[int]*game.Game{},
+		gameMutexes:   map[int]*sync.RWMutex{},
 		nextGameID:    1,
 		nextRequestID: 1,
+		childGames:    map[int]map[int]struct{}{},
+		parentGames:   map[int]int{},
+		appLogger:     log.New(os.Stderr, "", log.LstdFlags),
 	}
 
 	for range workerCount {
@@ -92,8 +107,16 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 	return engine, nil
 }
 
-func (engine *GameEngine) Shutdown() {
-	engine.comm.Shutdown()
+func (engine *GameEngine) IsClosed() bool {
+	return engine.closed
+}
+
+func (engine *GameEngine) Close() {
+	if engine.closed {
+		return
+	}
+	engine.closed = true
+	engine.comm.Close()
 }
 
 // Generate a random game from the given tileset.
@@ -113,7 +136,90 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 	}
 
 	engine.games[id] = g
+	engine.gameMutexes[id] = &sync.RWMutex{}
 	return SerializedGameWithID{id, g.Serialized()}, nil
+}
+
+// *Fully* clone the game (including its log) with the given ID `count` times
+// returning the IDs of the cloned games.
+// Intended use: Allowing multiple agents to play the same game scenario.
+func (engine *GameEngine) CloneGame(gameID int, count int) ([]int, error) {
+	return engine.cloneGame(gameID, count, true)
+}
+
+// Clone the game with the given ID `count` times and track the clones as the children
+// to the given game. All of the game's children should be cleaned up before a turn is
+// played on the parent game, otherwise a warning is issued.
+//
+// Returns the IDs of the cloned games.
+//
+// Intended use: Allowing a single agent to expand the game tree through child games
+// until it's ready to make its turn.
+func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
+	ret, err := engine.cloneGame(gameID, count, false)
+	if err != nil {
+		return ret, err
+	}
+
+	childGames, ok := engine.childGames[gameID]
+	if !ok {
+		childGames = map[int]struct{}{}
+		engine.childGames[gameID] = childGames
+	}
+
+	for _, childID := range ret {
+		childGames[childID] = struct{}{}
+		engine.parentGames[childID] = gameID
+	}
+	return ret, nil
+}
+
+// Delete games with the given IDs.
+func (engine *GameEngine) DeleteGames(gameIDs []int) {
+	for _, gameID := range gameIDs {
+		if len(engine.childGames[gameID]) != 0 {
+			// since we don't know whether the agent isn't actually using these,
+			// just settle on a warning
+			engine.appLogger.Printf(
+				childrenCleanupWarnFullMsg,
+				gameID,
+				engine.childGames[gameID],
+			)
+		}
+		delete(engine.games, gameID)
+		delete(engine.gameMutexes, gameID)
+		delete(engine.childGames, gameID)
+		parentID := engine.parentGames[gameID]
+		if parentID != 0 {
+			delete(engine.childGames[parentID], gameID)
+		}
+	}
+}
+
+func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, error) {
+	reservedIDs := make([]int, count)
+	for i := range count {
+		reservedIDs[i] = engine.nextGameID
+		engine.nextGameID++
+	}
+
+	logDir := ""
+	if full {
+		logDir = engine.logDir
+	}
+	req := &cloneGameRequest{GameID: gameID, ReservedIDs: reservedIDs, LogDir: logDir}
+	responses := engine.sendBatch([]Request{req})
+	if err := responses[0].Err(); err != nil {
+		return nil, err
+	}
+
+	resp := responses[0].(*cloneGameResponse)
+	for i, game := range resp.Clones {
+		engine.games[reservedIDs[i]] = game
+		engine.gameMutexes[reservedIDs[i]] = &sync.RWMutex{}
+	}
+
+	return reservedIDs, nil
 }
 
 // Due to limitations of Python bindings generator with []interface return type,
@@ -143,6 +249,60 @@ func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest)
 	return concreteResponses
 }
 
+// Due to limitations of Python bindings generator with []interface return type,
+// this wraps sendBatch() and limits the return type to only one Response type.
+func (engine *GameEngine) SendGetRemainingTilesBatch(concreteRequests []*GetRemainingTilesRequest) []*GetRemainingTilesResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*GetRemainingTilesResponse, len(responses))
+	for i := range responses {
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*GetRemainingTilesResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &GetRemainingTilesResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
+	}
+	return concreteResponses
+}
+
+// Due to limitations of Python bindings generator with []interface return type,
+// this wraps sendBatch() and limits the return type to only one Response type.
+func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMovesRequest) []*GetLegalMovesResponse {
+	requests := make([]Request, len(concreteRequests))
+	for i := range concreteRequests {
+		requests[i] = concreteRequests[i]
+	}
+	responses := engine.sendBatch(requests)
+	concreteResponses := make([]*GetLegalMovesResponse, len(responses))
+	for i := range responses {
+		var ok bool
+		concreteResponses[i], ok = responses[i].(*GetLegalMovesResponse)
+		if !ok {
+			// we can get a SyncResponse here, if the request didn't reach
+			// a worker due to failure during prepareWorkerInput
+			// this *is* stupid but it's what we have to deal with due to
+			// a limitation with auto-generated bindings breaking on
+			// a `[]Interface` return:
+			// https://github.com/go-python/gopy/issues/357
+			concreteResponses[i] = &GetLegalMovesResponse{
+				BaseResponse: responses[i].(*SyncResponse).BaseResponse,
+			}
+		}
+	}
+	return concreteResponses
+}
+
 // API for handling the sent requests using background workers.
 // The order and types of returned responses correspond to the requests slice.
 //
@@ -154,10 +314,12 @@ func (engine *GameEngine) SendPlayTurnBatch(concreteRequests []*PlayTurnRequest)
 // to avoid concurrent writes by the workers on different threads.
 // You will receive `ErrGameNotFound` error, if you try doing so.
 func (engine *GameEngine) sendBatch(requests []Request) []Response {
-	outputReqIndexes := map[int]int{}
-	outputReqIndexesLock := sync.RWMutex{}
+	outputItems := map[int]outputItemInfo{}
+	outputItemsLock := sync.RWMutex{}
 
 	games := map[int]*game.Game{}
+	removableGames := map[int]struct{}{}
+	parentsWithRemovableChildren := map[int]struct{}{}
 	responses := make([]Response, len(requests))
 	outputBuffer := make(chan workerOutput, len(requests))
 	waitGroup := sync.WaitGroup{}
@@ -166,24 +328,45 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	outputWaitGroup.Add(1)
 	go func() {
 		for output := range outputBuffer {
-			outputReqIndexesLock.RLock()
-			i := outputReqIndexes[output.requestID]
-			outputReqIndexesLock.RUnlock()
-			responses[i] = output.resp
+			outputItemsLock.RLock()
+			outputInfo := outputItems[output.requestID]
+			outputItemsLock.RUnlock()
+			responses[outputInfo.RequestIndex] = output.resp
+
+			if outputInfo.AcquiredWrite {
+				engine.gameMutexes[outputInfo.GameID].Unlock()
+			} else {
+				engine.gameMutexes[outputInfo.GameID].RUnlock()
+			}
+
+			if respGameRemovable, ok := output.resp.(ResponseGameRemovable); ok {
+				if respGameRemovable.canRemoveGame() {
+					removableGames[outputInfo.GameID] = struct{}{}
+				}
+			}
+
+			if respChildGamesRemovable, ok := output.resp.(ResponseChildGamesRemovable); ok {
+				if respChildGamesRemovable.canRemoveChildGames() {
+					parentsWithRemovableChildren[outputInfo.GameID] = struct{}{}
+				}
+			}
 		}
 		outputWaitGroup.Done()
 	}()
 
 	for i, req := range requests {
+		gameID := req.gameID()
 		input, err := engine.prepareWorkerInput(&waitGroup, outputBuffer, req)
 		if err != nil {
-			responses[i] = &SyncResponse{BaseResponse{gameID: req.gameID(), err: err}}
+			responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: err}}
 			continue
 		}
-		games[req.gameID()] = input.game
-		outputReqIndexesLock.Lock()
-		outputReqIndexes[input.requestID] = i
-		outputReqIndexesLock.Unlock()
+		games[gameID] = input.game
+		outputItemsLock.Lock()
+		outputItems[input.requestID] = outputItemInfo{
+			GameID: gameID, RequestIndex: i, AcquiredWrite: input.canWrite,
+		}
+		outputItemsLock.Unlock()
 		engine.send(input)
 	}
 
@@ -194,10 +377,30 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	close(outputBuffer)
 	outputWaitGroup.Wait()
 
-	// prepareWorkerInput removes games from the map to avoid concurrent
-	// requests to the same game. Now it's time to add them back.
-	for gameID, game := range games {
-		engine.games[gameID] = game
+	// remove games for which we got information that we can remove them
+	for gameID := range games {
+		_, canRemove := removableGames[gameID]
+		_, canRemoveChildren := parentsWithRemovableChildren[gameID]
+
+		if (canRemove || canRemoveChildren) && len(engine.childGames[gameID]) != 0 {
+			// since we don't know whether the agent isn't actually using these,
+			// just settle on a warning
+			engine.appLogger.Printf(
+				childrenCleanupWarnFullMsg,
+				gameID,
+				engine.childGames[gameID],
+			)
+		}
+
+		if canRemove {
+			delete(engine.games, gameID)
+			delete(engine.gameMutexes, gameID)
+			delete(engine.childGames, gameID)
+			parentID := engine.parentGames[gameID]
+			if parentID != 0 {
+				delete(engine.childGames[parentID], gameID)
+			}
+		}
 	}
 
 	return responses
@@ -221,9 +424,15 @@ func (engine *GameEngine) prepareWorkerInput(
 	if !ok {
 		return workerInput{}, ErrGameNotFound
 	}
-	// Delete the game to avoid concurrent requests to it
-	// This needs to be added back by the caller when the requests finishes.
-	delete(engine.games, gameID)
+	mutex := engine.gameMutexes[gameID]
+	canWrite := req.requiresWrite()
+	if canWrite {
+		if !mutex.TryLock() {
+			return workerInput{}, ErrLockAlreadyAcquired
+		}
+	} else if !mutex.TryRLock() {
+		return workerInput{}, ErrLockAlreadyAcquired
+	}
 
 	requestID := engine.nextRequestID
 	engine.nextRequestID++
@@ -233,6 +442,7 @@ func (engine *GameEngine) prepareWorkerInput(
 		outputBuffer: outputBuffer,
 		game:         game,
 		request:      req,
+		canWrite:     canWrite,
 	}, nil
 }
 

@@ -39,17 +39,18 @@ test-python: install-python
 .PHONY: lint
 lint:
 	@echo "Running the linter..."
-	docker run \
+	docker run --rm \
 		-e "VALIDATE_ALL_CODEBASE=true" \
 		-e "DEFAULT_BRANCH=origin/main" \
 		-e "VALIDATE_GO=false" \
-		-e "FILTER_REGEX_EXCLUDE=.*python_bindings/.*" \
 		-e "VALIDATE_PYTHON_PYLINT=false" \
+		-e "LINTER_RULES_PATH=." \
+		-e "PYTHON_ISORT_CONFIG_FILE=pyproject.toml" \
+		-e "FILTER_REGEX_EXCLUDE=.*python_bindings/_bindings/.*" \
 		-e "LOG_LEVEL=NOTICE" \
 		-e "RUN_LOCAL=true" \
 		-v ".:/tmp/lint" \
 		--mount "type=tmpfs,destination=/tmp/lint/python_bindings" \
-		--rm \
 		"ghcr.io/super-linter/super-linter:v6.3.1"
 
 .PHONY: open-coverage

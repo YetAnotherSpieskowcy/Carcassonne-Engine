@@ -14,9 +14,10 @@ import (
 )
 
 type SerializedGame struct {
-	CurrentTile         *tiles.Tile
+	CurrentTile         tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
-	CurrentPlayer       elements.Player
+	CurrentPlayerID     elements.ID
+	Players             []elements.Player
 	PlayerCount         int
 	Tiles               []elements.PlacedTile
 	TileSet             tilesets.TileSet
@@ -70,16 +71,42 @@ func NewFromDeck(
 	return game, nil
 }
 
+func (game Game) DeepClone() *Game {
+	game.board = game.board.DeepClone()
+	game.deck = game.deck.DeepClone()
+
+	players := make([]elements.Player, len(game.players))
+	for i, player := range game.players {
+		players[i] = player.DeepClone()
+	}
+	game.players = players
+
+	nullLogger := logger.New(io.Discard)
+	game.log = &nullLogger
+
+	return &game
+}
+
+func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
+	clone := game.DeepClone()
+	if err := game.log.CopyTo(log); err != nil {
+		return nil, err
+	}
+	clone.log = log
+	return clone, nil
+}
+
 func (game *Game) Serialized() SerializedGame {
 	serialized := SerializedGame{
-		CurrentPlayer: game.CurrentPlayer(),
-		PlayerCount:   game.PlayerCount(),
-		Tiles:         game.board.Tiles(),
-		TileSet:       game.deck.TileSet(),
+		CurrentPlayerID: game.CurrentPlayer().ID(),
+		Players:         game.players,
+		PlayerCount:     game.PlayerCount(),
+		Tiles:           game.board.Tiles(),
+		TileSet:         game.deck.TileSet(),
 	}
 
 	if tile, err := game.GetCurrentTile(); err == nil {
-		serialized.CurrentTile = &tile
+		serialized.CurrentTile = tile
 		serialized.ValidTilePlacements = game.board.GetTilePlacementsFor(tile)
 	}
 	return serialized
@@ -89,12 +116,24 @@ func (game *Game) GetCurrentTile() (tiles.Tile, error) {
 	return game.deck.Peek()
 }
 
+func (game *Game) GetRemainingTiles() []tiles.Tile {
+	return game.deck.GetRemaining()
+}
+
 func (game *Game) CurrentPlayer() elements.Player {
 	return game.players[game.currentPlayer]
 }
 
 func (game *Game) PlayerCount() int {
 	return len(game.players)
+}
+
+func (game *Game) GetTilePlacementsFor(tile tiles.Tile) []elements.PlacedTile {
+	return game.board.GetTilePlacementsFor(tile)
+}
+
+func (game *Game) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+	return game.board.GetLegalMovesFor(placement)
 }
 
 func (game *Game) ensureCurrentTileHasValidPlacement() error {

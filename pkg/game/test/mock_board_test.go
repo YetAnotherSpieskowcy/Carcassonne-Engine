@@ -14,6 +14,24 @@ func TestBoardMockImplementsBoardInterface(_ *testing.T) {
 	_ = board
 }
 
+func TestBoardMockDeepClone(t *testing.T) {
+	board := BoardMock{}
+	actual := board.DeepClone().(*BoardMock)
+	expected := &BoardMock{}
+
+	actualTileCountFunc := reflect.ValueOf(actual.TileCountFunc).Pointer()
+	expectedTileCountFunc := reflect.ValueOf(expected.TileCountFunc).Pointer()
+	if actualTileCountFunc != expectedTileCountFunc {
+		t.Fatalf("expected %v, got %v instead", expectedTileCountFunc, actualTileCountFunc)
+	}
+
+	actualPlaceTileFunc := reflect.ValueOf(actual.PlaceTileFunc).Pointer()
+	expectedPlaceTileFunc := reflect.ValueOf(expected.PlaceTileFunc).Pointer()
+	if actualPlaceTileFunc != expectedPlaceTileFunc {
+		t.Fatalf("expected %v, got %v instead", expectedTileCountFunc, actualTileCountFunc)
+	}
+}
+
 func TestBoardMockTileCountWithoutFunc(t *testing.T) {
 	board := BoardMock{}
 	actual := board.TileCount()
