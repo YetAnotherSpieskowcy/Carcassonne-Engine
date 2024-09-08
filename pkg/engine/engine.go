@@ -388,6 +388,13 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	}
 
 	defer func() {
+		// Wait for all workers request to finish running on the workers.
+		waitGroup.Wait()
+		// Close the output buffer to let the response-handling goroutine know
+		// that there will be no more requests and wait for it to finish.
+		close(outputBuffer)
+		outputWaitGroup.Wait()
+
 		if outputPanicValue == nil {
 			outputPanicValue = recover()
 			if outputPanicValue != nil {
@@ -460,13 +467,8 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 		engine.send(input)
 	}
 
-	// Wait for all workers request to finish running on the workers.
-	waitGroup.Wait()
-	// Close the output buffer to let the response-handling goroutine know
-	// that there will be no more requests and wait for it to finish.
-	close(outputBuffer)
-	outputWaitGroup.Wait()
-
+	// we wait for output goroutine to finish in deferred cleanup so responses slice
+	// will have correct responses by the time the function actually returns
 	return responses
 }
 
