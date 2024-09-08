@@ -33,7 +33,7 @@ type ExecutionPanicError struct {
 
 func (err *ExecutionPanicError) Error() string {
 	return fmt.Sprintf(
-		"panic occurred during request execution\n- msg: %#v\n- stack trace:\n%s",
+		"panic during request execution: %#v\n- stack trace:\n%s",
 		err.panicValue,
 		err.stack,
 	)
