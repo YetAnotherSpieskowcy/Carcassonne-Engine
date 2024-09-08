@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"runtime/debug"
+	"strings"
 	"sync"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
@@ -27,15 +28,19 @@ const (
 )
 
 type ExecutionPanicError struct {
-	panicValue any
-	stack      []byte
+	panicValues []any
+	stacks      [][]byte
 }
 
 func (err *ExecutionPanicError) Error() string {
+	formattedErrors := make([]string, len(err.panicValues))
+	for i := range err.panicValues {
+		formattedErrors[i] = fmt.Sprintf(
+			"%#v\n- stack trace:\n%s", err.panicValues[i], err.stacks[i],
+		)
+	}
 	return fmt.Sprintf(
-		"panic during request execution: %#v\n- stack trace:\n%s",
-		err.panicValue,
-		err.stack,
+		"panic during request execution: %v", strings.Join(formattedErrors, "\n"),
 	)
 }
 
@@ -45,7 +50,10 @@ func processWorkerInput(input *workerInput) (resp Response) {
 			resp = &SyncResponse{
 				BaseResponse{
 					gameID: input.request.gameID(),
-					err:    &ExecutionPanicError{panicValue: err, stack: debug.Stack()},
+					err: &ExecutionPanicError{
+						panicValues: []any{err},
+						stacks:      [][]byte{debug.Stack()},
+					},
 				},
 			}
 		}
@@ -403,7 +411,8 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 		}
 		if outputPanicValue != nil {
 			err := &ExecutionPanicError{
-				panicValue: outputPanicValue, stack: outputPanicStack,
+				panicValues: []any{outputPanicValue},
+				stacks: [][]byte{outputPanicStack},
 			}
 			for i, req := range requests {
 				gameID := req.gameID()
