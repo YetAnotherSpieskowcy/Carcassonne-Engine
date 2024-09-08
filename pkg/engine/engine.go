@@ -414,8 +414,7 @@ type requestBatch struct {
 	outputBuffer                 chan workerOutput
 	waitGroup                    sync.WaitGroup
 	outputWaitGroup              sync.WaitGroup
-	outputPanicValue             any
-	outputPanicStack             []byte
+	panicErr                     ExecutionPanicError
 }
 
 func newRequestBatch(engine *GameEngine, requests []Request) requestBatch {
@@ -441,10 +440,7 @@ func (batch *requestBatch) Process() {
 		defer func() {
 			// one cannot recover from a panic that occurred in another goroutine
 			// so we want to re-panic in the "parent" goroutine instead
-			batch.outputPanicValue = recover()
-			if batch.outputPanicValue != nil {
-				batch.outputPanicStack = debug.Stack()
-			}
+			batch.recover(recover())
 			batch.outputWaitGroup.Done()
 		}()
 
@@ -519,6 +515,13 @@ func (batch *requestBatch) cleanupGames() {
 	}
 }
 
+func (batch *requestBatch) recover(panicValue any) {
+	if panicValue != nil {
+		batch.panicErr.panicValues = append(batch.panicErr.panicValues, panicValue)
+		batch.panicErr.stacks = append(batch.panicErr.stacks, debug.Stack())
+	}
+}
+
 func (batch *requestBatch) recoverWithCleanup() {
 	// Wait for all workers request to finish running on the workers.
 	batch.waitGroup.Wait()
@@ -527,20 +530,14 @@ func (batch *requestBatch) recoverWithCleanup() {
 	close(batch.outputBuffer)
 	batch.outputWaitGroup.Wait()
 
-	err := ExecutionPanicError{}
-	panicValue := recover()
-	if panicValue != nil {
-		err.panicValues = append(err.panicValues, panicValue)
-		err.stacks = append(err.stacks, debug.Stack())
-	}
-	if batch.outputPanicValue != nil {
-		err.panicValues = append(err.panicValues, batch.outputPanicValue)
-		err.stacks = append(err.stacks, batch.outputPanicStack)
-	}
-	if len(err.panicValues) != 0 {
+	batch.recover(recover())
+
+	if len(batch.panicErr.panicValues) != 0 {
 		for i, req := range batch.requests {
 			gameID := req.gameID()
-			batch.responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: &err}}
+			batch.responses[i] = &SyncResponse{
+				BaseResponse{gameID: gameID, err: &batch.panicErr},
+			}
 		}
 	}
 	batch.cleanupGames()
