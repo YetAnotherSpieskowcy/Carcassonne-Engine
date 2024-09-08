@@ -40,6 +40,18 @@ func (req *testRequest) execute(game *game.Game) Response {
 	return &testResponse{BaseResponse{gameID: req.gameID()}}
 }
 
+type testResponseWithRemovableGame struct {
+	BaseResponse
+	canRemoveGameFunc func(resp *testResponseWithRemovableGame) bool
+}
+
+func (resp *testResponseWithRemovableGame) canRemoveGame() bool {
+	if resp.canRemoveGameFunc != nil {
+		return resp.canRemoveGameFunc(resp)
+	}
+	return false
+}
+
 func TestFullGame(t *testing.T) {
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
@@ -439,4 +451,149 @@ func TestGameEngineSendBatchReturnsFailuresWhenCommunicatorClosed(t *testing.T) 
 			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
 		}
 	}
+}
+
+func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicInWorker(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	requestCount := 5
+	requests := make([]Request, 0, requestCount)
+	for range requestCount {
+		g, err := engine.GenerateGame(tilesets.StandardTileSet())
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+
+		req := &testRequest{GameID: g.ID}
+		requests = append(requests, req)
+	}
+	req := requests[0].(*testRequest)
+	req.executeFunc = func(*testRequest, *game.Game) Response {
+		panic("panic during function execution")
+	}
+
+	responses := engine.sendBatch(requests)
+	for i, resp := range responses {
+		err := resp.Err()
+		if i == 0 {
+			if err == nil {
+				t.Fatal("expected error to occur")
+			}
+			_, panicOccured := err.(*ExecutionPanicError)
+			if !panicOccured {
+				t.Fatal(err)
+			}
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		expected := requests[i].gameID()
+		actual := resp.GameID()
+		if actual != expected {
+			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+		}
+	}
+	engine.Close()
+}
+
+func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicInSendBatchChildGoroutine(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	requestCount := 5
+	requests := make([]Request, 0, requestCount)
+	for range requestCount {
+		g, err := engine.GenerateGame(tilesets.StandardTileSet())
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+
+		req := &testRequest{GameID: g.ID}
+		requests = append(requests, req)
+	}
+	req := requests[0].(*testRequest)
+	req.executeFunc = func(req *testRequest, _ *game.Game) Response {
+		return &testResponseWithRemovableGame{
+			BaseResponse: BaseResponse{gameID: req.gameID()},
+			canRemoveGameFunc: func(*testResponseWithRemovableGame) bool {
+				panic("panic during function execution")
+			},
+		}
+	}
+
+	responses := engine.sendBatch(requests)
+	for i, resp := range responses {
+		err := resp.Err()
+		if err == nil {
+			t.Fatal("expected error to occur")
+		}
+		_, panicOccured := err.(*ExecutionPanicError)
+		if !panicOccured {
+			t.Fatal(err)
+		}
+		expected := requests[i].gameID()
+		actual := resp.GameID()
+		if actual != expected {
+			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+		}
+	}
+	engine.Close()
+}
+
+type testRequestPanickingOnRequiresWriteCall struct {
+	GameID int
+}
+
+func (req *testRequestPanickingOnRequiresWriteCall) gameID() int {
+	return req.GameID
+}
+
+func (req *testRequestPanickingOnRequiresWriteCall) requiresWrite() bool {
+	panic("panic during requiresWrite()")
+}
+
+func (req *testRequestPanickingOnRequiresWriteCall) execute(_ *game.Game) Response {
+	panic("this should not ever be reached")
+}
+
+func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicInMainThread(t *testing.T) {
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	requestCount := 5
+	requests := make([]Request, 0, requestCount)
+	for range requestCount {
+		g, err := engine.GenerateGame(tilesets.StandardTileSet())
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+
+		req := &testRequest{GameID: g.ID}
+		requests = append(requests, req)
+	}
+	requests[0] = &testRequestPanickingOnRequiresWriteCall{requests[1].gameID()}
+
+	responses := engine.sendBatch(requests)
+	for i, resp := range responses {
+		err := resp.Err()
+		if err == nil {
+			t.Fatal("expected error to occur")
+		}
+		_, panicOccured := err.(*ExecutionPanicError)
+		if !panicOccured {
+			t.Fatal(err)
+		}
+		expected := requests[i].gameID()
+		actual := resp.GameID()
+		if actual != expected {
+			t.Fatalf("expected %v game ID, got %v instead", expected, actual)
+		}
+	}
+	engine.Close()
 }
