@@ -354,70 +354,9 @@ func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMov
 // to avoid concurrent writes by the workers on different threads.
 // You will receive `ErrGameNotFound` error, if you try doing so.
 func (engine *GameEngine) sendBatch(requests []Request) (responses []Response) {
-	outputItems := map[int]outputItemInfo{}
-	outputItemsLock := sync.RWMutex{}
-
-	results := newBatchResults(engine, requests)
-	responses = results.responses
-
-	defer results.RecoverWithCleanup()
-
-	results.outputWaitGroup.Add(1)
-	go func() {
-		defer func() {
-			// one cannot recover from a panic that occurred in another goroutine
-			// so we want to re-panic in the "parent" goroutine instead
-			results.outputPanicValue = recover()
-			if results.outputPanicValue != nil {
-				results.outputPanicStack = debug.Stack()
-			}
-			results.outputWaitGroup.Done()
-		}()
-
-		for output := range results.outputBuffer {
-			outputItemsLock.RLock()
-			outputInfo := outputItems[output.requestID]
-			outputItemsLock.RUnlock()
-			responses[outputInfo.RequestIndex] = output.resp
-
-			if outputInfo.AcquiredWrite {
-				engine.gameMutexes[outputInfo.GameID].Unlock()
-			} else {
-				engine.gameMutexes[outputInfo.GameID].RUnlock()
-			}
-
-			if respGameRemovable, ok := output.resp.(ResponseGameRemovable); ok {
-				if respGameRemovable.canRemoveGame() {
-					results.removableGames[outputInfo.GameID] = struct{}{}
-				}
-			}
-
-			if respChildGamesRemovable, ok := output.resp.(ResponseChildGamesRemovable); ok {
-				if respChildGamesRemovable.canRemoveChildGames() {
-					results.parentsWithRemovableChildren[outputInfo.GameID] = struct{}{}
-				}
-			}
-		}
-	}()
-
-	for i, req := range requests {
-		gameID := req.gameID()
-		input, err := engine.prepareWorkerInput(&results.waitGroup, results.outputBuffer, req)
-		if err != nil {
-			responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: err}}
-			continue
-		}
-		results.games[gameID] = input.game
-		outputItemsLock.Lock()
-		outputItems[input.requestID] = outputItemInfo{
-			GameID: gameID, RequestIndex: i, AcquiredWrite: input.canWrite,
-		}
-		outputItemsLock.Unlock()
-		engine.send(input)
-	}
-
-	// value returned by a named return which may be further modified during cleanup
-	return
+	batch := newRequestBatch(engine, requests)
+	batch.Process()
+	return batch.responses
 }
 
 // Prepare the input that will be sent through engine's input buffer
@@ -465,7 +404,7 @@ func (engine *GameEngine) send(input workerInput) {
 	engine.comm.inputBuffer <- input
 }
 
-type batchResults struct {
+type requestBatch struct {
 	engine                       *GameEngine
 	requests                     []Request
 	games                        map[int]*game.Game
@@ -479,8 +418,8 @@ type batchResults struct {
 	outputPanicStack             []byte
 }
 
-func newBatchResults(engine *GameEngine, requests []Request) batchResults {
-	return batchResults{
+func newRequestBatch(engine *GameEngine, requests []Request) requestBatch {
+	return requestBatch{
 		engine:                       engine,
 		requests:                     requests,
 		games:                        map[int]*game.Game{},
@@ -491,41 +430,102 @@ func newBatchResults(engine *GameEngine, requests []Request) batchResults {
 	}
 }
 
-func (results *batchResults) CleanupGames() {
-	// remove games for which we got information that we can remove them
-	for gameID := range results.games {
-		_, canRemove := results.removableGames[gameID]
-		_, canRemoveChildren := results.parentsWithRemovableChildren[gameID]
+func (batch *requestBatch) Process() {
+	outputItems := map[int]outputItemInfo{}
+	outputItemsLock := sync.RWMutex{}
 
-		if (canRemove || canRemoveChildren) && len(results.engine.childGames[gameID]) != 0 {
+	defer batch.recoverWithCleanup()
+
+	batch.outputWaitGroup.Add(1)
+	go func() {
+		defer func() {
+			// one cannot recover from a panic that occurred in another goroutine
+			// so we want to re-panic in the "parent" goroutine instead
+			batch.outputPanicValue = recover()
+			if batch.outputPanicValue != nil {
+				batch.outputPanicStack = debug.Stack()
+			}
+			batch.outputWaitGroup.Done()
+		}()
+
+		for output := range batch.outputBuffer {
+			outputItemsLock.RLock()
+			outputInfo := outputItems[output.requestID]
+			outputItemsLock.RUnlock()
+			batch.responses[outputInfo.RequestIndex] = output.resp
+
+			if outputInfo.AcquiredWrite {
+				batch.engine.gameMutexes[outputInfo.GameID].Unlock()
+			} else {
+				batch.engine.gameMutexes[outputInfo.GameID].RUnlock()
+			}
+
+			if respGameRemovable, ok := output.resp.(ResponseGameRemovable); ok {
+				if respGameRemovable.canRemoveGame() {
+					batch.removableGames[outputInfo.GameID] = struct{}{}
+				}
+			}
+
+			if respChildGamesRemovable, ok := output.resp.(ResponseChildGamesRemovable); ok {
+				if respChildGamesRemovable.canRemoveChildGames() {
+					batch.parentsWithRemovableChildren[outputInfo.GameID] = struct{}{}
+				}
+			}
+		}
+	}()
+
+	for i, req := range batch.requests {
+		gameID := req.gameID()
+		input, err := batch.engine.prepareWorkerInput(&batch.waitGroup, batch.outputBuffer, req)
+		if err != nil {
+			batch.responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: err}}
+			continue
+		}
+		batch.games[gameID] = input.game
+		outputItemsLock.Lock()
+		outputItems[input.requestID] = outputItemInfo{
+			GameID: gameID, RequestIndex: i, AcquiredWrite: input.canWrite,
+		}
+		outputItemsLock.Unlock()
+		batch.engine.send(input)
+	}
+}
+
+func (batch *requestBatch) cleanupGames() {
+	// remove games for which we got information that we can remove them
+	for gameID := range batch.games {
+		_, canRemove := batch.removableGames[gameID]
+		_, canRemoveChildren := batch.parentsWithRemovableChildren[gameID]
+
+		if (canRemove || canRemoveChildren) && len(batch.engine.childGames[gameID]) != 0 {
 			// since we don't know whether the agent isn't actually using these,
 			// just settle on a warning
-			results.engine.appLogger.Printf(
+			batch.engine.appLogger.Printf(
 				childrenCleanupWarnFullMsg,
 				gameID,
-				results.engine.childGames[gameID],
+				batch.engine.childGames[gameID],
 			)
 		}
 
 		if canRemove {
-			delete(results.engine.games, gameID)
-			delete(results.engine.gameMutexes, gameID)
-			delete(results.engine.childGames, gameID)
-			parentID := results.engine.parentGames[gameID]
+			delete(batch.engine.games, gameID)
+			delete(batch.engine.gameMutexes, gameID)
+			delete(batch.engine.childGames, gameID)
+			parentID := batch.engine.parentGames[gameID]
 			if parentID != 0 {
-				delete(results.engine.childGames[parentID], gameID)
+				delete(batch.engine.childGames[parentID], gameID)
 			}
 		}
 	}
 }
 
-func (results *batchResults) RecoverWithCleanup() {
+func (batch *requestBatch) recoverWithCleanup() {
 	// Wait for all workers request to finish running on the workers.
-	results.waitGroup.Wait()
+	batch.waitGroup.Wait()
 	// Close the output buffer to let the response-handling goroutine know
 	// that there will be no more requests and wait for it to finish.
-	close(results.outputBuffer)
-	results.outputWaitGroup.Wait()
+	close(batch.outputBuffer)
+	batch.outputWaitGroup.Wait()
 
 	err := ExecutionPanicError{}
 	panicValue := recover()
@@ -533,15 +533,15 @@ func (results *batchResults) RecoverWithCleanup() {
 		err.panicValues = append(err.panicValues, panicValue)
 		err.stacks = append(err.stacks, debug.Stack())
 	}
-	if results.outputPanicValue != nil {
-		err.panicValues = append(err.panicValues, results.outputPanicValue)
-		err.stacks = append(err.stacks, results.outputPanicStack)
+	if batch.outputPanicValue != nil {
+		err.panicValues = append(err.panicValues, batch.outputPanicValue)
+		err.stacks = append(err.stacks, batch.outputPanicStack)
 	}
 	if len(err.panicValues) != 0 {
-		for i, req := range results.requests {
+		for i, req := range batch.requests {
 			gameID := req.gameID()
-			results.responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: &err}}
+			batch.responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: &err}}
 		}
 	}
-	results.CleanupGames()
+	batch.cleanupGames()
 }
