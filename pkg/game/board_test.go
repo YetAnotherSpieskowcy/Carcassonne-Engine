@@ -117,6 +117,21 @@ func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 	}
 }
 
+func TestBoardCanBePlacedReturnsFalseWhenMultipleFeaturesHaveMeeples(t *testing.T) {
+	board := NewBoard(tilesets.StandardTileSet())
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 1)
+	ptile.Features[0].Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
+	ptile.Features[1].Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
+
+	expected := false
+	actual := board.CanBePlaced(ptile)
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestBoardPlaceTileErrorsWhenCapacityIsExceeded(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{}
