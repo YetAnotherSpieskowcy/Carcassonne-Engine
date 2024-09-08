@@ -16,6 +16,13 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+var canBePlacedFunctions = map[feature.Type]func(*board, elements.PlacedTile) bool{
+	feature.Road:      (*board).roadCanBePlaced,
+	feature.City:      (*board).cityCanBePlaced,
+	feature.Field:     (*board).fieldCanBePlaced,
+	feature.Monastery: (*board).monasteryCanBePlaced,
+}
+
 // mutable type
 // Position coordinates example on the board:
 // (-1, +1)  (+0, +1)  (+1, +1)
@@ -180,14 +187,37 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 }
 
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
-	return board.isPositionValid(tile) &&
-		slices.Contains(board.placeablePositions, tile.Position) &&
-		// TODO: since `tile` can be user input, we need to check
-		// that legal number of meeples (i.e. just one) has been placed
-		board.cityCanBePlaced(tile) &&
-		board.fieldCanBePlaced(tile) &&
-		board.monasteryCanBePlaced(tile) &&
-		board.roadCanBePlaced(tile)
+	if !board.isPositionValid(tile) {
+		return false
+	}
+	if !slices.Contains(board.placeablePositions, tile.Position) {
+		return false
+	}
+
+	meepleCount := 0
+	featuresWithMeeples := map[feature.Type]struct{}{}
+	for _, feat := range tile.Features {
+		if feat.Meeple.Type != elements.NoneMeeple {
+			// Depending on use cases for this method, meeple counting may not be
+			// strictly necessary.
+			// One example where it's unnecessary is game.PlayTurn() which calls
+			// player.PlaceTile() and that already validates meeple count
+			// for other reasons.
+			meepleCount++
+			featuresWithMeeples[feat.FeatureType] = struct{}{}
+			if meepleCount > 1 {
+				return false
+			}
+		}
+	}
+
+	for feat := range featuresWithMeeples {
+		if !canBePlacedFunctions[feat](board, tile) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
