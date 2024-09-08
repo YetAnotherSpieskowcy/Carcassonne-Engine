@@ -403,20 +403,20 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 		close(outputBuffer)
 		outputWaitGroup.Wait()
 
-		if outputPanicValue == nil {
-			outputPanicValue = recover()
-			if outputPanicValue != nil {
-				outputPanicStack = debug.Stack()
-			}
+		err := ExecutionPanicError{}
+		panicValue := recover()
+		if panicValue != nil {
+			err.panicValues = append(err.panicValues, panicValue)
+			err.stacks = append(err.stacks, debug.Stack())
 		}
 		if outputPanicValue != nil {
-			err := &ExecutionPanicError{
-				panicValues: []any{outputPanicValue},
-				stacks: [][]byte{outputPanicStack},
-			}
+			err.panicValues = append(err.panicValues, outputPanicValue)
+			err.stacks = append(err.stacks, outputPanicStack)
+		}
+		if len(err.panicValues) != 0 {
 			for i, req := range requests {
 				gameID := req.gameID()
-				responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: err}}
+				responses[i] = &SyncResponse{BaseResponse{gameID: gameID, err: &err}}
 			}
 		}
 		cleanupGames()
