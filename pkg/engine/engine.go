@@ -467,10 +467,6 @@ func (engine *GameEngine) sendBatch(requests []Request) []Response {
 	close(outputBuffer)
 	outputWaitGroup.Wait()
 
-	if outputPanicValue != nil {
-		panic(outputPanicValue)
-	}
-
 	return responses
 }
 
