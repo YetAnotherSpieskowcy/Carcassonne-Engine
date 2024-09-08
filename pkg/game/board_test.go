@@ -9,6 +9,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -126,6 +128,48 @@ func TestBoardCanBePlacedReturnsFalseWhenMultipleFeaturesHaveMeeples(t *testing.
 
 	expected := false
 	actual := board.CanBePlaced(ptile)
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestBoardFieldCanBePlacedReturnsFalseWhenExpandToFieldWithMeepleHappensOverAnotherField(t *testing.T) {
+	t.Skip("not implemented yet, see GH-86")
+
+	board := NewBoard(tilesets.StandardTileSet()).(*board)
+
+	// prepare board layout (graphical representation can be found in GH-86)
+	tilesToPlace := []elements.PlacedTile{}
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+	tilesToPlace = append(tilesToPlace, ptile)
+
+	ptile = elements.ToPlacedTile(tiletemplates.StraightRoads().Rotate(1))
+	ptile.Position = position.New(1, 1)
+	tilesToPlace = append(tilesToPlace, ptile)
+
+	ptile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(3))
+	ptile.Position = position.New(-1, 0)
+	tilesToPlace = append(tilesToPlace, ptile)
+
+	for _, ptile := range tilesToPlace {
+		if _, err := board.PlaceTile(ptile); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	ptile = elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(1))
+	ptile.Position = position.New(1, 0)
+	ptile.GetPlacedFeatureAtSide(side.Right, feature.Field).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 2,
+	}
+
+	expected := false
+	actual := board.fieldCanBePlaced(ptile)
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)

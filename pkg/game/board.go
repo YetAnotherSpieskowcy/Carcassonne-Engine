@@ -237,8 +237,8 @@ func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
 		// unset the Meeple in our copy of the feature
 		feat.Meeple = elements.Meeple{}
 
-		// TODO: potential problem: Field instance cannot expand to another feature
-		// on the tile checked by this method since it's not part of the board.
+		// TODO: Field instance cannot expand to another feature on the tile checked by
+		// this method since it's not part of the board. See GH-86.
 		field := field.New(feat, tile.Position)
 		field.Expand(board, board.cityManager)
 
