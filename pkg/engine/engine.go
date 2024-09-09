@@ -343,7 +343,7 @@ func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMov
 // API for handling the sent requests using background workers.
 // The order and types of returned responses correspond to the requests slice.
 //
-// If a request fails before reaching a worker, a `SyncResponse` type will be
+// If a request fails before reaching a worker, a `SyncResponse` type will
 // be returned in place of the worker response.
 // If a panic occurs during execution of this method, it will be captured
 // and a SyncResponse with ExecutionPanicError will be returned for relevant
