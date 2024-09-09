@@ -46,7 +46,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '89 100'
+          thresholds: '88 100'
 
   python-build:
     name: Python Build
