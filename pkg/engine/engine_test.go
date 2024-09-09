@@ -640,6 +640,13 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicEverywhere(t *testi
 		if !panicOccured {
 			t.Fatal(err)
 		}
+		msg := err.Error()
+		if strings.Count(msg, "stack trace") < 2 {
+			t.Fatalf(
+				"expected at least 2 stack traces, got following message instead:\n%v",
+				msg,
+			)
+		}
 		expected := requests[i].gameID()
 		actual := resp.GameID()
 		if actual != expected {
