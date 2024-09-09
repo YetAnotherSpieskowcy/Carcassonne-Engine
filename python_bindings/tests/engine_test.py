@@ -86,7 +86,7 @@ def test_concurrent_read_requests(tmp_path: Path) -> None:
 
 
 def test_game_engine_send_batch_receives_correct_responses_after_worker_requests(
-        tmp_path: Path,
+    tmp_path: Path,
 ) -> None:
     engine = GameEngine(4, tmp_path)
     request_count = 100
@@ -111,7 +111,7 @@ def test_game_engine_send_batch_receives_correct_responses_after_worker_requests
 
 
 def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
-        tmp_path: Path,
+    tmp_path: Path,
 ) -> None:
     engine = GameEngine(4, tmp_path)
     requests = []
@@ -146,7 +146,7 @@ def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
 
 
 def test_game_engine_send_batch_raises_when_communicator_closed(
-        tmp_path: Path,
+    tmp_path: Path,
 ) -> None:
     engine = GameEngine(4, tmp_path)
     request_count = 5
@@ -167,7 +167,7 @@ def test_game_engine_send_batch_raises_when_communicator_closed(
 
 
 def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
-        tmp_path: Path,
+    tmp_path: Path,
 ) -> None:
     t1 = tiletemplates.monastery_with_single_road()
     t2 = tiletemplates.roads_turn()
@@ -197,7 +197,7 @@ def test_game_engine_send_get_remaining_tiles_batch_returns_remaining_tiles(
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
-        tmp_path: Path,
+    tmp_path: Path,
 ) -> None:
     tile = tiletemplates.monastery_without_roads()
     tile_set = TileSet.from_tiles(
@@ -225,7 +225,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
-        tmp_path: Path,
+    tmp_path: Path,
 ) -> None:
     tile = tiletemplates.monastery_with_single_road()
     tile_set = TileSet.from_tiles(

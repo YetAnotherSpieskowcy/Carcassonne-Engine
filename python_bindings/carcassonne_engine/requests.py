@@ -88,7 +88,7 @@ class GetRemainingTilesRequest:
     __slots__ = ("_go_obj", "_base_game_id", "_state_to_check")
 
     def __init__(
-            self, *, base_game_id: int, state_to_check: GameState | None = None
+        self, *, base_game_id: int, state_to_check: GameState | None = None
     ) -> None:
         if state_to_check is not None:
             self._go_obj = _go_engine.GetRemainingTilesRequest(
@@ -165,11 +165,11 @@ class GetLegalMovesRequest:
     __slots__ = ("_go_obj", "_base_game_id", "_state_to_check", "_tile_to_place")
 
     def __init__(
-            self,
-            *,
-            base_game_id: int,
-            state_to_check: GameState | None = None,
-            tile_to_place: Tile,
+        self,
+        *,
+        base_game_id: int,
+        state_to_check: GameState | None = None,
+        tile_to_place: Tile,
     ) -> None:
         if state_to_check is not None:
             self._go_obj = _go_engine.GetLegalMovesRequest(
