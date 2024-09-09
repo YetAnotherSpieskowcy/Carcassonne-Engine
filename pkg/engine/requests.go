@@ -81,10 +81,6 @@ func (resp *PlayTurnResponse) canRemoveGame() bool {
 	return err != nil && errors.Is(err, stack.ErrStackOutOfBounds)
 }
 
-func (resp *PlayTurnResponse) canRemoveChildGames() bool {
-	return resp.Err() == nil
-}
-
 func (req *PlayTurnRequest) gameID() int {
 	return req.GameID
 }

@@ -81,19 +81,6 @@ class GameEngine:
             raise Exception(str(exc)) from None
         return ret
 
-    def sub_clone_game(self, game_id: int, count: int) -> list[int]:
-        self._check_closed()
-        try:
-            ret = self._go_game_engine.SubCloneGame(game_id, count)
-        except RuntimeError as exc:
-            # We want to raise IOError (or its subclasses) or engine-specific
-            # exceptions depending on what error is returned here but since gopy
-            # flattens these, let's just raise generic Exception to not bind ourselves
-            # to a tighter API contract.
-            # TODO: map exceptions once we migrate from gopy to manually-written bindings
-            raise Exception(str(exc)) from None
-        return ret
-
     def delete_games(self, game_ids: list[int]) -> None:
         self._check_closed()
         self._go_game_engine.DeleteGames(game_ids)
