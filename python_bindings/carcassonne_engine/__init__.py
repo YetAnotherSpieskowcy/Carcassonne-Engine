@@ -5,8 +5,8 @@ from typing import Self
 
 from . import requests
 from ._bindings import engine as _go_engine  # type: ignore[attr-defined] # no stubs
-from .models import SerializedGame, SerializedGameWithID
 from .tilesets import TileSet
+from .models import SerializedGame, SerializedGameWithID
 
 __all__ = ("GameEngine",)
 
