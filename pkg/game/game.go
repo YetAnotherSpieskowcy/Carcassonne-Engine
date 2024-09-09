@@ -17,10 +17,11 @@ type SerializedGame struct {
 	CurrentTile         tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
 	CurrentPlayerID     elements.ID
-	Players             []elements.Player
+	Players             []elements.Player // TODO convert to serialized player?
 	PlayerCount         int
 	Tiles               []elements.PlacedTile
 	TileSet             tilesets.TileSet
+	// TODO add slice of binary tiles
 }
 
 type Game struct {
