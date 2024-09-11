@@ -22,6 +22,10 @@ def test_basic_params(tmp_path: Path) -> None:
     assert game.valid_tile_placements is not None
     assert len(game.tiles) == 72
     assert game.tile_set is not None
+    assert len(game.binary_tiles) == 72
+    assert game.binary_tiles[1] == 0  # not placed tile
+
+
 
 
 def test_player_params(tmp_path: Path) -> None:

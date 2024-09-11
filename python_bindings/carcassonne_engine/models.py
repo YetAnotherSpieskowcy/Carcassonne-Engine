@@ -53,7 +53,9 @@ class SerializedGame:
                  "_players",
                  "_player_count",
                  "_tiles",
-                 "_tile_set")
+                 "_tile_set",
+                 "_binary_tiles",
+                 )
 
     def __init__(self, go_obj: _go_game.SerializedGame) -> None:
         self._go_obj = go_obj
@@ -67,6 +69,7 @@ class SerializedGame:
         self._player_count = go_obj.PlayerCount
         self._tiles = go_obj.Tiles
         self._tile_set = go_obj.TileSet
+        self._binary_tiles = go_obj.BinaryTiles
 
     @property
     def current_tile(self) -> Tile | None:
@@ -96,6 +99,12 @@ class SerializedGame:
     def tile_set(self) -> TileSet:
         return self._tile_set
 
+    @property
+    def binary_tiles(self) -> list[int]:
+        tiles = []
+        #for tile in self._binary_tiles:
+        #    tiles.append(tile._unwrap())
+        return self._binary_tiles
 
 class SerializedGameWithID(NamedTuple):
     """

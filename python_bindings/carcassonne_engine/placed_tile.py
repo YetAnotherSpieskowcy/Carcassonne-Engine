@@ -11,6 +11,7 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
 
 __all__ = ( "PlacedTile", "Tile")
 
+
 class Tile:
     """
     Representation of a Carcassonne tile with specific feature configuration
