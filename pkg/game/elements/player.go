@@ -6,6 +6,15 @@ const (
 	NonePlayer ID = iota
 )
 
+/*
+Same parameters as player, but everything is public.
+*/
+type SerializedPlayer struct {
+	ID           ID
+	MeepleCounts []uint8
+	Score        uint32
+}
+
 type Player interface {
 	DeepClone() Player
 	ID() ID
@@ -18,4 +27,5 @@ type Player interface {
 	// how am I supposed to name this sensibly...
 	IsEligibleFor(move PlacedTile) bool
 	PlaceTile(board Board, move PlacedTile) (ScoreReport, error)
+	Serialized() SerializedPlayer
 }

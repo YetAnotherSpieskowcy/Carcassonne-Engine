@@ -23,6 +23,7 @@ def test_basic_params(tmp_path: Path) -> None:
     assert len(game.tiles) == 72
     assert game.tile_set is not None
 
+
 def test_player_params(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
     tile_set = standard_tile_set()
@@ -36,5 +37,4 @@ def test_player_params(tmp_path: Path) -> None:
     assert game.players[0].score == 0
     assert game.players[1].score == 0
 
-    assert game.players[1].meeple_count == 0
-
+    assert game.players[1].meeple_count == [0, 7]
