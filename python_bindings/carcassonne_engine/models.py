@@ -11,7 +11,7 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
 
 __all__ = ("GameState", "SerializedGame")
 
-from ._bindings.engine import Slice_elements_PlacedTile, Slice_elements_Player
+from ._bindings.engine import Slice_elements_PlacedTile
 from .placed_tile import Tile
 from .player import Player
 from .tilesets import TileSet

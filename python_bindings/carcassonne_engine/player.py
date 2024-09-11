@@ -12,7 +12,7 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
 
 __all__ = ("Player")
 
-from ._bindings.engine import Slice_elements_PlacedTile, Slice_elements_Player
+from ._bindings.engine import Slice_elements_PlacedTile
 from .placed_tile import Tile
 from .tilesets import TileSet
 
@@ -33,20 +33,23 @@ class Player:
                  "_meeple_count"
                  )
 
-    def __init__(self, go_obj: _go_elements.Player) -> None:
+    def __init__(self, go_obj: _go_elements.SerializedPlayer) -> None:
         self._go_obj = go_obj
 
-    def _unwrap(self) -> _go_elements.Player:
+    def _unwrap(self) -> _go_elements.SerializedPlayer:
         return self._go_obj
 
     @property
     def id(self) -> int:
-        return self._go_obj.ID()
+        return self._go_obj.ID
 
     @property
     def score(self) -> int:
-        return self._go_obj.Score()
+        return self._go_obj.Score
 
     @property
-    def meeple_count(self) -> int:
-        return self._go_obj.MeepleCount()
+    def meeple_count(self) -> list[int]:
+        meeples = []
+        for index, amount in enumerate(self._go_obj.MeepleCounts):
+            meeples.append(amount)
+        return meeples

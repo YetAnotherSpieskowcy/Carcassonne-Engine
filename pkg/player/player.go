@@ -95,3 +95,11 @@ func (player *player) PlaceTile(
 	}
 	return scoreReport, nil
 }
+
+func (player *player) Serialized() elements.SerializedPlayer {
+	return elements.SerializedPlayer{
+		ID:           player.id,
+		MeepleCounts: player.meepleCounts,
+		Score:        player.score,
+	}
+}
