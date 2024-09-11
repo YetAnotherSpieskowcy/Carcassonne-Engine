@@ -50,6 +50,6 @@ class Player:
     @property
     def meeple_count(self) -> list[int]:
         meeples = []
-        for index, amount in enumerate(self._go_obj.MeepleCounts):
+        for amount in self._go_obj.MeepleCounts:
             meeples.append(amount)
         return meeples
