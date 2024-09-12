@@ -101,7 +101,9 @@ def test_game_engine_send_batch_receives_correct_responses_after_worker_requests
     requests = [
         PlayTurnRequest(
             game_id=generated_game.id,
-            move=placed_tile.PlacedTile(generated_game.game._go_obj.ValidTilePlacements[0]),
+            move=placed_tile.PlacedTile(
+                generated_game.game._go_obj.ValidTilePlacements[0]
+            ),
         )
         for generated_game in games
     ]
@@ -161,7 +163,9 @@ def test_game_engine_send_batch_raises_when_communicator_closed(
     requests = [
         PlayTurnRequest(
             game_id=generated_game.id,
-            move=placed_tile.PlacedTile(generated_game.game._go_obj.ValidTilePlacements[0]),
+            move=placed_tile.PlacedTile(
+                generated_game.game._go_obj.ValidTilePlacements[0]
+            ),
         )
         for generated_game in games
     ]

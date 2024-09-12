@@ -3,8 +3,6 @@ from typing import NamedTuple, Self
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
     binarytiles as _go_binarytiles,
     elements as _go_elements,
-    engine as _go_engine,
-    game as _go_game,
     position as _go_position,
     tiles as _go_tiles,
 )
@@ -47,6 +45,7 @@ class Tile:
 
     def to_bits(self) -> int:
         return _go_binarytiles.FromTile(self._go_obj)
+
 
 class Position(NamedTuple):
     """Position of a tile on the board."""
