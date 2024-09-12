@@ -77,3 +77,12 @@ func (resp *BaseResponse) Err() error {
 type SyncResponse struct {
 	BaseResponse
 }
+
+func (resp *SyncResponse) canRemoveGame() bool {
+	err := resp.Err()
+	if err == nil {
+		return false
+	}
+	_, panicOccured := err.(*ExecutionPanicError)
+	return panicOccured
+}
