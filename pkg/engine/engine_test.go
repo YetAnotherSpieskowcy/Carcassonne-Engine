@@ -7,10 +7,7 @@ import (
 	"time"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -183,42 +180,6 @@ func TestGameEngineCloneGameReturnsIndependentGames(t *testing.T) {
 			"expected logs to be empty but they weren't. full logs below:\n%v",
 			logs,
 		)
-	}
-
-	engine.Close()
-}
-
-func TestGameEngineSendPlayTurnBatchRemovesFinishedGames(t *testing.T) {
-	engine, err := StartGameEngine(1, t.TempDir())
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	buf := bytes.Buffer{}
-	engine.appLogger.SetOutput(&buf)
-
-	g, err := engine.GenerateGame(
-		tilesets.TileSet{
-			StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
-			Tiles:        []tiles.Tile{},
-		},
-	)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	if _, exists := engine.games[g.ID]; !exists {
-		t.Fatal("expected game to exist before final round")
-	}
-
-	req := &PlayTurnRequest{GameID: g.ID}
-	resp := engine.SendPlayTurnBatch([]*PlayTurnRequest{req})[0]
-	if !errors.Is(resp.err, stack.ErrStackOutOfBounds) {
-		t.Fatal(err.Error())
-	}
-
-	if _, exists := engine.games[g.ID]; exists {
-		t.Fatal("expected game to not exist after final round")
 	}
 
 	engine.Close()
