@@ -460,7 +460,6 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicInWorker(t *testing
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
 	requestCount := 5
 	requests := make([]Request, 0, requestCount)
 	for range requestCount {
@@ -656,4 +655,38 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicEverywhere(t *testi
 		}
 	}
 	engine.Close()
+}
+func TestSendGetMidGameScoresBatch(t *testing.T) {
+
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	tileSet := tilesets.StandardTileSet()
+
+	gameWithID, err := engine.GenerateGame(tileSet)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	_, gameID := gameWithID.Game, gameWithID.ID
+
+	midGameScoreReq := &GetMidGameScoreRequest{
+		BaseGameID: gameID,
+	}
+
+	midGameScoreResp := engine.SendGetMidGameScoresBatch(
+		[]*GetMidGameScoreRequest{midGameScoreReq},
+	)[0]
+
+	if midGameScoreResp.Err() != nil {
+		t.Fatal(midGameScoreResp.Err().Error())
+	}
+
+	if midGameScoreResp.Scores[0] != 0 {
+		t.Fatal("Player 0 score not zero")
+	}
+
+	if midGameScoreResp.Scores[1] != 0 {
+		t.Fatal("Player 0 score not zero")
+	}
 }
