@@ -4,7 +4,10 @@ from types import TracebackType
 from typing import Self
 
 from . import requests
-from ._bindings import engine as _go_engine  # type: ignore[attr-defined] # no stubs
+from ._bindings import (  # type: ignore[attr-defined] # no stubs
+    engine as _go_engine,
+    go as _go,
+)
 from .models import SerializedGame, SerializedGameWithID
 from .tilesets import TileSet
 
@@ -96,7 +99,7 @@ class GameEngine:
 
     def delete_games(self, game_ids: list[int]) -> None:
         self._check_closed()
-        self._go_game_engine.DeleteGames(game_ids)
+        self._go_game_engine.DeleteGames(_go.Slice_int(game_ids))
 
     def send_play_turn_batch(
         self, concrete_requests: list[requests.PlayTurnRequest]
