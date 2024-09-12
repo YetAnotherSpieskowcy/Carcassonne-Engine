@@ -166,6 +166,19 @@ func TestBoardCanBePlacedReturnsFalseWhenMultipleFeaturesHaveMeeples(t *testing.
 	}
 }
 
+func TestBoardCanBePlacedReturnsFalseWhenPlacingAtInvalidPosition(t *testing.T) {
+	board := NewBoard(tilesets.StandardTileSet())
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 2)
+
+	expected := false
+	actual := board.CanBePlaced(ptile)
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestBoardFieldCanBePlacedReturnsFalseWhenExpandToFieldWithMeepleHappensOverAnotherField(t *testing.T) {
 	t.Skip("not implemented yet, see GH-86")
 
