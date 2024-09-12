@@ -64,6 +64,9 @@ func (player *player) IsEligibleFor(move elements.PlacedTile) bool {
 	count := 0
 	for _, feature := range move.Features {
 		if feature.Meeple.Type != elements.NoneMeeple {
+			if feature.Meeple.PlayerID != player.id {
+				return false
+			}
 			if player.MeepleCount(feature.Meeple.Type) == 0 {
 				return false
 			}

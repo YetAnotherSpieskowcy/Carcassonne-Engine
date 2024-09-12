@@ -16,6 +16,8 @@ GO_EXCLUDED_PACKAGES = (
     # fortunately we shouldn't need it but this package is problematic
     # due to use of generics: https://github.com/go-python/gopy/issues/283
     "stack",
+    # nothing depends on performance tests
+    "game/performancetests",
 )
 GO_MAIN_PACKAGE = f"{GO_BASE_PACKAGE}/{GO_MAIN_PACKAGE_NAME}"
 

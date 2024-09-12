@@ -16,6 +16,16 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+var (
+	canBePlacedFunctions = map[feature.Type]func(*board, elements.PlacedTile, elements.PlacedFeature) bool{
+		feature.Road:      (*board).roadCanBePlaced,
+		feature.City:      (*board).cityCanBePlaced,
+		feature.Field:     (*board).fieldCanBePlaced,
+		feature.Monastery: (*board).monasteryCanBePlaced,
+	}
+	meepleTypes = []elements.MeepleType{elements.NormalMeeple}
+)
+
 // mutable type
 // Position coordinates example on the board:
 // (-1, +1)  (+0, +1)  (+1, +1)
@@ -117,11 +127,32 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
-func (board *board) GetLegalMovesFor(placement elements.PlacedTile) []elements.PlacedTile {
+// Get legal moves that can be made from the given **valid** placement.
+//
+// This means that this function returns a slice with:
+//   - the given placement as is (assumed to have no meeple)
+//   - all variations of the given placement with meeple added to one of the features
+//     that a meeple can be placed on considering the current situation on the board.
+//
+// Note: the placement given as input is assumed to have no meeples.
+func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elements.PlacedTile {
 	// create initial move list without any meeple placed
-	moves := []elements.PlacedTile{placement}
-	// TODO:
-	// - implement generation of legal moves *with* meeples
+	moves := []elements.PlacedTile{basePlacement}
+
+	for i := range basePlacement.Features {
+		for _, meepleType := range meepleTypes {
+			placement := basePlacement
+			placement.Features = slices.Clone(basePlacement.Features)
+			placement.Features[i].Meeple = elements.Meeple{Type: meepleType}
+			feat := placement.Features[i]
+
+			// Doing this for every meeple type may be suboptimal, if more meeple types
+			// are added but that's not very likely at current time.
+			if canBePlacedFunctions[feat.FeatureType](board, placement, feat) {
+				moves = append(moves, placement)
+			}
+		}
+	}
 	return moves
 }
 
@@ -172,11 +203,102 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 	return true
 }
 
-//revive:disable-next-line:unused-parameter Until the TODO is finished.
 func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
-	// TODO for future tasks:
-	// - implement generation of legal moves
-	// - to be implemented after #18, #19 and #20 to avoid code duplication
+	if !board.isPositionValid(tile) {
+		return false
+	}
+	if !slices.Contains(board.placeablePositions, tile.Position) {
+		return false
+	}
+
+	meepleCount := 0
+	featuresWithMeeples := map[feature.Type]elements.PlacedFeature{}
+	for _, feat := range tile.Features {
+		if feat.Meeple.Type != elements.NoneMeeple {
+			// Depending on use cases for this method, meeple counting may not be
+			// strictly necessary.
+			// One example where it's unnecessary is game.PlayTurn() which calls
+			// player.PlaceTile() and that already validates meeple count
+			// for other reasons.
+			meepleCount++
+			featuresWithMeeples[feat.FeatureType] = feat
+			if meepleCount > 1 {
+				return false
+			}
+		}
+	}
+
+	for featureType, feat := range featuresWithMeeples {
+		if !canBePlacedFunctions[featureType](board, tile, feat) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (board *board) cityCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
+	return board.cityManager.CanBePlaced(tile, feat)
+}
+
+func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
+	// While placing a tile, the player can only put a single meeple on a field.
+	// This means we don't have to care about whether our field expands into
+	// a different feature on our tile - we will only expand the feature
+	// if it has a meeple and that only happens once.
+
+	// unset the Meeple in our copy of the feature
+	feat.Meeple = elements.Meeple{}
+
+	// TODO: Field instance cannot expand to another feature on the tile checked by
+	// this method since it's not part of the board. See GH-86.
+	field := field.New(feat, tile.Position)
+	field.Expand(board, board.cityManager)
+
+	// score report function checks the whole field for placed meeples
+	// and reports any meeples that would be returned which we can use here
+	scoreReport := field.GetScoreReport()
+
+	return len(scoreReport.ReturnedMeeples) == 0
+}
+
+func (board *board) monasteryCanBePlaced(_ elements.PlacedTile, _ elements.PlacedFeature) bool {
+	// meeple can always be placed on a monastery
+	return true
+}
+
+func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad elements.PlacedFeature) bool {
+	// get the two sides connected by the road which we will use to
+	// score roads on the neighbouring tiles (but not the tile itself)
+	sides := []side.Side{
+		checkedRoad.Sides.GetNthCardinalDirection(0), // 1st side
+		checkedRoad.Sides.GetNthCardinalDirection(1), // 2nd side
+	}
+	for _, checkedRoadSide := range sides {
+		neighbourTile, exists := board.GetTileAt(
+			checkedTile.Position.Add(position.FromSide(checkedRoadSide)),
+		)
+		if !exists {
+			// no existing tile found on this side of the road
+			continue
+		}
+
+		// an existing tile found on this side of the road - we need to check,
+		// if they have *any* meeple placed
+		neighbourRoadSide := checkedRoadSide.Mirror()
+		neighbourRoad := neighbourTile.GetPlacedFeatureAtSide(neighbourRoadSide, feature.Road)
+		// score function checks the whole road for placed meeples
+		// and reports any meeples that would be returned which we can use here
+		scoreReport, _ := board.ScoreRoadCompletion(
+			neighbourTile,
+			neighbourRoad.Feature,
+			true,
+		)
+		if len(scoreReport.ReturnedMeeples) != 0 {
+			return false
+		}
+	}
+
 	return true
 }
 
@@ -186,9 +308,11 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			"Board's tiles capacity exceeded, logic error?",
 		)
 	}
-	// TODO for future tasks:
-	// - determine if the tile can placed at a given position,
-	//   or return ErrInvalidMove otherwise
+
+	if !board.CanBePlaced(tile) {
+		return elements.ScoreReport{}, elements.ErrInvalidPosition
+	}
+
 	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
