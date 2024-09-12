@@ -127,14 +127,11 @@ func (manager *Manager) CanBePlaced(tile elements.PlacedTile) bool {
 			// no meeple
 			continue
 		}
-		cToJoin, exists := citiesToJoin[feature]
-		if !exists {
-			// no existing cities found in feature's neighbourhood - the feature is either
-			// not a City feature or it is a completely new city
-			continue
-		}
-		// existing city/cities found in feature's neighbourhood - we need to check,
-		// if they have *any* meeple placed
+		// this may return an empty list for features that have no cities to join with
+		cToJoin := citiesToJoin[feature]
+
+		// Check each of the existing cities (if any) found in feature's neighbourhood
+		// We need to check, if they have *any* meeple placed
 		for _, cityIndex := range cToJoin {
 			// score report function checks the whole city for placed meeples
 			// and reports any meeples that would be returned which we can use here

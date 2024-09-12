@@ -532,6 +532,26 @@ func TestCanBePlacedReturnsTrueWhenOpeningNewCity(t *testing.T) {
 	}
 }
 
+func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndOpeningNewCityWithMeeple(t *testing.T) {
+	manager := NewCityManager()
+
+	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
+	manager.UpdateCities(startingTile)
+
+	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+
+	expected := true
+	actual := manager.CanBePlaced(ptile)
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
 func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndPlacingFirstMeeple(t *testing.T) {
 	manager := NewCityManager()
 
