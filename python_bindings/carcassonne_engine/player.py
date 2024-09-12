@@ -1,7 +1,4 @@
-
-from ._bindings import (  # type: ignore[attr-defined] # no stubs
-    elements as _go_elements,
-)
+from ._bindings import elements as _go_elements  # type: ignore[attr-defined] # no stubs
 
 __all__ = "Player"
 
