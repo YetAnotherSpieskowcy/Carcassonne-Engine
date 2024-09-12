@@ -347,3 +347,47 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 
 	engine.Close()
 }
+
+func TestGameEngineGetMidGameScoreRequestError(t *testing.T) {
+	tile := tiletemplates.MonasteryWithSingleRoad()
+	tileSet := tilesets.TileSet{
+		// non-default starting tile - limits number of possible positions to one
+		StartingTile: tiletemplates.ThreeCityEdgesConnected(),
+		Tiles:        []tiles.Tile{tile},
+	}
+
+	game, err := game.NewFromTileSet(tileSet, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	gameWithID, err := engine.GenerateGame(tileSet)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ptile := elements.ToPlacedTile(tile)
+	ptile.Position = position.New(1, 0)
+	gameState := GameState{
+		serializedGame: gameWithID.Game,
+		simulatedMoves: []elements.PlacedTile{ptile},
+	}
+
+	midGameScoreRequest := GetMidGameScoreRequest{
+		BaseGameID:   0,
+		StateToCheck: &gameState,
+	}
+
+	midGameScoreResp := midGameScoreRequest.execute(game)
+
+	if midGameScoreResp.Err() != nil {
+		t.Fatal("Error didn't happen")
+	}
+
+	engine.Close()
+}
