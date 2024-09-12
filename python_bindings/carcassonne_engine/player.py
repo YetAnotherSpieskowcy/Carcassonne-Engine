@@ -1,6 +1,20 @@
-from ._bindings import elements as _go_elements  # type: ignore[attr-defined] # no stubs
+from typing import NamedTuple, Self
 
-__all__ = "Player"
+from . import _bindings
+from ._bindings import (  # type: ignore[attr-defined] # no stubs
+    binarytiles as _go_binarytiles,
+    elements as _go_elements,
+    engine as _go_engine,
+    game as _go_game,
+    position as _go_position,
+    tiles as _go_tiles,
+)
+
+__all__ = ("Player")
+
+from ._bindings.engine import Slice_elements_PlacedTile
+from .placed_tile import Tile
+from .tilesets import TileSet
 
 
 class Player:
@@ -13,7 +27,11 @@ class Player:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj", "_id", "_score", "_meeple_count")
+    __slots__ = ("_go_obj",
+                 "_id",
+                 "_score",
+                 "_meeple_count"
+                 )
 
     def __init__(self, go_obj: _go_elements.SerializedPlayer) -> None:
         self._go_obj = go_obj
