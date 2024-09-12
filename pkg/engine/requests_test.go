@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
@@ -47,6 +49,36 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsFailureWhenCommunicatorClose
 	}
 }
 
+func TestGameEngineSendGetRemainingTilesBatchReturnsFailureWhenInvalidGameStateIsPassed(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	game, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err)
+	}
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	ptile.Position = position.New(0, 1)
+
+	requests := []*GetRemainingTilesRequest{
+		{
+			BaseGameID: game.ID,
+			// constructing these manually is not an expected use of the API
+			// but we want to simulate someone somehow passing an invalid game state
+			StateToCheck: &GameState{simulatedMoves: []elements.PlacedTile{ptile}},
+		},
+	}
+	resp := engine.SendGetRemainingTilesBatch(requests)[0]
+	if resp.Err() == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(resp.Err(), elements.ErrWrongTile) {
+		t.Fatal(resp.Err())
+	}
+}
+
 func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
 	engine, err := StartGameEngine(1, t.TempDir())
 	if err != nil {
@@ -61,6 +93,36 @@ func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenCommunicatorClosed(t 
 	}
 	if !errors.Is(resp.Err(), ErrCommunicatorClosed) {
 		t.Fatal(resp.Err().Error())
+	}
+}
+
+func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenInvalidGameStateIsPassed(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	game, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err)
+	}
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	ptile.Position = position.New(0, 1)
+
+	requests := []*GetLegalMovesRequest{
+		{
+			BaseGameID: game.ID,
+			// constructing these manually is not an expected use of the API
+			// but we want to simulate someone somehow passing an invalid game state
+			StateToCheck: &GameState{simulatedMoves: []elements.PlacedTile{ptile}},
+		},
+	}
+	resp := engine.SendGetLegalMovesBatch(requests)[0]
+	if resp.Err() == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(resp.Err(), elements.ErrWrongTile) {
+		t.Fatal(resp.Err())
 	}
 }
 
