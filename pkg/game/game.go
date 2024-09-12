@@ -11,6 +11,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -22,10 +23,11 @@ type SerializedGame struct {
 	CurrentTile         tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
 	CurrentPlayerID     elements.ID
-	Players             []elements.Player
+	Players             []elements.SerializedPlayer
 	PlayerCount         int
 	Tiles               []elements.PlacedTile
 	TileSet             tilesets.TileSet
+	BinaryTiles         []binarytiles.BinaryTile // contains info about all placed tiles, not placed tiles are equal to 0
 }
 
 type Game struct {
@@ -109,12 +111,26 @@ func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
 }
 
 func (game *Game) Serialized() SerializedGame {
+
+	// serialize serializedPlayers
+	serializedPlayers := []elements.SerializedPlayer{}
+	for _, player := range game.players {
+		serializedPlayers = append(serializedPlayers, player.Serialized())
+	}
+
+	// create serialzied tiles
+	serializedTiles := []binarytiles.BinaryTile{}
+	for _, tile := range game.board.Tiles() {
+		serializedTiles = append(serializedTiles, binarytiles.FromTile(elements.ToTile(tile)))
+	}
+
 	serialized := SerializedGame{
 		CurrentPlayerID: game.CurrentPlayer().ID(),
-		Players:         game.players,
+		Players:         serializedPlayers,
 		PlayerCount:     game.PlayerCount(),
 		Tiles:           game.board.Tiles(),
 		TileSet:         game.deck.TileSet(),
+		BinaryTiles:     serializedTiles,
 	}
 
 	// prevent leakage of future state of the CurrentTile

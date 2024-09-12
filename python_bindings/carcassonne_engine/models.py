@@ -9,14 +9,12 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
     tiles as _go_tiles,
 )
 
-__all__ = (
-    "GameState",
-    "Tile",
-    "SerializedGame",
-    "SerializedGameWithID",
-    "Position",
-    "PlacedTile",
-)
+__all__ = ("GameState", "SerializedGame")
+
+from ._bindings.engine import Slice_elements_PlacedTile
+from .placed_tile import Tile
+from .player import Player
+from .tilesets import TileSet
 
 
 class GameState:
@@ -39,43 +37,6 @@ class GameState:
         return self._go_obj
 
 
-class Tile:
-    """
-    Representation of a Carcassonne tile with specific feature configuration
-    (and orientation).
-
-    This class is not meant to be instantiated by users directly
-    and should be considered read-only.
-
-    The instances of this class are provided by the `GameEngine` objects.
-    """
-
-    __slots__ = ("_go_obj",)
-
-    def __init__(self, go_obj: _go_tiles.Tile) -> None:
-        self._go_obj = go_obj
-
-    def _unwrap(self) -> _go_tiles.Tile:
-        return self._go_obj
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self._go_obj.Equals(other._go_obj)
-
-    def exact_equals(self, other: object) -> bool:
-        """
-        Unlike ``self == other``, this method also checks that
-        the compared tiles are in the same orientation.
-        """
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self._go_obj.ExactEquals(other._go_obj)
-
-    def to_bits(self) -> int:
-        return _go_binarytiles.FromTile(self._go_obj)
-
-
 class SerializedGame:
     """
     A serialized state of a game.
@@ -86,7 +47,16 @@ class SerializedGame:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj", "_current_tile")
+    __slots__ = ("_go_obj",
+                 "_current_tile",
+                 "_valid_tile_placements",
+                 "_current_player_id",
+                 "_players",
+                 "_player_count",
+                 "_tiles",
+                 "_tile_set",
+                 "_binary_tiles",
+                 )
 
     def __init__(self, go_obj: _go_game.SerializedGame) -> None:
         self._go_obj = go_obj
@@ -94,11 +64,48 @@ class SerializedGame:
         self._current_tile: Tile | None = None
         if go_tile_obj.Features:
             self._current_tile = Tile(go_tile_obj)
+        self._valid_tile_placements = go_obj.ValidTilePlacements
+        self._current_player_id = go_obj.CurrentPlayerID
+        self._players = [Player(x) for x in go_obj.Players]
+        self._player_count = go_obj.PlayerCount
+        self._tiles = go_obj.Tiles
+        self._tile_set = go_obj.TileSet
+        self._binary_tiles = go_obj.BinaryTiles
 
     @property
     def current_tile(self) -> Tile | None:
         return self._current_tile
 
+    @property
+    def valid_tile_placements(self) -> Slice_elements_PlacedTile:
+        return self._valid_tile_placements
+
+    @property
+    def current_player_id(self) -> int:
+        return self._current_player_id
+
+    @property
+    def players(self) -> list[Player]:
+        return self._players
+
+    @property
+    def player_count(self) -> int:
+        return self._player_count
+
+    @property
+    def tiles(self) -> Slice_elements_PlacedTile:
+        return self._tiles
+
+    @property
+    def tile_set(self) -> TileSet:
+        return self._tile_set
+
+    @property
+    def binary_tiles(self) -> list[int]:
+        tiles = []
+        #for tile in self._binary_tiles:
+        #    tiles.append(tile._unwrap())
+        return self._binary_tiles
 
 class SerializedGameWithID(NamedTuple):
     """
@@ -109,44 +116,3 @@ class SerializedGameWithID(NamedTuple):
 
     id: int
     game: SerializedGame
-
-
-class Position(NamedTuple):
-    """Position of a tile on the board."""
-
-    x: int
-    y: int
-
-    @classmethod
-    def _from_go_obj(cls, go_obj: _go_position.Position) -> Self:
-        return cls(go_obj.X(), go_obj.Y())
-
-
-class PlacedTile:
-    """
-    Represents a tile (to be) placed on the board.
-
-    This class is not meant to be instantiated by users directly
-    and should be considered read-only.
-
-    The instances of this class are provided by the `GameEngine` objects.
-    """
-
-    __slots__ = ("_go_obj", "_position")
-
-    def __init__(self, go_obj: _go_elements.PlacedTile) -> None:
-        self._go_obj = go_obj
-        self._position = Position._from_go_obj(go_obj.Position)
-
-    def _unwrap(self) -> _go_elements.PlacedTile:
-        return self._go_obj
-
-    @property
-    def position(self) -> Position:
-        return self._position
-
-    def to_tile(self) -> Tile:
-        return Tile(_go_elements.ToTile(self._go_obj))
-
-    def to_bits(self) -> int:
-        return _go_binarytiles.FromPlacedTile(self._go_obj)

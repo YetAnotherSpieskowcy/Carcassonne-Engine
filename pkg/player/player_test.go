@@ -178,3 +178,34 @@ func TestPlayerNewPlayerSetsId(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expectedID, actualID)
 	}
 }
+
+func TestPlayerSerialization(t *testing.T) {
+	id := 12
+	meepleCount := []uint8{1, 2}
+	score := uint32(124)
+
+	player := player.New(elements.ID(id))
+	for index, amount := range meepleCount {
+		player.SetMeepleCount(elements.MeepleType(index), amount)
+	}
+	player.SetScore(score)
+
+	serializedPlayer := player.Serialized()
+
+	// comparing
+
+	if serializedPlayer.ID != player.ID() {
+		t.Fatalf("expected %#v, got %#v instead", player.ID(), serializedPlayer)
+	}
+
+	for index := range meepleCount {
+		if player.MeepleCount(elements.MeepleType(index)) != serializedPlayer.MeepleCounts[index] {
+			t.Fatalf("Meeple %#v : expected %#v, got %#v instead", index, player.ID(), serializedPlayer)
+		}
+	}
+
+	if serializedPlayer.Score != player.Score() {
+		t.Fatalf("expected %#v, got %#v instead", player.ID(), serializedPlayer)
+	}
+
+}
