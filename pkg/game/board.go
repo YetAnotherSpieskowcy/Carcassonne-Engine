@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	canBePlacedFunctions = map[feature.Type]func(*board, elements.PlacedTile) bool{
+	canBePlacedFunctions = map[feature.Type]func(*board, elements.PlacedTile, elements.PlacedFeature) bool{
 		feature.Road:      (*board).roadCanBePlaced,
 		feature.City:      (*board).cityCanBePlaced,
 		feature.Field:     (*board).fieldCanBePlaced,
@@ -139,15 +139,16 @@ func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elemen
 	// create initial move list without any meeple placed
 	moves := []elements.PlacedTile{basePlacement}
 
-	for i, feat := range basePlacement.Features {
+	for i := range basePlacement.Features {
 		for _, meepleType := range meepleTypes {
 			placement := basePlacement
 			placement.Features = slices.Clone(basePlacement.Features)
 			placement.Features[i].Meeple = elements.Meeple{Type: meepleType}
+			feat := placement.Features[i]
 
 			// Doing this for every meeple type may be suboptimal, if more meeple types
 			// are added but that's not very likely at current time.
-			if canBePlacedFunctions[feat.FeatureType](board, placement) {
+			if canBePlacedFunctions[feat.FeatureType](board, placement, feat) {
 				moves = append(moves, placement)
 			}
 		}
@@ -211,7 +212,7 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 	}
 
 	meepleCount := 0
-	featuresWithMeeples := map[feature.Type]struct{}{}
+	featuresWithMeeples := map[feature.Type]elements.PlacedFeature{}
 	for _, feat := range tile.Features {
 		if feat.Meeple.Type != elements.NoneMeeple {
 			// Depending on use cases for this method, meeple counting may not be
@@ -220,15 +221,15 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 			// player.PlaceTile() and that already validates meeple count
 			// for other reasons.
 			meepleCount++
-			featuresWithMeeples[feat.FeatureType] = struct{}{}
+			featuresWithMeeples[feat.FeatureType] = feat
 			if meepleCount > 1 {
 				return false
 			}
 		}
 	}
 
-	for feat := range featuresWithMeeples {
-		if !canBePlacedFunctions[feat](board, tile) {
+	for featureType, feat := range featuresWithMeeples {
+		if !canBePlacedFunctions[featureType](board, tile, feat) {
 			return false
 		}
 	}
@@ -236,82 +237,65 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 	return true
 }
 
-func (board *board) cityCanBePlaced(tile elements.PlacedTile) bool {
-	return board.cityManager.CanBePlaced(tile)
+func (board *board) cityCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
+	return board.cityManager.CanBePlaced(tile, feat)
 }
 
-func (board *board) fieldCanBePlaced(tile elements.PlacedTile) bool {
+func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
 	// While placing a tile, the player can only put a single meeple on a field.
 	// This means we don't have to care about whether our field expands into
 	// a different feature on our tile - we will only expand the feature
 	// if it has a meeple and that only happens once.
-	for _, feat := range tile.Features {
-		if feat.FeatureType != feature.Field || feat.Meeple.Type == elements.NoneMeeple {
-			continue
-		}
 
-		// unset the Meeple in our copy of the feature
-		feat.Meeple = elements.Meeple{}
+	// unset the Meeple in our copy of the feature
+	feat.Meeple = elements.Meeple{}
 
-		// TODO: Field instance cannot expand to another feature on the tile checked by
-		// this method since it's not part of the board. See GH-86.
-		field := field.New(feat, tile.Position)
-		field.Expand(board, board.cityManager)
+	// TODO: Field instance cannot expand to another feature on the tile checked by
+	// this method since it's not part of the board. See GH-86.
+	field := field.New(feat, tile.Position)
+	field.Expand(board, board.cityManager)
 
-		// score report function checks the whole field for placed meeples
-		// and reports any meeples that would be returned which we can use here
-		scoreReport := field.GetScoreReport()
-		if len(scoreReport.ReturnedMeeples) != 0 {
-			return false
-		}
+	// score report function checks the whole field for placed meeples
+	// and reports any meeples that would be returned which we can use here
+	scoreReport := field.GetScoreReport()
 
-		// a single tile can only have one meeple on a field
-		break
-	}
-	return true
+	return len(scoreReport.ReturnedMeeples) == 0
 }
 
-func (board *board) monasteryCanBePlaced(_ elements.PlacedTile) bool {
+func (board *board) monasteryCanBePlaced(_ elements.PlacedTile, _ elements.PlacedFeature) bool {
 	// meeple can always be placed on a monastery
 	return true
 }
 
-func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile) bool {
-	for _, feat := range checkedTile.Features {
-		if feat.FeatureType != feature.Road || feat.Meeple.Type == elements.NoneMeeple {
+func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad elements.PlacedFeature) bool {
+	// get the two sides connected by the road which we will use to
+	// score roads on the neighbouring tiles (but not the tile itself)
+	sides := []side.Side{
+		checkedRoad.Sides.GetNthCardinalDirection(0), // 1st side
+		checkedRoad.Sides.GetNthCardinalDirection(1), // 2nd side
+	}
+	for _, checkedRoadSide := range sides {
+		neighbourTile, exists := board.GetTileAt(
+			checkedTile.Position.Add(position.FromSide(checkedRoadSide)),
+		)
+		if !exists {
+			// no existing tile found on this side of the road
 			continue
 		}
 
-		checkedRoad := feat
-		// get the two sides connected by the road which we will use to
-		// score roads on the neighbouring tiles (but not the tile itself)
-		sides := []side.Side{
-			checkedRoad.Sides.GetNthCardinalDirection(0), // 1st side
-			checkedRoad.Sides.GetNthCardinalDirection(1), // 2nd side
-		}
-		for _, checkedRoadSide := range sides {
-			neighbourTile, exists := board.GetTileAt(
-				checkedTile.Position.Add(position.FromSide(checkedRoadSide)),
-			)
-			if !exists {
-				// no existing tile found on this side of the road
-				continue
-			}
-
-			// an existing tile found on this side of the road - we need to check,
-			// if they have *any* meeple placed
-			neighbourRoadSide := checkedRoadSide.Mirror()
-			neighbourRoad := neighbourTile.GetPlacedFeatureAtSide(neighbourRoadSide, feature.Road)
-			// score function checks the whole road for placed meeples
-			// and reports any meeples that would be returned which we can use here
-			scoreReport, _ := board.ScoreRoadCompletion(
-				neighbourTile,
-				neighbourRoad.Feature,
-				true,
-			)
-			if len(scoreReport.ReturnedMeeples) != 0 {
-				return false
-			}
+		// an existing tile found on this side of the road - we need to check,
+		// if they have *any* meeple placed
+		neighbourRoadSide := checkedRoadSide.Mirror()
+		neighbourRoad := neighbourTile.GetPlacedFeatureAtSide(neighbourRoadSide, feature.Road)
+		// score function checks the whole road for placed meeples
+		// and reports any meeples that would be returned which we can use here
+		scoreReport, _ := board.ScoreRoadCompletion(
+			neighbourTile,
+			neighbourRoad.Feature,
+			true,
+		)
+		if len(scoreReport.ReturnedMeeples) != 0 {
+			return false
 		}
 	}
 

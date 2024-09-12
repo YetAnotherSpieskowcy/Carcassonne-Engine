@@ -111,9 +111,9 @@ func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elem
 }
 
 // Checks whether the tile can be placed at given position taking into account
-// the meeples placed on the given tile and the meeples that are already placed on
-// any city that the tile's features would join.
-func (manager *Manager) CanBePlaced(tile elements.PlacedTile) bool {
+// the meeple placed on the given feature and the meeples that are already placed on
+// any city that the feature would join.
+func (manager *Manager) CanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
 	foundCities := manager.findCities(tile.Position)
 
 	if len(foundCities) == 0 {
@@ -122,23 +122,17 @@ func (manager *Manager) CanBePlaced(tile elements.PlacedTile) bool {
 		return true
 	}
 	citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
-	for _, feature := range tile.Features {
-		if feature.Meeple.Type == elements.NoneMeeple {
-			// no meeple
-			continue
-		}
-		// this may return an empty list for features that have no cities to join with
-		cToJoin := citiesToJoin[feature]
+	// this may return an empty list for features that have no cities to join with
+	cToJoin := citiesToJoin[feat]
 
-		// Check each of the existing cities (if any) found in feature's neighbourhood
-		// We need to check, if they have *any* meeple placed
-		for _, cityIndex := range cToJoin {
-			// score report function checks the whole city for placed meeples
-			// and reports any meeples that would be returned which we can use here
-			scoreReport := manager.cities[cityIndex].GetScoreReport()
-			if len(scoreReport.ReturnedMeeples) != 0 {
-				return false
-			}
+	// Check each of the existing cities (if any) found in feature's neighbourhood
+	// We need to check, if they have *any* meeple placed
+	for _, cityIndex := range cToJoin {
+		// score report function checks the whole city for placed meeples
+		// and reports any meeples that would be returned which we can use here
+		scoreReport := manager.cities[cityIndex].GetScoreReport()
+		if len(scoreReport.ReturnedMeeples) != 0 {
+			return false
 		}
 	}
 

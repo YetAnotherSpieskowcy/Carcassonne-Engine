@@ -525,7 +525,7 @@ func TestCanBePlacedReturnsTrueWhenOpeningNewCity(t *testing.T) {
 	ptile.Position = position.New(0, -1)
 
 	expected := true
-	actual := manager.CanBePlaced(ptile)
+	actual := manager.CanBePlaced(ptile, *ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -540,12 +540,11 @@ func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndOpeningNewCityWithMeepl
 
 	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
 	ptile.Position = position.New(0, 1)
-	ptile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
-		Type: elements.NormalMeeple, PlayerID: 1,
-	}
+	feat := ptile.GetPlacedFeatureAtSide(side.Top, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
 
 	expected := true
-	actual := manager.CanBePlaced(ptile)
+	actual := manager.CanBePlaced(ptile, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -560,12 +559,11 @@ func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndPlacingFirstMeeple(t *t
 
 	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	ptile.Position = position.New(0, 1)
-	ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
-		Type: elements.NormalMeeple, PlayerID: 1,
-	}
+	feat := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
 
 	expected := true
-	actual := manager.CanBePlaced(ptile)
+	actual := manager.CanBePlaced(ptile, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -583,12 +581,11 @@ func TestCanBePlacedReturnsFalseWhenClosingExistingCityAndTryingToPlaceSecondMee
 
 	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	b.Position = position.New(0, 1)
-	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
-		Type: elements.NormalMeeple, PlayerID: 2,
-	}
+	feat := b.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
 
 	expected := false
-	actual := manager.CanBePlaced(b)
+	actual := manager.CanBePlaced(b, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -603,12 +600,11 @@ func TestCanBePlacedReturnsTrueWhenExpandingExistingCityAndPlacingFirstMeeple(t 
 
 	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
 	b.Position = position.New(0, 1)
-	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
-		Type: elements.NormalMeeple, PlayerID: 2,
-	}
+	feat := b.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
 
 	expected := true
-	actual := manager.CanBePlaced(b)
+	actual := manager.CanBePlaced(b, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -626,12 +622,11 @@ func TestCanBePlacedReturnsFalseWhenExpandingExistingCityAndTryingToPlaceSecondM
 
 	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
 	b.Position = position.New(0, 1)
-	b.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
-		Type: elements.NormalMeeple, PlayerID: 2,
-	}
+	feat := b.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
 
 	expected := false
-	actual := manager.CanBePlaced(b)
+	actual := manager.CanBePlaced(b, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)

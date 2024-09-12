@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
@@ -237,6 +238,7 @@ func TestGameGetLegalMovesForIncludesMeepleTypesCurrentPlayerDoesHave(t *testing
 	expected := []elements.PlacedTile{basePlacement}
 	for i := range basePlacement.Features {
 		ptile := basePlacement
+		ptile.Features = slices.Clone(basePlacement.Features)
 		ptile.Features[i].Meeple = elements.Meeple{
 			Type: elements.NormalMeeple, PlayerID: 1,
 		}

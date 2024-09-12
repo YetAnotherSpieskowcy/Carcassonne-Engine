@@ -209,12 +209,13 @@ func TestBoardFieldCanBePlacedReturnsFalseWhenExpandToFieldWithMeepleHappensOver
 
 	ptile = elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(1))
 	ptile.Position = position.New(1, 0)
-	ptile.GetPlacedFeatureAtSide(side.Right, feature.Field).Meeple = elements.Meeple{
+	feat := ptile.GetPlacedFeatureAtSide(side.Right, feature.Field)
+	feat.Meeple = elements.Meeple{
 		Type: elements.NormalMeeple, PlayerID: 2,
 	}
 
 	expected := false
-	actual := board.fieldCanBePlaced(ptile)
+	actual := board.fieldCanBePlaced(ptile, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
