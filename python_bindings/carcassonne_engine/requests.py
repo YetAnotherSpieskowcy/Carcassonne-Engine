@@ -1,6 +1,5 @@
 from ._bindings import engine as _go_engine  # type: ignore[attr-defined] # no stubs
 from .models import GameState, SerializedGame, Tile
-from .placed_tile import PlacedTile
 
 __all__ = (
     "BaseResponse",
@@ -15,6 +14,8 @@ __all__ = (
     "GetMidGameScoreRequest",
     "GetMidGameScoreResponse",
 )
+
+from .placed_tile import PlacedTile
 
 
 class BaseResponse:
