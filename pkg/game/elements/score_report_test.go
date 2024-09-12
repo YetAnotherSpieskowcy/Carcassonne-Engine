@@ -240,6 +240,7 @@ func TestMeepleInReportNotExists(t *testing.T) {
 		},
 		Position: position.New(0, 0),
 	}
+
 	if report.MeepleInReport(dummyMeeple) {
 		t.Fatalf("Meeple should not be in report!")
 	}
