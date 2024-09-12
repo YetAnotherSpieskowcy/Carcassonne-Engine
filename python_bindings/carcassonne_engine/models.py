@@ -98,10 +98,8 @@ class SerializedGame:
 
     @property
     def binary_tiles(self) -> list[int]:
-        tiles = []
-        #for tile in self._binary_tiles:
-        #    tiles.append(tile._unwrap())
         return self._binary_tiles
+
 
 class SerializedGameWithID(NamedTuple):
     """
