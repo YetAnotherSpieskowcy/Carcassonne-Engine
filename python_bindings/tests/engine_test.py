@@ -7,9 +7,9 @@ from pytest import approx
 from carcassonne_engine import GameEngine, models, tiletemplates
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
+    GetMidGameScoreRequest,
     GetRemainingTilesRequest,
     PlayTurnRequest,
-    GetMidGameScoreRequest
 )
 from carcassonne_engine.tilesets import TileSet, standard_tile_set
 from carcassonne_engine.utils import format_binary_tile_bits
@@ -282,6 +282,8 @@ def test_mid_game_score_request(tmp_path: Path) -> None:
     mid_game_score_request = GetMidGameScoreRequest(
         base_game_id=game_id,
     )
-    (mid_game_score_response,) = engine.send_get_mid_game_score_batch([mid_game_score_request])
+    (mid_game_score_response,) = engine.send_get_mid_game_score_batch(
+        [mid_game_score_request]
+    )
 
     assert mid_game_score_response.player_scores == {1: 0, 2: 0}

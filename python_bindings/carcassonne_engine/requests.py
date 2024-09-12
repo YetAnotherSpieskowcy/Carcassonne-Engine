@@ -11,6 +11,8 @@ __all__ = (
     "GetLegalMovesRequest",
     "GetLegalMovesResponse",
     "MoveWithState",
+    "GetMidGameScoreRequest",
+    "GetMidGameScoreResponse",
 )
 
 
@@ -246,10 +248,11 @@ class GetMidGameScoreRequest:
     Game engine request for getting points as if the game just finished
     in the game with specified ID and state.
     """
+
     __slots__ = ("_go_obj", "_base_game_id", "_state_to_check")
 
     def __init__(
-            self, *, base_game_id: int, state_to_check: GameState | None = None
+        self, *, base_game_id: int, state_to_check: GameState | None = None
     ) -> None:
         if state_to_check is not None:
             self._go_obj = _go_engine.GetMidGameScoreRequest(
@@ -291,10 +294,7 @@ class GetMidGameScoreResponse(BaseResponse):
     def __init__(self, go_obj: _go_engine.GetMidGameScoreResponse) -> None:
         super().__init__(go_obj)
         self.player_scores = (
-            {
-                score[0]: score[1]
-                for score in go_obj.Scores
-            }
+            {score[0]: score[1] for score in go_obj.Scores}
             if not self.exception
             else None
         )
