@@ -22,7 +22,9 @@ var (
 )
 
 const (
-	inputBufferSize = 10_000_000
+	inputBufferSize            = 10_000_000
+	childrenCleanupWarnMsg     = "WARN: children of the game with ID %v have not been cleaned up"
+	childrenCleanupWarnFullMsg = childrenCleanupWarnMsg + ": %#v\n"
 )
 
 type ExecutionPanicError struct {
@@ -112,6 +114,8 @@ type GameEngine struct {
 	nextGameID    int
 	nextRequestID int
 	closed        bool
+	childGames    map[int]map[int]struct{}
+	parentGames   map[int]int
 	appLogger     *log.Logger
 }
 
@@ -127,6 +131,8 @@ func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
 		gameMutexes:   map[int]*sync.RWMutex{},
 		nextGameID:    1,
 		nextRequestID: 1,
+		childGames:    map[int]map[int]struct{}{},
+		parentGames:   map[int]int{},
 		appLogger:     log.New(os.Stderr, "", log.LstdFlags),
 	}
 
@@ -178,11 +184,52 @@ func (engine *GameEngine) CloneGame(gameID int, count int) ([]int, error) {
 	return engine.cloneGame(gameID, count, true)
 }
 
+// Clone the game with the given ID `count` times and track the clones as the children
+// to the given game. All of the game's children should be cleaned up before a turn is
+// played on the parent game, otherwise a warning is issued.
+//
+// Returns the IDs of the cloned games.
+//
+// Intended use: Allowing a single agent to expand the game tree through child games
+// until it's ready to make its turn.
+func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
+	ret, err := engine.cloneGame(gameID, count, false)
+	if err != nil {
+		return ret, err
+	}
+
+	childGames, ok := engine.childGames[gameID]
+	if !ok {
+		childGames = map[int]struct{}{}
+		engine.childGames[gameID] = childGames
+	}
+
+	for _, childID := range ret {
+		childGames[childID] = struct{}{}
+		engine.parentGames[childID] = gameID
+	}
+	return ret, nil
+}
+
 // Delete games with the given IDs.
 func (engine *GameEngine) DeleteGames(gameIDs []int) {
 	for _, gameID := range gameIDs {
+		if len(engine.childGames[gameID]) != 0 {
+			// since we don't know whether the agent isn't actually using these,
+			// just settle on a warning
+			engine.appLogger.Printf(
+				childrenCleanupWarnFullMsg,
+				gameID,
+				engine.childGames[gameID],
+			)
+		}
 		delete(engine.games, gameID)
 		delete(engine.gameMutexes, gameID)
+		delete(engine.childGames, gameID)
+		parentID := engine.parentGames[gameID]
+		if parentID != 0 {
+			delete(engine.childGames[parentID], gameID)
+		}
 	}
 }
 
@@ -358,25 +405,27 @@ func (engine *GameEngine) send(input workerInput) {
 }
 
 type requestBatch struct {
-	engine          *GameEngine
-	requests        []Request
-	games           map[int]*game.Game
-	removableGames  map[int]struct{}
-	responses       []Response
-	outputBuffer    chan workerOutput
-	waitGroup       sync.WaitGroup
-	outputWaitGroup sync.WaitGroup
-	panicErr        ExecutionPanicError
+	engine                       *GameEngine
+	requests                     []Request
+	games                        map[int]*game.Game
+	removableGames               map[int]struct{}
+	parentsWithRemovableChildren map[int]struct{}
+	responses                    []Response
+	outputBuffer                 chan workerOutput
+	waitGroup                    sync.WaitGroup
+	outputWaitGroup              sync.WaitGroup
+	panicErr                     ExecutionPanicError
 }
 
 func newRequestBatch(engine *GameEngine, requests []Request) requestBatch {
 	return requestBatch{
-		engine:         engine,
-		requests:       requests,
-		games:          map[int]*game.Game{},
-		removableGames: map[int]struct{}{},
-		responses:      make([]Response, len(requests)),
-		outputBuffer:   make(chan workerOutput, len(requests)),
+		engine:                       engine,
+		requests:                     requests,
+		games:                        map[int]*game.Game{},
+		removableGames:               map[int]struct{}{},
+		parentsWithRemovableChildren: map[int]struct{}{},
+		responses:                    make([]Response, len(requests)),
+		outputBuffer:                 make(chan workerOutput, len(requests)),
 	}
 }
 
@@ -412,6 +461,12 @@ func (batch *requestBatch) Process() {
 					batch.removableGames[outputInfo.GameID] = struct{}{}
 				}
 			}
+
+			if respChildGamesRemovable, ok := output.resp.(ResponseChildGamesRemovable); ok {
+				if respChildGamesRemovable.canRemoveChildGames() {
+					batch.parentsWithRemovableChildren[outputInfo.GameID] = struct{}{}
+				}
+			}
 		}
 	}()
 
@@ -436,10 +491,26 @@ func (batch *requestBatch) cleanupGames() {
 	// remove games for which we got information that we can remove them
 	for gameID := range batch.games {
 		_, canRemove := batch.removableGames[gameID]
+		_, canRemoveChildren := batch.parentsWithRemovableChildren[gameID]
+
+		if (canRemove || canRemoveChildren) && len(batch.engine.childGames[gameID]) != 0 {
+			// since we don't know whether the agent isn't actually using these,
+			// just settle on a warning
+			batch.engine.appLogger.Printf(
+				childrenCleanupWarnFullMsg,
+				gameID,
+				batch.engine.childGames[gameID],
+			)
+		}
 
 		if canRemove {
 			delete(batch.engine.games, gameID)
 			delete(batch.engine.gameMutexes, gameID)
+			delete(batch.engine.childGames, gameID)
+			parentID := batch.engine.parentGames[gameID]
+			if parentID != 0 {
+				delete(batch.engine.childGames[parentID], gameID)
+			}
 		}
 	}
 }

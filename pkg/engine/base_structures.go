@@ -36,6 +36,12 @@ type Response interface {
 }
 
 // Responses implementing this interface may indicate to the sender
+// that the child games of the game with `GameID()` should be GC-able.
+type ResponseChildGamesRemovable interface {
+	canRemoveChildGames() bool
+}
+
+// Responses implementing this interface may indicate to the sender
 // that the the game with `GameID()` should be removed from the engine.
 type ResponseGameRemovable interface {
 	canRemoveGame() bool
