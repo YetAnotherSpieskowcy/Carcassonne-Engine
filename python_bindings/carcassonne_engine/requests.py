@@ -243,9 +243,9 @@ class MoveWithState:
 
 class GetMidGameScoreRequest:
     """
-   Game engine request for getting points as if the game just finished
-   in the game with specified ID and state.
-   """
+    Game engine request for getting points as if the game just finished
+    in the game with specified ID and state.
+    """
     __slots__ = ("_go_obj", "_base_game_id", "_state_to_check")
 
     def __init__(
