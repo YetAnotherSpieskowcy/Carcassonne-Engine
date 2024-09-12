@@ -301,7 +301,7 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 /*
 Calculate points as if game has just finished
 */
-func (game *Game) GetMidGameScore() (elements.ScoreReport, error) {
+func (game *Game) GetMidGameScore() elements.ScoreReport {
 	playerScores := elements.NewScoreReport()
 
 	// load scores
@@ -313,5 +313,5 @@ func (game *Game) GetMidGameScore() (elements.ScoreReport, error) {
 	meeplesReport := game.board.ScoreNotFinalMeeples()
 	playerScores.Join(meeplesReport)
 
-	return playerScores, nil
+	return playerScores
 }

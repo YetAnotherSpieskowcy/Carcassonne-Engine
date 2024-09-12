@@ -334,10 +334,7 @@ func (req *GetMidGameScoreRequest) execute(baseGame *game.Game) Response {
 		return resp
 	}
 
-	report, err := baseGame.GetMidGameScore()
-	if err != nil {
-		panic(err.Error())
-	}
+	report := baseGame.GetMidGameScore()
 
 	resp.Scores = report.ReceivedPoints
 
