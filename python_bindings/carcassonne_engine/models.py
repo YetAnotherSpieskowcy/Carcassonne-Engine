@@ -1,12 +1,8 @@
-from typing import NamedTuple, Self
+from typing import NamedTuple
 
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
-    binarytiles as _go_binarytiles,
-    elements as _go_elements,
     engine as _go_engine,
     game as _go_game,
-    position as _go_position,
-    tiles as _go_tiles,
 )
 
 __all__ = ("GameState", "SerializedGame")
@@ -47,16 +43,17 @@ class SerializedGame:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj",
-                 "_current_tile",
-                 "_valid_tile_placements",
-                 "_current_player_id",
-                 "_players",
-                 "_player_count",
-                 "_tiles",
-                 "_tile_set",
-                 "_binary_tiles",
-                 )
+    __slots__ = (
+        "_go_obj",
+        "_current_tile",
+        "_valid_tile_placements",
+        "_current_player_id",
+        "_players",
+        "_player_count",
+        "_tiles",
+        "_tile_set",
+        "_binary_tiles",
+    )
 
     def __init__(self, go_obj: _go_game.SerializedGame) -> None:
         self._go_obj = go_obj
@@ -102,10 +99,8 @@ class SerializedGame:
 
     @property
     def binary_tiles(self) -> list[int]:
-        tiles = []
-        #for tile in self._binary_tiles:
-        #    tiles.append(tile._unwrap())
         return self._binary_tiles
+
 
 class SerializedGameWithID(NamedTuple):
     """

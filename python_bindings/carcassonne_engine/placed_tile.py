@@ -9,7 +9,7 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
     tiles as _go_tiles,
 )
 
-__all__ = ( "PlacedTile", "Tile")
+__all__ = ("PlacedTile", "Tile")
 
 
 class Tile:
