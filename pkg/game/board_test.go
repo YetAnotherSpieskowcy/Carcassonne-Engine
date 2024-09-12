@@ -175,7 +175,7 @@ func TestBoardFieldCanBePlacedReturnsFalseWhenExpandToFieldWithMeepleHappensOver
 	tilesToPlace := []elements.PlacedTile{}
 	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	ptile.Position = position.New(0, 1)
-	ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.Field).Meeple = elements.Meeple{
 		Type: elements.NormalMeeple, PlayerID: 1,
 	}
 	tilesToPlace = append(tilesToPlace, ptile)
