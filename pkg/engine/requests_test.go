@@ -349,10 +349,10 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 }
 
 func TestGameEngineGetMidGameScoreRequestError(t *testing.T) {
-	tile := tiletemplates.MonasteryWithSingleRoad()
+	tile := tiletemplates.MonasteryWithoutRoads()
 	tileSet := tilesets.TileSet{
 		// non-default starting tile - limits number of possible positions to one
-		StartingTile: tiletemplates.ThreeCityEdgesConnected(),
+		StartingTile: tiletemplates.XCrossRoad(),
 		Tiles:        []tiles.Tile{tile},
 	}
 
@@ -385,7 +385,7 @@ func TestGameEngineGetMidGameScoreRequestError(t *testing.T) {
 
 	midGameScoreResp := midGameScoreRequest.execute(game)
 
-	if midGameScoreResp.Err() != nil {
+	if midGameScoreResp.Err() == nil {
 		t.Fatal("Error didn't happen")
 	}
 
