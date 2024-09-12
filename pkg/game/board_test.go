@@ -108,6 +108,38 @@ func TestBoardTileHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testin
 	}
 }
 
+func TestBoardGetLegalMovesForDoesNotIncludeInvalidMeeplePlacements(t *testing.T) {
+	// starting tile has a city on top, we want to expand it with an unclosed city
+	// and then try finding legal moves for a tile with a city and some other feature.
+	board := NewBoard(tilesets.StandardTileSet())
+	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+	_, err := board.PlaceTile(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	basePlacement := elements.ToPlacedTile(
+		tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
+	)
+	basePlacement.Position = position.New(0, 2)
+	placementWithMeeple := basePlacement
+	placementWithMeeple.Features = slices.Clone(basePlacement.Features)
+	placementWithMeeple.GetPlacedFeatureAtSide(
+		side.Top, feature.Field,
+	).Meeple = elements.Meeple{Type: elements.NormalMeeple}
+
+	expected := []elements.PlacedTile{basePlacement, placementWithMeeple}
+	actual := board.GetLegalMovesFor(basePlacement)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 	board := NewBoard(tilesets.StandardTileSet())
 

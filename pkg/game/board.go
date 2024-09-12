@@ -16,12 +16,15 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-var canBePlacedFunctions = map[feature.Type]func(*board, elements.PlacedTile) bool{
-	feature.Road:      (*board).roadCanBePlaced,
-	feature.City:      (*board).cityCanBePlaced,
-	feature.Field:     (*board).fieldCanBePlaced,
-	feature.Monastery: (*board).monasteryCanBePlaced,
-}
+var (
+	canBePlacedFunctions = map[feature.Type]func(*board, elements.PlacedTile) bool{
+		feature.Road:      (*board).roadCanBePlaced,
+		feature.City:      (*board).cityCanBePlaced,
+		feature.Field:     (*board).fieldCanBePlaced,
+		feature.Monastery: (*board).monasteryCanBePlaced,
+	}
+	meepleTypes = []elements.MeepleType{elements.NormalMeeple}
+)
 
 // mutable type
 // Position coordinates example on the board:
@@ -124,16 +127,29 @@ func (board *board) TileHasValidPlacement(tile tiles.Tile) bool {
 	return false
 }
 
+// Get legal moves that can be made from the given **valid** placement.
+//
+// This means that this function returns a slice with:
+//   - the given placement as is (assumed to have no meeple)
+//   - all variations of the given placement with meeple added to one of the features
+//     that a meeple can be placed on considering the current situation on the board.
+//
+// Note: the placement given as input is assumed to have no meeples.
 func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elements.PlacedTile {
 	// create initial move list without any meeple placed
 	moves := []elements.PlacedTile{basePlacement}
-	meepleTypes := []elements.MeepleType{elements.NormalMeeple}
-	for i := range basePlacement.Features {
+
+	for i, feat := range basePlacement.Features {
 		for _, meepleType := range meepleTypes {
 			placement := basePlacement
 			placement.Features = slices.Clone(basePlacement.Features)
 			placement.Features[i].Meeple = elements.Meeple{Type: meepleType}
-			moves = append(moves, placement)
+
+			// Doing this for every meeple type may be suboptimal, if more meeple types
+			// are added but that's not very likely at current time.
+			if canBePlacedFunctions[feat.FeatureType](board, placement) {
+				moves = append(moves, placement)
+			}
 		}
 	}
 	return moves
