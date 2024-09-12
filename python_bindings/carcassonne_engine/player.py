@@ -1,4 +1,3 @@
-from typing import NamedTuple, Self
 
 __all__ = ("Player",)
 
@@ -13,11 +12,7 @@ class Player:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj",
-                 "_id",
-                 "_score",
-                 "_meeple_count"
-                 )
+    __slots__ = ("_go_obj", "_id", "_score", "_meeple_count")
 
     def __init__(self, go_obj: _go_elements.SerializedPlayer) -> None:
         self._go_obj = go_obj
