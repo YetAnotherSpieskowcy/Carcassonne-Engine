@@ -702,3 +702,32 @@ func TestOnlyField() tiles.Tile {
 		},
 	}
 }
+
+/*
+returns tiles.Tile consisting of only a single road. (Unused in game, useful in testing)
+*/
+func TestOnlyStraightRoads() tiles.Tile {
+	return tiles.Tile{
+		Features: []feature.Feature{
+			{
+				FeatureType: feature.Road,
+				Sides: side.Right |
+					side.Left,
+			},
+		},
+	}
+}
+
+/*
+returns tiles.Tile consisting of only a single monastery. (Unused in game, useful in testing)
+*/
+func TestOnlyMonastery() tiles.Tile {
+	return tiles.Tile{
+		Features: []feature.Feature{
+			{
+				FeatureType: feature.Monastery,
+				Sides:       side.NoSide,
+			},
+		},
+	}
+}
