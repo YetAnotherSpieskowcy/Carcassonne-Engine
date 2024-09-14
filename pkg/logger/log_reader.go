@@ -74,8 +74,8 @@ func (reader *LogReader) ReadEntry() (Entry, bool) {
 				This isn't the cleanest solution, but I don't think there is any simple way to guard against such cases
 			*/
 
-		} else {
-			panic(err)
 		}
+		// else:
+		panic(err)
 	}
 }
