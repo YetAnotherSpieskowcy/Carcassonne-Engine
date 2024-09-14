@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
@@ -192,7 +193,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 	}
 
 	if !currentTile.Equals(elements.ToTile(move)) {
-		return elements.ErrWrongTile
+		return fmt.Errorf("%w: %#v", elements.ErrWrongTile, currentTile)
 	}
 	player := game.CurrentPlayer()
 	defer func() { game.currentPlayer = (game.currentPlayer + 1) % game.PlayerCount() }()
