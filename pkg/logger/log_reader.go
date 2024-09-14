@@ -50,32 +50,32 @@ func (reader *LogReader) ReadEntry() (Entry, bool) {
 
 	if err == nil {
 		return entry, true
-	} else {
-		if err == io.EOF {
-			reader.fileEndReached = true
-			endOffset, err := reader.file.Seek(0, io.SeekCurrent)
-			if err != nil {
-				panic(err)
-			}
-			reader.fileEndOffset = endOffset
+	}
 
-			return Entry{}, false
-
-		} else if _, ok := err.(*json.SyntaxError); ok {
-			return Entry{}, false
-			/*
-				silently skipping json syntax errors (instead of panicking) because these can be returned when reading a partially written data.
-				example situation where this may occur:
-				- writer: {"entry": "entry con
-				- reader: <syntax error>
-				- writer: tent"}
-				- reader: successfully read {"entry": "entry content"}
-
-				This isn't the cleanest solution, but I don't think there is any simple way to guard against such cases
-			*/
-
+	if err == io.EOF {
+		reader.fileEndReached = true
+		endOffset, seekErr := reader.file.Seek(0, io.SeekCurrent)
+		if seekErr != nil {
+			panic(err)
 		}
-		// else:
+		reader.fileEndOffset = endOffset
+
+		return Entry{}, false
+
+	} else if _, ok := err.(*json.SyntaxError); ok {
+		return Entry{}, false
+		/*
+			silently skipping json syntax errors (instead of panicking) because these can be returned when reading a partially written data.
+			example situation where this may occur:
+			- writer: {"entry": "entry con
+			- reader: <syntax error>
+			- writer: tent"}
+			- reader: successfully read {"entry": "entry content"}
+
+			This isn't the cleanest solution, but I don't think there is any simple way to guard against such cases
+		*/
+
+	} else {
 		panic(err)
 	}
 }
