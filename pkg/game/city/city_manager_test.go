@@ -104,6 +104,37 @@ func TestUpdateCitiesWhenOneCityClosedSeconedOpen(t *testing.T) {
 	}
 }
 
+func TestUpdateCityWhenTwoFeaturesAdded(t *testing.T) {
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected().Rotate(1))
+	a.Position = position.New(1, 0)
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected())
+	b.Position = position.New(2, 0)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	c.Position = position.New(2, 1)
+	manager.UpdateCities(c)
+
+	d := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerNotConnected().Rotate(1))
+	d.Position = position.New(1, 1)
+	manager.UpdateCities(d)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+
+	for _, f := range d.GetFeaturesOfType(feature.City) {
+		city, _ := manager.GetCity(d.Position, f)
+		if city == nil {
+			t.Fatalf("not found city feature at side %#v", f.Sides)
+		}
+	}
+}
+
 func TestJoinCitiesOnAdd(t *testing.T) {
 	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	a.Position = position.New(1, 1)

@@ -114,8 +114,16 @@ func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedF
 			hasShield = true
 		}
 	}
-	city.features[pos] = cityFeatures
-	city.shields[pos] = hasShield
+	_, tileInCity := city.GetFeaturesFromTile(pos)
+	if !tileInCity {
+		city.features[pos] = cityFeatures
+		city.shields[pos] = hasShield
+	} else {
+		city.features[pos] = append(city.features[pos], cityFeatures...)
+		if !city.shields[pos] {
+			city.shields[pos] = hasShield
+		}
+	}
 	city.checkCompleted()
 }
 
