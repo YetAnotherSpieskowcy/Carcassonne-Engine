@@ -1,7 +1,6 @@
 package city
 
 import (
-	"fmt"
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -139,7 +138,6 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 
 	if len(foundCities) > 0 {
 		for _, cityFeature := range tile.GetFeaturesOfType(feature.City) {
-			fmt.Println("aaa")
 			citiesToRemove := make([]int, 0)
 			cityIndexesToJoin := manager.findCitiesToJoin(foundCities, cityFeature.Sides)
 			// join cities
