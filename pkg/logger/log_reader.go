@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"reflect"
 )
 
 type LogReader struct {
-	file           *os.File
-	decoder        *json.Decoder
-	fileEndReached bool
-	fileEndOffset  int64
+	file                 *os.File
+	decoder              *json.Decoder
+	shouldRestartDecoder bool
+	fileEndOffset        int64
 }
 
 func NewLogReader(filename string) (LogReader, error) {
@@ -32,50 +33,64 @@ func (reader *LogReader) Close() error {
 	return err
 }
 
+func (reader LogReader) ReadLogs() <-chan Entry {
+	channel := make(chan Entry)
+
+	go func() {
+		var entry Entry
+		decoder := json.NewDecoder(reader.file)
+		decoder.DisallowUnknownFields()
+		for {
+			err := decoder.Decode(&entry)
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				panic(err)
+			}
+			channel <- entry
+		}
+		close(channel)
+	}()
+
+	return channel
+}
+
 // Reads a single log entry. Returns the entry and a bool indicating whether or not it was correctly read.
 func (reader *LogReader) ReadEntry() (Entry, bool) {
-	if reader.fileEndReached {
+	if reader.shouldRestartDecoder {
 		// reopen the decoder if file end was reached previously
 		_, err := reader.file.Seek(reader.fileEndOffset, io.SeekStart)
 		if err != nil {
 			panic(err)
 		}
 		reader.decoder = json.NewDecoder(reader.file)
-		reader.fileEndReached = false
+		reader.shouldRestartDecoder = false
 	}
 
-	var entry Entry
+	value := reflect.ValueOf(reader.decoder).Elem()
+	startOffset := value.FieldByName("scanned").Int()
 
+	var entry Entry
 	err := reader.decoder.Decode(&entry)
 
 	if err == nil {
 		return entry, true
 	}
 
-	if err == io.EOF {
-		reader.fileEndReached = true
-		endOffset, seekErr := reader.file.Seek(0, io.SeekCurrent)
-		if seekErr != nil {
-			panic(err)
-		}
-		reader.fileEndOffset = endOffset
+	reader.shouldRestartDecoder = true
+	reader.fileEndOffset = startOffset
+	/*
+		silently skipping errors (instead of panicking) because they can be	returned
+		when reading a partially written data.
 
-		return Entry{}, false
+		example situation where this may occur:
+		- writer: {"entry": "entry con
+		- reader: <error>
+		- writer: tent"}
+		- reader: successfully read {"entry": "entry content"}
 
-	} else if _, ok := err.(*json.SyntaxError); ok {
-		return Entry{}, false
-		/*
-			silently skipping json syntax errors (instead of panicking) because these can be returned when reading a partially written data.
-			example situation where this may occur:
-			- writer: {"entry": "entry con
-			- reader: <syntax error>
-			- writer: tent"}
-			- reader: successfully read {"entry": "entry content"}
-
-			This isn't the cleanest solution, but I don't think there is any simple way to guard against such cases
-		*/
-
-	} else {
-		panic(err)
-	}
+		This isn't the cleanest solution, but I don't think there is any simple way
+		to guard against such cases, since file write operations aren't guaranteed to be atomic
+	*/
+	return Entry{}, false
 }
