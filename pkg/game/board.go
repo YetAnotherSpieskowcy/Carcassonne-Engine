@@ -246,12 +246,6 @@ func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.Pla
 	// This means we don't have to care about whether our field expands into
 	// a different feature on our tile - we will only expand the feature
 	// if it has a meeple and that only happens once.
-
-	// unset the Meeple in our copy of the feature
-	feat.Meeple = elements.Meeple{}
-
-	// TODO: Field instance cannot expand to another feature on the tile checked by
-	// this method since it's not part of the board. See GH-86.
 	field := field.New(feat, tile)
 
 	return field.IsFieldValid(board, 1)

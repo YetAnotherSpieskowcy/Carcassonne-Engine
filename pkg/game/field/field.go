@@ -132,7 +132,7 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 	field.features = newFeatures
 }
 
-// Returns true if the field has less than maxMeepleCount meeples, and false otherwise
+// Returns true if the field has lesser or equal number of meeples than maxMeepleCount, and false otherwise
 func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 	newFeatures := map[fieldKey]struct{}{}
 	meeples := 0
