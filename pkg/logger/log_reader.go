@@ -58,7 +58,6 @@ func (reader LogReader) ReadLogs() <-chan Entry {
 // Reads a single log entry. Returns the entry and a bool indicating whether or not it was correctly read.
 func (reader *LogReader) ReadEntry() (Entry, bool) {
 	if reader.shouldRestartDecoder {
-		// reopen the decoder if file end was reached previously
 		_, err := reader.file.Seek(reader.fileEndOffset, io.SeekStart)
 		if err != nil {
 			panic(err)
