@@ -197,6 +197,19 @@ func TestMoveToTopReturnsErrorWhenNoMatchingTileLeft(t *testing.T) {
 	}
 }
 
+func TestMoveToTopReturnsErrorWhenNoTilesLeft(t *testing.T) {
+	tiles := []Tile{{0}}
+	stack := NewOrdered(tiles)
+	if _, err := stack.Next(); err != nil {
+		t.Fatal(err)
+	}
+
+	err := stack.MoveToTop(Tile{0})
+	if err == nil || !errors.Is(err, ErrStackOutOfBounds) {
+		t.Fatal(err)
+	}
+}
+
 func TestMoveToTopUpdatesOrderProperly(t *testing.T) {
 	tiles := []Tile{{0}, {1}, {2}, {3}}
 	stack := NewOrdered(tiles)

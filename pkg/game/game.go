@@ -117,7 +117,7 @@ func (game *Game) Serialized() SerializedGame {
 	}
 
 	// prevent leakage of future state of the CurrentTile
-	if game.canSwapTiles {
+	if game.CanSwapTiles() {
 		return serialized
 	}
 
@@ -203,7 +203,7 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 }
 
 func (game *Game) SwapCurrentTile(tile tiles.Tile) error {
-	if !game.canSwapTiles {
+	if !game.CanSwapTiles() {
 		return ErrCannotSwapTiles
 	}
 	return game.deck.MoveToTop(tile)
