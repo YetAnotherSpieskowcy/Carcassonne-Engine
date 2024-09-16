@@ -13,6 +13,10 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+var ErrCannotSwapTiles = errors.New(
+	"swapping tiles is only allowed in game clones created with DeepCloneWithSwappableTiles()",
+)
+
 type SerializedGame struct {
 	CurrentTile         tiles.Tile
 	ValidTilePlacements []elements.PlacedTile
@@ -30,6 +34,7 @@ type Game struct {
 	// index in the `players` field, not the Player ID
 	currentPlayer int
 	log           logger.Logger
+	canSwapTiles  bool
 }
 
 func NewFromTileSet(tileSet tilesets.TileSet, log logger.Logger) (*Game, error) {
@@ -87,6 +92,12 @@ func (game Game) DeepClone() *Game {
 	return &game
 }
 
+func (game *Game) DeepCloneWithSwappableTiles() *Game {
+	clone := game.DeepClone()
+	clone.canSwapTiles = true
+	return clone
+}
+
 func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
 	clone := game.DeepClone()
 	if err := game.log.CopyTo(log); err != nil {
@@ -105,11 +116,20 @@ func (game *Game) Serialized() SerializedGame {
 		TileSet:         game.deck.TileSet(),
 	}
 
+	// prevent leakage of future state of the CurrentTile
+	if game.CanSwapTiles() {
+		return serialized
+	}
+
 	if tile, err := game.GetCurrentTile(); err == nil {
 		serialized.CurrentTile = tile
 		serialized.ValidTilePlacements = game.board.GetTilePlacementsFor(tile)
 	}
 	return serialized
+}
+
+func (game *Game) CanSwapTiles() bool {
+	return game.canSwapTiles
 }
 
 func (game *Game) GetCurrentTile() (tiles.Tile, error) {
@@ -180,6 +200,13 @@ func (game *Game) ensureCurrentTileHasValidPlacement() error {
 	}
 
 	return nil
+}
+
+func (game *Game) SwapCurrentTile(tile tiles.Tile) error {
+	if !game.CanSwapTiles() {
+		return ErrCannotSwapTiles
+	}
+	return game.deck.MoveToTop(tile)
 }
 
 func (game *Game) PlayTurn(move elements.PlacedTile) error {
