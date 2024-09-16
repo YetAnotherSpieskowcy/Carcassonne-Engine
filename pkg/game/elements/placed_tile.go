@@ -92,8 +92,13 @@ func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, feat
 	return nil
 }
 
-func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
-	return ToPlacedTile(tileSet.StartingTile)
+func (placedTile PlacedTile) HasMeeple() bool {
+	for _, feat := range placedTile.Features {
+		if feat.Meeple.Type != NoneMeeple {
+			return true
+		}
+	}
+	return false
 }
 
 func (placedTile PlacedTile) Monastery() *PlacedFeature {
@@ -103,4 +108,8 @@ func (placedTile PlacedTile) Monastery() *PlacedFeature {
 		}
 	}
 	return nil
+}
+
+func NewStartingTile(tileSet tilesets.TileSet) PlacedTile {
+	return ToPlacedTile(tileSet.StartingTile)
 }
