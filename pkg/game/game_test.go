@@ -40,7 +40,7 @@ func TestDeepClone(t *testing.T) {
 	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
 
 	originalLogger := &TestLogger{}
-	original, err := NewFromTileSet(tileSet, originalLogger)
+	original, err := NewFromTileSet(tileSet, originalLogger, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -225,7 +225,7 @@ func TestGameSerializedCurrentTileNotSetWhenStackOutOfBounds(t *testing.T) {
 func TestGameSerializedCurrentTileNotSetForClonesWithSwappableTiles(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -250,7 +250,7 @@ func TestGameGetLegalMovesForIncludesMeepleTypesCurrentPlayerDoesHave(t *testing
 		Tiles:        []tiles.Tile{tile},
 	}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -279,7 +279,7 @@ func TestGameGetLegalMovesForExcludesMeepleTypesCurrentPlayerDoesNotHave(t *test
 		Tiles:        []tiles.Tile{tile},
 	}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -305,7 +305,7 @@ func TestGameSwapCurrentTileReturnsErrorOnOriginalGame(t *testing.T) {
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
 
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -337,7 +337,7 @@ func TestGameSwapCurrentTileSwapTileOnCloneWithSwappableTiles(t *testing.T) {
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
 
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

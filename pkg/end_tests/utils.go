@@ -64,11 +64,11 @@ func VerifyMeepleExistence(t *testing.T, game *gameMod.Game, pos position.Positi
 	}
 	placedFeature := placedTile.GetPlacedFeatureAtSide(side, featureType)
 	if meepleExist {
-		if placedFeature.Type != elements.NormalMeeple {
+		if placedFeature.Meeple.Type != elements.NormalMeeple {
 			t.Fatalf("Turn %d: Missing meeple on a tile!", turnNumber)
 		}
 	} else {
-		if placedFeature.Type != elements.NoneMeeple {
+		if placedFeature.Meeple.Type != elements.NoneMeeple {
 			t.Fatalf("Turn %d: Meeple hasn't been removed!", turnNumber)
 		}
 	}
