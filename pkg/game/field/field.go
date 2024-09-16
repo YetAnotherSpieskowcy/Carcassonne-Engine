@@ -33,13 +33,21 @@ type Field struct {
 	features           map[fieldKey]struct{}         // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
 	neighbouringCities map[int]struct{}              // this is a set of cities' IDs
 	meeples            []elements.MeepleWithPosition // returned meeples for each player ID (same as in elements.ScoreReport)
+
+	startingTile elements.PlacedTile
 }
 
-func New(feature elements.PlacedFeature, position position.Position) Field {
+func New(feature elements.PlacedFeature, startingTile elements.PlacedTile) Field {
 	features := map[fieldKey]struct{}{
-		{feature: feature, position: position}: {},
+		{feature: feature, position: startingTile.Position}: {},
 	}
-	return Field{features: features, neighbouringCities: map[int]struct{}{}, meeples: []elements.MeepleWithPosition{}}
+	return Field{
+		features:           features,
+		neighbouringCities: map[int]struct{}{},
+		meeples:            []elements.MeepleWithPosition{},
+
+		startingTile: startingTile,
+	}
 }
 
 func (field Field) FeaturesCount() int {
@@ -51,7 +59,13 @@ func (field Field) CitiesCount() int {
 }
 
 // Expands this field to maximum possible size (like flood fill) and finds all neighbouring cities
+// Has to be called on a field which starting tile has already been placed (mostly only at the end of the game)
 func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
+	_, startingTileExists := board.GetTileAt(field.startingTile.Position)
+	if !startingTileExists {
+		panic("the field's starting tile does not exist on the board")
+	}
+
 	newFeatures := map[fieldKey]struct{}{}
 
 	for len(field.features) != 0 {
@@ -61,13 +75,12 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		_, exists := newFeatures[element]
 		if !exists {
 			newFeatures[element] = struct{}{}
-			for _, neighbour := range findNeighbours(element, board) {
+			for _, neighbour := range field.findNeighbours(element, board) {
 				_, exists := newFeatures[neighbour]
 				if !exists {
 					field.features[neighbour] = struct{}{}
 				}
 			}
-
 		}
 
 		// add meeple if it exists
@@ -119,16 +132,61 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 	field.features = newFeatures
 }
 
+// Returns true if the field has lesser or equal number of meeples than maxMeepleCount, and false otherwise
+//
+// Useful for testing whether or not a meeple can be placed on a field feature
+// (i.e. are there any other meeples on the expanded field)
+// In such cases, maxMeepleCount should be set to 1 if the tested tile already has a meeple and 0 if it does not.
+func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
+	newFeatures := map[fieldKey]struct{}{}
+	meeples := 0
+
+	// copy the original field.features into features, to avoid modifying it
+	features := map[fieldKey]struct{}{}
+	for key := range field.features {
+		features[key] = struct{}{}
+	}
+
+	for len(features) != 0 {
+		element, _, _ := utilities.GetAnyElementFromMap(features)
+
+		// add neighbouring tiles to the set
+		_, exists := newFeatures[element]
+		if !exists {
+			newFeatures[element] = struct{}{}
+			for _, neighbour := range field.findNeighbours(element, board) {
+				_, exists := newFeatures[neighbour]
+				if !exists {
+					features[neighbour] = struct{}{}
+				}
+			}
+		}
+
+		// add meeple if it exists
+		meeple := element.feature.Meeple
+		if meeple.Type != elements.NoneMeeple {
+			meeples++
+			if meeples > maxMeepleCount {
+				return false
+			}
+		}
+
+		// remove the processed field feature from features set
+		delete(features, element)
+	}
+	return true
+}
+
 // Returns a slice of fieldKey elements containing all features neighbouring a given fieldKey (feature and position)
 // The slice may contain duplicates in some cases (todo?)
-func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
+func (field *Field) findNeighbours(fieldK fieldKey, board elements.Board) []fieldKey {
 	neighbours := []fieldKey{}
 
 	for _, side := range side.EdgeSides {
-		if field.feature.Sides.OverlapsSide(side) {
-			neighbourPosition := field.position.Add(position.FromSide(side))
+		if fieldK.feature.Sides.OverlapsSide(side) {
+			neighbourPosition := fieldK.position.Add(position.FromSide(side))
 
-			tile, tileExists := board.GetTileAt(neighbourPosition)
+			tile, tileExists := field.getTile(neighbourPosition, board)
 			if tileExists {
 				mirroredSide := side.Mirror()
 
@@ -141,6 +199,20 @@ func findNeighbours(field fieldKey, board elements.Board) []fieldKey {
 		}
 	}
 	return neighbours
+}
+
+// If a tile exists in board at the given position, returns board.GetTileAt(position)
+// If the tile doesn't exist in board, but the position is the same as field.startingTile, returns (field.startingTile, true)
+// Otherwise returns board.GetTileAt(position) (that is, empty tile and false)
+func (field Field) getTile(position position.Position, board elements.Board) (elements.PlacedTile, bool) {
+	tile, ok := board.GetTileAt(position)
+	if ok {
+		return tile, ok
+	}
+	if position == field.startingTile.Position {
+		return field.startingTile, true
+	}
+	return tile, ok
 }
 
 // Returns score report for this field. Has to be called after field.Expand() (todo?)
