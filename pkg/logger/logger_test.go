@@ -469,9 +469,12 @@ func TestLogReaderReadEntry(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	_, ok := reader.ReadEntry()
+	_, ok, err := reader.ReadEntry()
 	if ok {
 		t.Fatal("log reader returned ok=true with empty logs file")
+	}
+	if err == nil {
+		t.Fatal("expected an error to occur")
 	}
 
 	err = logger.LogEvent(StartEvent, startEntryContent)
@@ -479,10 +482,14 @@ func TestLogReaderReadEntry(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	entry, ok := reader.ReadEntry()
+	entry, ok, err := reader.ReadEntry()
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !ok {
 		t.Fatalf("expected %#v, got %#v instead", true, ok)
 	}
+
 	if entry.Event != StartEvent {
 		t.Fatalf("expected %#v, got %#v instead", StartEvent, entry.Event)
 	}
@@ -528,7 +535,10 @@ func TestLogReaderReadIncompleteEntry(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, ok := reader.ReadEntry()
+	_, ok, err := reader.ReadEntry()
+	if err == nil {
+		t.Fatal("expected an error to occur")
+	}
 	if ok {
 		t.Fatalf("expected %#v, got %#v instead", false, ok)
 	}
@@ -538,7 +548,10 @@ func TestLogReaderReadIncompleteEntry(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	entry, ok := reader.ReadEntry()
+	entry, ok, err := reader.ReadEntry()
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !ok {
 		t.Fatalf("expected %#v, got %#v instead", true, ok)
 	}
