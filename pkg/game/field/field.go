@@ -133,12 +133,22 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 }
 
 // Returns true if the field has lesser or equal number of meeples than maxMeepleCount, and false otherwise
+//
+// Useful for testing whether or not a meeple can be placed on a field feature
+// (i.e. are there any other meeples on the expanded field)
+// In such cases, maxMeepleCount should be set to 1 if the tested tile already has a meeple and 0 if it does not.
 func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 	newFeatures := map[fieldKey]struct{}{}
 	meeples := 0
 
-	for len(field.features) != 0 {
-		element, _, _ := utilities.GetAnyElementFromMap(field.features)
+	// copy the original field.features into features, to avoid modifying it
+	features := map[fieldKey]struct{}{}
+	for key := range field.features {
+		features[key] = struct{}{}
+	}
+
+	for len(features) != 0 {
+		element, _, _ := utilities.GetAnyElementFromMap(features)
 
 		// add neighbouring tiles to the set
 		_, exists := newFeatures[element]
@@ -147,7 +157,7 @@ func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 			for _, neighbour := range field.findNeighbours(element, board) {
 				_, exists := newFeatures[neighbour]
 				if !exists {
-					field.features[neighbour] = struct{}{}
+					features[neighbour] = struct{}{}
 				}
 			}
 		}
@@ -161,8 +171,8 @@ func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 			}
 		}
 
-		// remove the processed field feature from field.features set
-		delete(field.features, element)
+		// remove the processed field feature from features set
+		delete(features, element)
 	}
 	return true
 }
