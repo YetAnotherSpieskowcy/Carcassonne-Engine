@@ -246,20 +246,9 @@ func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.Pla
 	// This means we don't have to care about whether our field expands into
 	// a different feature on our tile - we will only expand the feature
 	// if it has a meeple and that only happens once.
+	field := field.New(feat, tile)
 
-	// unset the Meeple in our copy of the feature
-	feat.Meeple = elements.Meeple{}
-
-	// TODO: Field instance cannot expand to another feature on the tile checked by
-	// this method since it's not part of the board. See GH-86.
-	field := field.New(feat, tile.Position)
-	field.Expand(board, board.cityManager)
-
-	// score report function checks the whole field for placed meeples
-	// and reports any meeples that would be returned which we can use here
-	scoreReport := field.GetScoreReport()
-
-	return len(scoreReport.ReturnedMeeples) == 0
+	return field.IsFieldValid(board, 1)
 }
 
 func (board *board) monasteryCanBePlaced(_ elements.PlacedTile, _ elements.PlacedFeature) bool {
@@ -648,7 +637,7 @@ func (board *board) ScoreFinalMeeples() elements.ScoreReport {
 				case feature.Road:
 					miniReport.Join(board.ScoreRoads(pTile, true))
 				case feature.Field:
-					field := field.New(feat, pTile.Position)
+					field := field.New(feat, pTile)
 					field.Expand(board, board.cityManager)
 					miniReport.Join(field.GetScoreReport())
 				case feature.Monastery:
