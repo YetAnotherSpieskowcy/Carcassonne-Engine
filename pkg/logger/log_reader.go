@@ -55,8 +55,9 @@ func (reader LogReader) ReadLogs() <-chan Entry {
 	return channel
 }
 
-// Reads a single log entry. Returns the entry and a bool indicating whether or not it was correctly read.
-func (reader *LogReader) ReadEntry() (Entry, bool) {
+// Reads a single log entry.
+// Returns the entry, a bool indicating whether or not it was correctly read, and an error in case an error happened
+func (reader *LogReader) ReadEntry() (Entry, bool, error) {
 	if reader.shouldRestartDecoder {
 		_, err := reader.file.Seek(reader.fileEndOffset, io.SeekStart)
 		if err != nil {
@@ -73,23 +74,21 @@ func (reader *LogReader) ReadEntry() (Entry, bool) {
 	err := reader.decoder.Decode(&entry)
 
 	if err == nil {
-		return entry, true
+		return entry, true, nil
 	}
 
 	reader.shouldRestartDecoder = true
 	reader.fileEndOffset = startOffset
 	/*
-		silently skipping errors (instead of panicking) because they can be	returned
-		when reading a partially written data.
-
-		example situation where this may occur:
+		errors can also be returned in perfectly normal situations and don't always require handling.
+		For example, such a situation may happen when reading a partially written data:
 		- writer: {"entry": "entry con
 		- reader: <error>
 		- writer: tent"}
 		- reader: successfully read {"entry": "entry content"}
 
-		This isn't the cleanest solution, but I don't think there is any simple way
-		to guard against such cases, since file write operations aren't guaranteed to be atomic
+		I don't think there is any simple way to guard against such cases,
+		since file write operations aren't guaranteed to be atomic
 	*/
-	return Entry{}, false
+	return Entry{}, false, err
 }
