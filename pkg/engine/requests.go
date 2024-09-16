@@ -69,7 +69,8 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 
 type PlayTurnResponse struct {
 	BaseResponse
-	Game game.SerializedGame
+	Game        game.SerializedGame
+	FinalScores map[elements.ID]uint32
 }
 type PlayTurnRequest struct {
 	GameID int
@@ -106,6 +107,17 @@ func (req *PlayTurnRequest) execute(game *game.Game) Response {
 	}
 
 	resp.Game = game.Serialized()
+
+	scoreReport, err := game.Finalize()
+	if err != nil {
+		if !errors.Is(err, elements.ErrGameIsNotFinished) {
+			// game was finished but the game could not be finalized? unexpected...
+			resp.err = err
+		}
+	} else {
+		resp.FinalScores = scoreReport.ReceivedPoints
+	}
+
 	return resp
 }
 

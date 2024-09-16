@@ -69,11 +69,14 @@ class PlayTurnResponse(BaseResponse):
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("game",)
+    __slots__ = ("game", "final_scores")
 
     def __init__(self, go_obj: _go_engine.PlayTurnResponse) -> None:
         super().__init__(go_obj)
         self.game = SerializedGame(go_obj.Game) if not self.exception else None
+        self.final_scores: dict[int, int] | None = None
+        if go_obj.FinalScores:
+            self.final_scores = {k: v for k, v in go_obj.FinalScores.items()}
 
 
 class GetRemainingTilesRequest:
