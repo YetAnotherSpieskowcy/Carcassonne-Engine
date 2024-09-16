@@ -22,10 +22,11 @@ class GameState:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj",)
+    __slots__ = ("_go_obj", "serialized")
 
     def __init__(self, go_obj: _go_engine.GameState) -> None:
         self._go_obj = go_obj
+        self.serialized = go_obj.Serialized()
 
     def _unwrap(self) -> _go_engine.GameState:
         return self._go_obj
