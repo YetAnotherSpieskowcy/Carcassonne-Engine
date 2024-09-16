@@ -115,8 +115,9 @@ func (manager *Manager) CanBePlaced(tile elements.PlacedTile, feat elements.Plac
 		// no City features or only has a completely new city
 		return true
 	}
-	citiesToJoin := manager.findCitiesToJoin(foundCities, feat.Sides)
+
 	// this may return an empty list for features that have no cities to join with
+	citiesToJoin := manager.findCitiesToJoin(foundCities, feat.Sides)
 
 	// Check each of the existing cities (if any) found in feature's neighbourhood
 	// We need to check, if they have *any* meeple placed
