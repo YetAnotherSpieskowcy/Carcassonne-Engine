@@ -539,21 +539,21 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 |				  0	   1    2    3
 |
 |
-|               .| |........!.......
+|               |   |.......!.......
 |				.\ /............[ ].
 |1				..2....4----9---[A].
 |				./ \...|.../ \..[@].
-|				.| |...|...| |......
-|		   ......| |...|...| |.
+|				|   |..|..|   |.....
+|		   .....|   |..|..|   |
 |		   ......\ /...|...\ /.
 |0		   ..8----0----1....3..
 |	       ..|.........|.../ \.
-|	       ..|.........|...| |.
-|	       ..|....@....|...| |.
+|	       ..|.........|..|   |
+|	       ..|....@....|..|   |
 |	       ..|.........|...\ /
 |-1		   ..B----6----5....7..
 |	       ..|..........!../ \.
-|	       ..#.............|#|.
+|	       ..#............| # |
 |				.....
 |				.....
 |-2				--C-$
@@ -575,12 +575,11 @@ func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
 }
 
 /*
-player 1 scores additional 15 points:
-  - 9 points for upper farmer
-  - 6 points for lower farmer
+player 1 scores additional 9 points:
+  - 9 points for both farmers (the same farm)
 
-player 2 scores additional 2 points:
-  - 2 points for a monastery
+player 2 scores additional 3 points:
+  - 3 points for a monastery
   - 0 for farmer in the center
 
 player 3 scores additional 2 points:
@@ -595,11 +594,16 @@ func checkFinalResult(game *gameMod.Game, t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	var expectedScores = []uint32{4 + 15, 4 + 2, 4 + 2, 8 + 1}
+	var expectedScores = []uint32{
+		4 + 9,
+		4 + 3,
+		4 + 2,
+		8 + 1,
+	}
 
 	for i := range 4 {
-		if scores.ReceivedPoints[elements.ID(i)] != expectedScores[i] {
-			t.Fatalf("Player %d final score incorrect. Expected %d, got: %d", i+1, expectedScores[i], scores.ReceivedPoints[1])
+		if scores.ReceivedPoints[elements.ID(i+1)] != expectedScores[i] {
+			t.Fatalf("Player %d final score incorrect. Expected %d, got: %d", i+1, expectedScores[i], scores.ReceivedPoints[elements.ID(i+1)])
 		}
 	}
 }

@@ -406,8 +406,8 @@ func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
 	gameMod.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 12)
 }
 
-/* player 1 scores additional 11 points:
-	- 2 points for monastery
+/* player 1 scores additional 12 points:
+	- 3 points for monastery
 	- 3 points for farmer in the center
 	- 6 points for farmer outside
    player 2 scores additional 4 points:
@@ -420,11 +420,13 @@ func checkFinalResult(game *gameMod.Game, t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if scores.ReceivedPoints[0] != 19 {
-		t.Fatalf("Player 1 final score incorrect. Expected 19, got: %d", scores.ReceivedPoints[1])
+	score := uint32(8 + 12)
+	if scores.ReceivedPoints[1] != score {
+		t.Fatalf("Player 1 final score incorrect. Expected %d, got: %d", score, scores.ReceivedPoints[1])
 	}
 
-	if scores.ReceivedPoints[1] != 16 {
-		t.Fatalf("Player 2 final score incorrect. Expected 16, got: %d", scores.ReceivedPoints[1])
+	score = 16
+	if scores.ReceivedPoints[2] != 16 {
+		t.Fatalf("Player 2 final score incorrect. Expected %d, got: %d", score, scores.ReceivedPoints[2])
 	}
 }
