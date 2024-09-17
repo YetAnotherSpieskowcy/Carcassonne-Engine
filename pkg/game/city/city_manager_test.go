@@ -9,6 +9,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
 func TestDeepClone(t *testing.T) {
@@ -100,6 +101,37 @@ func TestUpdateCitiesWhenOneCityClosedSeconedOpen(t *testing.T) {
 
 	if len(manager.cities) != 2 {
 		t.Fatalf("expected %#v, got %#v instead", 2, len(manager.cities))
+	}
+}
+
+func TestUpdateCityWhenTwoFeaturesAdded(t *testing.T) {
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected().Rotate(1))
+	a.Position = position.New(1, 0)
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected())
+	b.Position = position.New(2, 0)
+	manager.UpdateCities(b)
+
+	c := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
+	c.Position = position.New(2, 1)
+	manager.UpdateCities(c)
+
+	d := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerNotConnected().Rotate(1))
+	d.Position = position.New(1, 1)
+	manager.UpdateCities(d)
+
+	if len(manager.cities) != 1 {
+		t.Fatalf("expected %#v, got %#v instead", 1, len(manager.cities))
+	}
+
+	for _, f := range d.GetFeaturesOfType(feature.City) {
+		city, _ := manager.GetCity(d.Position, f)
+		if city == nil {
+			t.Fatalf("not found city feature at side %#v", f.Sides)
+		}
 	}
 }
 
@@ -511,5 +543,123 @@ func TestGetCity(t *testing.T) {
 	}
 	if nilCityID != -1 {
 		t.Fatalf("expected %#v, got %#v instead", -1, nilCityID)
+	}
+}
+
+func TestCanBePlacedReturnsTrueWhenOpeningNewCity(t *testing.T) {
+	manager := NewCityManager()
+
+	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
+	manager.UpdateCities(startingTile)
+
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, -1)
+
+	expected := true
+	actual := manager.CanBePlaced(ptile, *ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City))
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
+func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndOpeningNewCityWithMeeple(t *testing.T) {
+	manager := NewCityManager()
+
+	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
+	manager.UpdateCities(startingTile)
+
+	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	ptile.Position = position.New(0, 1)
+	feat := ptile.GetPlacedFeatureAtSide(side.Top, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
+
+	expected := true
+	actual := manager.CanBePlaced(ptile, *feat)
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
+func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndPlacingFirstMeeple(t *testing.T) {
+	manager := NewCityManager()
+
+	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
+	manager.UpdateCities(startingTile)
+
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 1)
+	feat := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
+
+	expected := true
+	actual := manager.CanBePlaced(ptile, *feat)
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
+func TestCanBePlacedReturnsFalseWhenClosingExistingCityAndTryingToPlaceSecondMeeple(t *testing.T) {
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	b.Position = position.New(0, 1)
+	feat := b.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
+
+	expected := false
+	actual := manager.CanBePlaced(b, *feat)
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
+func TestCanBePlacedReturnsTrueWhenExpandingExistingCityAndPlacingFirstMeeple(t *testing.T) {
+	manager := NewCityManager()
+
+	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
+	manager.UpdateCities(startingTile)
+
+	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
+	b.Position = position.New(0, 1)
+	feat := b.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
+
+	expected := true
+	actual := manager.CanBePlaced(b, *feat)
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
+func TestCanBePlacedReturnsFalseWhenExpandingExistingCityAndTryingToPlaceSecondMeeple(t *testing.T) {
+	manager := NewCityManager()
+
+	a := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	a.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+	manager.UpdateCities(a)
+
+	b := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
+	b.Position = position.New(0, 1)
+	feat := b.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
+
+	expected := false
+	actual := manager.CanBePlaced(b, *feat)
+
+	if expected != actual {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
 	}
 }

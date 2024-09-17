@@ -82,32 +82,55 @@ func (manager Manager) findCities(pos position.Position) map[side.Side]int {
 // Checks which cities surrounding positions must be joined after this move.
 // Returns a map of lists of indexes of cities to join. As a key is used a
 // feature that will close the city.
-func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, tile elements.PlacedTile) map[elements.PlacedFeature][]int {
-	citiesToJoin := map[elements.PlacedFeature][]int{}
-	cityFeatures := tile.GetFeaturesOfType(feature.City)
-	for _, cityFeature := range cityFeatures {
-		var cityIndexesToJoin = []int{}
-		sides := cityFeature.Feature.Sides
-		for _, mask := range side.PrimarySides {
-			if sides.HasSide(mask) {
-				neighbourCityIndex, ok := foundCities[mask]
-				if ok {
-					alreadyChecked := false
-					for _, cityIndex := range cityIndexesToJoin {
-						if cityIndex == neighbourCityIndex {
-							alreadyChecked = true
-							break
-						}
+func (manager Manager) findCitiesToJoin(foundCities map[side.Side]int, sides side.Side) []int {
+	var cityIndexesToJoin = []int{}
+	for _, mask := range side.PrimarySides {
+		if sides.HasSide(mask) {
+			neighbourCityIndex, ok := foundCities[mask]
+			if ok {
+				alreadyChecked := false
+				for _, cityIndex := range cityIndexesToJoin {
+					if cityIndex == neighbourCityIndex {
+						alreadyChecked = true
+						break
 					}
-					if !alreadyChecked {
-						cityIndexesToJoin = append(cityIndexesToJoin, neighbourCityIndex)
-					}
+				}
+				if !alreadyChecked {
+					cityIndexesToJoin = append(cityIndexesToJoin, neighbourCityIndex)
 				}
 			}
 		}
-		citiesToJoin[cityFeature] = cityIndexesToJoin
 	}
-	return citiesToJoin
+	return cityIndexesToJoin
+}
+
+// Checks whether the tile can be placed at given position taking into account
+// the meeple placed on the given feature and the meeples that are already placed on
+// any city that the feature would join.
+func (manager *Manager) CanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
+	foundCities := manager.findCities(tile.Position)
+
+	if len(foundCities) == 0 {
+		// no existing cities found in tile's neighbourhood - the tile either has
+		// no City features or only has a completely new city
+		return true
+	}
+
+	// this may return an empty list for features that have no cities to join with
+	citiesToJoin := manager.findCitiesToJoin(foundCities, feat.Sides)
+
+	// Check each of the existing cities (if any) found in feature's neighbourhood
+	// We need to check, if they have *any* meeple placed
+	for _, cityIndex := range citiesToJoin {
+		// score report function checks the whole city for placed meeples
+		// and reports any meeples that would be returned which we can use here
+		scoreReport := manager.cities[cityIndex].GetScoreReport()
+		if len(scoreReport.ReturnedMeeples) != 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 // Performs required operations to add a new city feature.
@@ -115,12 +138,12 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 	foundCities := manager.findCities(tile.Position)
 
 	if len(foundCities) > 0 {
-		citiesToRemove := make([]int, 0)
-		citiesToJoin := manager.findCitiesToJoin(foundCities, tile)
-		// join cities
-		for f, cityIndexesToJoin := range citiesToJoin {
+		for _, cityFeature := range tile.GetFeaturesOfType(feature.City) {
+			citiesToRemove := make([]int, 0)
+			cityIndexesToJoin := manager.findCitiesToJoin(foundCities, cityFeature.Sides)
+			// join cities
 			if len(cityIndexesToJoin) == 0 {
-				toAppend := []elements.PlacedFeature{f}
+				toAppend := []elements.PlacedFeature{cityFeature}
 				manager.cities = append(manager.cities, NewCity(tile.Position, toAppend))
 			} else {
 				if len(cityIndexesToJoin) > 1 {
@@ -129,19 +152,20 @@ func (manager *Manager) UpdateCities(tile elements.PlacedTile) {
 						citiesToRemove = append(citiesToRemove, cityIndex)
 					}
 				}
-				toAdd := []elements.PlacedFeature{f}
+				toAdd := []elements.PlacedFeature{cityFeature}
 				manager.cities[cityIndexesToJoin[0]].AddTile(tile.Position, toAdd)
 			}
-		}
-		// remove cities that were merged into another city
-		if len(citiesToRemove) > 0 {
-			newCities := make([]City, 0)
-			for index, city := range manager.cities {
-				if !slices.Contains(citiesToRemove, index) {
-					newCities = append(newCities, city)
+
+			// remove cities that were merged into another city
+			if len(citiesToRemove) > 0 {
+				newCities := make([]City, 0)
+				for index, city := range manager.cities {
+					if !slices.Contains(citiesToRemove, index) {
+						newCities = append(newCities, city)
+					}
 				}
+				manager.cities = newCities
 			}
-			manager.cities = newCities
 		}
 	} else {
 		for _, f := range tile.GetFeaturesOfType(feature.City) {

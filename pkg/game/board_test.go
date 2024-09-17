@@ -9,6 +9,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -106,11 +108,112 @@ func TestBoardTileHasValidPlacementReturnsTrueWhenValidPlacementExists(t *testin
 	}
 }
 
+func TestBoardGetLegalMovesForDoesNotIncludeInvalidMeeplePlacements(t *testing.T) {
+	// starting tile has a city on top, we want to expand it with an unclosed city
+	// and then try finding legal moves for a tile with a city and some other feature.
+	board := NewBoard(tilesets.StandardTileSet())
+	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+	_, err := board.PlaceTile(ptile)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	basePlacement := elements.ToPlacedTile(
+		tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
+	)
+	basePlacement.Position = position.New(0, 2)
+	placementWithMeeple := basePlacement
+	placementWithMeeple.Features = slices.Clone(basePlacement.Features)
+	placementWithMeeple.GetPlacedFeatureAtSide(
+		side.Top, feature.Field,
+	).Meeple = elements.Meeple{Type: elements.NormalMeeple}
+
+	expected := []elements.PlacedTile{basePlacement, placementWithMeeple}
+	actual := board.GetLegalMovesFor(basePlacement)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
 func TestBoardCanBePlacedReturnsTrueWhenPlacedTileCanBePlaced(t *testing.T) {
 	board := NewBoard(tilesets.StandardTileSet())
 
 	expected := true
 	actual := board.CanBePlaced(test.GetTestPlacedTile())
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestBoardCanBePlacedReturnsFalseWhenMultipleFeaturesHaveMeeples(t *testing.T) {
+	board := NewBoard(tilesets.StandardTileSet())
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 1)
+	ptile.Features[0].Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
+	ptile.Features[1].Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
+
+	expected := false
+	actual := board.CanBePlaced(ptile)
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestBoardCanBePlacedReturnsFalseWhenPlacingAtInvalidPosition(t *testing.T) {
+	board := NewBoard(tilesets.StandardTileSet())
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 2)
+
+	expected := false
+	actual := board.CanBePlaced(ptile)
+
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestBoardFieldCanBePlacedReturnsFalseWhenExpandToFieldWithMeepleHappensOverAnotherField(t *testing.T) {
+	board := NewBoard(tilesets.StandardTileSet()).(*board)
+
+	// prepare board layout (graphical representation can be found in issue GH-86)
+	tilesToPlace := []elements.PlacedTile{}
+	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.Field).Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 1,
+	}
+	tilesToPlace = append(tilesToPlace, ptile)
+
+	ptile = elements.ToPlacedTile(tiletemplates.StraightRoads().Rotate(1))
+	ptile.Position = position.New(1, 1)
+	tilesToPlace = append(tilesToPlace, ptile)
+
+	ptile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad().Rotate(3))
+	ptile.Position = position.New(-1, 0)
+	tilesToPlace = append(tilesToPlace, ptile)
+
+	for _, ptile := range tilesToPlace {
+		if _, err := board.PlaceTile(ptile); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	ptile = elements.ToPlacedTile(tiletemplates.RoadsTurn().Rotate(1))
+	ptile.Position = position.New(1, 0)
+	feat := ptile.GetPlacedFeatureAtSide(side.Right, feature.Field)
+	feat.Meeple = elements.Meeple{
+		Type: elements.NormalMeeple, PlayerID: 2,
+	}
+
+	expected := false
+	actual := board.fieldCanBePlaced(ptile, *feat)
 
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
@@ -243,7 +346,7 @@ func TestIsPositionValidWhenPositionIsValid(t *testing.T) {
 	}
 }
 
-func TestBoardScoreInclompleteMonastery(t *testing.T) {
+func TestBoardScoreIncompleteMonastery(t *testing.T) {
 	var report elements.ScoreReport
 	var extendedTileSet = tilesets.StandardTileSet()
 	for range 3 {
@@ -264,10 +367,10 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	tiles[0].Monastery().Meeple.Type = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = position.New(0, 1)
-	tiles[1].Position = position.New(1, 1)
-	tiles[2].Position = position.New(0, 2)
-	tiles[3].Position = position.New(1, 2)
+	tiles[0].Position = position.New(0, -1)
+	tiles[1].Position = position.New(1, -1)
+	tiles[2].Position = position.New(0, -2)
+	tiles[3].Position = position.New(1, -2)
 
 	// place tiles
 	for i, tile := range tiles {
@@ -292,7 +395,7 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-			position.New(0, 1),
+			position.New(0, -1),
 		)},
 	}
 
@@ -304,17 +407,17 @@ func TestBoardScoreInclompleteMonastery(t *testing.T) {
 func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	/*
 		the board setup is as follows:
+		 S
 		FFFF
 		FMMF
 		FFFF
-		 S
 
 		F - field
 		M - monastery
 		S - starting tile
 
-		left monastery is at (0,2)
-		right monastery is at (1,2)
+		left monastery is at (0,-2)
+		right monastery is at (1,-2)
 		right monastery is placed as the last tile
 	*/
 
@@ -349,23 +452,23 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	tiles[11].Monastery().Meeple.Type = elements.NormalMeeple
 
 	// set positions
-	tiles[0].Position = position.New(0, 1)
-	tiles[1].Position = position.New(0, 2)
-	tiles[2].Position = position.New(0, 3)
+	tiles[0].Position = position.New(0, -1)
+	tiles[1].Position = position.New(0, -2)
+	tiles[2].Position = position.New(0, -3)
 
-	tiles[3].Position = position.New(-1, 1)
-	tiles[4].Position = position.New(-1, 2)
-	tiles[5].Position = position.New(-1, 3)
+	tiles[3].Position = position.New(-1, -1)
+	tiles[4].Position = position.New(-1, -2)
+	tiles[5].Position = position.New(-1, -3)
 
-	tiles[6].Position = position.New(1, 1)
+	tiles[6].Position = position.New(1, -1)
 
-	tiles[7].Position = position.New(2, 1)
-	tiles[8].Position = position.New(2, 2)
-	tiles[9].Position = position.New(2, 3)
+	tiles[7].Position = position.New(2, -1)
+	tiles[8].Position = position.New(2, -2)
+	tiles[9].Position = position.New(2, -3)
 
-	tiles[10].Position = position.New(1, 3)
+	tiles[10].Position = position.New(1, -3)
 
-	tiles[11].Position = position.New(1, 2)
+	tiles[11].Position = position.New(1, -2)
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
@@ -394,11 +497,11 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	expectedReport.ReturnedMeeples = map[elements.ID][]elements.MeepleWithPosition{
 		1: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
-			position.New(0, 2),
+			position.New(0, -2),
 		)},
 		2: {elements.NewMeepleWithPosition(
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
-			position.New(1, 2),
+			position.New(1, -2),
 		)},
 	}
 	if !reflect.DeepEqual(report, expectedReport) {

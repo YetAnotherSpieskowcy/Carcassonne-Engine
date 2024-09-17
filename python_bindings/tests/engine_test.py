@@ -219,10 +219,14 @@ def test_game_engine_send_get_legal_moves_batch_returns_no_duplicates(
         assert resp.moves is not None
 
     # Monastery with no roads is symmetrical both horizontally and vertically
-    assert len(resp.moves) == 1
-    assert resp.moves[0].move.position.x == 0
-    assert resp.moves[0].move.position.y == -1
-    assert tile.exact_equals(resp.moves[0].move.to_tile())
+    # and there's just one valid position (below starting tile, i.e. (0, -1))
+    # so there's three legal moves: without meeple and with meeple on each of
+    # the 2 features
+    assert len(resp.moves) == 3
+    for move_with_state in resp.moves:
+        assert move_with_state.move.position.x == 0
+        assert move_with_state.move.position.y == -1
+        assert tile.exact_equals(move_with_state.move.to_tile())
 
 
 def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
@@ -250,8 +254,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
     # - meeple on monastery
     # - meeple on field
     # - meeple on road
-    # For now, meeple placement is not handled so last number is 1 instead of 4 below
-    expected_move_count = 1 * 3 * 1
+    expected_move_count = 1 * 3 * 4
 
     assert len(resp.moves) == expected_move_count
     for move_state in resp.moves:
@@ -259,7 +262,7 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
         assert move_state.move.position.y == -1
 
     # starting tile has a field at the bottom so expected values are:
-    expected = [
+    expected_tiles = [
         # road at the bottom
         tile,
         # road on the left
@@ -267,5 +270,9 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
         # road on the right
         models.Tile(tile._go_obj.Rotate(3)),
     ]
-    for idx, move_state in enumerate(resp.moves):
-        assert expected[idx].exact_equals(move_state.move.to_tile())
+    move_idx = 0
+    for expected in expected_tiles:
+        for _ in range(4):
+            move_state = resp.moves[move_idx]
+            assert expected.exact_equals(move_state.move.to_tile())
+            move_idx += 1

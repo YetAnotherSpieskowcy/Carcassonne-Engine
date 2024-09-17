@@ -242,22 +242,35 @@ func TestGameEngineSendGetLegalMovesBatchReturnsNoDuplicates(t *testing.T) {
 	}
 
 	// Monastery with no roads is symmetrical both horizontally and vertically
-	if len(resp.Moves) != 1 {
-		t.Fatalf("expected %v as number of available moves, got %v instead", 1, resp.Moves)
+	// and there's just one valid position (below starting tile, i.e. (0, -1))
+	// so there's three legal moves: without meeple and with meeple on each of
+	// the 2 features
+
+	// without meeple
+	ptile1 := elements.ToPlacedTile(tile)
+	ptile1.Position = position.New(0, -1)
+	// with meeple on the field
+	ptile2 := elements.ToPlacedTile(tile)
+	ptile2.Position = position.New(0, -1)
+	ptile2.Features[0].Meeple = elements.Meeple{
+		Type:     elements.NormalMeeple,
+		PlayerID: elements.ID(1),
 	}
-	if resp.Moves[0].Move.Position.X() != 0 {
-		t.Fatalf("expected %v X, got %v instead", 0, resp.Moves[0].Move.Position.X())
+	// with meeple on the monastery
+	ptile3 := elements.ToPlacedTile(tile)
+	ptile3.Position = position.New(0, -1)
+	ptile3.Features[1].Meeple = elements.Meeple{
+		Type:     elements.NormalMeeple,
+		PlayerID: elements.ID(1),
 	}
-	if resp.Moves[0].Move.Position.Y() != -1 {
-		t.Fatalf("expected %v Y, got %v instead", -1, resp.Moves[0].Move.Position.Y())
+	expectedMoves := []elements.PlacedTile{ptile1, ptile2, ptile3}
+
+	actualMoves := make([]elements.PlacedTile, len(resp.Moves))
+	for i, moveWithState := range resp.Moves {
+		actualMoves[i] = moveWithState.Move
 	}
-	if len(resp.Moves[0].Move.Features) != len(tile.Features) {
-		t.Fatalf("expected %#v, got %#v instead", tile.Features, resp.Moves[0].Move.Features)
-	}
-	for i := range tile.Features {
-		if !tile.Features[i].Equals(resp.Moves[0].Move.Features[i].Feature) {
-			t.Fatalf("expected %#v to equal %#v", tile.Features, resp.Moves[0].Move.Features)
-		}
+	if !reflect.DeepEqual(expectedMoves, actualMoves) {
+		t.Fatalf("expected following moves: %#v, got %#v instead", expectedMoves, actualMoves)
 	}
 
 	engine.Close()
@@ -294,8 +307,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 	// - meeple on monastery
 	// - meeple on field
 	// - meeple on road
-	// For now, meeple placement is not handled so last number is 1 instead of 4 below
-	expectedMoveCount := 1 * 3 * 1
+	expectedMoveCount := 1 * 3 * 4
 	if len(resp.Moves) != expectedMoveCount {
 		t.Fatalf("expected %v as number of available moves, got %v instead", expectedMoveCount, resp.Moves)
 	}
@@ -317,15 +329,19 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 		// road on the right
 		tile.Rotate(3),
 	}
-	for i, moveState := range resp.Moves {
-		expected := expectedTiles[i]
-		if len(moveState.Move.Features) != len(expected.Features) {
-			t.Fatalf("expected %#v, got %#v instead", expected, moveState)
-		}
-		for i := range expected.Features {
-			if !expected.Features[i].Equals(moveState.Move.Features[i].Feature) {
-				t.Fatalf("expected %#v to equal %#v", expected, moveState)
+	moveIndex := 0
+	for _, expected := range expectedTiles {
+		for range 4 {
+			moveState := resp.Moves[moveIndex]
+			for i := range expected.Features {
+				if len(moveState.Move.Features) != len(expected.Features) {
+					t.Fatalf("expected %#v, got %#v instead", moveState, expected)
+				}
+				if !expected.Features[i].Equals(moveState.Move.Features[i].Feature) {
+					t.Fatalf("expected %#v to equal %#v", moveState, expected)
+				}
 			}
+			moveIndex++
 		}
 	}
 

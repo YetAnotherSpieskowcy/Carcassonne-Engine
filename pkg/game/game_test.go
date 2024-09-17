@@ -3,6 +3,8 @@ package game
 import (
 	"errors"
 	"io"
+	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
@@ -115,7 +117,7 @@ func TestDeepClone(t *testing.T) {
 func TestFullGame(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{
-		tiletemplates.SingleCityEdgeNoRoads(),
+		tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
 		tiletemplates.StraightRoads(),
 	}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
@@ -131,7 +133,7 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = position.New(0, -1)
+	ptile.Position = position.New(0, 1)
 	err = game.PlayTurn(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -140,7 +142,7 @@ func TestFullGame(t *testing.T) {
 	// incorrect move - try placing tile 0 when 1 should be placed
 	tile = tileSet.Tiles[0]
 	ptile = elements.ToPlacedTile(tile)
-	ptile.Position = position.New(0, 1)
+	ptile.Position = position.New(0, -1)
 	err = game.PlayTurn(ptile)
 	if err == nil {
 		t.Fatal("expected error to occur")
@@ -155,7 +157,7 @@ func TestFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	ptile = elements.ToPlacedTile(tile)
-	ptile.Position = position.New(0, 1)
+	ptile.Position = position.New(0, -1)
 	err = game.PlayTurn(ptile)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -204,7 +206,7 @@ func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
 	}
 }
 
-func TestGameSerializedCurrentTileNilWhenStackOutOfBounds(t *testing.T) {
+func TestGameSerializedCurrentTileNotSetWhenStackOutOfBounds(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{}
 
@@ -215,6 +217,143 @@ func TestGameSerializedCurrentTileNilWhenStackOutOfBounds(t *testing.T) {
 
 	serialized := game.Serialized()
 	if len(serialized.CurrentTile.Features) != 0 {
-		t.Fatalf("expected nil, got %v instead", serialized.CurrentTile)
+		t.Fatalf("expected no current tile, got %v instead", serialized.CurrentTile)
+	}
+}
+
+func TestGameSerializedCurrentTileNotSetForClonesWithSwappableTiles(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+
+	game, err := NewFromTileSet(tileSet, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	serialized := game.Serialized()
+	if len(serialized.CurrentTile.Features) == 0 {
+		t.Fatal("got empty tile when expected valid one to be provided")
+	}
+
+	clone := game.DeepCloneWithSwappableTiles()
+	serialized = clone.Serialized()
+	if len(serialized.CurrentTile.Features) != 0 {
+		t.Fatalf("expected no current tile, got %v instead", serialized.CurrentTile)
+	}
+}
+
+func TestGameGetLegalMovesForIncludesMeepleTypesCurrentPlayerDoesHave(t *testing.T) {
+	tile := tiletemplates.MonasteryWithSingleRoad()
+	tileSet := tilesets.TileSet{
+		// non-default starting tile - limits number of possible positions to one
+		StartingTile: tiletemplates.ThreeCityEdgesConnected(),
+		Tiles:        []tiles.Tile{tile},
+	}
+
+	game, err := NewFromTileSet(tileSet, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	basePlacement := game.GetTilePlacementsFor(tile)[0]
+	expected := []elements.PlacedTile{basePlacement}
+	for i := range basePlacement.Features {
+		ptile := basePlacement
+		ptile.Features = slices.Clone(basePlacement.Features)
+		ptile.Features[i].Meeple = elements.Meeple{
+			Type: elements.NormalMeeple, PlayerID: 1,
+		}
+		expected = append(expected, ptile)
+	}
+	actual := game.GetLegalMovesFor(basePlacement)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestGameGetLegalMovesForExcludesMeepleTypesCurrentPlayerDoesNotHave(t *testing.T) {
+	tile := tiletemplates.MonasteryWithSingleRoad()
+	tileSet := tilesets.TileSet{
+		// non-default starting tile - limits number of possible positions to one
+		StartingTile: tiletemplates.ThreeCityEdgesConnected(),
+		Tiles:        []tiles.Tile{tile},
+	}
+
+	game, err := NewFromTileSet(tileSet, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ptile := game.GetTilePlacementsFor(tile)[0]
+	player := game.CurrentPlayer()
+	player.SetMeepleCount(elements.NormalMeeple, 0)
+
+	expected := []elements.PlacedTile{ptile}
+	actual := game.GetLegalMovesFor(ptile)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestGameSwapCurrentTileReturnsErrorOnOriginalGame(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{
+		tiletemplates.SingleCityEdgeNoRoads(),
+		tiletemplates.StraightRoads(),
+	}
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = game.SwapCurrentTile(tileSet.Tiles[1])
+	if err == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(err, ErrCannotSwapTiles) {
+		t.Fatal(err)
+	}
+
+	tile, err := game.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !tile.ExactEquals(tileSet.Tiles[0]) {
+		t.Fatalf("expected %#v, got %#v instead", tileSet.Tiles[0], tile)
+	}
+}
+
+func TestGameSwapCurrentTileSwapTileOnCloneWithSwappableTiles(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{
+		tiletemplates.SingleCityEdgeNoRoads(),
+		tiletemplates.StraightRoads(),
+	}
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+
+	game, err := NewFromDeck(deck, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	clone := game.DeepCloneWithSwappableTiles()
+
+	err = clone.SwapCurrentTile(tileSet.Tiles[1])
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tile, err := clone.GetCurrentTile()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !tile.ExactEquals(tileSet.Tiles[1]) {
+		t.Fatalf("expected %#v, got %#v instead", tileSet.Tiles[1], tile)
 	}
 }
