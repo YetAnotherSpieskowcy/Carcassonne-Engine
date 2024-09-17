@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"encoding/json"
 	"io"
 	"os"
 )
@@ -27,28 +26,6 @@ func (fl *FileLogger) Open(filename string) error {
 func (fl *FileLogger) Close() error {
 	err := fl.file.Close()
 	return err
-}
-
-func (fl FileLogger) ReadLogs() <-chan Entry {
-	channel := make(chan Entry)
-
-	go func() {
-		var entry Entry
-		decoder := json.NewDecoder(fl.file)
-		decoder.DisallowUnknownFields()
-		for {
-			err := decoder.Decode(&entry)
-			if err == io.EOF {
-				break
-			} else if err != nil {
-				panic(err)
-			}
-			channel <- entry
-		}
-		close(channel)
-	}()
-
-	return channel
 }
 
 func (fl *FileLogger) CopyTo(dst Logger) error {
