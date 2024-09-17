@@ -180,11 +180,9 @@ func TestBoardCanBePlacedReturnsFalseWhenPlacingAtInvalidPosition(t *testing.T) 
 }
 
 func TestBoardFieldCanBePlacedReturnsFalseWhenExpandToFieldWithMeepleHappensOverAnotherField(t *testing.T) {
-	t.Skip("not implemented yet, see GH-86")
-
 	board := NewBoard(tilesets.StandardTileSet()).(*board)
 
-	// prepare board layout (graphical representation can be found in GH-86)
+	// prepare board layout (graphical representation can be found in issue GH-86)
 	tilesToPlace := []elements.PlacedTile{}
 	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	ptile.Position = position.New(0, 1)

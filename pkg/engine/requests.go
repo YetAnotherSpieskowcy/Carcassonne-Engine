@@ -40,7 +40,7 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 
 	if req.LogDir == "" {
 		for i := range req.ReservedIDs {
-			clones[i] = g.DeepClone()
+			clones[i] = g.DeepCloneWithSwappableTiles()
 		}
 		resp.Clones = clones
 		return resp
@@ -95,7 +95,13 @@ func (req *PlayTurnRequest) requiresWrite() bool {
 }
 
 func (req *PlayTurnRequest) execute(game *game.Game) Response {
-	err := game.PlayTurn(req.Move)
+	var err error
+	if game.CanSwapTiles() {
+		err = game.SwapCurrentTile(elements.ToTile(req.Move))
+	}
+	if err == nil {
+		err = game.PlayTurn(req.Move)
+	}
 	resp := &PlayTurnResponse{
 		BaseResponse: BaseResponse{
 			gameID: req.gameID(),
@@ -138,10 +144,12 @@ func (state *GameState) resolve(baseGame *game.Game) (*game.Game, error) {
 	if state == nil {
 		return baseGame, nil
 	}
-	game := baseGame.DeepClone()
+	game := baseGame.DeepCloneWithSwappableTiles()
 	for _, move := range state.simulatedMoves {
-		err := game.PlayTurn(move)
-		if err != nil {
+		if err := game.SwapCurrentTile(elements.ToTile(move)); err != nil {
+			return nil, err
+		}
+		if err := game.PlayTurn(move); err != nil {
 			return nil, err
 		}
 	}
@@ -160,6 +168,11 @@ func (state *GameState) with(
 		simulatedMoves = append(simulatedMoves, state.simulatedMoves...)
 		simulatedMoves = append(simulatedMoves, move)
 	}
+
+	// prevent leakage of future state of the CurrentTile
+	serializedGame.CurrentTile = tiles.Tile{}
+	serializedGame.ValidTilePlacements = nil
+
 	return &GameState{
 		serializedGame: serializedGame,
 		simulatedMoves: simulatedMoves,
@@ -276,7 +289,11 @@ func (req *GetLegalMovesRequest) execute(baseGame *game.Game) Response {
 	resp.Moves = []MoveWithState{}
 	for _, placement := range placements {
 		for _, move := range baseGame.GetLegalMovesFor(placement) {
-			game := baseGame.DeepClone()
+			game := baseGame.DeepCloneWithSwappableTiles()
+			if err := game.SwapCurrentTile(elements.ToTile(move)); err != nil {
+				resp.err = err
+				return resp
+			}
 			if err := game.PlayTurn(move); err != nil {
 				resp.err = err
 				return resp
