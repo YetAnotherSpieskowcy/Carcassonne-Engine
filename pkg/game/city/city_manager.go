@@ -36,7 +36,7 @@ func (manager Manager) GetCity(position position.Position, feature elements.Plac
 		cityFeatures, exists := city.features[position]
 		if exists {
 			for _, cityFeature := range cityFeatures {
-				if cityFeature == feature {
+				if cityFeature.Sides == feature.Sides {
 					return &manager.cities[cityIndex], cityIndex
 				}
 			}

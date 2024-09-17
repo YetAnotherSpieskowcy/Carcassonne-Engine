@@ -546,6 +546,29 @@ func TestGetCity(t *testing.T) {
 	}
 }
 
+func TestGetCityWhenMeepleWasOnTile(t *testing.T) {
+	manager := NewCityManager()
+
+	meeple := elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)}
+
+	tile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
+	tile.Position = position.New(1, 1)
+	tile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = meeple
+	manager.UpdateCities(tile)
+
+	city1, _ := manager.GetCity(position.New(1, 1), *tile.GetPlacedFeatureAtSide(side.Top, feature.City))
+
+	tile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
+		Type:     elements.NoneMeeple,
+		PlayerID: elements.NonePlayer,
+	}
+
+	city, _ := manager.GetCity(position.New(1, 1), *tile.GetPlacedFeatureAtSide(side.Top, feature.City))
+	if !reflect.DeepEqual(city, city1) {
+		t.Fatalf("expected %#v, got %#v instead", city1, city)
+	}
+}
+
 func TestCanBePlacedReturnsTrueWhenOpeningNewCity(t *testing.T) {
 	manager := NewCityManager()
 
