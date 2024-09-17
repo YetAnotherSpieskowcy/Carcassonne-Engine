@@ -230,7 +230,9 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 	if err != nil {
 		return err
 	}
-	defer func() { game.currentPlayer = (game.currentPlayer + 1) % game.PlayerCount() }() // change player after placing tile, in case of incorrect turn
+	// if placing a tile hasn't failed, the board has already been modified
+	// and we can update the current player as well
+	game.currentPlayer = (game.currentPlayer + 1) % game.PlayerCount()
 
 	if err = game.log.LogEvent(
 		logger.PlaceTileEvent, logger.NewPlaceTileEntryContent(player.ID(), move),
