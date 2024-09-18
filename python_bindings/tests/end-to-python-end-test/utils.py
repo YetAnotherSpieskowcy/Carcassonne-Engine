@@ -25,8 +25,8 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
     for move in moves:
         # if exact placement
         if (
-            move.move.to_tile().exact_equals(turnParams.tile)
-            and move.position == turnParams.pos
+                move.move.to_tile().exact_equals(turnParams.tile)
+                and move.move.position == turnParams.pos
         ):
             if turnParams.meepleType == MeepleType.NoneMeeple:
                 meepleExists = False
@@ -40,10 +40,10 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
             else:
                 # check if meeple in desired position
                 if (
-                    move._go_obj.GetPlacedFeatureAtSide(
-                        sideToCheck=turnParams.side, featureType=turnParams.featureType
-                    ).Meeple.Type
-                    == turnParams.meepleType
+                        move._go_obj.GetPlacedFeatureAtSide(
+                            sideToCheck=turnParams.side, featureType=turnParams.featureType
+                        ).Meeple.Type
+                        == turnParams.meepleType
                 ):
                     return move
 
@@ -51,7 +51,7 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 
 
 def make_turn(
-    engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
+        engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
 ) -> (int, SerializedGame):
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(
@@ -76,8 +76,8 @@ def make_turn(
 def check_points(game: SerializedGame, scores: list[int]):
     for player in game._go_obj.Players:
         assert player.Score() == scores[player.ID() - 1], (
-            f"Player:{ player.ID()} has { player.Score()} points, should "
-            f"have {scores[player.ID()-1]}"
+            f"Player:{player.ID()} has {player.Score()} points, should "
+            f"have {scores[player.ID() - 1]}"
         )
     return
 

@@ -4,6 +4,7 @@
 
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.side import Side
+from carcassonne_engine.models import Position
 
 """
  diagonal edges represent cities, dots fields, straight lines roads.
