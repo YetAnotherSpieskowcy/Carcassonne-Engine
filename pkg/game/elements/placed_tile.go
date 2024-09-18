@@ -1,6 +1,8 @@
 package elements
 
 import (
+	"slices"
+
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -32,6 +34,11 @@ type PlacedFeature struct {
 type PlacedTile struct {
 	Features []PlacedFeature
 	Position position.Position
+}
+
+func (placedTile PlacedTile) DeepClone() PlacedTile {
+	placedTile.Features = slices.Clone(placedTile.Features)
+	return placedTile
 }
 
 func (placedTile PlacedTile) Rotate(rotations uint) PlacedTile {
