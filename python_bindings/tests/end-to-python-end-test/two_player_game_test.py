@@ -36,15 +36,14 @@ from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
 from carcassonne_engine.models import Position
-from carcassonne_engine.tilesets import mini_tile_set
-
+from carcassonne_engine.tilesets import mini_tile_set, ordered_mini_tile_set1
 
 log = logging.getLogger(__name__)
 
 
 def test_two_player_game(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
-    tile_set = mini_tile_set()
+    tile_set = ordered_mini_tile_set1()
 
     game_id, game = engine.generate_ordered_game(tile_set)
 

@@ -50,7 +50,7 @@ from carcassonne_engine.requests import (
     GetRemainingTilesRequest,
     PlayTurnRequest,
 )
-from carcassonne_engine.tilesets import TileSet, mini_tile_set
+from carcassonne_engine.tilesets import TileSet, mini_tile_set, ordered_mini_tile_set2
 from carcassonne_engine.utils import format_binary_tile_bits
 
 log = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ log = logging.getLogger(__name__)
 
 def test_two_player_game2(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
-    tile_set = mini_tile_set()
+    tile_set = ordered_mini_tile_set2()
 
     game_id, game = engine.generate_ordered_game(tile_set)
 

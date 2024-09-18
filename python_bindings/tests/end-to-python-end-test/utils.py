@@ -20,6 +20,14 @@ class TurnParams(NamedTuple):
     side: Side
     featureType: FeatureType
 
+def find_meeple_in_placed_tile(ptile: PlacedTile):
+    for feature in ptile._go_obj.Features:
+        if feature.Meeple.Type != 0:
+            print("Meeple on side: " + str(feature.Sides) + " feature type: " + str(feature.FeatureType))
+            return
+
+
+    print("Meeple not on tile")
 
 def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> PlacedTile:
     for move in moves:
@@ -31,21 +39,22 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
             if turnParams.meepleType == MeepleType.NoneMeeple:
                 meepleExists = False
                 # check if there is no meeple on a tile
-                for feature in move._go_obj.Features:
+                for feature in move.move._go_obj.Features:
                     if feature.Meeple.Type != MeepleType.NoneMeeple:
                         meepleExists = True
                         break
                 if not meepleExists:
-                    return move
+                    return move.move
             else:
                 # check if meeple in desired position
+                find_meeple_in_placed_tile(move.move)
                 if (
-                        move._go_obj.GetPlacedFeatureAtSide(
-                            sideToCheck=turnParams.side, featureType=turnParams.featureType
-                        ).Meeple.Type
-                        == turnParams.meepleType
+                    move.move._go_obj.GetPlacedFeatureAtSide(
+                        sideToCheck=turnParams.side.value, featureType=turnParams.featureType.value
+                    ).Meeple.Type
+                    == turnParams.meepleType
                 ):
-                    return move
+                    return move.move
 
     raise KeyError("did not find the specified tile")
 
