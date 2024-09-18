@@ -1,4 +1,5 @@
 """"""
+
 """
  diagonal edges represent cities, dots fields, straight lines roads.
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number in hex :/)

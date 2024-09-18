@@ -1,4 +1,5 @@
 """"""
+
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.side import Side
 
