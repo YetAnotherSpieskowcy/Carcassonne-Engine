@@ -1,5 +1,5 @@
-''''''
-'''
+""""""
+"""
  diagonal edges represent cities, dots fields, straight lines roads.
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number in hex :/)
 
@@ -22,7 +22,7 @@
 -1         .[5].       6    7    A
            .[ ].      /.\  /.\  /.\ 
            .....     -...--   --...-
-'''
+"""
 import logging
 from pathlib import Path
 
@@ -63,7 +63,7 @@ def test_two_player_game(tmp_path: Path) -> None:
     assert game.current_tile is None
 
 
-'''
+"""
 // straight road with city edge
 // player 1 places meeple on city, and closes it
 
@@ -85,7 +85,7 @@ def test_two_player_game(tmp_path: Path) -> None:
 -1                                
                                     
  
-'''
+"""
 
 
 def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -94,7 +94,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         tile=tiletemplates.single_city_edge_straight_roads().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -103,7 +103,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // road turn
 // player 2 places meeple (@) on a road
             -1    0    1    2    3
@@ -124,7 +124,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 -1                                
                                     
   
-'''
+"""
 
 
 def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -133,7 +133,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         tile=tiletemplates.roads_turn(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Left,
-        featureType=FeatureType.Road
+        featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -142,7 +142,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // road turn
 // player 1 places meeple (!) on a field
             -1    0    1    2    3
@@ -163,7 +163,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 -1                                
                                     
     
-'''
+"""
 
 
 def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -172,7 +172,8 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         tile=tiletemplates.roads_turn().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.TopLeftEdge,
-        featureType=FeatureType.Field)
+        featureType=FeatureType.Field,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 0])
@@ -180,7 +181,7 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // T cross road
 // player2 places meeple (@) on road going down
             -1    0    1    2    3
@@ -201,7 +202,7 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 -1                                
                                     
                         
-'''
+"""
 
 
 def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -210,7 +211,8 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         tile=tiletemplates.t_cross_road().rotate(3),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.Road)
+        featureType=FeatureType.Road,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 0])
@@ -218,7 +220,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // monastery with single road
 // player1 places meeple (!) on a monastery
 // road from 4 to 5 is finished, so player2 scores 2 points
@@ -240,7 +242,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 -1         .[5].                  
            .[!].                    
            .....            
-'''
+"""
 
 
 def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -249,7 +251,8 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         tile=tiletemplates.monastery_with_single_road().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.Monastery)
+        featureType=FeatureType.Monastery,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 2])
@@ -257,7 +260,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // Two city edges not connected
 // player 2 places meeple(@) on the right city
             -1    0    1    2    3
@@ -278,7 +281,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 -1         .[5].       6 @        
            .[!].      /.\           
            .....     -...-      
-'''
+"""
 
 
 def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -287,7 +290,8 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         tile=tiletemplates.two_city_edges_up_and_down_not_connected().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
-        featureType=FeatureType.City)
+        featureType=FeatureType.City,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 2])
@@ -295,7 +299,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // Two city edges not connected
 // player 1 places meeple (!) on the right city
 // playey 2 scores points for finished city
@@ -317,7 +321,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 -1         .[5].       6    7 !   
            .[!].      /.\  /.\      
            .....     -...--   - 
-'''
+"""
 
 
 def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -326,7 +330,8 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         tile=tiletemplates.two_city_edges_up_and_down_not_connected().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
-        featureType=FeatureType.City)
+        featureType=FeatureType.City,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 6])
@@ -334,7 +339,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     return game_id, game
 
 
-'''
+"""
 // straight road
 // player 2 places meeple (@) on a bottom road
             -1    0    1    2    3
@@ -355,7 +360,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
 -1         .[5].       6    7 !   
            .[!].      /.\  /.\      
            .....     -...--   -   
-'''
+"""
 
 
 def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -364,7 +369,8 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         tile=tiletemplates.straight_roads().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.Road)
+        featureType=FeatureType.Road,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 6])
@@ -372,7 +378,7 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // T cross road
 // road is finished. Player 2 scores 6 points for a road
 // player 1 places meeple (!) on a field
@@ -394,7 +400,7 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 -1         .[5].       6    7 !    
            .[!].      /.\  /.\      
            .....     -...--   -     
-'''
+"""
 
 
 def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -403,7 +409,8 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
         tile=tiletemplates.t_cross_road().rotate(3),
         meepleType=MeepleType.NormalMeeple,
         side=Side.TopRightEdge,
-        featureType=FeatureType.Field)
+        featureType=FeatureType.Field,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [4, 12])
@@ -411,7 +418,7 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // Two city edges not connected
 // player 2 places meeple (@) on the right city
 // player 1 scores points for city
@@ -433,7 +440,7 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
            .....     -...--   --...-
-'''
+"""
 
 
 def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -442,7 +449,8 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
         tile=tiletemplates.two_city_edges_up_and_down_not_connected().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
-        featureType=FeatureType.City)
+        featureType=FeatureType.City,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [8, 12])
@@ -450,7 +458,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // road turn
             -1    0    1    2    3
             
@@ -470,7 +478,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
            .....     -...--   --...-
-'''
+"""
 
 
 def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -479,7 +487,8 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
         tile=tiletemplates.roads_turn().rotate(2),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType)
+        featureType=FeatureType.NoneType,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [8, 12])
@@ -487,7 +496,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
     return game_id, game
 
 
-'''
+"""
 // straight road
             -1    0    1    2    3
             
@@ -507,7 +516,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
            .....     -...--   --...-
-'''
+"""
 
 
 def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -516,7 +525,8 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         tile=tiletemplates.straight_roads(),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType)
+        featureType=FeatureType.NoneType,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [8, 12])
@@ -524,7 +534,7 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     return game_id, game
 
 
-'''
+"""
 player1 scores 11 points in total:
     - 2*3points for farmer on 9 tile
     - 3 points for farmer on 3 tile
@@ -552,7 +562,7 @@ player2 scores 4 points in total:
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
            .....     -...--   --...-
-'''
+"""
 
 
 def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):

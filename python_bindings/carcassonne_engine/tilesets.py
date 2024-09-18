@@ -50,5 +50,6 @@ class TileSet:
 def standard_tile_set() -> TileSet:
     return TileSet(_go_tilesets.StandardTileSet())
 
+
 def mini_tile_set() -> TileSet:
     return TileSet(_go_tilesets.MiniTileSet())

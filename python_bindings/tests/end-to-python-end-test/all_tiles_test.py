@@ -117,7 +117,7 @@ def check_turn_1(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.monastery_without_roads(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.Monastery
+        featureType=FeatureType.Monastery,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -172,7 +172,8 @@ def check_turn_2(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.monastery_with_single_road().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.Monastery)
+        featureType=FeatureType.Monastery,
+    )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
     check_points(game, [0, 0])
@@ -225,7 +226,7 @@ def check_turn_3(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.straight_roads(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Left,
-        featureType=FeatureType.Road
+        featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -280,7 +281,7 @@ def check_turn_4(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.roads_turn().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.Field
+        featureType=FeatureType.Field,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -335,7 +336,7 @@ def check_turn_5(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.t_cross_road().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Top,
-        featureType=FeatureType.Road
+        featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -392,7 +393,7 @@ def check_turn_6(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.x_cross_road(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
-        featureType=FeatureType.Road
+        featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -447,7 +448,7 @@ def check_turn_7(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.single_city_edge_no_roads().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -502,7 +503,7 @@ def check_turn_8(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.single_city_edge_straight_roads().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -558,7 +559,7 @@ def check_turn_9(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.single_city_edge_left_road_turn().rotate(3),
         meepleType=MeepleType.NormalMeeple,
         side=Side.TopRightEdge,
-        featureType=FeatureType.Field
+        featureType=FeatureType.Field,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -612,7 +613,7 @@ def check_turn_A(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.single_city_edge_right_road_turn().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -667,7 +668,7 @@ def check_turn_B(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.single_city_edge_cross_road(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.BottomRightEdge,
-        featureType=FeatureType.Field
+        featureType=FeatureType.Field,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -720,7 +721,7 @@ def check_turn_C(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_up_and_down_not_connected(),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType
+        featureType=FeatureType.NoneType,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -774,7 +775,7 @@ def check_turn_D(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_up_and_down_connected(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -828,7 +829,7 @@ def check_turn_E(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_up_and_down_connected_shield(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -884,7 +885,7 @@ def check_turn_F(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_corner_not_connected(),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Left,
-        featureType=FeatureType.Field
+        featureType=FeatureType.Field,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -938,7 +939,7 @@ def check_turn_G(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_corner_connected().rotate(3),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.Field
+        featureType=FeatureType.Field,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -992,7 +993,7 @@ def check_turn_H(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_corner_connected_shield().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
-        featureType=FeatureType.City
+        featureType=FeatureType.City,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1048,7 +1049,7 @@ def check_turn_I(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_corner_connected_road_turn().rotate(1),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Top,
-        featureType=FeatureType.Road
+        featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1103,7 +1104,7 @@ def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.two_city_edges_corner_connected_road_turn_shield().rotate(2),
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
-        featureType=FeatureType.Road
+        featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1156,7 +1157,7 @@ def check_turn_K(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.three_city_edges_connected().rotate(2),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType
+        featureType=FeatureType.NoneType,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1209,7 +1210,7 @@ def check_turn_L(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.three_city_edges_connected_shield(),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType
+        featureType=FeatureType.NoneType,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1262,7 +1263,7 @@ def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.three_city_edges_connected_road(),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType
+        featureType=FeatureType.NoneType,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1315,7 +1316,7 @@ def check_turn_N(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.three_city_edges_connected_road_shield().rotate(2),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType
+        featureType=FeatureType.NoneType,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
@@ -1373,7 +1374,7 @@ def check_turn_O(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         tile=tiletemplates.four_city_edges_connected_shield(),
         meepleType=MeepleType.NoneMeeple,
         side=Side.NoSide,
-        featureType=FeatureType.NoneType
+        featureType=FeatureType.NoneType,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
