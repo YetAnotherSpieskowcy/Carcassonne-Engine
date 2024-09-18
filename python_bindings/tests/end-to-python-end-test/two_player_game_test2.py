@@ -1,8 +1,8 @@
-''''''
+""""""
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.side import Side
 
-'''
+"""
  diagonal edges represent cities, dots fields, straight lines roads.
  Player meeples will be represented as !@#$ signs ( you know, writing number but with shift!) 1->!, 2->@ and so on
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number in hex :/)
@@ -30,7 +30,7 @@ from carcassonne_engine._bindings.side import Side
 |-2             --C--
 |               .....
 |               .....
-'''
+"""
 import logging
 
 from carcassonne_engine.models import Position
@@ -79,7 +79,7 @@ def test_two_player_game2(tmp_path: Path) -> None:
     assert game.current_tile is None
 
 
-'''
+"""
 // player1 places T Cross road with meeple on a bottom road
 |				  0	   1    2    3
 |
@@ -104,7 +104,7 @@ def test_two_player_game2(tmp_path: Path) -> None:
 |-2
 |
 |
-'''
+"""
 
 
 def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -122,7 +122,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // player2 places Two city edges not connected, and a meeple on a closing city
 |				  0	   1    2    3
 |
@@ -147,7 +147,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |-2
 |
 |
-'''
+"""
 
 
 def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -165,7 +165,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // Player1 places Two city edges not connected and a meeple on bottom city
 |				  0	   1    2    3
 |
@@ -190,7 +190,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 |-2
 |
 |
-'''
+"""
 
 
 def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -208,7 +208,7 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // Player2 places Road turn with a meeple(@) on a road
 |				  0	   1    2    3
 |
@@ -233,7 +233,7 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |-2
 |
 |
-'''
+"""
 
 
 def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -251,7 +251,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // Player1 places Road turn with a farmer(!) on the right bottom
 |				  0	   1    2    3
 |
@@ -276,7 +276,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 |-2
 |
 |
-'''
+"""
 
 
 def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -294,7 +294,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // Player2 places Straight Road with a meeple on a top field
 |				  0	   1    2    3
 |
@@ -319,7 +319,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |-2
 |
 |
-'''
+"""
 
 
 def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -337,7 +337,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // Player1 places Two city edges not connected, finishing own city, and placing a meeple on a new one
 // player1 scores 4 points for a city
 |				  0	   1    2    3
@@ -363,7 +363,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |-2
 |
 |
-'''
+"""
 
 
 def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -381,7 +381,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     return game_id, game
 
 
-'''
+"""
 // Player2 places Road turn and a meeple on a road
 |				  0	   1    2    3
 |
@@ -406,7 +406,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
 |-2
 |
 |
-'''
+"""
 
 
 def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -424,7 +424,7 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // Player1 places Straight road with city edge and places a meeple on the upper field.
 No one scores for the finished city
 |				  0	   1    2    3
@@ -450,7 +450,7 @@ No one scores for the finished city
 |-2
 |
 |
-'''
+"""
 
 
 def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -468,7 +468,7 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
     return game_id, game
 
 
-'''
+"""
 // Player2 places Monastery with road, with a meeple on a monastery.
 Player2 scores 3 points for finished road
 |				  0	   1    2    3
@@ -494,7 +494,7 @@ Player2 scores 3 points for finished road
 |-2
 |
 |
-'''
+"""
 
 
 def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -512,7 +512,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
     return game_id, game
 
 
-'''
+"""
 // Player1 places T cross road, with a meeple on a bottom road
 player1 and player4 score 4 points for their roads
 |				  0	   1    2    3
@@ -538,7 +538,7 @@ player1 and player4 score 4 points for their roads
 |-2
 |
 |
-'''
+"""
 
 
 def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -556,7 +556,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
     return game_id, game
 
 
-'''
+"""
 // Player2 places Straight road with a meeple on a road
 |				  0	   1    2    3
 |
@@ -581,7 +581,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
 |-2             --C-@
 |               .....
 |               .....
-'''
+"""
 
 
 def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -599,7 +599,7 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     return game_id, game
 
 
-'''
+"""
 player1 scores 12 points in total:
     - 2*3points for farmer on 9 tile
     - 2*3points for meeple on 5 tile    
@@ -633,7 +633,7 @@ player2 scores 6 points in total:
 |-2             --C-@
 |               .....
 |               .....
-'''
+"""
 
 
 def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):

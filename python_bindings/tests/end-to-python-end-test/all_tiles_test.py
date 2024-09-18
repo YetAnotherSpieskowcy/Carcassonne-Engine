@@ -1,6 +1,6 @@
-''''''
+""""""
 
-'''
+"""
  diagonal edges represent cities, dots fields, straight lines roads.
  Player meeples will be represented as !@ signs ( you know, writing number but with shift!) 1->!, 2->@
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number :/)
@@ -42,7 +42,7 @@
                      .[ ]....\  /|..
                      .........--.|..
                
-'''
+"""
 import logging
 from pathlib import Path
 
@@ -72,7 +72,7 @@ def test_all_tiles_game(tmp_path: Path) -> None:
     assert game.current_tile is None
 
 
-'''
+"""
 player1 places meeple (!) on a monastery 
        -3   -2   -1    0    1    2    3
 
@@ -108,7 +108,7 @@ player1 places meeple (!) on a monastery
                      .[ ]. 
                      .....
 
-'''
+"""
 
 
 def check_turn_1(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -126,7 +126,7 @@ def check_turn_1(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player2 places meeple(@) on a monastery
 
        -3   -2   -1    0    1    2    3
@@ -163,7 +163,7 @@ player2 places meeple(@) on a monastery
                      .[ ]. 
                      .....
 
-'''
+"""
 
 
 def check_turn_2(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -181,7 +181,7 @@ def check_turn_2(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 places meeple(!) on a road
        -3   -2   -1    0    1    2    3
 
@@ -217,7 +217,7 @@ player1 places meeple(!) on a road
                      .[ ]. 
                      .....
 
-'''
+"""
 
 
 def check_turn_3(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -235,7 +235,7 @@ def check_turn_3(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player2 places meeple on a field
 
        -3   -2   -1    0    1    2    3
@@ -272,7 +272,7 @@ player2 places meeple on a field
                      .[ ]. 
                      .....
 
-'''
+"""
 
 
 def check_turn_4(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -290,7 +290,7 @@ def check_turn_4(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 finished road, places meeple(!) on a top road
 player1 scores 5 points
        -3   -2   -1    0    1    2    3
@@ -327,7 +327,7 @@ player1 scores 5 points
                      .[ ]. 
                      .....
 
-'''
+"""
 
 
 def check_turn_5(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -345,7 +345,7 @@ def check_turn_5(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player 2 finishes road
 player 2 places meeple on a right road
 player 1 scores 2 points
@@ -384,7 +384,7 @@ player 1 scores 2 points
                      .[ ]. 
                      .....
 
-'''
+"""
 
 
 def check_turn_6(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -402,7 +402,7 @@ def check_turn_6(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player 1 places meeple(!) on a city
 
        -3   -2   -1    0    1    2    3
@@ -439,7 +439,7 @@ player 1 places meeple(!) on a city
                      .[ ]....\ 
                      .........-
 
-'''
+"""
 
 
 def check_turn_7(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -457,7 +457,7 @@ def check_turn_7(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player2 places meeple(@) on a city
 
        -3   -2   -1    0    1    2    3
@@ -494,7 +494,7 @@ player2 places meeple(@) on a city
                      .[ ]....\ 
                      .........-
 
-'''
+"""
 
 
 def check_turn_8(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -512,7 +512,7 @@ def check_turn_8(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 places meeple(!) on a upper field
 player1 closes city 
 player1 scores 4 points
@@ -550,7 +550,7 @@ player1 scores 4 points
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_9(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -568,7 +568,7 @@ def check_turn_9(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player2 places meeple on a city
        -3   -2   -1    0    1    2    3
 
@@ -604,7 +604,7 @@ player2 places meeple on a city
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_A(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -622,7 +622,7 @@ def check_turn_A(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player 1 places meeple(!) on a field
 player 2 scores 4 points
        -3   -2   -1    0    1    2    3
@@ -659,7 +659,7 @@ player 2 scores 4 points
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_B(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -677,7 +677,7 @@ def check_turn_B(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
        -3   -2   -1    0    1    2    3
 
 
@@ -712,7 +712,7 @@ def check_turn_B(engine: GameEngine, game, game_id) -> (int, SerializedGame):
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_C(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -730,7 +730,7 @@ def check_turn_C(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player 1 places meeple(!) on a city
        -3   -2   -1    0    1    2    3
 
@@ -766,7 +766,7 @@ player 1 places meeple(!) on a city
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_D(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -784,7 +784,7 @@ def check_turn_D(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player 2 places meeple(@) on a city
        -3   -2   -1    0    1    2    3
 
@@ -820,7 +820,7 @@ player 2 places meeple(@) on a city
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_E(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -838,7 +838,7 @@ def check_turn_E(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 places meeple(!) on a field
 player2 scores 4 points
 
@@ -876,7 +876,7 @@ player2 scores 4 points
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_F(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -894,7 +894,7 @@ def check_turn_F(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player2 places meeple(@) on a field
        -3   -2   -1    0    1    2    3
 
@@ -930,7 +930,7 @@ player2 places meeple(@) on a field
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_G(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -948,7 +948,7 @@ def check_turn_G(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 places meeple(!) on a city 
        -3   -2   -1    0    1    2    3
 
@@ -984,7 +984,7 @@ player1 places meeple(!) on a city
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_H(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1002,7 +1002,7 @@ def check_turn_H(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player2 places meeple(@) on a road
 
 
@@ -1040,7 +1040,7 @@ player2 places meeple(@) on a road
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_I(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1058,7 +1058,7 @@ def check_turn_I(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 places meeple(!) on a road
 
        -3   -2   -1    0    1    2    3
@@ -1095,7 +1095,7 @@ player1 places meeple(!) on a road
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1113,7 +1113,7 @@ def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
        -3   -2   -1    0    1    2    3
 
 
@@ -1148,7 +1148,7 @@ def check_turn_J(engine: GameEngine, game, game_id) -> (int, SerializedGame):
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_K(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1166,7 +1166,7 @@ def check_turn_K(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
        -3   -2   -1    0    1    2    3
 
 
@@ -1201,7 +1201,7 @@ def check_turn_K(engine: GameEngine, game, game_id) -> (int, SerializedGame):
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_L(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1219,7 +1219,7 @@ def check_turn_L(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
        -3   -2   -1    0    1    2    3
 
 
@@ -1254,7 +1254,7 @@ def check_turn_L(engine: GameEngine, game, game_id) -> (int, SerializedGame):
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1272,7 +1272,7 @@ def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
        -3   -2   -1    0    1    2    3
 
 
@@ -1307,7 +1307,7 @@ def check_turn_M(engine: GameEngine, game, game_id) -> (int, SerializedGame):
                      .[ ]....\  /|..
                      .........--.|..
 
-'''
+"""
 
 
 def check_turn_N(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1325,7 +1325,7 @@ def check_turn_N(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 scores nothing because player2 has meeples in the city
 player2 scores: 13*2 + 3*2 = 26+6=32
     13 tile city
@@ -1365,7 +1365,7 @@ player2 scores: 13*2 + 3*2 = 26+6=32
                      .[ ]....\  /|..
                      .........--.|..
                
-'''
+"""
 
 
 def check_turn_O(engine: GameEngine, game, game_id) -> (int, SerializedGame):
@@ -1383,7 +1383,7 @@ def check_turn_O(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     return game_id, game
 
 
-'''
+"""
 player1 scores 20 points in total:
     - 1+1 points for a city with shield on H tile
     - 5 points for monastery on 1 tile
@@ -1431,7 +1431,7 @@ player2 scores 19 points in total:
 -1                   .[1]...7    9--     
                      .[ ]....\  /|..
                      .........--.|..
-'''
+"""
 
 
 def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):
