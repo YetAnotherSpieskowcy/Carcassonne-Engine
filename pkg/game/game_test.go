@@ -13,6 +13,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -355,5 +357,33 @@ func TestGameSwapCurrentTileSwapTileOnCloneWithSwappableTiles(t *testing.T) {
 
 	if !tile.ExactEquals(tileSet.Tiles[1]) {
 		t.Fatalf("expected %#v, got %#v instead", tileSet.Tiles[1], tile)
+	}
+}
+
+func TestGamePlayTurnDoesNotMutateInput(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
+
+	game, err := NewFromTileSet(tileSet, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected := elements.Meeple{
+		Type:     elements.NormalMeeple,
+		PlayerID: game.CurrentPlayer().ID(),
+	}
+	ptile := elements.ToPlacedTile(tileSet.Tiles[0])
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = expected
+
+	err = game.PlayTurn(ptile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	actual := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple
+	if expected != actual {
+		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
