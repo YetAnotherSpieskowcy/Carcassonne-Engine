@@ -76,7 +76,7 @@ def make_turn(
 def check_points(game: SerializedGame, scores: list[int]):
     for player in game._go_obj.Players:
         assert player.Score() == scores[player.ID() - 1], (
-            f"Player:{ player.ID()} has {player.Score()} points, should "
+            f"Player:{ player.ID()} has { player.Score()} points, should "
             f"have {scores[player.ID()-1]}"
         )
     return
