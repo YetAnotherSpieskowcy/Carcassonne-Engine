@@ -1,14 +1,16 @@
 from typing import NamedTuple
 
 from carcassonne_engine import GameEngine, SerializedGame
-from carcassonne_engine.models import PlacedTile, Tile, Position
-from carcassonne_engine.requests import (
-    PlayTurnRequest,
-    GetLegalMovesRequest,
-    MoveWithState)
-from carcassonne_engine._bindings.side import Side
+
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
+from carcassonne_engine._bindings.side import Side
+from carcassonne_engine.models import PlacedTile, Position, Tile
+from carcassonne_engine.requests import (
+    GetLegalMovesRequest,
+    MoveWithState,
+    PlayTurnRequest,
+)
 
 
 class TurnParams(NamedTuple):
@@ -19,7 +21,7 @@ class TurnParams(NamedTuple):
     featureType: FeatureType
 
 
-def get_placed_tile(moves: list[MoveWithState], turnParams:TurnParams) -> PlacedTile:
+def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> PlacedTile:
     for move in moves:
         # if exact placement
         if (
@@ -73,7 +75,7 @@ def make_turn(
 
 def check_points(game: SerializedGame, scores: list[int]):
     for player in game._go_obj.Players:
-        assert player.Score() == scores[player.ID()-1], (
+        assert player.Score() == scores[player.ID() - 1], (
             f"Player:{ player.ID()} has {player.Score()} points, should "
             f"have {scores[player.ID()-1]}"
         )

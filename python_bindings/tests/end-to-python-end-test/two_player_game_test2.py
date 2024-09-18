@@ -34,22 +34,20 @@ from carcassonne_engine._bindings.side import Side
 """
 import logging
 
-from carcassonne_engine.models import Position
-from utils import make_turn, TurnParams, check_points, check_final_points
 from pathlib import Path
 
 import pytest
 from pytest import approx
+from utils import TurnParams, check_final_points, check_points, make_turn
 
-from carcassonne_engine import GameEngine, SerializedGame
-from carcassonne_engine import models, tiletemplates
+from carcassonne_engine import GameEngine, SerializedGame, models, tiletemplates
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
     GetRemainingTilesRequest,
     PlayTurnRequest,
 )
-from carcassonne_engine.tilesets import mini_tile_set, TileSet
+from carcassonne_engine.tilesets import TileSet, mini_tile_set
 from carcassonne_engine.utils import format_binary_tile_bits
 
 log = logging.getLogger(__name__)
