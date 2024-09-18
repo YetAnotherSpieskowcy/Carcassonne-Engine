@@ -74,7 +74,7 @@ func TestGameEngineSendGetRemainingTilesBatchReturnsFailureWhenInvalidGameStateI
 	if resp.Err() == nil {
 		t.Fatal("expected error to occur")
 	}
-	if !errors.Is(resp.Err(), elements.ErrWrongTile) {
+	if !errors.Is(resp.Err(), elements.ErrInvalidPosition) {
 		t.Fatal(resp.Err())
 	}
 }
@@ -121,7 +121,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenInvalidGameStateIsPas
 	if resp.Err() == nil {
 		t.Fatal("expected error to occur")
 	}
-	if !errors.Is(resp.Err(), elements.ErrWrongTile) {
+	if !errors.Is(resp.Err(), elements.ErrInvalidPosition) {
 		t.Fatal(resp.Err())
 	}
 }

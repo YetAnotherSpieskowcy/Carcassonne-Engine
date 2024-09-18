@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
-	"slices"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
@@ -132,6 +131,7 @@ func TestFileLogger(t *testing.T) {
 	if !reflect.DeepEqual(endContent.Scores, expectedScores) {
 		t.Fatalf("expected %#v, got %#v instead", expectedScores, endContent.Scores)
 	}
+
 }
 
 //nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
@@ -172,12 +172,7 @@ func TestReadLogsFileLogger(t *testing.T) {
 	var placeTileContent PlaceTileEntryContent
 	var endContent ScoreEntryContent
 
-	reader, err := NewLogReader(filename)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for e := range reader.ReadLogs() {
+	for e := range log.ReadLogs() {
 		switch e.Event {
 		case StartEvent:
 			err = json.Unmarshal(e.Content, &startContent)
@@ -446,119 +441,5 @@ func TestParseEntries(t *testing.T) {
 	}
 	if !reflect.DeepEqual(scoreContent.Scores, expectedScores) {
 		t.Fatalf("expected %#v, got %#v instead", expectedScores, scoreContent.Scores)
-	}
-}
-
-func TestLogReaderReadEntry(t *testing.T) {
-	deck := getTestDeck()
-	expectedStack := deck.GetRemaining()
-	expectedStartingTile := deck.StartingTile
-	expectedPlayerCount := 2
-
-	startEntryContent := NewStartEntryContent(expectedStartingTile, expectedStack, expectedPlayerCount)
-
-	filename := "test_file.jsonl"
-	logger, err := NewFromFile(filename)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	defer os.Remove(filename)
-
-	reader, err := NewLogReader(filename)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	_, ok, err := reader.ReadEntry()
-	if ok {
-		t.Fatal("log reader returned ok=true with empty logs file")
-	}
-	if err == nil {
-		t.Fatal("expected an error to occur")
-	}
-
-	err = logger.LogEvent(StartEvent, startEntryContent)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	entry, ok, err := reader.ReadEntry()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !ok {
-		t.Fatalf("expected %#v, got %#v instead", true, ok)
-	}
-
-	if entry.Event != StartEvent {
-		t.Fatalf("expected %#v, got %#v instead", StartEvent, entry.Event)
-	}
-
-	var startContent StartEntryContent
-	err = json.Unmarshal(entry.Content, &startContent)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	if !reflect.DeepEqual(startContent.StartingTile, expectedStartingTile) {
-		t.Fatalf("expected %#v, got %#v instead", expectedStartingTile, startContent.StartingTile)
-	}
-	if !reflect.DeepEqual(startContent.Stack, expectedStack) {
-		t.Fatalf("expected %#v, got %#v instead", expectedStack, startContent.Stack)
-	}
-	if !reflect.DeepEqual(startContent.PlayerCount, expectedPlayerCount) {
-		t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, startContent.PlayerCount)
-	}
-}
-
-func TestLogReaderReadIncompleteEntry(t *testing.T) {
-	filename := "test_file.jsonl"
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(filename)
-
-	reader, err := NewLogReader(filename)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	expectedContent := []byte("This is the event's content")
-	startEvent := NewEntry(StartEvent, expectedContent)
-	jsonData, err := json.Marshal(startEvent)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, err = file.Write(jsonData[:10])
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_, ok, err := reader.ReadEntry()
-	if err == nil {
-		t.Fatal("expected an error to occur")
-	}
-	if ok {
-		t.Fatalf("expected %#v, got %#v instead", false, ok)
-	}
-
-	_, err = file.Write(jsonData[10:])
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	entry, ok, err := reader.ReadEntry()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !ok {
-		t.Fatalf("expected %#v, got %#v instead", true, ok)
-	}
-	if entry.Event != StartEvent {
-		t.Fatalf("expected %#v, got %#v instead", StartEvent, entry.Event)
-	}
-	if !slices.Equal(entry.Content, expectedContent) {
-		t.Fatalf("expected %#v, got %#v instead", expectedContent, entry.Content)
 	}
 }
