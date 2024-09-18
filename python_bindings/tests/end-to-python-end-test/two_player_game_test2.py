@@ -1,3 +1,4 @@
+# flake8: noqa ascci drawing makes a lot errors
 """"""
 
 from carcassonne_engine._bindings.elements import MeepleType
