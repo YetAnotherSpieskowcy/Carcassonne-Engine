@@ -1,5 +1,3 @@
-//go:build test
-
 package two_player_game_test
 
 import (
