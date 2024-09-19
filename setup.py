@@ -17,9 +17,9 @@ GO_EXCLUDED_PACKAGES = (
     # due to use of generics: https://github.com/go-python/gopy/issues/283
     "stack",
     # nothing depends on performance tests
-    "game/performancetests",
+    f"game{os.sep}performancetests",
 )
-GO_MAIN_PACKAGE = f"{GO_BASE_PACKAGE}/{GO_MAIN_PACKAGE_NAME}"
+GO_MAIN_PACKAGE = f"{GO_BASE_PACKAGE}{os.sep}{GO_MAIN_PACKAGE_NAME}"
 
 
 class BinaryDistribution(setuptools.Distribution):
@@ -45,7 +45,7 @@ class BuildGoCommand(setuptools.Command):
 
     def run(self) -> None:
         go_packages = [
-            f"{GO_NAMESPACE}/{pkg}"
+            f"{GO_NAMESPACE}{os.sep}{pkg}"
             for pkg, _, _ in os.walk(GO_PKG_DIR)
             if pkg[4:] not in GO_EXCLUDED_PACKAGES
         ][1:]
