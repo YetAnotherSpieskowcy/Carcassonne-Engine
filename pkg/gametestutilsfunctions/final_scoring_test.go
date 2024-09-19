@@ -1,9 +1,10 @@
-package game
+package gametestutilsfunctions
 
 import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
@@ -42,7 +43,7 @@ func TestFinalScoreRoad(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -98,7 +99,7 @@ func TestFinalScoreMultipleRoads(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -145,7 +146,7 @@ func TestFinalScoreMonastery(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -196,7 +197,7 @@ func TestFinalScoreMonasteries(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -247,7 +248,7 @@ func TestFinalScoreCity(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -299,7 +300,7 @@ func TestFinalScoreCities(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -350,7 +351,7 @@ func TestFinalScoreField(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -415,7 +416,7 @@ func TestFinalScoreFields1(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -476,7 +477,7 @@ func TestFinalScoreFields2(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -567,7 +568,7 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -637,7 +638,7 @@ func TestFinalScoreMultipleRoads123(t *testing.T) {
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil, 2)
+	game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

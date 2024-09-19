@@ -1,9 +1,10 @@
-package game
+package gametestutilsfunctions
 
 import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
@@ -19,7 +20,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 	minitileSet := tilesets.OrderedMiniTileSet2()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
-	game, err := NewFromDeck(deck, nil, 4)
+	game, err := game.NewFromDeck(deck, nil, 4)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -34,7 +35,7 @@ func TestCheckMeeplesAndScore(t *testing.T) {
 	minitileSet := tilesets.OrderedMiniTileSet2()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
-	game, err := NewFromDeck(deck, nil, 4)
+	game, err := game.NewFromDeck(deck, nil, 4)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -47,7 +48,7 @@ func TestVerifyMeepleExistence(t *testing.T) {
 	minitileSet := tilesets.OrderedMiniTileSet2()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
-	game, err := NewFromDeck(deck, nil, 4)
+	game, err := game.NewFromDeck(deck, nil, 4)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

@@ -7,6 +7,7 @@ import (
 	gameMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/gametestutilsfunctions"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
@@ -75,10 +76,10 @@ func Test2PlayerFullGame(t *testing.T) {
 */
 func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(0, 1)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.City}, true, 1)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.City}, true, 1)
 
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.City, false, 1) // removed meeple
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{7, 7}, 1)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.City, false, 1) // removed meeple
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{7, 7}, 1)
 }
 
 // road turn
@@ -95,10 +96,10 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 1)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road}, true, 2)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road}, true, 2)
 
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Left, feature.Road, true, 2)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{7, 6}, 2)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Left, feature.Road, true, 2)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{7, 6}, 2)
 }
 
 // road turn
@@ -117,13 +118,13 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 0)
 
 	// try illegal turn first (put meeple on a road)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road}, false, 3)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road}, false, 3)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.TopLeftEdge, FeatureType: feature.Field}, true, 3)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.TopLeftEdge, FeatureType: feature.Field}, true, 3)
 
-	gameMod.VerifyMeepleExistence(t, game, pos, side.TopLeftEdge, feature.Field, true, 3)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 6}, 3)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.TopLeftEdge, feature.Field, true, 3)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 6}, 3)
 }
 
 // T cross road
@@ -142,13 +143,13 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 0)
 
 	// try illegal turn first (put meeple on a road)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road}, false, 4)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road}, false, 4)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 4)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 4)
 
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true, 4)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 5}, 4)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true, 4)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 0}, []uint8{6, 5}, 4)
 }
 
 // monastery with single road
@@ -171,14 +172,14 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, -1)
 
 	// try illegal turn first (put meeple on a road)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road}, false, 5)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road}, false, 5)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery}, true, 5)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery}, true, 5)
 
-	gameMod.VerifyMeepleExistence(t, game, position.New(-1, 0), side.Bottom, feature.Road, false, 5)
-	gameMod.VerifyMeepleExistence(t, game, pos, side.NoSide, feature.Monastery, true, 5)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 6}, 5)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, position.New(-1, 0), side.Bottom, feature.Road, false, 5)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.NoSide, feature.Monastery, true, 5)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 6}, 5)
 
 }
 
@@ -199,10 +200,10 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, -1)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City}, true, 6)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City}, true, 6)
 
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 6)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 5}, 6)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 6)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 2}, []uint8{5, 5}, 6)
 }
 
 // Two city edges not connected
@@ -226,14 +227,14 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, -1)
 
 	// try illegal turn first (put meeple on a city)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.City}, false, 7)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.City}, false, 7)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City}, true, 7)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City}, true, 7)
 
-	gameMod.VerifyMeepleExistence(t, game, position.New(1, -1), side.Right, feature.City, false, 7) // removed meeple
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 7)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 6}, []uint8{4, 6}, 7)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, position.New(1, -1), side.Right, feature.City, false, 7) // removed meeple
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 7)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 6}, []uint8{4, 6}, 7)
 }
 
 // straight road
@@ -255,10 +256,10 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 func checkEightthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 1)
 
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 8)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 8)
 
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true, 8)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 6}, []uint8{4, 5}, 8)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true, 8)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 6}, []uint8{4, 5}, 8)
 }
 
 // T cross road
@@ -282,14 +283,14 @@ func checkNinethTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 1)
 
 	// try illegal turn first (put meeple on a road)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road}, false, 9)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road}, false, 9)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.TopRightEdge, FeatureType: feature.Field}, true, 9)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.TopRightEdge, FeatureType: feature.Field}, true, 9)
 
-	gameMod.VerifyMeepleExistence(t, game, position.New(1, 1), side.Left, feature.Road, false, 9) // removed meeple
-	gameMod.VerifyMeepleExistence(t, game, pos, side.TopRightEdge, feature.Field, true, 9)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{4, 12}, []uint8{3, 6}, 9)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, position.New(1, 1), side.Left, feature.Road, false, 9) // removed meeple
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.TopRightEdge, feature.Field, true, 9)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{4, 12}, []uint8{3, 6}, 9)
 }
 
 // Two city edges not connected
@@ -313,11 +314,11 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, -1)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City}, true, 10)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City}, true, 10)
 
-	gameMod.VerifyMeepleExistence(t, game, position.New(2, -1), side.Right, feature.City, false, 10) // removed meeple
-	gameMod.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 10)
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 10)
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, position.New(2, -1), side.Right, feature.City, false, 10) // removed meeple
+	gametestutilsfunctions.VerifyMeepleExistence(t, game, pos, side.Right, feature.City, true, 10)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 10)
 }
 
 // road turn
@@ -339,12 +340,12 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 0)
 
 	// try illegal turn first (put meeple on a field)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field}, false, 11)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field}, false, 11)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.NoneMeeple(), true, 11)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.NoneMeeple(), true, 11)
 
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 11)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 11)
 }
 
 // straight road
@@ -365,12 +366,12 @@ func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 0)
 
 	// try illegal turn first (put meeple on a field)
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field}, false, 12)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field}, false, 12)
 
 	// normal correct turn
-	gameMod.MakeTurnValidCheck(game, t, pos, gameMod.NoneMeeple(), true, 12)
+	gametestutilsfunctions.MakeTurnValidCheck(game, t, pos, gametestutilsfunctions.NoneMeeple(), true, 12)
 
-	gameMod.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 12)
+	gametestutilsfunctions.CheckMeeplesAndScore(game, t, []uint32{8, 12}, []uint8{4, 5}, 12)
 }
 
 /* player 1 scores additional 12 points:
