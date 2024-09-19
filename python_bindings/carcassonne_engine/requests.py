@@ -16,8 +16,6 @@ __all__ = (
     "GetMidGameScoreResponse",
 )
 
-from .placed_tile import PlacedTile
-
 
 class BaseResponse:
     """
