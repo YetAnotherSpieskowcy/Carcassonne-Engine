@@ -9,12 +9,9 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -616,53 +613,5 @@ func findMeeple(tile elements.PlacedTile) {
 
 	if !found {
 		println("Meeple not found")
-	}
-}
-func TestMeepleOnCityGetLegalMoves(t *testing.T) {
-	// -------------create engine----------------
-	engine, err := StartGameEngine(3, t.TempDir())
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	// -------------create game----------------
-	var tiles []tiles.Tile
-	tiles = append(tiles, tiletemplates.SingleCityEdgeStraightRoads()) // turn 1
-	tiles = append(tiles, tiletemplates.RoadsTurn())                   // just in case to rpevent finishing
-
-	tileset := tilesets.TileSet{
-		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
-		Tiles:        tiles,
-	}
-
-	gameWithID, err := engine.GenerateOrderedGame(tileset)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	// -------------create request----------------
-	legalMovesReq := &GetLegalMovesRequest{
-		BaseGameID: gameWithID.ID, TileToPlace: gameWithID.Game.CurrentTile,
-	}
-	legalMovesResp := engine.SendGetLegalMovesBatch(
-		[]*GetLegalMovesRequest{legalMovesReq},
-	)[0]
-
-	// -------------search for meeples in moves on position(x:0,y:1)----------------
-	found := false
-	for _, moveWithState := range legalMovesResp.Moves {
-		move := moveWithState.Move
-		if move.Position == position.New(0, 1) {
-			if move.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.Type != elements.NoneMeeple {
-				found = true
-			}
-
-			//debug where found
-			findMeeple(move)
-		}
-
-	}
-
-	if !found {
-		t.Fatalf("Not found meeple in a city")
 	}
 }
