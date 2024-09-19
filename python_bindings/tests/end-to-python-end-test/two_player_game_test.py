@@ -1,5 +1,5 @@
 # flake8: noqa ascci drawing makes a lot errors
-# mypy: ignore-errors drawing makes a lot errors
+# mypy: ignore-errors
 """"""
 
 """
