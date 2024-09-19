@@ -1,7 +1,6 @@
 from typing import NamedTuple
 
 from carcassonne_engine import GameEngine, SerializedGame
-
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
@@ -20,21 +19,27 @@ class TurnParams(NamedTuple):
     side: Side
     featureType: FeatureType
 
+
 def find_meeple_in_placed_tile(ptile: PlacedTile):
     for feature in ptile._go_obj.Features:
         if feature.Meeple.Type != 0:
-            print("Meeple on side: " + str(feature.Sides) + " feature type: " + str(feature.FeatureType))
+            print(
+                "Meeple on side: "
+                + str(feature.Sides)
+                + " feature type: "
+                + str(feature.FeatureType)
+            )
             return
 
-
     print("Meeple not on tile")
+
 
 def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> PlacedTile:
     for move in moves:
         # if exact placement
         if (
-                move.move.to_tile().exact_equals(turnParams.tile)
-                and move.move.position == turnParams.pos
+            move.move.to_tile().exact_equals(turnParams.tile)
+            and move.move.position == turnParams.pos
         ):
             if turnParams.meepleType == MeepleType.NoneMeeple:
                 meepleExists = False
@@ -50,7 +55,8 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
                 find_meeple_in_placed_tile(move.move)
                 if (
                     move.move._go_obj.GetPlacedFeatureAtSide(
-                        sideToCheck=turnParams.side.value, featureType=turnParams.featureType.value
+                        sideToCheck=turnParams.side.value,
+                        featureType=turnParams.featureType.value,
                     ).Meeple.Type
                     == turnParams.meepleType
                 ):
@@ -60,7 +66,7 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 
 
 def make_turn(
-        engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
+    engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
 ) -> (int, SerializedGame):
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(

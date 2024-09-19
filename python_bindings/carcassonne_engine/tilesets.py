@@ -54,8 +54,10 @@ def standard_tile_set() -> TileSet:
 def mini_tile_set() -> TileSet:
     return TileSet(_go_tilesets.MiniTileSet())
 
+
 def ordered_mini_tile_set1() -> TileSet:
     return TileSet(_go_tilesets.OrderedMiniTileSet1())
+
 
 def ordered_mini_tile_set2() -> TileSet:
     return TileSet(_go_tilesets.OrderedMiniTileSet2())

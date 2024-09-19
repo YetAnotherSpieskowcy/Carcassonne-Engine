@@ -48,7 +48,7 @@
 import logging
 from pathlib import Path
 
-from utils import make_turn, TurnParams, check_points, check_final_points
+from utils import TurnParams, check_final_points, check_points, make_turn
 
 from carcassonne_engine import GameEngine, SerializedGame, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
@@ -56,7 +56,6 @@ from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
 from carcassonne_engine.models import Position
 from carcassonne_engine.tilesets import mini_tile_set
-
 
 log = logging.getLogger(__name__)
 

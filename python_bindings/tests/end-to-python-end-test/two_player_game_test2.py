@@ -36,7 +36,6 @@ from carcassonne_engine.models import Position
 |               .....
 """
 import logging
-
 from pathlib import Path
 
 import pytest
