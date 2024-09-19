@@ -14,6 +14,15 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
+func validateScores(game *Game, expectedScores []uint32, t *testing.T) {
+	report := game.GetMidGameScore()
+	for i := range 2 {
+		if report.ReceivedPoints[elements.ID(i+1)] != expectedScores[i] {
+			t.Fatalf("Player %d mid game score incorrect. Expected %d, got: %d", i+1, expectedScores[i], report.ReceivedPoints[elements.ID(i+1)])
+		}
+	}
+}
+
 /*
 |            -1   0    1
 |               | @ |
@@ -53,43 +62,19 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	var expectedScores []uint32
 	// first turn
 	makeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
-	report := game.GetMidGameScore()
-	expectedScores = []uint32{2, 0}
-	for i := range 2 {
-		if report.ReceivedPoints[elements.ID(i+1)] != expectedScores[i] {
-			t.Fatalf("Player %d mid game score incorrect. Expected %d, got: %d", i+1, expectedScores[i], report.ReceivedPoints[elements.ID(i+1)])
-		}
-	}
+	validateScores(game, []uint32{2, 0}, t)
 
 	// second turn
 	makeTurn(game, t, position.New(-1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
-	report = game.GetMidGameScore()
-	expectedScores = []uint32{2, 3}
-	for i := range 2 {
-		if report.ReceivedPoints[elements.ID(i+1)] != expectedScores[i] {
-			t.Fatalf("Player %d mid game score incorrect. Expected %d, got: %d", i+1, expectedScores[i], report.ReceivedPoints[elements.ID(i+1)])
-		}
-	}
+	validateScores(game, []uint32{2, 3}, t)
 
 	// third turn
 	makeTurn(game, t, position.New(-2, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
-	report = game.GetMidGameScore()
-	expectedScores = []uint32{2, 4}
-	for i := range 2 {
-		if report.ReceivedPoints[elements.ID(i+1)] != expectedScores[i] {
-			t.Fatalf("Player %d mid game score incorrect. Expected %d, got: %d", i+1, expectedScores[i], report.ReceivedPoints[elements.ID(i+1)])
-		}
-	}
+	validateScores(game, []uint32{2, 4}, t)
 
 	// fourth turn
 	makeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
-	report = game.GetMidGameScore()
-	expectedScores = []uint32{6, 5}
-	for i := range 2 {
-		if report.ReceivedPoints[elements.ID(i+1)] != expectedScores[i] {
-			t.Fatalf("Player %d mid game score incorrect. Expected %d, got: %d", i+1, expectedScores[i], report.ReceivedPoints[elements.ID(i+1)])
-		}
-	}
+	validateScores(game, []uint32{6, 5}, t)
 
 	// finalize
 	expectedScores = []uint32{6, 5}

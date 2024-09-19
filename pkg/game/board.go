@@ -614,16 +614,18 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile, forceScore bool) 
 	return scoreReport
 }
 
-func (board *board) ScoreFinalMeeples() elements.ScoreReport {
+func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 	meeplesReport := elements.NewScoreReport()
 
 	// score cities first (because they have their own manager)
 	meeplesReport.Join(board.cityManager.ScoreCities(true))
 
-	// remove city meeples from board
-	for _, returnedMeeples := range meeplesReport.ReturnedMeeples {
-		for _, meeple := range returnedMeeples {
-			board.RemoveMeeple(meeple.Position)
+	if final {
+		// remove city meeples from board
+		for _, returnedMeeples := range meeplesReport.ReturnedMeeples {
+			for _, meeple := range returnedMeeples {
+				board.RemoveMeeple(meeple.Position)
+			}
 		}
 	}
 
@@ -644,40 +646,12 @@ func (board *board) ScoreFinalMeeples() elements.ScoreReport {
 				}
 			}
 
-			// remove meeples from board
-			for _, returnedMeeples := range miniReport.ReturnedMeeples {
-				for _, meeple := range returnedMeeples {
-					board.RemoveMeeple(meeple.Position)
-				}
-			}
-			meeplesReport.Join(miniReport)
-		}
-	}
-
-	return meeplesReport
-}
-
-func (board *board) ScoreNotFinalMeeples() elements.ScoreReport {
-	meeplesReport := elements.NewScoreReport()
-
-	// score cities first (because they have their own manager)
-	meeplesReport.Join(board.cityManager.ScoreCities(true))
-
-	// score meeples left on the board (fields, monasteries, roads)
-	for _, pTile := range board.Tiles() {
-		for _, feat := range pTile.Features {
-			miniReport := elements.NewScoreReport()
-			// check for meeple, and check if it wasn't already checked
-			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
-				switch feat.FeatureType {
-				case feature.Road:
-					miniReport.Join(board.ScoreRoads(pTile, true))
-				case feature.Field:
-					field := field.New(feat, pTile.Position)
-					field.Expand(board, board.cityManager)
-					miniReport.Join(field.GetScoreReport())
-				case feature.Monastery:
-					miniReport.Join(board.ScoreMonasteries(pTile, true))
+			if final {
+				// remove meeples from board
+				for _, returnedMeeples := range miniReport.ReturnedMeeples {
+					for _, meeple := range returnedMeeples {
+						board.RemoveMeeple(meeple.Position)
+					}
 				}
 			}
 			meeplesReport.Join(miniReport)

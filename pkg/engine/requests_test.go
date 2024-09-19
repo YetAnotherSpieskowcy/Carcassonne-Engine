@@ -126,6 +126,23 @@ func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenInvalidGameStateIsPas
 	}
 }
 
+func TestGameEngineSendGetMidGameScoresBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
+	engine, err := StartGameEngine(1, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	engine.Close()
+
+	requests := []*GetMidGameScoreRequest{{BaseGameID: 123}}
+	resp := engine.SendGetMidGameScoresBatch(requests)[0]
+	if resp.Err() == nil {
+		t.Fatal("expected error to occur")
+	}
+	if !errors.Is(resp.Err(), ErrCommunicatorClosed) {
+		t.Fatal(resp.Err().Error())
+	}
+}
+
 // --- logic tests ---
 
 func TestGameEngineSendPlayTurnBatchReceivesCorrectResponsesAfterWorkerRequests(t *testing.T) {
@@ -348,46 +365,37 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 	engine.Close()
 }
 
-func TestGameEngineGetMidGameScoreRequestError(t *testing.T) {
-	tile := tiletemplates.MonasteryWithoutRoads()
-	tileSet := tilesets.TileSet{
-		// non-default starting tile - limits number of possible positions to one
-		StartingTile: tiletemplates.XCrossRoad(),
-		Tiles:        []tiles.Tile{tile},
-	}
+func TestSendGetMidGameScoresBatchAtTheStartOfGame(t *testing.T) {
 
-	game, err := game.NewFromTileSet(tileSet, nil)
+	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
-	engine, err := StartGameEngine(1, t.TempDir())
-	if err != nil {
-		t.Fatal(err.Error())
-	}
+	tileSet := tilesets.StandardTileSet()
 
 	gameWithID, err := engine.GenerateGame(tileSet)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+	_, gameID := gameWithID.Game, gameWithID.ID
 
-	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = position.New(1, 0)
-	gameState := GameState{
-		serializedGame: gameWithID.Game,
-		simulatedMoves: []elements.PlacedTile{ptile},
+	midGameScoreReq := &GetMidGameScoreRequest{
+		BaseGameID: gameID,
 	}
 
-	midGameScoreRequest := GetMidGameScoreRequest{
-		BaseGameID:   0,
-		StateToCheck: &gameState,
+	midGameScoreResp := engine.SendGetMidGameScoresBatch(
+		[]*GetMidGameScoreRequest{midGameScoreReq},
+	)[0]
+
+	if midGameScoreResp.Err() != nil {
+		t.Fatal(midGameScoreResp.Err().Error())
 	}
 
-	midGameScoreResp := midGameScoreRequest.execute(game)
-
-	if midGameScoreResp.Err() == nil {
-		t.Fatal("Error didn't happen")
+	if midGameScoreResp.Scores[0] != 0 {
+		t.Fatal("Player 0 score not zero")
 	}
 
-	engine.Close()
+	if midGameScoreResp.Scores[1] != 0 {
+		t.Fatal("Player 0 score not zero")
+	}
 }
