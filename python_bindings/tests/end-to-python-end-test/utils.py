@@ -87,7 +87,7 @@ def make_turn(
     play_turn_req = PlayTurnRequest(game_id=game_id, move=move)
     (play_turn_resp,) = engine.send_play_turn_batch([play_turn_req])
     assert play_turn_resp.exception is None
-    assert play_turn_resp.moves is not None
+    assert play_turn_resp.game is not None
 
     return play_turn_resp.game_id, play_turn_resp.game
 
