@@ -385,3 +385,49 @@ func TestGamePlayTurnDoesNotMutateInput(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
 	}
 }
+
+func TestGameGetPlayerById(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	game, err := NewFromTileSet(tileSet, nil, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	player1 := game.GetPlayerByID(elements.ID(1))
+	player2 := game.GetPlayerByID(elements.ID(2))
+
+	// ID
+	if player1.ID() != elements.ID(1) {
+		t.Fatalf("Player1 id not valid expected 1")
+	}
+
+	if player2.ID() != elements.ID(2) {
+		t.Fatalf("Player1 id not valid expected 2")
+	}
+
+	// score
+	if player1.Score() != 0 {
+		t.Fatalf("Player1 score not 0")
+	}
+
+	if player2.Score() != 0 {
+		t.Fatalf("Player2 score not 0")
+	}
+}
+
+func TestGameGetPlayerByIdNotFound(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	game, err := NewFromTileSet(tileSet, nil, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatalf("Found not existing player, panic didn't happen")
+		}
+	}()
+
+	game.GetPlayerByID(elements.ID(10))
+
+}
