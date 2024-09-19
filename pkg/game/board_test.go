@@ -126,8 +126,7 @@ func TestBoardGetLegalMovesForDoesNotIncludeInvalidMeeplePlacements(t *testing.T
 		tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
 	)
 	basePlacement.Position = position.New(0, 2)
-	placementWithMeeple := basePlacement
-	placementWithMeeple.Features = slices.Clone(basePlacement.Features)
+	placementWithMeeple := basePlacement.DeepClone()
 	placementWithMeeple.GetPlacedFeatureAtSide(
 		side.Top, feature.Field,
 	).Meeple = elements.Meeple{Type: elements.NormalMeeple}

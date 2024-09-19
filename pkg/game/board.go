@@ -141,8 +141,7 @@ func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elemen
 
 	for i := range basePlacement.Features {
 		for _, meepleType := range meepleTypes {
-			placement := basePlacement
-			placement.Features = slices.Clone(basePlacement.Features)
+			placement := basePlacement.DeepClone()
 			placement.Features[i].Meeple = elements.Meeple{Type: meepleType}
 			feat := placement.Features[i]
 
