@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
@@ -600,18 +599,4 @@ func TestGenerateOrderedGame(t *testing.T) {
 	}
 
 	engine.Close()
-}
-
-func findMeeple(tile elements.PlacedTile) {
-	found := false
-	for _, feature := range tile.Features {
-		if feature.Meeple.Type != elements.NoneMeeple {
-			fmt.Printf("Found meeple on side: %#v and featuretype: %#v\n", feature.Sides, feature.FeatureType)
-			found = true
-		}
-	}
-
-	if !found {
-		println("Meeple not found")
-	}
 }
