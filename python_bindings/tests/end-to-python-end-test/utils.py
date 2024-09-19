@@ -68,6 +68,10 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 def make_turn(
     engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
 ) -> (int, SerializedGame):
+
+    if game.current_tile is None:
+        return
+
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(
         base_game_id=game_id, tile_to_place=game.current_tile
@@ -75,12 +79,14 @@ def make_turn(
     (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
 
     # find the desired one
+    if legal_moves_resp.moves is None:
+        return
     move = get_placed_tile(legal_moves_resp.moves, turn_params)
 
     # play turn
     play_turn_req = PlayTurnRequest(game_id=game_id, move=move)
     (play_turn_resp,) = engine.send_play_turn_batch([play_turn_req])
-    if turn_params.valid_turn:
+    if play_turn_resp.valid_turn:
         assert play_turn_resp.exception is None
     else:
         assert play_turn_resp.exception is not None
