@@ -29,9 +29,9 @@ def find_meeple_in_placed_tile(ptile: PlacedTile):
                 + " feature type: "
                 + str(feature.FeatureType)
             )
-            return
-
+            return feature.Meeple
     print("Meeple not on tile")
+    return None
 
 
 def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> PlacedTile:
@@ -53,13 +53,12 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
             else:
                 # check if meeple in desired position
                 find_meeple_in_placed_tile(move.move)
-                if (
-                    move.move._go_obj.GetPlacedFeatureAtSide(
-                        sideToCheck=turnParams.side.value,
-                        featureType=turnParams.featureType.value,
-                    ).Meeple.Type
-                    == turnParams.meepleType
-                ):
+                found = find_meeple_in_placed_tile(move.move)
+                feature = move.move._go_obj.GetPlacedFeatureAtSide(
+                    sideToCheck=turnParams.side.value,
+                    featureType=turnParams.featureType.value,
+                )
+                if feature is not None and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value:
                     return move.move
 
     raise KeyError("did not find the specified tile")
@@ -68,7 +67,6 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 def make_turn(
     engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
 ) -> (int, SerializedGame):
-
     if game.current_tile is None:
         return
 
