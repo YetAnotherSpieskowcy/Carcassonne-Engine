@@ -8,7 +8,7 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
 __all__ = ("GameState", "SerializedGame")
 
 from ._bindings.engine import Slice_elements_PlacedTile
-from .placed_tile import Tile
+from .placed_tile import Tile, PlacedTile
 from .player import Player
 from .tilesets import TileSet
 
@@ -74,8 +74,8 @@ class SerializedGame:
         return self._current_tile
 
     @property
-    def valid_tile_placements(self) -> Slice_elements_PlacedTile:
-        return self._valid_tile_placements
+    def valid_tile_placements(self) -> list[PlacedTile]:
+        return [PlacedTile(tile) for tile in self._valid_tile_placements]
 
     @property
     def current_player_id(self) -> int:
@@ -90,8 +90,8 @@ class SerializedGame:
         return self._player_count
 
     @property
-    def tiles(self) -> Slice_elements_PlacedTile:
-        return self._tiles
+    def tiles(self) -> list[PlacedTile]:
+        return [PlacedTile(tile) for tile in self._tiles]
 
     @property
     def tile_set(self) -> TileSet:

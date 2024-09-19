@@ -1,6 +1,6 @@
 from ._bindings import elements as _go_elements  # type: ignore[attr-defined] # no stubs
 
-__all__ = "Player"
+__all__ = ("Player",)
 
 
 class Player:
