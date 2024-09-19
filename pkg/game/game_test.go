@@ -362,7 +362,7 @@ func TestGamePlayTurnDoesNotMutateInput(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
