@@ -9,7 +9,14 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
     tiles as _go_tiles,
 )
 
-__all__ = ("GameState", "PlacedTile", "SerializedGame", "Tile")
+__all__ = (
+    "GameState",
+    "Tile",
+    "SerializedGame",
+    "SerializedGameWithID",
+    "Position",
+    "PlacedTile",
+)
 
 
 class GameState:
@@ -96,9 +103,6 @@ class SerializedGame:
 class SerializedGameWithID(NamedTuple):
     """
     A serialized game consisting of its ID and serialized state.
-
-    This class is not meant to be instantiated by users directly
-    and should be considered read-only.
 
     The instances of this class are provided by the `GameEngine` objects.
     """
