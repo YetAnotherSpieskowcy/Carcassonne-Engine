@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"reflect"
 	"slices"
 	"testing"
@@ -505,5 +506,80 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	}
 	if !reflect.DeepEqual(report, expectedReport) {
 		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expectedReport, report)
+	}
+}
+
+/*
+Test if meeples are counter multiple times. They shouldn't be!
+
+		board:
+	     0  1  2  3  4  5  6  7
+
+
+		 1  2  3  4  5  6  7  D       <- cities!
+
+		.V.   \ /\ /\ /\ /\ /
+		-0-   -8M-B--9M-C--AM
+		...   ...............
+*/
+func TestScoreNotFinalMeeplesOnSameFeature(t *testing.T) {
+	// define tileSlice
+	tileSlice := []elements.PlacedTile{}
+	for range 7 {
+		tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield()))
+	}
+	for range 5 {
+		tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.SingleCityEdgeStraightRoads()))
+	}
+	tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield()))
+
+	// set positions
+	for i := range 7 {
+		tileSlice[i].Position = position.New(int16(i), 1)
+	}
+	for i := range 3 {
+		tileSlice[i+7].Position = position.New(int16(2*i+2), 0)
+	}
+	for i := range 2 {
+		tileSlice[i+7+3].Position = position.New(int16(2*i+3), 0)
+	}
+	tileSlice[7+5].Position = position.New(7, 0)
+
+	// add meeples
+	for i := range 3 {
+		fmt.Printf("%#v\n", i+7+1)
+		tileSlice[i+7].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = elements.Meeple{
+			Type:     elements.NormalMeeple,
+			PlayerID: elements.ID(1),
+		}
+	}
+
+	// create board
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{}
+	for _, tile := range tileSlice {
+		tileSet.Tiles = append(tileSet.Tiles, elements.ToTile(tile))
+	}
+
+	boardInterface := NewBoard(tileSet)
+	board := boardInterface.(*board)
+
+	// play all turns but one
+	for i, tile := range tileSlice[:len(tileSlice)-1] {
+		_, err := board.PlaceTile(tile)
+		if err != nil {
+			fmt.Printf("Tile: %#v\n", tile)
+			t.Fatalf("error placing tile number: %#v: %#v", i+1, err)
+		}
+	}
+
+	report := board.ScoreMeeples(false)
+	expected := uint32(5)
+	if report.ReceivedPoints[elements.ID(1)] != expected {
+		if report.ReceivedPoints[elements.ID(1)] == expected*3 {
+			t.Fatalf("Road was scored for each meeple!")
+		} else {
+			t.Fatalf("Wrong amount of points while scoring roads: %#v, expected: %#v", report.ReceivedPoints[elements.ID(1)], expected)
+		}
 	}
 }

@@ -614,6 +614,9 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile, forceScore bool) 
 	return scoreReport
 }
 
+/*
+Final will remove meeples from board
+*/
 func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 	meeplesReport := elements.NewScoreReport()
 
@@ -633,7 +636,7 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 	for _, pTile := range board.Tiles() {
 		for _, feat := range pTile.Features {
 			miniReport := elements.NewScoreReport()
-			if feat.Meeple.PlayerID != 0 {
+			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
 					miniReport.Join(board.ScoreRoads(pTile, true))
