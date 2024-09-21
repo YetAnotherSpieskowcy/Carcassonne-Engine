@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from typing import Self
 
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
@@ -29,6 +30,10 @@ class TileSet:
 
     def __len__(self) -> int:
         return len(self._go_obj.Tiles) + 1
+
+    def __iter__(self) -> Iterator[Tile]:
+        for go_tile in self._go_obj.Tiles:
+            yield Tile(go_tile)
 
     @classmethod
     def from_tiles(cls, tiles: list[Tile], *, starting_tile: Tile) -> Self:
