@@ -460,6 +460,7 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicInWorker(t *testing
 	if err != nil {
 		t.Fatal(err.Error())
 	}
+
 	requestCount := 5
 	requests := make([]Request, 0, requestCount)
 	for range requestCount {
