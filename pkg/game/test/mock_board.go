@@ -65,6 +65,7 @@ func (board *BoardMock) RemoveMeeple(pos position.Position) {
 	_ = pos
 }
 
-func (board *BoardMock) ScoreMeeples(_ bool) elements.ScoreReport {
+func (board *BoardMock) ScoreMeeples(final bool) elements.ScoreReport {
+	_ = final
 	return elements.NewScoreReport()
 }
