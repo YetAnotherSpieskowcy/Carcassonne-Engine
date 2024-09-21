@@ -512,26 +512,31 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 /*
 Test if meeples are counter multiple times. They shouldn't be!
 
-		board:
-	     0  1  2  3  4  5  6  7
+	board:
 
+|            0  1  2  3  4  5  6  7 -> X
++-----------------------------------
+|
+|           ........................
+|1          .1..2..3..4..5..6..7..D.
+|           ........................
+|           ...   ................
+|0          -0-   -8M-B--9M-C--AM
+|           ...   ...............
+V
 
-		 1  2  3  4  5  6  7  D       <- cities!
-
-		.V.   \ /\ /\ /\ /\ /
-		-0-   -8M-B--9M-C--AM
-		...   ...............
+Y
 */
 func TestScoreNotFinalMeeplesOnSameFeature(t *testing.T) {
 	// define tileSlice
 	tileSlice := []elements.PlacedTile{}
 	for range 7 {
-		tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield()))
+		tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.TestOnlyField()))
 	}
 	for range 5 {
-		tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.SingleCityEdgeStraightRoads()))
+		tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.StraightRoads()))
 	}
-	tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield()))
+	tileSlice = append(tileSlice, elements.ToPlacedTile(tiletemplates.TestOnlyField()))
 
 	// set positions
 	for i := range 7 {
@@ -547,7 +552,6 @@ func TestScoreNotFinalMeeplesOnSameFeature(t *testing.T) {
 
 	// add meeples
 	for i := range 3 {
-		fmt.Printf("%#v\n", i+7+1)
 		tileSlice[i+7].GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = elements.Meeple{
 			Type:     elements.NormalMeeple,
 			PlayerID: elements.ID(1),
@@ -556,6 +560,7 @@ func TestScoreNotFinalMeeplesOnSameFeature(t *testing.T) {
 
 	// create board
 	tileSet := tilesets.StandardTileSet()
+	tileSet.StartingTile = tiletemplates.StraightRoads()
 	tileSet.Tiles = []tiles.Tile{}
 	for _, tile := range tileSlice {
 		tileSet.Tiles = append(tileSet.Tiles, elements.ToTile(tile))
