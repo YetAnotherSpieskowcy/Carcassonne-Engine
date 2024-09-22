@@ -9,6 +9,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -397,5 +399,75 @@ func TestSendGetMidGameScoresBatchAtTheStartOfGame(t *testing.T) {
 
 	if midGameScoreResp.Scores[1] != 0 {
 		t.Fatal("Player 0 score not zero")
+	}
+}
+
+func TestSendGetMidGameScoresBatchAtMidGame(t *testing.T) {
+	// --------- setup  game -------------
+	engine, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	tileSet := tilesets.TileSet{
+		Tiles: []tiles.Tile{
+			tiletemplates.FourCityEdgesConnectedShield(),
+			tiletemplates.StraightRoads(),
+			tiletemplates.StraightRoads(),
+		},
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+	}
+
+	gameWithID, err := engine.GenerateOrderedGame(tileSet)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	gameState, gameID := gameWithID.Game, gameWithID.ID
+
+	// --------- play two turns -------------
+	ptile := elements.ToPlacedTile(gameState.CurrentTile)
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{PlayerID: elements.ID(1), Type: elements.NormalMeeple}
+	playTurn1 := []*PlayTurnRequest{
+		{
+			GameID: gameID,
+			Move:   ptile,
+		},
+	}
+	resp := engine.SendPlayTurnBatch(playTurn1)[0]
+	gameState, gameID = resp.Game, resp.GameID()
+
+	ptile = elements.ToPlacedTile(gameState.CurrentTile)
+	ptile.Position = position.New(1, 0)
+	ptile.GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{PlayerID: elements.ID(2), Type: elements.NormalMeeple}
+	playTurn2 := []*PlayTurnRequest{
+		{
+			GameID: gameID,
+			Move:   ptile,
+		},
+	}
+	resp = engine.SendPlayTurnBatch(playTurn2)[0]
+	gameState, gameID = resp.Game, resp.GameID()
+
+	// --------- check scores -------------
+	midGameScoreReq := &GetMidGameScoreRequest{
+		BaseGameID: gameID,
+	}
+
+	midGameScoreResp := engine.SendGetMidGameScoresBatch(
+		[]*GetMidGameScoreRequest{midGameScoreReq},
+	)[0]
+
+	if midGameScoreResp.Err() != nil {
+		t.Fatal(midGameScoreResp.Err().Error())
+	}
+
+	expected := uint32(3)
+	if midGameScoreResp.Scores[1] != expected {
+		t.Fatalf("Player 1 score: %#v, expected: %#v", midGameScoreResp.Scores[1], expected)
+	}
+
+	expected = uint32(2)
+	if midGameScoreResp.Scores[2] != expected {
+		t.Fatalf("Player 2 score: %#v, expected: %#v", midGameScoreResp.Scores[2], expected)
 	}
 }
