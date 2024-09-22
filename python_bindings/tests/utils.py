@@ -23,30 +23,31 @@ class TurnParams(NamedTuple):
 def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> PlacedTile:
     for move in moves:
         # if exact placement
-        if (
+        if not (
             move.move.to_tile().exact_equals(turnParams.tile)
             and move.move.position == turnParams.pos
         ):
-            if turnParams.meepleType == MeepleType.NoneMeeple:
-                meeple_exists = False
-                # check if there is no meeple on a tile
-                for feature in move.move._go_obj.Features:
-                    if feature.Meeple.Type != MeepleType.NoneMeeple:
-                        meeple_exists = True
-                        break
-                if not meeple_exists:
-                    return move.move
+            continue
+
+        if turnParams.meepleType == MeepleType.NoneMeeple:
+            # check if there is no meeple on a tile
+            for feature in move.move._go_obj.Features:
+                if feature.Meeple.Type != MeepleType.NoneMeeple:
+                    break
             else:
-                # check if meeple in desired position
-                feature = move.move._go_obj.GetPlacedFeatureAtSide(
-                    sideToCheck=turnParams.side.value,
-                    featureType=turnParams.featureType.value,
-                )
-                if (
-                    feature is not None
-                    and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value
-                ):
-                    return move.move
+                return move.move
+            continue
+
+        # check if meeple in desired position
+        feature = move.move._go_obj.GetPlacedFeatureAtSide(
+            sideToCheck=turnParams.side.value,
+            featureType=turnParams.featureType.value,
+        )
+        if (
+            feature is not None
+            and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value
+        ):
+            return move.move
 
     raise KeyError("did not find the specified tile")
 
