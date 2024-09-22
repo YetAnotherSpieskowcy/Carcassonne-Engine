@@ -198,3 +198,50 @@ func TestGetPlayersWithMostMeeplesTwoPlayers(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expectedPlayers, actualplayers)
 	}
 }
+
+func TestMeepleInReportExists(t *testing.T) {
+	report := NewScoreReport()
+	meeple1 := MeepleWithPosition{
+		Meeple: Meeple{
+			Type:     NormalMeeple,
+			PlayerID: 1,
+		},
+		Position: position.New(0, 0),
+	}
+
+	meeple2 := MeepleWithPosition{
+		Meeple: Meeple{
+			Type:     NormalMeeple,
+			PlayerID: 2,
+		},
+		Position: position.New(1, 0),
+	}
+
+	report.ReturnedMeeples = map[ID][]MeepleWithPosition{
+		1: {meeple1},
+		2: {meeple2},
+	}
+
+	if !report.MeepleInReport(meeple1) {
+		t.Fatalf("Meeple1 not found in report!")
+	}
+
+	if !report.MeepleInReport(meeple2) {
+		t.Fatalf("Meeple2 not found in report!")
+	}
+}
+
+func TestMeepleInReportNotExists(t *testing.T) {
+	report := NewScoreReport()
+	dummyMeeple := MeepleWithPosition{
+		Meeple: Meeple{
+			Type:     NormalMeeple,
+			PlayerID: 1,
+		},
+		Position: position.New(0, 0),
+	}
+
+	if report.MeepleInReport(dummyMeeple) {
+		t.Fatalf("Meeple should not be in report!")
+	}
+}

@@ -614,16 +614,21 @@ func (board *board) ScoreRoads(placedTile elements.PlacedTile, forceScore bool) 
 	return scoreReport
 }
 
-func (board *board) ScoreFinalMeeples() elements.ScoreReport {
+/*
+Final will remove meeples from board
+*/
+func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 	meeplesReport := elements.NewScoreReport()
 
 	// score cities first (because they have their own manager)
 	meeplesReport.Join(board.cityManager.ScoreCities(true))
 
-	// remove city meeples from board
-	for _, returnedMeeples := range meeplesReport.ReturnedMeeples {
-		for _, meeple := range returnedMeeples {
-			board.RemoveMeeple(meeple.Position)
+	if final {
+		// remove city meeples from board
+		for _, returnedMeeples := range meeplesReport.ReturnedMeeples {
+			for _, meeple := range returnedMeeples {
+				board.RemoveMeeple(meeple.Position)
+			}
 		}
 	}
 
@@ -631,7 +636,7 @@ func (board *board) ScoreFinalMeeples() elements.ScoreReport {
 	for _, pTile := range board.Tiles() {
 		for _, feat := range pTile.Features {
 			miniReport := elements.NewScoreReport()
-			if feat.Meeple.PlayerID != 0 {
+			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
 					miniReport.Join(board.ScoreRoads(pTile, true))
@@ -644,10 +649,12 @@ func (board *board) ScoreFinalMeeples() elements.ScoreReport {
 				}
 			}
 
-			// remove meeples from board
-			for _, returnedMeeples := range miniReport.ReturnedMeeples {
-				for _, meeple := range returnedMeeples {
-					board.RemoveMeeple(meeple.Position)
+			if final {
+				// remove meeples from board
+				for _, returnedMeeples := range miniReport.ReturnedMeeples {
+					for _, meeple := range returnedMeeples {
+						board.RemoveMeeple(meeple.Position)
+					}
 				}
 			}
 			meeplesReport.Join(miniReport)

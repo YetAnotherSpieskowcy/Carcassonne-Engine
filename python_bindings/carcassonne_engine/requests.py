@@ -11,6 +11,8 @@ __all__ = (
     "GetLegalMovesRequest",
     "GetLegalMovesResponse",
     "MoveWithState",
+    "GetMidGameScoreRequest",
+    "GetMidGameScoreResponse",
 )
 
 
@@ -239,3 +241,60 @@ class MoveWithState:
     def __init__(self, go_obj: _go_engine.MoveWithState) -> None:
         self.move = PlacedTile(go_obj.Move)
         self.state = GameState(go_obj.State)
+
+
+class GetMidGameScoreRequest:
+    """
+    Game engine request for getting points as if the game just finished
+    in the game with specified ID and state.
+    """
+
+    __slots__ = ("_go_obj", "_base_game_id", "_state_to_check")
+
+    def __init__(
+        self, *, base_game_id: int, state_to_check: GameState | None = None
+    ) -> None:
+        if state_to_check is not None:
+            self._go_obj = _go_engine.GetMidGameScoreRequest(
+                BaseGameID=base_game_id,
+                StateToCheck=state_to_check._unwrap(),
+            )
+        else:
+            # gopy bindings don't consider None as Go's nil for pointers
+            self._go_obj = _go_engine.GetMidGameScoreRequest(
+                BaseGameID=base_game_id,
+            )
+        self._base_game_id = base_game_id
+        self._state_to_check = state_to_check
+
+    def _unwrap(self) -> _go_engine.GetMidGameScoreRequest:
+        return self._go_obj
+
+    @property
+    def base_game_id(self) -> int:
+        return self._base_game_id
+
+    @property
+    def state_to_check(self) -> GameState | None:
+        return self._state_to_check
+
+
+class GetMidGameScoreResponse(BaseResponse):
+    """
+    Game engine response for `GetMidGameScoreRequest` instances.
+
+    This class is not meant to be instantiated by users directly
+    and should be considered read-only.
+
+    The instances of this class are provided by the `GameEngine` objects.
+    """
+
+    __slots__ = ("player_scores",)
+
+    def __init__(self, go_obj: _go_engine.GetMidGameScoreResponse) -> None:
+        super().__init__(go_obj)
+        self.player_scores = (
+            {score[0]: score[1] for score in go_obj.Scores}
+            if not self.exception
+            else None
+        )

@@ -3,10 +3,16 @@ from pathlib import Path
 
 import pytest
 from pytest import approx
+from utils import TurnParams, make_turn
 
 from carcassonne_engine import GameEngine, models, tiletemplates
+from carcassonne_engine._bindings.elements import MeepleType
+from carcassonne_engine._bindings.feature import Type as FeatureType
+from carcassonne_engine._bindings.side import Side
+from carcassonne_engine.models import Position
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
+    GetMidGameScoreRequest,
     GetRemainingTilesRequest,
     PlayTurnRequest,
 )
@@ -270,3 +276,66 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
             move_state = resp.moves[move_idx]
             assert expected.exact_equals(move_state.move.to_tile())
             move_idx += 1
+
+
+def test_game_engine_send_get_mid_game_score_batch_at_game_start_returns_zero_scores(
+    tmp_path: Path,
+) -> None:
+    engine = GameEngine(4, tmp_path)
+    tile_set = standard_tile_set()
+
+    game_id, game = engine.generate_game(tile_set)
+
+    mid_game_score_request = GetMidGameScoreRequest(
+        base_game_id=game_id,
+    )
+    (mid_game_score_response,) = engine.send_get_mid_game_score_batch(
+        [mid_game_score_request]
+    )
+
+    assert mid_game_score_response.player_scores == {1: 0, 2: 0}
+
+
+def test_game_engine_send_get_mid_game_score_batch_at_mid_game_returns_expected_scores(
+    tmp_path: Path,
+) -> None:
+    engine = GameEngine(4, tmp_path)
+    tiles = [
+        tiletemplates.four_city_edges_connected_shield(),
+        tiletemplates.straight_roads(),
+        tiletemplates.straight_roads(),
+    ]
+    tile_set = TileSet.from_tiles(
+        tiles=tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
+    )
+
+    game_id, game = engine.generate_ordered_game(tile_set)
+
+    # play turns
+    turn_params = TurnParams(
+        pos=Position(x=0, y=1),
+        tile=tiletemplates.four_city_edges_connected_shield(),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Left,
+        featureType=FeatureType.City,
+    )
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+
+    turn_params = TurnParams(
+        pos=Position(x=1, y=0),
+        tile=tiletemplates.straight_roads(),
+        meepleType=MeepleType.NormalMeeple,
+        side=Side.Left,
+        featureType=FeatureType.Road,
+    )
+    game_id, game = make_turn(engine, game, game_id, turn_params)
+
+    # check scores
+    mid_game_score_request = GetMidGameScoreRequest(
+        base_game_id=game_id,
+    )
+    (mid_game_score_response,) = engine.send_get_mid_game_score_batch(
+        [mid_game_score_request]
+    )
+
+    assert mid_game_score_response.player_scores == {1: 3, 2: 2}

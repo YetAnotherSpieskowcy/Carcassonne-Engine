@@ -288,7 +288,7 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 	}
 
 	// add final score report
-	meeplesReport := game.board.ScoreFinalMeeples()
+	meeplesReport := game.board.ScoreMeeples(true)
 	playerScores.Join(meeplesReport)
 
 	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(playerScores)); err != nil {
@@ -296,4 +296,22 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 	}
 
 	return playerScores, nil
+}
+
+/*
+Calculate points as if game has just finished
+*/
+func (game *Game) GetMidGameScore() elements.ScoreReport {
+	playerScores := elements.NewScoreReport()
+
+	// load scores
+	for _, player := range game.players {
+		playerScores.ReceivedPoints[player.ID()] = player.Score()
+	}
+
+	// add final score report
+	meeplesReport := game.board.ScoreMeeples(false)
+	playerScores.Join(meeplesReport)
+
+	return playerScores
 }
