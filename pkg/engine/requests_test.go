@@ -128,7 +128,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsFailureWhenInvalidGameStateIsPas
 	}
 }
 
-func TestGameEngineSendGetMidGameScoresBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
+func TestGameEngineSendGetMidGameScoreBatchReturnsFailureWhenCommunicatorClosed(t *testing.T) {
 	engine, err := StartGameEngine(1, t.TempDir())
 	if err != nil {
 		t.Fatal(err.Error())
@@ -136,7 +136,7 @@ func TestGameEngineSendGetMidGameScoresBatchReturnsFailureWhenCommunicatorClosed
 	engine.Close()
 
 	requests := []*GetMidGameScoreRequest{{BaseGameID: 123}}
-	resp := engine.SendGetMidGameScoresBatch(requests)[0]
+	resp := engine.SendGetMidGameScoreBatch(requests)[0]
 	if resp.Err() == nil {
 		t.Fatal("expected error to occur")
 	}
@@ -367,7 +367,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 	engine.Close()
 }
 
-func TestGameEngineSendGetMidGameScoresBatchAtGameStartReturnsZeroScores(t *testing.T) {
+func TestGameEngineSendGetMidGameScoreBatchAtGameStartReturnsZeroScores(t *testing.T) {
 
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
@@ -385,7 +385,7 @@ func TestGameEngineSendGetMidGameScoresBatchAtGameStartReturnsZeroScores(t *test
 		BaseGameID: gameID,
 	}
 
-	midGameScoreResp := engine.SendGetMidGameScoresBatch(
+	midGameScoreResp := engine.SendGetMidGameScoreBatch(
 		[]*GetMidGameScoreRequest{midGameScoreReq},
 	)[0]
 
@@ -402,7 +402,7 @@ func TestGameEngineSendGetMidGameScoresBatchAtGameStartReturnsZeroScores(t *test
 	}
 }
 
-func TestGameEngineSendGetMidGameScoresBatchAtMidGameReturnsExpectedScores(t *testing.T) {
+func TestGameEngineSendGetMidGameScoreBatchAtMidGameReturnsExpectedScores(t *testing.T) {
 	// --------- setup  game -------------
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
@@ -453,7 +453,7 @@ func TestGameEngineSendGetMidGameScoresBatchAtMidGameReturnsExpectedScores(t *te
 		BaseGameID: gameID,
 	}
 
-	midGameScoreResp := engine.SendGetMidGameScoresBatch(
+	midGameScoreResp := engine.SendGetMidGameScoreBatch(
 		[]*GetMidGameScoreRequest{midGameScoreReq},
 	)[0]
 

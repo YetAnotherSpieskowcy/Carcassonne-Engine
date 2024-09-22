@@ -158,5 +158,5 @@ class GameEngine:
         go_requests = _go_engine.Slice_Ptr_engine_GetMidGameScoreRequest(
             req._unwrap() for req in concrete_requests
         )
-        go_obj = self._go_game_engine.SendGetMidGameScoresBatch(go_requests)
+        go_obj = self._go_game_engine.SendGetMidGameScoreBatch(go_requests)
         return [requests.GetMidGameScoreResponse(go_resp) for go_resp in go_obj]

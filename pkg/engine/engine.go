@@ -360,7 +360,7 @@ func (engine *GameEngine) SendGetLegalMovesBatch(concreteRequests []*GetLegalMov
 
 // Due to limitations of Python bindings generator with []interface return type,
 // this wraps sendBatch() and limits the return type to only one Response type.
-func (engine *GameEngine) SendGetMidGameScoresBatch(concreteRequests []*GetMidGameScoreRequest) []*GetMidGameScoreResponse {
+func (engine *GameEngine) SendGetMidGameScoreBatch(concreteRequests []*GetMidGameScoreRequest) []*GetMidGameScoreResponse {
 	requests := make([]Request, len(concreteRequests))
 	for i := range concreteRequests {
 		requests[i] = concreteRequests[i]
