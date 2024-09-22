@@ -315,9 +315,7 @@ def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
         side=Side.Left,
         featureType=FeatureType.City,
     )
-    gameWithID = make_turn(engine, game, game_id, turn_params)
-    assert gameWithID is not None
-    game_id, game = gameWithID
+    game_id, game = make_turn(engine, game, game_id, turn_params)
 
     turn_params = TurnParams(
         pos=Position(x=1, y=0),
@@ -326,9 +324,7 @@ def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
         side=Side.Left,
         featureType=FeatureType.Road,
     )
-    gameWithID = make_turn(engine, game, game_id, turn_params)
-    assert gameWithID is not None
-    game_id, game = gameWithID
+    game_id, game = make_turn(engine, game, game_id, turn_params)
 
     # check scores
     mid_game_score_request = GetMidGameScoreRequest(
