@@ -118,7 +118,8 @@ class GameEngine:
         return ret
 
     def delete_games(self, game_ids: list[int]) -> None:
-        self._check_closed()
+        if self.closed:
+            return
         self._go_game_engine.DeleteGames(_go.Slice_int(game_ids))
 
     def send_play_turn_batch(
