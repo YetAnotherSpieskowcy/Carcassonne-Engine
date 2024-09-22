@@ -55,7 +55,7 @@ def make_turn(
     engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
 ) -> Tuple[int, SerializedGame] | None:
     if game.current_tile is None:
-        return
+        return None
 
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(
@@ -65,7 +65,7 @@ def make_turn(
 
     # find the desired one
     if legal_moves_resp.moves is None:
-        return
+        return None
     move = get_placed_tile(legal_moves_resp.moves, turn_params)
 
     # play turn
