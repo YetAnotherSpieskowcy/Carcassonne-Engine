@@ -28,13 +28,13 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
             and move.move.position == turnParams.pos
         ):
             if turnParams.meepleType == MeepleType.NoneMeeple:
-                meepleExists = False
+                meeple_exists = False
                 # check if there is no meeple on a tile
                 for feature in move.move._go_obj.Features:
                     if feature.Meeple.Type != MeepleType.NoneMeeple:
-                        meepleExists = True
+                        meeple_exists = True
                         break
-                if not meepleExists:
+                if not meeple_exists:
                     return move.move
             else:
                 # check if meeple in desired position
@@ -53,9 +53,8 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 
 def make_turn(
     engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
-) -> Tuple[int, SerializedGame] | None:
-    if game.current_tile is None:
-        return
+) -> Tuple[int, SerializedGame]:
+    assert game.current_tile is not None
 
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(
@@ -64,8 +63,7 @@ def make_turn(
     (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
 
     # find the desired one
-    if legal_moves_resp.moves is None:
-        return
+    assert legal_moves_resp.moves is not None
     move = get_placed_tile(legal_moves_resp.moves, turn_params)
 
     # play turn
