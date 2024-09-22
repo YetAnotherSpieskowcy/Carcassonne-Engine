@@ -588,3 +588,29 @@ func TestScoreNotFinalMeeplesOnSameFeature(t *testing.T) {
 		}
 	}
 }
+
+func TestScoreNotFinalMeeplesOnIncompleteCity(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{tiletemplates.TwoCityEdgesUpAndDownConnected()}
+
+	board := NewBoard(tileSet)
+
+	ptile := elements.ToPlacedTile(tileSet.Tiles[0])
+	ptile.Position = position.New(0, 1)
+	ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = elements.Meeple{
+		Type:     elements.NormalMeeple,
+		PlayerID: elements.ID(1),
+	}
+	_, err := board.PlaceTile(ptile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	report := board.ScoreMeeples(false)
+	actual := report.ReceivedPoints[elements.ID(1)]
+	expected := uint32(2)
+
+	if actual != expected {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
