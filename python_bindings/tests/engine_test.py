@@ -278,7 +278,9 @@ def test_game_engine_send_get_legal_moves_batch_returns_all_legal_rotations(
             move_idx += 1
 
 
-def test_mid_game_score_request_at_start(tmp_path: Path) -> None:
+def test_game_engine_send_get_mid_game_scores_batch_at_game_start_returns_zero_scores(
+    tmp_path: Path,
+) -> None:
     engine = GameEngine(4, tmp_path)
     tile_set = standard_tile_set()
 
@@ -294,7 +296,9 @@ def test_mid_game_score_request_at_start(tmp_path: Path) -> None:
     assert mid_game_score_response.player_scores == {1: 0, 2: 0}
 
 
-def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
+def test_game_engine_send_get_mid_game_scores_batch_at_mid_game_returns_expected_scores(
+    tmp_path: Path,
+) -> None:
     engine = GameEngine(4, tmp_path)
     tiles = [
         tiletemplates.four_city_edges_connected_shield(),

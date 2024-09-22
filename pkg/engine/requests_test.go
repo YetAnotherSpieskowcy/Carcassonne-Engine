@@ -367,7 +367,7 @@ func TestGameEngineSendGetLegalMovesBatchReturnsAllLegalRotations(t *testing.T) 
 	engine.Close()
 }
 
-func TestSendGetMidGameScoresBatchAtTheStartOfGame(t *testing.T) {
+func TestGameEngineSendGetMidGameScoresBatchAtGameStartReturnsZeroScores(t *testing.T) {
 
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
@@ -402,7 +402,7 @@ func TestSendGetMidGameScoresBatchAtTheStartOfGame(t *testing.T) {
 	}
 }
 
-func TestSendGetMidGameScoresBatchAtMidGame(t *testing.T) {
+func TestGameEngineSendGetMidGameScoresBatchAtMidGameReturnsExpectedScores(t *testing.T) {
 	// --------- setup  game -------------
 	engine, err := StartGameEngine(4, t.TempDir())
 	if err != nil {
