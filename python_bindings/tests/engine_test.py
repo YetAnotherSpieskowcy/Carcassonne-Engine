@@ -287,7 +287,7 @@ def test_mid_game_score_request_at_start(tmp_path: Path) -> None:
     mid_game_score_request = GetMidGameScoreRequest(
         base_game_id=game_id,
     )
-    (mid_game_score_response,) = engine.send_get_mid_game_score_batch(
+    (mid_game_score_response,) = engine.send_get_mid_game_scores_batch(
         [mid_game_score_request]
     )
 
@@ -330,7 +330,7 @@ def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
     mid_game_score_request = GetMidGameScoreRequest(
         base_game_id=game_id,
     )
-    (mid_game_score_response,) = engine.send_get_mid_game_score_batch(
+    (mid_game_score_response,) = engine.send_get_mid_game_scores_batch(
         [mid_game_score_request]
     )
 

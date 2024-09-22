@@ -151,7 +151,7 @@ class GameEngine:
         go_obj = self._go_game_engine.SendGetLegalMovesBatch(go_requests)
         return [requests.GetLegalMovesResponse(go_resp) for go_resp in go_obj]
 
-    def send_get_mid_game_score_batch(
+    def send_get_mid_game_scores_batch(
         self, concrete_requests: list[requests.GetMidGameScoreRequest]
     ) -> list[requests.GetMidGameScoreResponse]:
         self._check_closed()
