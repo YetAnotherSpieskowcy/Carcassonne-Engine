@@ -5,7 +5,7 @@ import pytest
 from pytest import approx
 from utils import TurnParams, make_turn
 
-from carcassonne_engine import GameEngine, models, tiletemplates, placed_tile
+from carcassonne_engine import GameEngine, models, placed_tile, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
