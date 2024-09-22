@@ -614,3 +614,65 @@ func TestScoreNotFinalMeeplesOnIncompleteCity(t *testing.T) {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
 	}
 }
+
+func TestScoreNotFinalMeeplesOnFieldWithIncompleteCity(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{tiletemplates.StraightRoads()}
+
+	board := NewBoard(tileSet)
+
+	ptile := elements.ToPlacedTile(tileSet.Tiles[0])
+	ptile.Position = position.New(1, 0)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.Field).Meeple = elements.Meeple{
+		Type:     elements.NormalMeeple,
+		PlayerID: elements.ID(1),
+	}
+	_, err := board.PlaceTile(ptile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	report := board.ScoreMeeples(false)
+	actual := report.ReceivedPoints[elements.ID(1)]
+	expected := uint32(0)
+
+	if actual != expected {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
+
+func TestScoreNotFinalMeeplesOnFieldWithCompleteCity(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	tileSet.Tiles = []tiles.Tile{
+		tiletemplates.SingleCityEdgeNoRoads().Rotate(2),
+		tiletemplates.StraightRoads(),
+	}
+
+	board := NewBoard(tileSet)
+
+	ptile := elements.ToPlacedTile(tileSet.Tiles[0])
+	ptile.Position = position.New(0, 1)
+	_, err := board.PlaceTile(ptile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ptile = elements.ToPlacedTile(tileSet.Tiles[1])
+	ptile.Position = position.New(1, 0)
+	ptile.GetPlacedFeatureAtSide(side.Top, feature.Field).Meeple = elements.Meeple{
+		Type:     elements.NormalMeeple,
+		PlayerID: elements.ID(2),
+	}
+	_, err = board.PlaceTile(ptile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	report := board.ScoreMeeples(false)
+	actual := report.ReceivedPoints[elements.ID(2)]
+	expected := uint32(3)
+
+	if actual != expected {
+		t.Fatalf("expected %v, got %v instead", expected, actual)
+	}
+}
