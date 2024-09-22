@@ -20,13 +20,6 @@ class TurnParams(NamedTuple):
     featureType: FeatureType
 
 
-def find_meeple_in_placed_tile(ptile: PlacedTile):
-    for feature in ptile._go_obj.Features:
-        if feature.Meeple.Type != 0:
-            return feature.Meeple
-    return None
-
-
 def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> PlacedTile:
     for move in moves:
         # if exact placement
@@ -45,13 +38,14 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
                     return move.move
             else:
                 # check if meeple in desired position
-                find_meeple_in_placed_tile(move.move)
-                found = find_meeple_in_placed_tile(move.move)
                 feature = move.move._go_obj.GetPlacedFeatureAtSide(
                     sideToCheck=turnParams.side.value,
                     featureType=turnParams.featureType.value,
                 )
-                if feature is not None and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value:
+                if (
+                    feature is not None
+                    and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value
+                ):
                     return move.move
 
     raise KeyError("did not find the specified tile")

@@ -3,13 +3,13 @@ from pathlib import Path
 
 import pytest
 from pytest import approx
+from utils import make_turn, TurnParams
 
 from carcassonne_engine import GameEngine, models, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
-from carcassonne_engine._bindings.side import Side
 from carcassonne_engine._bindings.feature import Type as FeatureType
+from carcassonne_engine._bindings.side import Side
 from carcassonne_engine.models import Position
-from carcassonne_engine.tilesets import TileSet
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
     GetMidGameScoreRequest,
@@ -18,7 +18,6 @@ from carcassonne_engine.requests import (
 )
 from carcassonne_engine.tilesets import TileSet, standard_tile_set
 from carcassonne_engine.utils import format_binary_tile_bits
-from tests.utils import make_turn, TurnParams
 
 log = logging.getLogger(__name__)
 
@@ -294,6 +293,7 @@ def test_mid_game_score_request_at_start(tmp_path: Path) -> None:
 
     assert mid_game_score_response.player_scores == {1: 0, 2: 0}
 
+
 def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
     tiles = [
@@ -301,7 +301,7 @@ def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
         tiletemplates.straight_roads(),
         tiletemplates.straight_roads(),
     ]
-    tile_set = TileSet.from_tiles(tiles=tiles,starting_tile= tiletemplates.single_city_edge_straight_roads())
+    tile_set = TileSet.from_tiles(tiles=tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
 
     game_id, game = engine.generate_ordered_game(tile_set)
 
