@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Tuple
 
 from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine._bindings.elements import MeepleType
@@ -53,7 +53,7 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 
 def make_turn(
     engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
-) -> (int, SerializedGame):
+) -> Tuple[int, SerializedGame] | None:
     if game.current_tile is None:
         return
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 from pytest import approx
-from utils import make_turn, TurnParams
+from utils import TurnParams, make_turn
 
 from carcassonne_engine import GameEngine, models, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
@@ -301,7 +301,9 @@ def test_mid_game_score_request_mid_game(tmp_path: Path) -> None:
         tiletemplates.straight_roads(),
         tiletemplates.straight_roads(),
     ]
-    tile_set = TileSet.from_tiles(tiles=tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
+    tile_set = TileSet.from_tiles(
+        tiles=tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
+    )
 
     game_id, game = engine.generate_ordered_game(tile_set)
 
