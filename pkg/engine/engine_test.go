@@ -59,14 +59,23 @@ func TestFullGame(t *testing.T) {
 	}
 	tileSet := tilesets.StandardTileSet()
 
-	gameWithID, err := engine.GenerateGame(tileSet)
+	gameWithID, err := engine.GenerateOrderedGame(tileSet)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	game, gameID := gameWithID.Game, gameWithID.ID
 
 	t.Logf("before loop: %s\n", time.Now())
-	for i := range len(tileSet.Tiles) {
+	for i, expectedTile := range tileSet.Tiles {
+		if !game.CurrentTile.Equals(expectedTile) {
+			t.Fatalf(
+				"expected %v-th tile to be %#v, got %#v instead",
+				i,
+				expectedTile,
+				game.CurrentTile,
+			)
+		}
+
 		t.Logf(
 			"iteration %v start: %v\n", i, binarytiles.FromTile(game.CurrentTile),
 		)
@@ -98,13 +107,6 @@ func TestFullGame(t *testing.T) {
 		game = playTurnResp.Game
 		gameID = playTurnResp.GameID()
 		t.Logf("iteration %v end: %s\n", i, time.Now())
-
-		if len(game.CurrentTile.Features) == 0 {
-			// number of tiles in the tile set and number of tiles that you actually
-			// get to place can differ, if a tile that's next in the stack happens to
-			// not have any position to place available
-			break
-		}
 	}
 
 	if len(game.CurrentTile.Features) != 0 {

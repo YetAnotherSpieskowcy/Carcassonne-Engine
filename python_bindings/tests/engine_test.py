@@ -20,10 +20,10 @@ def test_full_game(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
     tile_set = standard_tile_set()
 
-    game_id, game = engine.generate_game(tile_set)
+    game_id, game = engine.generate_ordered_game(tile_set)
 
-    for i in range(len(tile_set) - 1):
-        assert game.current_tile is not None
+    for i, expected_tile in enumerate(tile_set):
+        assert game.current_tile == expected_tile
         log.info(
             "iteration %s start: %s",
             i,
@@ -53,12 +53,6 @@ def test_full_game(tmp_path: Path) -> None:
         game = play_turn_resp.game
         game_id = play_turn_resp.game_id
         log.info("iteration %s end", i)
-
-        if game.current_tile is None:
-            # number of tiles in the tile set and number of tiles that you actually
-            # get to place can differ, if a tile that's next in the stack happens to
-            # not have any position to place available
-            break
 
     assert game.current_tile is None
 

@@ -59,9 +59,29 @@ class GameEngine:
         self.close()
 
     def generate_game(self, tileset: TileSet) -> SerializedGameWithID:
+        """Generate a random game from the given tileset."""
         self._check_closed()
         try:
             go_obj = self._go_game_engine.GenerateGame(tileset._unwrap())
+        except RuntimeError as exc:
+            # We want to raise IOError (or its subclasses) or engine-specific
+            # exceptions depending on what error is returned here but since gopy
+            # flattens these, let's just raise generic Exception to not bind ourselves
+            # to a tighter API contract.
+            # TODO: map exceptions once we migrate from gopy to manually-written bindings
+            raise Exception(str(exc)) from None
+        return SerializedGameWithID(go_obj.ID, SerializedGame(go_obj.Game))
+
+    def generate_ordered_game(self, tileset: TileSet) -> SerializedGameWithID:
+        """
+        Generate a game from the given tileset using its defined tile order.
+
+        Usage for games played by an agent is ill-advised - the serialized game reveals
+        the tileset and the order in it will be consistent with stack's order.
+        """
+        self._check_closed()
+        try:
+            go_obj = self._go_game_engine.GenerateOrderedGame(tileset._unwrap())
         except RuntimeError as exc:
             # We want to raise IOError (or its subclasses) or engine-specific
             # exceptions depending on what error is returned here but since gopy

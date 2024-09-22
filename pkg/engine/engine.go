@@ -10,8 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -158,6 +160,22 @@ func (engine *GameEngine) Close() {
 
 // Generate a random game from the given tileset.
 func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGameWithID, error) {
+	deckStack := stack.New(tileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+	return engine.generateGameFromDeck(deck)
+}
+
+// Generate a game from the given tileset using its defined tile order.
+//
+// Usage for games played by an agent is ill-advised - the serialized game reveals
+// the tileset and the order in it will be consistent with stack's order.
+func (engine *GameEngine) GenerateOrderedGame(tileSet tilesets.TileSet) (SerializedGameWithID, error) {
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+	return engine.generateGameFromDeck(deck)
+}
+
+func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWithID, error) {
 	id := engine.nextGameID
 	engine.nextGameID++
 
@@ -167,7 +185,7 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 		return SerializedGameWithID{}, err
 	}
 
-	g, err := game.NewFromTileSet(tileSet, &logger)
+	g, err := game.NewFromDeck(deck, &logger)
 	if err != nil {
 		return SerializedGameWithID{}, err
 	}
