@@ -416,14 +416,14 @@ func TestBoardScoreIncompleteMonastery(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
 		}
 
-		report = board.ScoreMonasteries(tile, false)
+		report = board.scoreMonasteries(tile, false)
 		if !reflect.DeepEqual(report, elements.NewScoreReport()) {
-			t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected %#v, got %#v instead", i, elements.NewScoreReport(), report)
+			t.Fatalf("scoreMonasteries() failed on tile number: %#v. expected %#v, got %#v instead", i, elements.NewScoreReport(), report)
 		}
 	}
 
 	// test forceScore
-	report = board.ScoreMonasteries(tiles[0], true)
+	report = board.scoreMonasteries(tiles[0], true)
 
 	expectedReport := elements.NewScoreReport()
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{
@@ -437,7 +437,7 @@ func TestBoardScoreIncompleteMonastery(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(report, expectedReport) {
-		t.Fatalf("ScoreMonasteries failed when forceScore=true. expected:\n%#v,\ngot:\n%#v instead", expectedReport, report)
+		t.Fatalf("scoreMonasteries() failed when forceScore=true. expected:\n%#v,\ngot:\n%#v instead", expectedReport, report)
 	}
 }
 
@@ -514,9 +514,9 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
 		}
 
-		report = board.ScoreMonasteries(tile, false)
+		report = board.scoreMonasteries(tile, false)
 		if !reflect.DeepEqual(report, elements.NewScoreReport()) {
-			t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected %#v, got %#v instead", i, elements.NewScoreReport(), report)
+			t.Fatalf("scoreMonasteries() failed on tile number: %#v. expected %#v, got %#v instead", i, elements.NewScoreReport(), report)
 		}
 	}
 
@@ -525,7 +525,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error placing tile number: %#v: %#v", 11, err)
 	}
-	report = board.ScoreMonasteries(tiles[11], false)
+	report = board.scoreMonasteries(tiles[11], false)
 	expectedReport := elements.NewScoreReport()
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{
 		1: 9,
@@ -542,7 +542,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 		)},
 	}
 	if !reflect.DeepEqual(report, expectedReport) {
-		t.Fatalf("ScoreMonasteries failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expectedReport, report)
+		t.Fatalf("scoreMonasteries() failed on tile number: %#v. expected:\n%#v,\ngot:\n%#v instead", 11, expectedReport, report)
 	}
 }
 
