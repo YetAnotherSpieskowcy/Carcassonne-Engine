@@ -304,14 +304,20 @@ func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad
 }
 
 func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, error) {
+	err := board.addTileToBoard(tile)
+	if err != nil {
+		return elements.ScoreReport{}, err
+	}
+	return board.checkCompleted(tile), nil
+}
+
+func (board *board) addTileToBoard(tile elements.PlacedTile) error {
 	if board.TileCount() == cap(board.tiles) {
-		return elements.ScoreReport{}, errors.New(
-			"Board's tiles capacity exceeded, logic error?",
-		)
+		return errors.New("Board's tiles capacity exceeded, logic error?")
 	}
 
 	if !board.CanBePlaced(tile) {
-		return elements.ScoreReport{}, elements.ErrInvalidPosition
+		return elements.ErrInvalidPosition
 	}
 
 	setTiles := board.tileSet.Tiles
@@ -321,9 +327,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			return elements.ToTile(tile).Equals(candidate)
 		})
 		if index == -1 {
-			return elements.ScoreReport{}, errors.New(
-				"Placed tile not found in the tile set, logic error?",
-			)
+			return errors.New("Placed tile not found in the tile set, logic error?")
 		}
 		actualIndex += index
 		if !elements.ToTile(board.tiles[actualIndex]).Equals(elements.ToTile(tile)) {
@@ -337,8 +341,8 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	board.updateValidPlacements(tile)
 	board.tiles[actualIndex] = tile
 	board.tilesMap[tile.Position] = tile
-	scoreReport := board.checkCompleted(tile)
-	return scoreReport, nil
+
+	return nil
 }
 
 func (board *board) RemoveMeeple(pos position.Position) {

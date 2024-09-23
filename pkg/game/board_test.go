@@ -411,7 +411,7 @@ func TestBoardScoreIncompleteMonastery(t *testing.T) {
 
 	// place tiles
 	for i, tile := range tiles {
-		_, err := board.PlaceTile(tile)
+		err := board.addTileToBoard(tile)
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
 		}
@@ -509,7 +509,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
-		_, err := board.PlaceTile(tile)
+		err := board.addTileToBoard(tile)
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
 		}
@@ -521,7 +521,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	}
 
 	// place the last tile
-	_, err := board.PlaceTile(tiles[11])
+	err := board.addTileToBoard(tiles[11])
 	if err != nil {
 		t.Fatalf("error placing tile number: %#v: %#v", 11, err)
 	}
