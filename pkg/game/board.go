@@ -83,10 +83,13 @@ func (board board) DeepClone() elements.Board {
 
 	tiles[0] = board.tiles[0]
 	for i, tile := range board.tiles {
-		if tile.Position.X() == 0 && tile.Position.Y() == 0 {
-			continue
+		// `board.tiles` is fixed size vector with space for all placed tiles
+		// but only some are actually real rather than zero values.
+		// Check one of the structure's fields for value that it could not possibly have
+		// i.e. nil slice of features
+		if tile.Features != nil {
+			tiles[i] = tilesMap[tile.Position]
 		}
-		tiles[i] = tilesMap[tile.Position]
 	}
 	board.tiles = tiles
 
