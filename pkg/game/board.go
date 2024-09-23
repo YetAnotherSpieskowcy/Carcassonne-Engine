@@ -337,8 +337,8 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	board.updateValidPlacements(tile)
 	board.tiles[actualIndex] = tile
 	board.tilesMap[tile.Position] = tile
-	scoreReport, err := board.checkCompleted(tile)
-	return scoreReport, err
+	scoreReport := board.checkCompleted(tile)
+	return scoreReport, nil
 }
 
 func (board *board) RemoveMeeple(pos position.Position) {
@@ -371,20 +371,20 @@ func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	}
 }
 
-func (board *board) checkCompleted(
-	//revive:disable-next-line:unused-parameter Until the TODO is finished.
-	tile elements.PlacedTile,
-) (elements.ScoreReport, error) {
-	// TODO for future tasks:
-	// - identify all completed features
-	// - resolve control of the completed features
-	// - award points
+func (board *board) checkCompleted(tile elements.PlacedTile) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
 	scoreReport.Join(board.ScoreRoads(tile, false))
 	scoreReport.Join(board.ScoreMonasteries(tile, false))
-	return scoreReport, nil
+
+	for _, returnedMeeples := range scoreReport.ReturnedMeeples {
+		for _, meeple := range returnedMeeples {
+			board.RemoveMeeple(meeple.Position)
+		}
+	}
+
+	return scoreReport
 }
 
 /*
