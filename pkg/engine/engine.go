@@ -24,9 +24,7 @@ var (
 )
 
 const (
-	inputBufferSize            = 10_000_000
-	childrenCleanupWarnMsg     = "WARN: children of the game with ID %v have not been cleaned up"
-	childrenCleanupWarnFullMsg = childrenCleanupWarnMsg + ": %#v\n"
+	inputBufferSize = 10_000_000
 )
 
 type ExecutionPanicError struct {
@@ -232,15 +230,6 @@ func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
 // Delete games with the given IDs.
 func (engine *GameEngine) DeleteGames(gameIDs []int) {
 	for _, gameID := range gameIDs {
-		if len(engine.childGames[gameID]) != 0 {
-			// since we don't know whether the agent isn't actually using these,
-			// just settle on a warning
-			engine.appLogger.Printf(
-				childrenCleanupWarnFullMsg,
-				gameID,
-				engine.childGames[gameID],
-			)
-		}
 		delete(engine.games, gameID)
 		delete(engine.gameMutexes, gameID)
 		delete(engine.childGames, gameID)
@@ -538,16 +527,6 @@ func (batch *requestBatch) cleanupGames() {
 		_, canRemove := batch.removableGames[gameID]
 		_, canRemoveChildren := batch.parentsWithRemovableChildren[gameID]
 
-		if (canRemove || canRemoveChildren) && len(batch.engine.childGames[gameID]) != 0 {
-			// since we don't know whether the agent isn't actually using these,
-			// just settle on a warning
-			batch.engine.appLogger.Printf(
-				childrenCleanupWarnFullMsg,
-				gameID,
-				batch.engine.childGames[gameID],
-			)
-		}
-
 		if canRemove {
 			delete(batch.engine.games, gameID)
 			delete(batch.engine.gameMutexes, gameID)
@@ -556,6 +535,8 @@ func (batch *requestBatch) cleanupGames() {
 			if parentID != 0 {
 				delete(batch.engine.childGames[parentID], gameID)
 			}
+		} else if canRemoveChildren {
+			delete(batch.engine.childGames, gameID)
 		}
 	}
 }

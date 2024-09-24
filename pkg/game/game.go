@@ -242,23 +242,28 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		return err
 	}
 
-	// Score features and update meeple counts
+	// Score features
 	for playerID, receivedPoints := range scoreReport.ReceivedPoints {
 		player := game.players[playerID-1]
 		player.SetScore(player.Score() + receivedPoints)
 	}
 
+	// Return meeples to the players
 	for playerID, returnedMeeples := range scoreReport.ReturnedMeeples {
 		player := game.players[playerID-1]
 		for _, meeple := range returnedMeeples {
-			// return meeple to player
 			player.SetMeepleCount(
 				meeple.Type,
 				player.MeepleCount(meeple.Type)+1,
 			)
+		}
+	}
 
-			// remove meeple from board
-			game.board.RemoveMeeple(meeple.Position)
+	if !scoreReport.IsEmpty() {
+		if err = game.log.LogEvent(
+			logger.ScoreEvent, logger.NewScoreEntryContent(scoreReport),
+		); err != nil {
+			return err
 		}
 	}
 
@@ -291,7 +296,11 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 	meeplesReport := game.board.ScoreMeeples(true)
 	playerScores.Join(meeplesReport)
 
-	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(playerScores)); err != nil {
+	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(meeplesReport)); err != nil {
+		return playerScores, err
+	}
+
+	if err := game.log.LogEvent(logger.FinalScoreEvent, logger.NewFinalScoreEntryContent(playerScores)); err != nil {
 		return playerScores, err
 	}
 

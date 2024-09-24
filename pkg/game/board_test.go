@@ -17,16 +17,31 @@ import (
 )
 
 func TestBoardDeepClone(t *testing.T) {
-	oldPos := position.New(0, 1)
-	newPos := position.New(0, 2) // just one of new positions
+	oldPos := position.New(0, 2)
+	newPos := position.New(0, 3) // just one of new positions
 	newTile := test.GetTestPlacedTile()
+	newTile.Position = oldPos
+
+	expectedMeeplePos := position.New(0, 1)
+	expectedMeeple := elements.Meeple{
+		PlayerID: 1,
+		Type:     elements.NormalMeeple,
+	}
 
 	original := NewBoard(tilesets.StandardTileSet()).(*board)
-	clone := original.DeepClone().(*board)
-
-	_, err := clone.PlaceTile(newTile)
+	// add a tile with meeple to verify that it's still there on the original later
+	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
+	ptile.Position = expectedMeeplePos
+	ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple = expectedMeeple
+	_, err := original.PlaceTile(ptile)
 	if err != nil {
-		t.Fatal(err.Error())
+		t.Fatal(err)
+	}
+
+	clone := original.DeepClone().(*board)
+	_, err = clone.PlaceTile(newTile)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// --- placeablePositions check ---
@@ -59,6 +74,28 @@ func TestBoardDeepClone(t *testing.T) {
 	cloneTiles := clone.Tiles()
 	if !slices.ContainsFunc(cloneTiles, cmpFunc) {
 		t.Fatalf("expected to find %#v in %#v", newTile, cloneTiles)
+	}
+
+	// check that meeple is still present on the original
+	originalTile, ok := original.GetTileAt(expectedMeeplePos)
+	if !ok {
+		t.Fatalf("expected to find a tile at %#v", expectedMeeplePos)
+	}
+	actual := originalTile.GetPlacedFeatureAtSide(side.Bottom, feature.City)
+	actualMeeple := actual.Meeple
+
+	if expectedMeeple != actualMeeple {
+		t.Fatalf("expected %#v, got %#v instead", expectedMeeple, actualMeeple)
+	}
+	// just to confirm that clone does not have the meeple
+	clonedTile, ok := clone.GetTileAt(expectedMeeplePos)
+	if !ok {
+		t.Fatalf("expected to find a tile at %#v", expectedMeeplePos)
+	}
+
+	clonedMeeple := clonedTile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple
+	if clonedMeeple.Type != elements.NoneMeeple {
+		t.Fatalf("expected %#v to have no meeple", clonedTile)
 	}
 }
 
@@ -374,7 +411,7 @@ func TestBoardScoreIncompleteMonastery(t *testing.T) {
 
 	// place tiles
 	for i, tile := range tiles {
-		_, err := board.PlaceTile(tile)
+		err := board.addTileToBoard(tile)
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
 		}
@@ -472,7 +509,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
-		_, err := board.PlaceTile(tile)
+		err := board.addTileToBoard(tile)
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
 		}
@@ -484,7 +521,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	}
 
 	// place the last tile
-	_, err := board.PlaceTile(tiles[11])
+	err := board.addTileToBoard(tiles[11])
 	if err != nil {
 		t.Fatalf("error placing tile number: %#v: %#v", 11, err)
 	}
