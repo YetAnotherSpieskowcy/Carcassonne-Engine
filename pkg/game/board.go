@@ -306,6 +306,11 @@ func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad
 	return true
 }
 
+// Add a tile to the board and propagate feature completion
+// to other tiles on the board (including meeple removal).
+//
+// Anything not managed by the board, such as players, will need to be updated
+// by the caller.
 func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, error) {
 	err := board.addTileToBoard(tile)
 	if err != nil {
@@ -314,6 +319,8 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	return board.checkCompleted(tile), nil
 }
 
+// Add a tile to the board without propagating feature completion to
+// other tiles on the board or removing meeples.
 func (board *board) addTileToBoard(tile elements.PlacedTile) error {
 	if board.TileCount() == cap(board.tiles) {
 		return errors.New("Board's tiles capacity exceeded, logic error?")
