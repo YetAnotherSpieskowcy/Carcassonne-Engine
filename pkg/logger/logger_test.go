@@ -374,6 +374,14 @@ func TestParseEntries(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
+	expectedFinalScores := elements.NewScoreReport()
+	expectedFinalScores.ReceivedPoints[playerID.ID()] = 6
+	expectedFinalScores.ReceivedPoints[elements.ID(2)] = 3
+	err = log.LogEvent(ScoreEvent, NewFinalScoreEntryContent(expectedFinalScores))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	line, err := buffer.ReadString(byte('\n'))
 	if err != nil {
 		t.Fatal(err.Error())
@@ -441,5 +449,24 @@ func TestParseEntries(t *testing.T) {
 	}
 	if !reflect.DeepEqual(scoreContent.Scores, expectedScores) {
 		t.Fatalf("expected %#v, got %#v instead", expectedScores, scoreContent.Scores)
+	}
+
+	line, err = buffer.ReadString(byte('\n'))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	err = json.Unmarshal([]byte(line), &entryLine)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if entryLine.Event != ScoreEvent {
+		t.Fatalf("expected %#v, got %#v instead", ScoreEvent, entryLine.Event)
+	}
+	finalScoreContent := ParseFinalScoreEntryContent(entryLine.Content)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if !reflect.DeepEqual(finalScoreContent.Scores, expectedFinalScores) {
+		t.Fatalf("expected %#v, got %#v instead", expectedFinalScores, finalScoreContent.Scores)
 	}
 }
