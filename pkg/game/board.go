@@ -3,7 +3,6 @@ package game
 import (
 	"errors"
 	"fmt"
-	"maps"
 	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
@@ -73,9 +72,26 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 func (board board) DeepClone() elements.Board {
 	// note: skipped board.tileSet because TileSet is immutable
 
-	// PlacedTile is not mutated after it's placed
-	board.tiles = slices.Clone(board.tiles)
-	board.tilesMap = maps.Clone(board.tilesMap)
+	tilesMap := map[position.Position]elements.PlacedTile{}
+	tiles := make([]elements.PlacedTile, len(board.tileSet.Tiles)+1)
+
+	for pos, tile := range board.tilesMap {
+		tile = tile.DeepClone()
+		tilesMap[pos] = tile
+	}
+	board.tilesMap = tilesMap
+
+	tiles[0] = board.tiles[0]
+	for i, tile := range board.tiles {
+		// `board.tiles` is fixed size vector with space for all placed tiles
+		// but only some are actually real rather than zero values.
+		// Check one of the structure's fields for value that it could not possibly have
+		// i.e. nil slice of features
+		if tile.Features != nil {
+			tiles[i] = tilesMap[tile.Position]
+		}
+	}
+	board.tiles = tiles
 
 	// Position is immutable
 	board.placeablePositions = slices.Clone(board.placeablePositions)
@@ -290,15 +306,28 @@ func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad
 	return true
 }
 
+// Add a tile to the board and propagate feature completion
+// to other tiles on the board (including meeple removal).
+//
+// Anything not managed by the board, such as players, will need to be updated
+// by the caller.
 func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, error) {
+	err := board.addTileToBoard(tile)
+	if err != nil {
+		return elements.ScoreReport{}, err
+	}
+	return board.checkCompleted(tile), nil
+}
+
+// Add a tile to the board without propagating feature completion to
+// other tiles on the board or removing meeples.
+func (board *board) addTileToBoard(tile elements.PlacedTile) error {
 	if board.TileCount() == cap(board.tiles) {
-		return elements.ScoreReport{}, errors.New(
-			"Board's tiles capacity exceeded, logic error?",
-		)
+		return errors.New("Board's tiles capacity exceeded, logic error?")
 	}
 
 	if !board.CanBePlaced(tile) {
-		return elements.ScoreReport{}, elements.ErrInvalidPosition
+		return elements.ErrInvalidPosition
 	}
 
 	setTiles := board.tileSet.Tiles
@@ -308,9 +337,7 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 			return elements.ToTile(tile).Equals(candidate)
 		})
 		if index == -1 {
-			return elements.ScoreReport{}, errors.New(
-				"Placed tile not found in the tile set, logic error?",
-			)
+			return errors.New("Placed tile not found in the tile set, logic error?")
 		}
 		actualIndex += index
 		if !elements.ToTile(board.tiles[actualIndex]).Equals(elements.ToTile(tile)) {
@@ -324,8 +351,8 @@ func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, e
 	board.updateValidPlacements(tile)
 	board.tiles[actualIndex] = tile
 	board.tilesMap[tile.Position] = tile
-	scoreReport, err := board.checkCompleted(tile)
-	return scoreReport, err
+
+	return nil
 }
 
 func (board *board) RemoveMeeple(pos position.Position) {
@@ -358,20 +385,20 @@ func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 	}
 }
 
-func (board *board) checkCompleted(
-	//revive:disable-next-line:unused-parameter Until the TODO is finished.
-	tile elements.PlacedTile,
-) (elements.ScoreReport, error) {
-	// TODO for future tasks:
-	// - identify all completed features
-	// - resolve control of the completed features
-	// - award points
+func (board *board) checkCompleted(tile elements.PlacedTile) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
 	scoreReport.Join(board.ScoreRoads(tile, false))
 	scoreReport.Join(board.ScoreMonasteries(tile, false))
-	return scoreReport, nil
+
+	for _, returnedMeeples := range scoreReport.ReturnedMeeples {
+		for _, meeple := range returnedMeeples {
+			board.RemoveMeeple(meeple.Position)
+		}
+	}
+
+	return scoreReport
 }
 
 /*

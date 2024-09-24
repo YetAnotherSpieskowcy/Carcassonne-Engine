@@ -71,7 +71,7 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 	// --------------- Placing tile ----------------------
 
 	for i := range 5 {
-		_, err := board.PlaceTile(tiles[i])
+		err := board.addTileToBoard(tiles[i])
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
@@ -184,7 +184,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 
 	for i := range len(tiles) {
 
-		_, err := board.PlaceTile(tiles[i])
+		err := board.addTileToBoard(tiles[i])
 
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v ", i)
@@ -249,7 +249,7 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 
 	// --------------- Placing tile ----------------------
 	for i := range len(tiles) {
-		_, err := board.PlaceTile(tiles[i])
+		err := board.addTileToBoard(tiles[i])
 
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v ", i)
