@@ -10,9 +10,10 @@ import (
 type EventType string
 
 const (
-	StartEvent     EventType = "start"
-	PlaceTileEvent EventType = "place"
-	ScoreEvent     EventType = "score"
+	StartEvent      EventType = "start"
+	PlaceTileEvent  EventType = "place"
+	ScoreEvent      EventType = "score"
+	FinalScoreEvent EventType = "final_score"
 )
 
 type Entry struct {
@@ -81,6 +82,23 @@ func NewScoreEntryContent(scores elements.ScoreReport) ScoreEntryContent {
 
 func ParseScoreEntryContent(entryContent []byte) ScoreEntryContent {
 	var content ScoreEntryContent
+	err := json.Unmarshal(entryContent, &content)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
+type FinalScoreEntryContent struct {
+	Scores elements.ScoreReport `json:"scores"`
+}
+
+func NewFinalScoreEntryContent(scores elements.ScoreReport) FinalScoreEntryContent {
+	return FinalScoreEntryContent{Scores: scores}
+}
+
+func ParseFinalScoreEntryContent(entryContent []byte) FinalScoreEntryContent {
+	var content FinalScoreEntryContent
 	err := json.Unmarshal(entryContent, &content)
 	if err != nil {
 		panic(err)

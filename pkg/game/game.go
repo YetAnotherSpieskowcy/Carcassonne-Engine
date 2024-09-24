@@ -259,6 +259,14 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		}
 	}
 
+	if !scoreReport.IsEmpty() {
+		if err = game.log.LogEvent(
+			logger.ScoreEvent, logger.NewScoreEntryContent(scoreReport),
+		); err != nil {
+			return err
+		}
+	}
+
 	// Pop from the stack after the move.
 	if _, err = game.deck.Next(); err != nil {
 		return err
@@ -288,7 +296,11 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 	meeplesReport := game.board.ScoreMeeples(true)
 	playerScores.Join(meeplesReport)
 
-	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(playerScores)); err != nil {
+	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(meeplesReport)); err != nil {
+		return playerScores, err
+	}
+
+	if err := game.log.LogEvent(logger.FinalScoreEvent, logger.NewFinalScoreEntryContent(playerScores)); err != nil {
 		return playerScores, err
 	}
 
