@@ -409,7 +409,7 @@ func (engine *GameEngine) prepareWorkerInput(
 	gameID := req.gameID()
 	game, ok := engine.games[gameID]
 	if !ok {
-		return workerInput{}, ErrGameNotFound
+		return workerInput{}, fmt.Errorf("%w: %#v", ErrGameNotFound, gameID)
 	}
 	mutex := engine.gameMutexes[gameID]
 	canWrite := req.requiresWrite()
