@@ -183,7 +183,7 @@ func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWi
 		return SerializedGameWithID{}, err
 	}
 
-	g, err := game.NewFromDeck(deck, &logger)
+	g, err := game.NewFromDeck(deck, &logger, 2)
 	if err != nil {
 		return SerializedGameWithID{}, err
 	}

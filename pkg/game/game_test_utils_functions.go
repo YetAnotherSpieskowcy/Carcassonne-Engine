@@ -1,9 +1,8 @@
-package gametestutilsfunctions
+package game
 
 import (
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -24,7 +23,7 @@ func NoneMeeple() MeepleParams {
 	}
 }
 
-func MakeTurn(gamee *game.Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams) {
+func MakeTurn(gamee *Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams) {
 	tile, err := gamee.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -48,7 +47,7 @@ func MakeTurn(gamee *game.Game, t *testing.T, tilePosition position.Position, me
 	}
 }
 
-func MakeTurnValidCheck(gamee *game.Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams, correctMove bool, turnNumber uint) {
+func MakeTurnValidCheck(gamee *Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams, correctMove bool, turnNumber uint) {
 	tile, err := gamee.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -74,7 +73,7 @@ func MakeTurnValidCheck(gamee *game.Game, t *testing.T, tilePosition position.Po
 	}
 }
 
-func CheckMeeplesAndScore(gamee *game.Game, t *testing.T, playerScores []uint32, playerMeeples []uint8, turnNumber uint) {
+func CheckMeeplesAndScore(gamee *Game, t *testing.T, playerScores []uint32, playerMeeples []uint8, turnNumber uint) {
 
 	for i := range len(playerScores) {
 		// load player
@@ -92,7 +91,7 @@ func CheckMeeplesAndScore(gamee *game.Game, t *testing.T, playerScores []uint32,
 	}
 }
 
-func VerifyMeepleExistence(t *testing.T, gamee *game.Game, pos position.Position, side side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
+func VerifyMeepleExistence(t *testing.T, gamee *Game, pos position.Position, side side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
 	board := gamee.GetBoard()
 	placedTile, tileExists := board.GetTileAt(pos)
 	if !tileExists {

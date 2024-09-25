@@ -54,26 +54,26 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	var expectedScores []uint32
 	// first turn
-	makeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	MakeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
 	validateScores(game, []uint32{2, 0}, t)
 
 	// second turn
-	makeTurn(game, t, position.New(-1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	MakeTurn(game, t, position.New(-1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
 	validateScores(game, []uint32{2, 3}, t)
 
 	// third turn
-	makeTurn(game, t, position.New(-2, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	MakeTurn(game, t, position.New(-2, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
 	validateScores(game, []uint32{2, 4}, t)
 
 	// fourth turn
-	makeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
 	validateScores(game, []uint32{6, 5}, t)
 
 	// finalize
