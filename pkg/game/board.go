@@ -312,6 +312,9 @@ func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad
 // Anything not managed by the board, such as players, will need to be updated
 // by the caller.
 func (board *board) PlaceTile(tile elements.PlacedTile) (elements.ScoreReport, error) {
+	// prevent reusing underlying Features slice
+	tile = tile.DeepClone()
+
 	err := board.addTileToBoard(tile)
 	if err != nil {
 		return elements.ScoreReport{}, err
