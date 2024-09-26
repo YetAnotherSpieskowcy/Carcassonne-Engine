@@ -1,9 +1,9 @@
 from ._bindings import elements as _go_elements  # type: ignore[attr-defined] # no stubs
 
-__all__ = ("Player",)
+__all__ = ("SerializedPlayer",)
 
 
-class Player:
+class SerializedPlayer:
     """
     State of the game the request is made for.
 

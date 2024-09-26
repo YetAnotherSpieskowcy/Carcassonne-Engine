@@ -8,7 +8,7 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
 __all__ = ("GameState", "SerializedGame")
 
 from .placed_tile import PlacedTile, Tile
-from .player import Player
+from .player import SerializedPlayer
 from .tilesets import TileSet
 
 
@@ -62,7 +62,7 @@ class SerializedGame:
             self._current_tile = Tile(go_tile_obj)
         self._valid_tile_placements = go_obj.ValidTilePlacements
         self._current_player_id = go_obj.CurrentPlayerID
-        self._players = [Player(x) for x in go_obj.Players]
+        self._players = [SerializedPlayer(x) for x in go_obj.Players]
         self._player_count = go_obj.PlayerCount
         self._tiles = go_obj.Tiles
         self._tile_set = go_obj.TileSet
@@ -81,7 +81,7 @@ class SerializedGame:
         return self._current_player_id
 
     @property
-    def players(self) -> list[Player]:
+    def players(self) -> list[SerializedPlayer]:
         return self._players
 
     @property
