@@ -239,8 +239,6 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		return fmt.Errorf("%w: %#v", elements.ErrWrongTile, currentTile)
 	}
 	player := game.CurrentPlayer()
-	// prevent reusing underlying Features slice
-	move = move.DeepClone()
 
 	// In the class diagram, the `scoreReport` would be returned by
 	// separate `CheckCompleted()` method but it's been abstracted by PlaceTile instead.
