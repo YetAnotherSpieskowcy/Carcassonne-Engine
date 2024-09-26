@@ -5,7 +5,7 @@ import pytest
 from pytest import approx
 from utils import TurnParams, make_turn
 
-from carcassonne_engine import GameEngine, models, placed_tile, tiletemplates
+from carcassonne_engine import GameEngine, models, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
@@ -101,9 +101,7 @@ def test_game_engine_send_batch_receives_correct_responses_after_worker_requests
     requests = [
         PlayTurnRequest(
             game_id=generated_game.id,
-            move=placed_tile.PlacedTile(
-                generated_game.game._go_obj.ValidTilePlacements[0]
-            ),
+            move=generated_game.game.valid_tile_placements[0],
         )
         for generated_game in games
     ]
@@ -127,14 +125,14 @@ def test_game_engine_send_batch_returns_failure_when_game_id_not_found(
 
     successful_req = PlayTurnRequest(
         game_id=game_id,
-        move=placed_tile.PlacedTile(game._go_obj.ValidTilePlacements[0]),
+        move=game.valid_tile_placements[0],
     )
     requests.append(successful_req)
 
     wrong_id = game_id + 2
     failed_req = PlayTurnRequest(
         game_id=wrong_id,
-        move=placed_tile.PlacedTile(game._go_obj.ValidTilePlacements[0]),
+        move=game.valid_tile_placements[0],
     )
     requests.append(failed_req)
 
@@ -163,9 +161,7 @@ def test_game_engine_send_batch_raises_when_communicator_closed(
     requests = [
         PlayTurnRequest(
             game_id=generated_game.id,
-            move=placed_tile.PlacedTile(
-                generated_game.game._go_obj.ValidTilePlacements[0]
-            ),
+            move=generated_game.game.valid_tile_placements[0],
         )
         for generated_game in games
     ]
