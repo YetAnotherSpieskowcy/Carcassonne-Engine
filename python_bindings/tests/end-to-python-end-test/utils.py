@@ -4,7 +4,7 @@ from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
-from carcassonne_engine.models import PlacedTile, Position, Tile
+from carcassonne_engine.placed_tile import PlacedTile, Position, Tile
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
     MoveWithState,
@@ -23,14 +23,9 @@ class TurnParams(NamedTuple):
 def find_meeple_in_placed_tile(ptile: PlacedTile):
     for feature in ptile._go_obj.Features:
         if feature.Meeple.Type != 0:
-            print(
-                "Meeple on side: "
-                + str(feature.Sides)
-                + " feature type: "
-                + str(feature.FeatureType)
-            )
+            print(f"sides: {feature.Sides}, feat type: {feature.FeatureType}")
             return feature.Meeple
-    print("Meeple not on tile")
+    print(f"NONE")
     return None
 
 
@@ -45,15 +40,14 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
                 meepleExists = False
                 # check if there is no meeple on a tile
                 for feature in move.move._go_obj.Features:
-                    if feature.Meeple.Type != MeepleType.NoneMeeple:
+                    if feature.Meeple.Type != MeepleType.NoneMeeple.value:
                         meepleExists = True
                         break
                 if not meepleExists:
                     return move.move
             else:
                 # check if meeple in desired position
-                find_meeple_in_placed_tile(move.move)
-                found = find_meeple_in_placed_tile(move.move)
+                # find_meeple_in_placed_tile(move.move)
                 feature = move.move._go_obj.GetPlacedFeatureAtSide(
                     sideToCheck=turnParams.side.value,
                     featureType=turnParams.featureType.value,
@@ -65,10 +59,8 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
 
 
 def make_turn(
-    engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams
+    engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams, final=False, final_scores=None
 ) -> (int, SerializedGame):
-    if game.current_tile is None:
-        return
 
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(
@@ -87,19 +79,25 @@ def make_turn(
     assert play_turn_resp.exception is None
     assert play_turn_resp.game is not None
 
+    if final:
+        check_final_points(play_turn_resp.final_scores, final_scores)
+
     return play_turn_resp.game_id, play_turn_resp.game
 
 
 def check_points(game: SerializedGame, scores: list[int]):
-    for player in game._go_obj.Players:
-        assert player.Score() == scores[player.ID() - 1], (
-            f"Player:{player.ID()} has {player.Score()} points, should "
-            f"have {scores[player.ID() - 1]}"
+    for player in game.players:
+        assert player.score == scores[player.id - 1], (
+            f"Player:{player.id} has {player.score} points, should "
+            f"have {scores[player.id - 1]}"
         )
     return
 
 
-def check_final_points(scores: list[int]):
-    # there is no engine request for game finalizing
-    # TODO might be similar to check_points function
+def check_final_points(player_scores,scores: dict[int:int]):
+    for id, player_score in player_scores.items():
+        assert player_score == scores[id], (
+            f"Player:{id} has {player_score} points, should "
+            f"have {scores[id]}"
+        )
     return

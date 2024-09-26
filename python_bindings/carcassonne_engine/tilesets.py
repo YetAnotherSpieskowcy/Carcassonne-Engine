@@ -61,3 +61,7 @@ def ordered_mini_tile_set1() -> TileSet:
 
 def ordered_mini_tile_set2() -> TileSet:
     return TileSet(_go_tilesets.OrderedMiniTileSet2())
+
+
+def every_tile_once_tile_set() -> TileSet:
+    return TileSet(_go_tilesets.EveryTileOnceTileSet())

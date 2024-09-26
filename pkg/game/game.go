@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -240,7 +239,6 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		return fmt.Errorf("%w: %#v", elements.ErrWrongTile, currentTile)
 	}
 	player := game.CurrentPlayer()
-	move.Features = slices.Clone(move.Features) // TODO change for move.DeepClone() in future
 
 	// In the class diagram, the `scoreReport` would be returned by
 	// separate `CheckCompleted()` method but it's been abstracted by PlaceTile instead.

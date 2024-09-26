@@ -193,31 +193,6 @@ func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWi
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 
-// Generate a ordered game from the given tileset.
-// Used only for end tests in python
-func (engine *GameEngine) GenerateOrderedGame(tileSet tilesets.TileSet) (SerializedGameWithID, error) {
-	id := engine.nextGameID
-	engine.nextGameID++
-
-	logFile := path.Join(engine.logDir, fmt.Sprintf("%v.jsonl", id))
-	logger, err := logger.NewFromFile(logFile)
-	if err != nil {
-		return SerializedGameWithID{}, err
-	}
-
-	deckStack := stack.NewOrdered(tileSet.Tiles)
-	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
-
-	g, err := game.NewFromDeck(deck, &logger)
-	if err != nil {
-		return SerializedGameWithID{}, err
-	}
-
-	engine.games[id] = g
-	engine.gameMutexes[id] = &sync.RWMutex{}
-	return SerializedGameWithID{id, g.Serialized()}, nil
-}
-
 // *Fully* clone the game (including its log) with the given ID `count` times
 // returning the IDs of the cloned games.
 // Intended use: Allowing multiple agents to play the same game scenario.

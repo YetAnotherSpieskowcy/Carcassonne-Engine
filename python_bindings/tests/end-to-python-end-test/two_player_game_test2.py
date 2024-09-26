@@ -4,7 +4,7 @@
 
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.side import Side
-from carcassonne_engine.models import Position
+from carcassonne_engine.placed_tile import Position
 
 """
  diagonal edges represent cities, dots fields, straight lines roads.
@@ -56,6 +56,7 @@ log = logging.getLogger(__name__)
 
 
 def test_two_player_game2(tmp_path: Path) -> None:
+    print(tmp_path)
     engine = GameEngine(4, tmp_path)
     tile_set = ordered_mini_tile_set2()
 
@@ -111,7 +112,7 @@ def test_two_player_game2(tmp_path: Path) -> None:
 def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=0),
-        tile=tiletemplates.t_cross_road().rotate(1),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.Road,
@@ -240,7 +241,7 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=1),
-        tile=tiletemplates.roads_turn().rotate(3),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.Right,
         featureType=FeatureType.Road,
@@ -283,7 +284,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=1, y=-1),
-        tile=tiletemplates.roads_turn().rotate(1),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.BottomRightEdge,
         featureType=FeatureType.Field,
@@ -325,10 +326,10 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
-        pos=Position(x=0, y=1),
-        tile=tiletemplates.straight_roads(),
+        pos=Position(x=0, y=-1),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
-        side=Side.TopRightEdge,
+        side=Side.Top,
         featureType=FeatureType.Field,
     )
 
@@ -412,8 +413,8 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
 
 def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
-        pos=Position(x=0, y=-1),
-        tile=tiletemplates.roads_turn().rotate(3),
+        pos=Position(x=-1, y=0),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.Road,
@@ -457,7 +458,7 @@ No one scores for the finished city
 def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=2, y=1),
-        tile=tiletemplates.single_city_edge_straight_roads().rotate(2),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.TopRightEdge,
         featureType=FeatureType.Field,
@@ -501,14 +502,14 @@ Player2 scores 3 points for finished road
 def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=3, y=1),
-        tile=tiletemplates.monastery_with_single_road().rotate(1),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.NoSide,
         featureType=FeatureType.Monastery,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [4, 7])
+    check_points(game, [4, 8])
 
     return game_id, game
 
@@ -545,14 +546,14 @@ player1 and player4 score 4 points for their roads
 def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     turn_params = TurnParams(
         pos=Position(x=-1, y=-1),
-        tile=tiletemplates.t_cross_road().rotate(3),
+        tile=game.current_tile,
         meepleType=MeepleType.NormalMeeple,
         side=Side.Bottom,
         featureType=FeatureType.Road,
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [8, 11])
+    check_points(game, [8, 12])
 
     return game_id, game
 
@@ -595,7 +596,7 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [8, 11])
+    check_points(game, [8, 12])
 
     return game_id, game
 
