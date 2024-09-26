@@ -13,25 +13,21 @@ class SerializedPlayer:
     The instances of this class are provided by the `GameEngine` objects.
     """
 
-    __slots__ = ("_go_obj", "_id", "_score", "_meeple_counts")
+    __slots__ = ("_id", "_score", "_meeple_counts")
 
     def __init__(self, go_obj: _go_elements.SerializedPlayer) -> None:
-        self._go_obj = go_obj
-
-    def _unwrap(self) -> _go_elements.SerializedPlayer:
-        return self._go_obj
+        self._id = go_obj.ID
+        self._score = go_obj.Score
+        self._meeple_counts = list(go_obj.MeepleCounts)
 
     @property
     def id(self) -> int:
-        return self._go_obj.ID
+        return self._id
 
     @property
     def score(self) -> int:
-        return self._go_obj.Score
+        return self._score
 
     @property
     def meeple_counts(self) -> list[int]:
-        meeples = []
-        for amount in self._go_obj.MeepleCounts:
-            meeples.append(amount)
-        return meeples
+        return self._meeple_counts
