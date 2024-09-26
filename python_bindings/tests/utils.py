@@ -4,7 +4,7 @@ from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
-from carcassonne_engine.models import PlacedTile, Position, Tile
+from carcassonne_engine.placed_tile import PlacedTile, Position, Tile
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
     MoveWithState,
