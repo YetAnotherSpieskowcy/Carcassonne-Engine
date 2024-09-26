@@ -91,13 +91,13 @@ func CheckMeeplesAndScore(gamee *Game, t *testing.T, playerScores []uint32, play
 	}
 }
 
-func VerifyMeepleExistence(t *testing.T, gamee *Game, pos position.Position, side side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
+func VerifyMeepleExistence(t *testing.T, gamee *Game, pos position.Position, s side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
 	board := gamee.GetBoard()
 	placedTile, tileExists := board.GetTileAt(pos)
 	if !tileExists {
 		t.Fatalf("Turn %d: There is no tile on desired positon: %#v", turnNumber, pos)
 	}
-	placedFeature := placedTile.GetPlacedFeatureAtSide(side, featureType)
+	placedFeature := placedTile.GetPlacedFeatureAtSide(s, featureType)
 	if meepleExist {
 		if placedFeature.Meeple.Type != elements.NormalMeeple {
 			t.Fatalf("Turn %d: Missing meeple on a tile!", turnNumber)
