@@ -39,5 +39,5 @@ def test_serialized_player_properties(tmp_path: Path) -> None:
     assert serialized_game.players[0].score == 0
     assert serialized_game.players[1].score == 0
 
-    assert serialized_game.players[0].meeple_count == [0, 7]
-    assert serialized_game.players[1].meeple_count == [0, 7]
+    assert serialized_game.players[0].meeple_counts == [0, 7]
+    assert serialized_game.players[1].meeple_counts == [0, 7]
