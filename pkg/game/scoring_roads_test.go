@@ -268,7 +268,7 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 
 /*
 board drawing:
-|				  0	   1    2    3
+|			-1	  0	   1    2    3
 |
 |
 |          .....|   |..|..
@@ -342,7 +342,7 @@ func TestWithNameToCreate(t *testing.T) {
 					position.New(1, 0))},
 			2: []elements.MeepleWithPosition{
 				elements.NewMeepleWithPosition(
-					elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(1)},
+					elements.Meeple{Type: elements.NormalMeeple, PlayerID: elements.ID(2)},
 					position.New(-1, 0))},
 		},
 	}
