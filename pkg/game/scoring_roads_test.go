@@ -282,7 +282,7 @@ board drawing:
 |          ..|............
 |          ..!............
 */
-func TestWithNameToCreate(t *testing.T) {
+func TestScoreRoadPreventCheckingWithNoSideAtTile5(t *testing.T) {
 	var report elements.ScoreReport
 	var boardInterface interface{} = NewBoard(tilesets.StandardTileSet())
 	board := boardInterface.(*board)

@@ -570,7 +570,7 @@ func (board *board) scoreRoadCompletion(tile elements.PlacedTile, road feature.F
 
 	// check meeples on start tile
 	var roadLeft = tile.GetPlacedFeatureAtSide(leftSide, feature.Road)
-	var roadRight *elements.PlacedFeature = nil
+	var roadRight *elements.PlacedFeature
 	if rightSide != side.NoSide {
 		roadRight = tile.GetPlacedFeatureAtSide(rightSide, feature.Road)
 	}
