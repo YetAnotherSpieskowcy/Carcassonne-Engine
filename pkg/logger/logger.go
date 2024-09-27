@@ -68,6 +68,7 @@ func (*EmptyLogger) AsWriter() io.Writer {
 func (*EmptyLogger) LogEvent(eventName EventType, event interface{}) error { //nolint:revive // causes gopy to fail
 	return nil
 }
+
 func (*EmptyLogger) CopyTo(dst Logger) error { //nolint:revive // causes gopy to fail
 	return nil
 }
