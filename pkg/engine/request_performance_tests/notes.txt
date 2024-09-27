@@ -1,0 +1,4 @@
+przypadki poza play_turn
+-pusta gra (świeżo rozpoczęta)
+-jakaś trochę rozegrana
+-duża? gra
