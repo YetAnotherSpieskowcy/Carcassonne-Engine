@@ -23,8 +23,11 @@ func BenchmarkGetRemainingTilesAtStart(b *testing.B) {
 	requests := []*engine.GetRemainingTilesRequest{{BaseGameID: gameWithID.ID}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetRemainingTilesBatch(requests)
+		resp := eng.SendGetRemainingTilesBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
@@ -33,13 +36,16 @@ func BenchmarkGetRemainingTilesAtStart(b *testing.B) {
 func BenchmarkGetRemainingTilesAtEarlyGame(b *testing.B) {
 	b.StopTimer()
 
-	eng, serializedGameWithID := CreateEarlyGameEngnine(b.TempDir())
+	eng, serializedGameWithID := CreateEarlyGameEngine(b.TempDir())
 
 	requests := []*engine.GetRemainingTilesRequest{{BaseGameID: serializedGameWithID.ID}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetRemainingTilesBatch(requests)
+		resp := eng.SendGetRemainingTilesBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
@@ -48,13 +54,16 @@ func BenchmarkGetRemainingTilesAtEarlyGame(b *testing.B) {
 func BenchmarkGetRemainingTilesAtLateGame(b *testing.B) {
 	b.StopTimer()
 
-	eng, serializedGameWithID := CreateLateGameEngnine(b.TempDir())
+	eng, serializedGameWithID := CreateLateGameEngine(b.TempDir())
 
 	requests := []*engine.GetRemainingTilesRequest{{BaseGameID: serializedGameWithID.ID}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetRemainingTilesBatch(requests)
+		resp := eng.SendGetRemainingTilesBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()

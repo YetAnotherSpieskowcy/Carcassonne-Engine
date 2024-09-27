@@ -8,11 +8,11 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func CreateEarlyGameEngnine(logdir string) (*engine.GameEngine, engine.SerializedGameWithID) {
+func CreateEarlyGameEngine(logdir string) (*engine.GameEngine, engine.SerializedGameWithID) {
 	return PlayTurns(logdir, 10)
 }
 
-func CreateLateGameEngnine(logdir string) (*engine.GameEngine, engine.SerializedGameWithID) {
+func CreateLateGameEngine(logdir string) (*engine.GameEngine, engine.SerializedGameWithID) {
 
 	return PlayTurns(logdir, 20)
 }

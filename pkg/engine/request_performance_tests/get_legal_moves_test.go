@@ -20,11 +20,14 @@ func BenchmarkGetLegalMovesAtStart(b *testing.B) {
 		b.Fatal(err.Error())
 	}
 
-	requests := []*engine.GetLegalMovesRequest{{BaseGameID: gameWithID.ID}}
+	requests := []*engine.GetLegalMovesRequest{{BaseGameID: gameWithID.ID, TileToPlace: gameWithID.Game.CurrentTile}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetLegalMovesBatch(requests)
+		resp := eng.SendGetLegalMovesBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
@@ -33,13 +36,16 @@ func BenchmarkGetLegalMovesAtStart(b *testing.B) {
 func BenchmarkGetLegalMovesAtEarlyGame(b *testing.B) {
 	b.StopTimer()
 
-	eng, serializedGameWithID := CreateEarlyGameEngnine(b.TempDir())
+	eng, serializedGameWithID := CreateEarlyGameEngine(b.TempDir())
 
-	requests := []*engine.GetLegalMovesRequest{{BaseGameID: serializedGameWithID.ID}}
+	requests := []*engine.GetLegalMovesRequest{{BaseGameID: serializedGameWithID.ID, TileToPlace: serializedGameWithID.Game.CurrentTile}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetLegalMovesBatch(requests)
+		resp := eng.SendGetLegalMovesBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
@@ -48,13 +54,16 @@ func BenchmarkGetLegalMovesAtEarlyGame(b *testing.B) {
 func BenchmarkGetLegalMovesLateGame(b *testing.B) {
 	b.StopTimer()
 
-	eng, serializedGameWithID := CreateEarlyGameEngnine(b.TempDir())
+	eng, serializedGameWithID := CreateEarlyGameEngine(b.TempDir())
 
-	requests := []*engine.GetLegalMovesRequest{{BaseGameID: serializedGameWithID.ID}}
+	requests := []*engine.GetLegalMovesRequest{{BaseGameID: serializedGameWithID.ID, TileToPlace: serializedGameWithID.Game.CurrentTile}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetLegalMovesBatch(requests)
+		resp := eng.SendGetLegalMovesBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()

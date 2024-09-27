@@ -23,8 +23,11 @@ func BenchmarkGetMidGameScoreAtStart(b *testing.B) {
 	requests := []*engine.GetMidGameScoreRequest{{BaseGameID: gameWithID.ID}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetMidGameScoreBatch(requests)
+		resp := eng.SendGetMidGameScoreBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
@@ -33,13 +36,16 @@ func BenchmarkGetMidGameScoreAtStart(b *testing.B) {
 func BenchmarkGetMidGameScoreAtEarlyGame(b *testing.B) {
 	b.StopTimer()
 
-	eng, serializedGameWithID := CreateEarlyGameEngnine(b.TempDir())
+	eng, serializedGameWithID := CreateEarlyGameEngine(b.TempDir())
 
 	requests := []*engine.GetMidGameScoreRequest{{BaseGameID: serializedGameWithID.ID}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetMidGameScoreBatch(requests)
+		resp := eng.SendGetMidGameScoreBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
@@ -48,13 +54,16 @@ func BenchmarkGetMidGameScoreAtEarlyGame(b *testing.B) {
 func BenchmarkGetMidGameScoreAtLateGame(b *testing.B) {
 	b.StopTimer()
 
-	eng, serializedGameWithID := CreateLateGameEngnine(b.TempDir())
+	eng, serializedGameWithID := CreateLateGameEngine(b.TempDir())
 
 	requests := []*engine.GetMidGameScoreRequest{{BaseGameID: serializedGameWithID.ID}}
 	for range b.N {
 		b.StartTimer()
-		eng.SendGetMidGameScoreBatch(requests)
+		resp := eng.SendGetMidGameScoreBatch(requests)[0]
 		b.StopTimer()
+		if resp.Err() != nil {
+			b.Fatalf("Request fail")
+		}
 	}
 
 	eng.Close()
