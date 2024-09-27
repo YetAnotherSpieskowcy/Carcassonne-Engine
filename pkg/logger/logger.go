@@ -54,3 +54,20 @@ func (logger *BaseLogger) CopyTo(dst Logger) error {
 	_ = dst
 	return ErrCopyToNotImplemented
 }
+
+type EmptyLogger struct{}
+
+func NewEmpty() EmptyLogger {
+	return EmptyLogger{}
+}
+
+func (*EmptyLogger) AsWriter() io.Writer {
+	return nil
+}
+
+func (*EmptyLogger) LogEvent(_ EventType, _ interface{}) error {
+	return nil
+}
+func (*EmptyLogger) CopyTo(_ Logger) error {
+	return nil
+}
