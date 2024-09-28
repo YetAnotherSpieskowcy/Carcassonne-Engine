@@ -38,9 +38,8 @@ func BenchmarkPlayTurnAtStart(b *testing.B) {
 			b.Fatalf("Request fail")
 		}
 
-		eng.Close()
 	}
-
+	eng.Close()
 }
 
 func BenchmarkPlayTurnAtEarlyGame(b *testing.B) {
@@ -67,8 +66,8 @@ func BenchmarkPlayTurnAtEarlyGame(b *testing.B) {
 			b.Fatalf("Request fail")
 		}
 
-		eng.Close()
 	}
+	eng.Close()
 }
 
 func BenchmarkPlayTurnAtLateGame(b *testing.B) {
@@ -95,6 +94,6 @@ func BenchmarkPlayTurnAtLateGame(b *testing.B) {
 			b.Fatalf("Request fail")
 		}
 
-		eng.Close()
 	}
+	eng.Close()
 }
