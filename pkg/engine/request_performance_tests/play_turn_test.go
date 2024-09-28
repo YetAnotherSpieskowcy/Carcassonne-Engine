@@ -11,19 +11,24 @@ func BenchmarkPlayTurnAtStart(b *testing.B) {
 	b.StopTimer()
 
 	move := CreateMovesArray()[0]
+	eng, err := engine.StartGameEngine(4, b.TempDir())
+	if err != nil {
+		b.Fatal(err.Error())
+	}
+	gameWithID, err := eng.GenerateOrderedGame(tilesets.EveryTileOnceTileSet())
+	if err != nil {
+		b.Fatal(err.Error())
+	}
 
 	for range b.N {
-		eng, err := engine.StartGameEngine(4, b.TempDir())
+		// create clone game
+		cloneGamesID, err := eng.CloneGame(gameWithID.ID, 1)
 		if err != nil {
-			b.Fatal(err.Error())
+			b.Fatalf(err.Error())
 		}
-
-		gameWithID, err := eng.GenerateOrderedGame(tilesets.EveryTileOnceTileSet())
-		if err != nil {
-			b.Fatal(err.Error())
-		}
+		cloneGameID := cloneGamesID[0]
 		requests := []*engine.PlayTurnRequest{
-			{GameID: gameWithID.ID, Move: move},
+			{GameID: cloneGameID, Move: move},
 		}
 
 		b.StartTimer()
@@ -42,11 +47,17 @@ func BenchmarkPlayTurnAtEarlyGame(b *testing.B) {
 	b.StopTimer()
 
 	move := CreateMovesArray()[10]
+	eng, serializedGameWithID := CreateEarlyGameEngine(b.TempDir())
 
 	for range b.N {
-		eng, serializedGameWithID := CreateEarlyGameEngine(b.TempDir())
+		// create clone game
+		cloneGamesID, err := eng.CloneGame(serializedGameWithID.ID, 1)
+		if err != nil {
+			b.Fatalf(err.Error())
+		}
+		cloneGameID := cloneGamesID[0]
 		requests := []*engine.PlayTurnRequest{
-			{GameID: serializedGameWithID.ID, Move: move},
+			{GameID: cloneGameID, Move: move},
 		}
 
 		b.StartTimer()
@@ -64,11 +75,17 @@ func BenchmarkPlayTurnAtLateGame(b *testing.B) {
 	b.StopTimer()
 
 	move := CreateMovesArray()[20]
+	eng, serializedGameWithID := CreateLateGameEngine(b.TempDir())
 
 	for range b.N {
-		eng, serializedGameWithID := CreateLateGameEngine(b.TempDir())
+		// create clone game
+		cloneGamesID, err := eng.CloneGame(serializedGameWithID.ID, 1)
+		if err != nil {
+			b.Fatalf(err.Error())
+		}
+		cloneGameID := cloneGamesID[0]
 		requests := []*engine.PlayTurnRequest{
-			{GameID: serializedGameWithID.ID, Move: move},
+			{GameID: cloneGameID, Move: move},
 		}
 
 		b.StartTimer()
