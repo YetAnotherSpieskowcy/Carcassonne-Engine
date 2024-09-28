@@ -15,7 +15,7 @@ func BenchmarkGetLegalMovesAtStart(b *testing.B) {
 		b.Fatal(err.Error())
 	}
 
-	gameWithID, err := eng.GenerateOrderedGame(tilesets.StandardTileSet())
+	gameWithID, err := eng.GenerateOrderedGame(tilesets.EveryTileOnceTileSet())
 	if err != nil {
 		b.Fatal(err.Error())
 	}
