@@ -54,3 +54,21 @@ func (logger *BaseLogger) CopyTo(dst Logger) error {
 	_ = dst
 	return ErrCopyToNotImplemented
 }
+
+type EmptyLogger struct{}
+
+func NewEmpty() EmptyLogger {
+	return EmptyLogger{}
+}
+
+func (*EmptyLogger) AsWriter() io.Writer {
+	return nil
+}
+
+func (*EmptyLogger) LogEvent(eventName EventType, event interface{}) error { //nolint:revive // causes gopy to fail
+	return nil
+}
+
+func (*EmptyLogger) CopyTo(dst Logger) error { //nolint:revive // causes gopy to fail
+	return nil
+}

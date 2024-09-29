@@ -53,7 +53,7 @@ func NewFromDeck(
 	deck deck.Deck, log logger.Logger,
 ) (*Game, error) {
 	if log == nil {
-		nullLogger := logger.New(io.Discard)
+		nullLogger := logger.NewEmpty()
 		log = &nullLogger
 	}
 	game := &Game{
