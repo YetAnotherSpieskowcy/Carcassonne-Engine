@@ -62,6 +62,9 @@ func BenchmarkPlayTurnTest(b *testing.B) {
 		// update games
 		for i := range gameCount {
 			games[i].Game = playTurnResp[i].Game
+			if playTurnResp[i].Err() != nil {
+				b.Fatalf("%#v play turn failed. Reason: %#v", i, playTurnResp[i].Err().Error())
+			}
 		}
 	}
 }
