@@ -4,67 +4,57 @@ import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/engine"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
-func BenchmarkPlayTurnTest(b *testing.B) {
-	gameCount := 10
-	b.StopTimer()
-
-	eng, err := engine.StartGameEngine(4, b.TempDir())
-	if err != nil {
-		b.Fatal()
+func SendPlayTurnRequest(games *[]engine.SerializedGameWithID, eng *engine.GameEngine, b *testing.B) {
+	type IDWithCurrentTile struct {
+		ID          int
+		CurrentTile tiles.Tile
 	}
-
-	var games = []engine.SerializedGameWithID{}
-	for seed := range gameCount {
-		game, err := eng.GenerateSeededGame(tilesets.StandardTileSet(), int64(seed+1000))
+	// create game copies
+	copies := []IDWithCurrentTile{}
+	for _, game := range *games {
+		copy, err := eng.CloneGame(game.ID, 1)
 		if err != nil {
-			b.Fatal()
+			b.Fatal(err.Error())
 		}
-		games = append(games, game)
+		copies = append(copies, IDWithCurrentTile{ID: copy[0], CurrentTile: game.Game.CurrentTile})
 	}
 
-	// for each turn
-	for range len(tilesets.StandardTileSet().Tiles) {
-
-		// get moves
-		legalMovesRequests := []*engine.GetLegalMovesRequest{}
-		for _, game := range games {
-			legalMovesRequests = append(legalMovesRequests,
-				&engine.GetLegalMovesRequest{
-					BaseGameID:  game.ID,
-					TileToPlace: game.Game.CurrentTile,
-				},
-			)
-		}
-		legalMoves := eng.SendGetLegalMovesBatch(legalMovesRequests)
-		for i, legalMove := range legalMoves {
-			if legalMove.Err() != nil {
-				b.Fatalf("%#v legal move failed. Reason: %#v", i, legalMove.Err().Error())
-			}
-		}
-
-		// make move
-		makeTurnRequests := []*engine.PlayTurnRequest{}
-		for i := range gameCount {
-			makeTurnRequests = append(makeTurnRequests,
-				&engine.PlayTurnRequest{
-					GameID: games[i].ID,
-					Move:   legalMoves[i].Moves[0].Move,
-				},
-			)
-		}
-		b.StartTimer()
-		playTurnResp := eng.SendPlayTurnBatch(makeTurnRequests)
-		b.StopTimer()
-
-		// update games
-		for i := range gameCount {
-			games[i].Game = playTurnResp[i].Game
-			if playTurnResp[i].Err() != nil {
-				b.Fatalf("%#v play turn failed. Reason: %#v", i, playTurnResp[i].Err().Error())
-			}
+	// get legal moves for copies
+	legalMovesRequests := []*engine.GetLegalMovesRequest{}
+	for _, copy := range copies {
+		legalMovesRequests = append(legalMovesRequests,
+			&engine.GetLegalMovesRequest{
+				BaseGameID:  copy.ID,
+				TileToPlace: copy.CurrentTile,
+			},
+		)
+	}
+	legalMoves := eng.SendGetLegalMovesBatch(legalMovesRequests)
+	for i, legalMove := range legalMoves {
+		if legalMove.Err() != nil {
+			b.Fatalf("%#v legal move failed. Reason: %#v", i, legalMove.Err().Error())
 		}
 	}
+
+	// create make move requests
+	// make move
+	makeTurnRequests := []*engine.PlayTurnRequest{}
+	for i := range len(copies) {
+		makeTurnRequests = append(makeTurnRequests,
+			&engine.PlayTurnRequest{
+				GameID: copies[i].ID,
+				Move:   legalMoves[i].Moves[0].Move,
+			},
+		)
+	}
+
+	b.StartTimer()
+	eng.SendPlayTurnBatch(makeTurnRequests)
+	b.StopTimer()
+}
+func BenchmarkPlayTurnTest(b *testing.B) {
+	PlayGame(10, b, SendPlayTurnRequest)
 }
