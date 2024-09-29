@@ -12,23 +12,23 @@ func SendPlayTurnRequest(games *[]engine.SerializedGameWithID, eng *engine.GameE
 		ID          int
 		CurrentTile tiles.Tile
 	}
-	// create game copies
-	copies := []IDWithCurrentTile{}
+	// create game clones
+	clones := []IDWithCurrentTile{}
 	for _, game := range *games {
-		copy, err := eng.CloneGame(game.ID, 1)
+		clone, err := eng.CloneGame(game.ID, 1)
 		if err != nil {
 			b.Fatal(err.Error())
 		}
-		copies = append(copies, IDWithCurrentTile{ID: copy[0], CurrentTile: game.Game.CurrentTile})
+		clones = append(clones, IDWithCurrentTile{ID: clone[0], CurrentTile: game.Game.CurrentTile})
 	}
 
-	// get legal moves for copies
+	// get legal moves for clones
 	legalMovesRequests := []*engine.GetLegalMovesRequest{}
-	for _, copy := range copies {
+	for _, clone := range clones {
 		legalMovesRequests = append(legalMovesRequests,
 			&engine.GetLegalMovesRequest{
-				BaseGameID:  copy.ID,
-				TileToPlace: copy.CurrentTile,
+				BaseGameID:  clone.ID,
+				TileToPlace: clone.CurrentTile,
 			},
 		)
 	}
@@ -42,10 +42,10 @@ func SendPlayTurnRequest(games *[]engine.SerializedGameWithID, eng *engine.GameE
 	// create make move requests
 	// make move
 	makeTurnRequests := []*engine.PlayTurnRequest{}
-	for i := range len(copies) {
+	for i := range len(clones) {
 		makeTurnRequests = append(makeTurnRequests,
 			&engine.PlayTurnRequest{
-				GameID: copies[i].ID,
+				GameID: clones[i].ID,
 				Move:   legalMoves[i].Moves[0].Move,
 			},
 		)
