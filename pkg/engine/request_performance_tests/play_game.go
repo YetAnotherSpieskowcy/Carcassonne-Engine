@@ -7,8 +7,9 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func BenchmarkPlayTurnTest(b *testing.B) {
-	gameCount := 100
+type TestedRequest func(games *[]engine.SerializedGameWithID, eng *engine.GameEngine, b *testing.B)
+
+func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
 	b.StopTimer()
 
 	eng, err := engine.StartGameEngine(4, b.TempDir())
@@ -28,6 +29,12 @@ func BenchmarkPlayTurnTest(b *testing.B) {
 	// for each turn
 	for turnindex := range len(tilesets.StandardTileSet().Tiles) {
 		println(turnindex + 1)
+
+		// at start before makiny any turn
+		// test desired requests
+		for range b.N {
+			testedRequest(&games, eng, b)
+		}
 
 		// get moves
 		legalMovesRequests := []*engine.GetLegalMovesRequest{}
@@ -56,9 +63,7 @@ func BenchmarkPlayTurnTest(b *testing.B) {
 				},
 			)
 		}
-		b.StartTimer()
 		playTurnResp := eng.SendPlayTurnBatch(makeTurnRequests)
-		b.StopTimer()
 
 		// update games
 		for i := range gameCount {
