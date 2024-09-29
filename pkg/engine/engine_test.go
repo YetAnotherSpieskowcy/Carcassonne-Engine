@@ -587,3 +587,14 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicEverywhere(t *testi
 	}
 	engine.Close()
 }
+
+func TestGenerateSeededGame(t *testing.T) {
+	eng, err := StartGameEngine(4, t.TempDir())
+	if err == nil {
+		t.Fatal(err.Error())
+	}
+	_, err = eng.GenerateSeededGame(tilesets.StandardTileSet(), 0)
+	if err == nil {
+		t.Fatal(err.Error())
+	}
+}

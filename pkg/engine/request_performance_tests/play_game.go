@@ -27,8 +27,7 @@ func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
 	}
 
 	// for each turn
-	for turnindex := range len(tilesets.StandardTileSet().Tiles) {
-		println(turnindex + 1)
+	for range len(tilesets.StandardTileSet().Tiles) {
 
 		// at start before makiny any turn
 		// test desired requests
@@ -70,5 +69,4 @@ func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
 			games[i].Game = playTurnResp[i].Game
 		}
 	}
-	println("FINISHED")
 }

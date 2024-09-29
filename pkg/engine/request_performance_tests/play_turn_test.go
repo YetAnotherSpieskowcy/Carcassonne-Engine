@@ -26,8 +26,7 @@ func BenchmarkPlayTurnTest(b *testing.B) {
 	}
 
 	// for each turn
-	for turnindex := range len(tilesets.StandardTileSet().Tiles) {
-		println(turnindex + 1)
+	for range len(tilesets.StandardTileSet().Tiles) {
 
 		// get moves
 		legalMovesRequests := []*engine.GetLegalMovesRequest{}
@@ -65,5 +64,4 @@ func BenchmarkPlayTurnTest(b *testing.B) {
 			games[i].Game = playTurnResp[i].Game
 		}
 	}
-	println("FINISHED")
 }
