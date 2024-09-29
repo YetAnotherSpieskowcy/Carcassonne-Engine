@@ -1,13 +1,23 @@
-package game
+package test
 
 import (
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
+
+// equivalent to Game type from game package
+type Game interface {
+	GetCurrentTile() (tiles.Tile, error)
+	CurrentPlayer() elements.Player
+	PlayTurn(move elements.PlacedTile) error
+	GetPlayerByID(playerID elements.ID) elements.Player
+	GetBoard() elements.Board
+}
 
 type MeepleParams struct {
 	MeepleType  elements.MeepleType
@@ -23,13 +33,13 @@ func NoneMeeple() MeepleParams {
 	}
 }
 
-func MakeTurn(gamee *Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams) {
-	tile, err := gamee.GetCurrentTile()
+func MakeTurn(game Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams) {
+	tile, err := game.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	var player = gamee.CurrentPlayer()
+	var player = game.CurrentPlayer()
 
 	ptile := elements.ToPlacedTile(tile)
 	ptile.Position = tilePosition
@@ -40,20 +50,20 @@ func MakeTurn(gamee *Game, t *testing.T, tilePosition position.Position, meepleP
 		}
 	}
 
-	err = gamee.PlayTurn(ptile)
+	err = game.PlayTurn(ptile)
 
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 }
 
-func MakeTurnValidCheck(gamee *Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams, correctMove bool, turnNumber uint) {
-	tile, err := gamee.GetCurrentTile()
+func MakeTurnValidCheck(game Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams, correctMove bool, turnNumber uint) {
+	tile, err := game.GetCurrentTile()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	var player = gamee.CurrentPlayer()
+	var player = game.CurrentPlayer()
 
 	ptile := elements.ToPlacedTile(tile)
 	ptile.Position = tilePosition
@@ -64,7 +74,7 @@ func MakeTurnValidCheck(gamee *Game, t *testing.T, tilePosition position.Positio
 		}
 	}
 
-	err = gamee.PlayTurn(ptile)
+	err = game.PlayTurn(ptile)
 
 	if err != nil && correctMove {
 		t.Fatal(err.Error())
@@ -73,11 +83,11 @@ func MakeTurnValidCheck(gamee *Game, t *testing.T, tilePosition position.Positio
 	}
 }
 
-func CheckMeeplesAndScore(gamee *Game, t *testing.T, playerScores []uint32, playerMeeples []uint8, turnNumber uint) {
+func CheckMeeplesAndScore(game Game, t *testing.T, playerScores []uint32, playerMeeples []uint8, turnNumber uint) {
 
 	for i := range len(playerScores) {
 		// load player
-		var player = gamee.GetPlayerByID(elements.ID(i + 1))
+		var player = game.GetPlayerByID(elements.ID(i + 1))
 
 		// check meeples
 		if player.MeepleCount(elements.NormalMeeple) != playerMeeples[i] {
@@ -91,8 +101,8 @@ func CheckMeeplesAndScore(gamee *Game, t *testing.T, playerScores []uint32, play
 	}
 }
 
-func VerifyMeepleExistence(t *testing.T, gamee *Game, pos position.Position, s side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
-	board := gamee.GetBoard()
+func VerifyMeepleExistence(t *testing.T, game Game, pos position.Position, s side.Side, featureType feature.Type, meepleExist bool, turnNumber uint) {
+	board := game.GetBoard()
 	placedTile, tileExists := board.GetTileAt(pos)
 	if !tileExists {
 		t.Fatalf("Turn %d: There is no tile on desired positon: %#v", turnNumber, pos)

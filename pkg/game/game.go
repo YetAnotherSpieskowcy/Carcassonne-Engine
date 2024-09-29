@@ -177,6 +177,10 @@ func (game *Game) GetPlayerByID(playerID elements.ID) elements.Player {
 	panic(errorString)
 }
 
+func (game *Game) GetBoard() elements.Board {
+	return game.board
+}
+
 func (game *Game) PlayerCount() int {
 	return len(game.players)
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -47,7 +48,7 @@ func TestFinalScoreRoad(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -103,10 +104,10 @@ func TestFinalScoreMultipleRoads(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
-	MakeTurn(game, t, position.New(0, -1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
-	MakeTurn(game, t, position.New(1, -1), NoneMeeple())
-	MakeTurn(game, t, position.New(0, -2), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn(game, t, position.New(0, -1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn(game, t, position.New(1, -1), test.NoneMeeple())
+	test.MakeTurn(game, t, position.New(0, -2), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -150,7 +151,7 @@ func TestFinalScoreMonastery(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	test.MakeTurn(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -201,9 +202,9 @@ func TestFinalScoreMonasteries(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
-	MakeTurn(game, t, position.New(0, -1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
-	MakeTurn(game, t, position.New(1, -1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	test.MakeTurn(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	test.MakeTurn(game, t, position.New(0, -1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	test.MakeTurn(game, t, position.New(1, -1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -252,7 +253,7 @@ func TestFinalScoreCity(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -304,9 +305,9 @@ func TestFinalScoreCities(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
-	MakeTurn(game, t, position.New(1, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
-	MakeTurn(game, t, position.New(-1, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	test.MakeTurn(game, t, position.New(1, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	test.MakeTurn(game, t, position.New(-1, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -355,7 +356,7 @@ func TestFinalScoreField(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -420,11 +421,11 @@ func TestFinalScoreFields1(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
-	MakeTurn(game, t, position.New(0, -1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
-	MakeTurn(game, t, position.New(0, -2), NoneMeeple())
-	MakeTurn(game, t, position.New(1, 0), NoneMeeple())
-	MakeTurn(game, t, position.New(1, 1), NoneMeeple())
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	test.MakeTurn(game, t, position.New(0, -1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	test.MakeTurn(game, t, position.New(0, -2), test.NoneMeeple())
+	test.MakeTurn(game, t, position.New(1, 0), test.NoneMeeple())
+	test.MakeTurn(game, t, position.New(1, 1), test.NoneMeeple())
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -481,8 +482,8 @@ func TestFinalScoreFields2(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Field})
-	MakeTurn(game, t, position.New(0, 2), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Field})
+	test.MakeTurn(game, t, position.New(0, 2), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
 
 	scores, err := game.Finalize()
 	if err != nil {
@@ -578,30 +579,30 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 	// start with inner single city edges (starting from top) (tiles 1-4)
 	for _, rotation := range rotations {
 		if rotation == 2 {
-			MakeTurn(game, t, position.New(0, 1).Rotate(rotation), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+			test.MakeTurn(game, t, position.New(0, 1).Rotate(rotation), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
 		} else {
-			MakeTurn(game, t, position.New(0, 1).Rotate(rotation), NoneMeeple())
+			test.MakeTurn(game, t, position.New(0, 1).Rotate(rotation), test.NoneMeeple())
 		}
 	}
 
 	// Now outer single city edges (starting from top) (tiles 5-G)
 	for _, rotation := range rotations {
 		for _, offset := range offsets {
-			MakeTurn(game, t, position.New(0, 2).Rotate(rotation).Add(offset.Rotate(rotation)), NoneMeeple())
+			test.MakeTurn(game, t, position.New(0, 2).Rotate(rotation).Add(offset.Rotate(rotation)), test.NoneMeeple())
 		}
 	}
 
 	// Inner corners
 	for _, rotation := range rotations {
-		MakeTurn(game, t, position.New(1, 1).Rotate(rotation), NoneMeeple())
+		test.MakeTurn(game, t, position.New(1, 1).Rotate(rotation), test.NoneMeeple())
 	}
 
 	// Outer corners
 	for _, rotation := range rotations {
 		if rotation == 1 {
-			MakeTurn(game, t, position.New(2, 2).Rotate(rotation), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+			test.MakeTurn(game, t, position.New(2, 2).Rotate(rotation), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
 		} else {
-			MakeTurn(game, t, position.New(2, 2).Rotate(rotation), NoneMeeple())
+			test.MakeTurn(game, t, position.New(2, 2).Rotate(rotation), test.NoneMeeple())
 		}
 	}
 
@@ -642,10 +643,10 @@ func TestFinalScoreMultipleRoads123(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	MakeTurn(game, t, position.New(0, -1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
-	MakeTurn(game, t, position.New(1, -1), NoneMeeple())
-	MakeTurn(game, t, position.New(1, -2), NoneMeeple())
-	MakeTurn(game, t, position.New(0, -2), NoneMeeple())
+	test.MakeTurn(game, t, position.New(0, -1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn(game, t, position.New(1, -1), test.NoneMeeple())
+	test.MakeTurn(game, t, position.New(1, -2), test.NoneMeeple())
+	test.MakeTurn(game, t, position.New(0, -2), test.NoneMeeple())
 
 	scores, err := game.Finalize()
 	if err != nil {

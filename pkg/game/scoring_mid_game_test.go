@@ -6,6 +6,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -61,19 +62,19 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 
 	var expectedScores []uint32
 	// first turn
-	MakeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	test.MakeTurn(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
 	validateScores(game, []uint32{2, 0}, t)
 
 	// second turn
-	MakeTurn(game, t, position.New(-1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn(game, t, position.New(-1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
 	validateScores(game, []uint32{2, 3}, t)
 
 	// third turn
-	MakeTurn(game, t, position.New(-2, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	test.MakeTurn(game, t, position.New(-2, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
 	validateScores(game, []uint32{2, 4}, t)
 
 	// fourth turn
-	MakeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
 	validateScores(game, []uint32{6, 5}, t)
 
 	// finalize

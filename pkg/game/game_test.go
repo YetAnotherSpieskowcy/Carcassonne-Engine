@@ -431,3 +431,18 @@ func TestGameGetPlayerByIdNotFound(t *testing.T) {
 	game.GetPlayerByID(elements.ID(10))
 
 }
+
+func TestGetBoard(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+
+	game, err := NewFromDeck(deck, nil, 2)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if game.GetBoard() == nil {
+		t.Fatalf("Couldn't get board")
+	}
+}
