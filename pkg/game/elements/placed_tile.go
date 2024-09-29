@@ -67,6 +67,21 @@ func ToTile(tile PlacedTile) tiles.Tile {
 	}
 }
 
+// Returns true if placedTile equals tile and false otherwise
+// The comparison doesn't take meeples or position into account
+// Features of tile *MUST* be in the same order as in placedTile for the tiles to be considered equal
+func (placedTile PlacedTile) EqualsTile(tile tiles.Tile) bool {
+	if len(tile.Features) != len(placedTile.Features) {
+		return false
+	}
+	for i := range tile.Features {
+		if tile.Features[i] != placedTile.Features[i].Feature {
+			return false
+		}
+	}
+	return true
+}
+
 // Returns a list of all features of the given type on this tile
 func (placedTile PlacedTile) GetFeaturesOfType(featureType feature.Type) []PlacedFeature {
 	features := []PlacedFeature{}

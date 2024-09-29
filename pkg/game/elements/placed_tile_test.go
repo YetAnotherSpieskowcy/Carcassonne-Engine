@@ -3,6 +3,7 @@ package elements
 import (
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -145,4 +146,30 @@ func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
 	for _, f := range tileFeatures {
 		t.Fatalf("expected nothing, got %#v instead", f)
 	}
+}
+
+func TestEqualsTile(t *testing.T) {
+	tile := tiletemplates.MonasteryWithSingleRoad()
+	placedTile := ToPlacedTile(tile)
+	placedTile.Position = position.New(12, 34)
+	placedTile.GetPlacedFeatureAtSide(side.Bottom, feature.Road).Meeple = Meeple{NormalMeeple, ID(5)}
+	if !placedTile.EqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", true, false)
+	}
+
+	tile = tiletemplates.SingleCityEdgeCrossRoad()
+	placedTile = ToPlacedTile(tile.Rotate(1))
+	placedTile.Position = position.New(-43, -21)
+	placedTile.GetPlacedFeatureAtSide(side.Right, feature.City).Meeple = Meeple{NormalMeeple, ID(3)}
+	if placedTile.EqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", false, true)
+	}
+
+	tile = tiletemplates.TestOnlyField()
+	placedTile = ToPlacedTile(tiletemplates.MonasteryWithoutRoads())
+	placedTile.Position = position.New(1, 0)
+	if placedTile.EqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", false, true)
+	}
+
 }
