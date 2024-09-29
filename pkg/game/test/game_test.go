@@ -16,6 +16,35 @@ import (
 
 // If test functions contain logic, they need to be tested as well :)
 
+func TestMakeTurn(t *testing.T) {
+	minitileSet := tilesets.OrderedMiniTileSet1()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 2)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road})
+
+	board := game.GetBoard()
+	ptile, ok := board.GetTileAt(position.New(0, 1))
+	if !ok {
+		t.Fatal("expected to find a tile at (0, 1)")
+	}
+
+	tile := elements.ToTile(ptile)
+	expected := minitileSet.Tiles[0]
+	if !tile.Equals(expected) {
+		t.Fatalf("expected %#v, got %#v instead", expected, tile)
+	}
+
+	feat := ptile.GetPlacedFeatureAtSide(side.Left, feature.Road)
+	if feat.Meeple.Type != elements.NormalMeeple {
+		t.Fatalf("expected normal meeple on road tile feature, got %#v instead", feat.Meeple.Type)
+	}
+}
+
 func TestMakeTurnValidCheck(t *testing.T) {
 	// create game
 	minitileSet := tilesets.OrderedMiniTileSet2()
@@ -28,7 +57,6 @@ func TestMakeTurnValidCheck(t *testing.T) {
 
 	test.MakeTurnValidCheck(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, false, 1) // do any wrong move, and catch it
 	test.MakeTurnValidCheck(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 1)  // do any correct move
-
 }
 
 func TestCheckMeeplesAndScore(t *testing.T) {
