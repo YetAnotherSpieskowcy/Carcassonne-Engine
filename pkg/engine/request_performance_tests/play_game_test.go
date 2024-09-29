@@ -7,7 +7,7 @@ import (
 )
 
 // coverage test
-func TestPlayGame(t *testing.T) {
+func TestPlayGame(_ *testing.T) {
 	b := testing.B{}
-	PlayGame(1, &b, func(games *[]engine.SerializedGameWithID, eng *engine.GameEngine, b *testing.B) {})
+	PlayGame(1, &b, func(_ *[]engine.SerializedGameWithID, _ *engine.GameEngine, _ *testing.B) {})
 }

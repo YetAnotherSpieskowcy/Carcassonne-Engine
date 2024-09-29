@@ -8,7 +8,7 @@ import (
 )
 
 func BenchmarkPlayTurnTest(b *testing.B) {
-	gameCount := 100
+	gameCount := 10
 	b.StopTimer()
 
 	eng, err := engine.StartGameEngine(4, b.TempDir())

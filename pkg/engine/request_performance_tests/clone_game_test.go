@@ -18,5 +18,5 @@ func SendCloneGameRequest(games *[]engine.SerializedGameWithID, eng *engine.Game
 }
 
 func BenchmarkCloneGameTest(b *testing.B) {
-	PlayGame(100, b, SendCloneGameRequest)
+	PlayGame(10, b, SendCloneGameRequest)
 }

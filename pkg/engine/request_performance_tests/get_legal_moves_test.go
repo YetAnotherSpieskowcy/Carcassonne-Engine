@@ -22,5 +22,5 @@ func SendGetLegalMovesRequest(games *[]engine.SerializedGameWithID, eng *engine.
 }
 
 func BenchmarkGetLegalMovesTest(b *testing.B) {
-	PlayGame(100, b, SendGetLegalMovesRequest)
+	PlayGame(10, b, SendGetLegalMovesRequest)
 }

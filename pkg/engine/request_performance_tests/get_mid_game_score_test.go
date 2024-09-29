@@ -21,5 +21,5 @@ func SendGetMidGameScoreRequest(games *[]engine.SerializedGameWithID, eng *engin
 }
 
 func BenchmarkGetMidGameScoreTest(b *testing.B) {
-	PlayGame(100, b, SendGetMidGameScoreRequest)
+	PlayGame(10, b, SendGetMidGameScoreRequest)
 }
