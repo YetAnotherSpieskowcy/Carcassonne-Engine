@@ -149,6 +149,7 @@ func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
 }
 
 func TestEqualsTile(t *testing.T) {
+	// equal tiles
 	tile := tiletemplates.MonasteryWithSingleRoad()
 	placedTile := ToPlacedTile(tile)
 	placedTile.Position = position.New(12, 34)
@@ -157,19 +158,66 @@ func TestEqualsTile(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", true, false)
 	}
 
+	// equal tiles, but rotated
 	tile = tiletemplates.SingleCityEdgeCrossRoad()
 	placedTile = ToPlacedTile(tile.Rotate(1))
 	placedTile.Position = position.New(-43, -21)
 	placedTile.GetPlacedFeatureAtSide(side.Right, feature.City).Meeple = Meeple{NormalMeeple, ID(3)}
+	if !placedTile.EqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", true, false)
+	}
+
+	// non-equal tiles with same number of features
+	tile = tiletemplates.StraightRoads()
+	placedTile = ToPlacedTile(tiletemplates.RoadsTurn())
+	placedTile.Position = position.New(-43, -21)
+	placedTile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = Meeple{NormalMeeple, ID(3)}
 	if placedTile.EqualsTile(tile) {
 		t.Fatalf("expected %#v, got %#v instead", false, true)
 	}
 
+	// non-equal tiles with different number of features
 	tile = tiletemplates.TestOnlyField()
 	placedTile = ToPlacedTile(tiletemplates.MonasteryWithoutRoads())
 	placedTile.Position = position.New(1, 0)
 	if placedTile.EqualsTile(tile) {
 		t.Fatalf("expected %#v, got %#v instead", false, true)
 	}
+}
 
+func TestExactEqualsTile(t *testing.T) {
+	// equal tiles
+	tile := tiletemplates.MonasteryWithSingleRoad()
+	placedTile := ToPlacedTile(tile)
+	placedTile.Position = position.New(12, 34)
+	placedTile.GetPlacedFeatureAtSide(side.Bottom, feature.Road).Meeple = Meeple{NormalMeeple, ID(5)}
+	if !placedTile.ExactEqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", true, false)
+	}
+
+	// equal tiles, but rotated
+	tile = tiletemplates.SingleCityEdgeCrossRoad()
+	placedTile = ToPlacedTile(tile.Rotate(1))
+	placedTile.Position = position.New(-43, -21)
+	placedTile.GetPlacedFeatureAtSide(side.Right, feature.City).Meeple = Meeple{NormalMeeple, ID(3)}
+	if placedTile.ExactEqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", false, true)
+	}
+
+	// non-equal tiles with same number of features
+	tile = tiletemplates.StraightRoads()
+	placedTile = ToPlacedTile(tiletemplates.RoadsTurn())
+	placedTile.Position = position.New(-43, -21)
+	placedTile.GetPlacedFeatureAtSide(side.Left, feature.Road).Meeple = Meeple{NormalMeeple, ID(3)}
+	if placedTile.ExactEqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", false, true)
+	}
+
+	// non-equal tiles with different number of features
+	tile = tiletemplates.TestOnlyField()
+	placedTile = ToPlacedTile(tiletemplates.MonasteryWithoutRoads())
+	placedTile.Position = position.New(1, 0)
+	if placedTile.ExactEqualsTile(tile) {
+		t.Fatalf("expected %#v, got %#v instead", false, true)
+	}
 }

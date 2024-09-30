@@ -68,9 +68,10 @@ func ToTile(tile PlacedTile) tiles.Tile {
 }
 
 // Returns true if placedTile equals tile and false otherwise
-// The comparison doesn't take meeples or position into account
+// The comparison ignores meeples and position but includes orientation
 // Features of tile *MUST* be in the same order as in placedTile for the tiles to be considered equal
-func (placedTile PlacedTile) EqualsTile(tile tiles.Tile) bool {
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
+func (placedTile PlacedTile) ExactEqualsTile(tile tiles.Tile) bool {
 	if len(tile.Features) != len(placedTile.Features) {
 		return false
 	}
@@ -80,6 +81,27 @@ func (placedTile PlacedTile) EqualsTile(tile tiles.Tile) bool {
 		}
 	}
 	return true
+}
+
+// Returns true if placedTile equals tile and false otherwise
+// The comparison ignores meeples, position and orientation
+// Features of tile *MUST* be in the same order as in placedTile for the tiles to be considered equal
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
+func (placedTile PlacedTile) EqualsTile(tile tiles.Tile) bool {
+	if len(tile.Features) != len(placedTile.Features) {
+		return false
+	}
+outer:
+	for rotations := range uint(4) {
+		rotated := tile.Rotate(rotations)
+		for i, placedFeature := range placedTile.Features {
+			if placedFeature.Feature != rotated.Features[i] {
+				continue outer
+			}
+		}
+		return true
+	}
+	return false
 }
 
 // Returns a list of all features of the given type on this tile
