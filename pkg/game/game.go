@@ -57,9 +57,9 @@ func NewFromDeck(
 		log = &nullLogger
 	}
 
-	var players = []elements.Player{}
+	var players = make([]elements.Player, playerCount)
 	for i := range playerCount {
-		players = append(players, player.New(elements.ID(i+1)))
+		players[i] = player.New(elements.ID(i + 1))
 	}
 
 	game := &Game{

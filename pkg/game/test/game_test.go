@@ -57,6 +57,18 @@ func TestMakeTurnValidCheck(t *testing.T) {
 
 	test.MakeTurnValidCheck(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, false, 1) // do any wrong move, and catch it
 	test.MakeTurnValidCheck(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 1)  // do any correct move
+
+	// check if meeple was placed
+	ptile, exist := game.GetBoard().GetTileAt(position.New(1, 0))
+	if !exist {
+		t.Fatalf("Tile doesn't exist!")
+	}
+	pfeature := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.Road)
+	if pfeature.Meeple.PlayerID != elements.ID(1) &&
+		pfeature.Meeple.Type != elements.NormalMeeple {
+		t.Fatalf("Wrong meeple params!")
+	}
+
 }
 
 func TestCheckMeeplesAndScore(t *testing.T) {
