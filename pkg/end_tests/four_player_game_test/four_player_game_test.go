@@ -55,11 +55,6 @@ func Test4PlayerFullGame(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	// for i, _ := range deck.GetTiles() {
-	// 	fmt.Printf("%v:\n", i+1)
-	// 	var tile, _ = deck.Next()
-	// 	fmt.Printf("%v\n", tile)
-	// }
 	checkFirstTurn(game, t)    // T Cross road
 	checkSecondTurn(game, t)   // Two city edges not connected
 	checkThirdTurn(game, t)    // Two city edges not connected

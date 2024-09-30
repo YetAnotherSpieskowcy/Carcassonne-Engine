@@ -38,13 +38,6 @@ func Test2PlayerFullGame(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	/*
-		for i, _ := range deck.GetTiles() {
-			fmt.Printf("%v:\n", i+1)
-			var tile, _ = deck.Next()
-			fmt.Printf("%v\n", tile)
-		}
-	*/
 
 	checkFirstTurn(game, t)    // straight road with city edge
 	checkSecondTurn(game, t)   // road turn
