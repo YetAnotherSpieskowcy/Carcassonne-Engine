@@ -33,27 +33,34 @@ func NoneMeeple() MeepleParams {
 	}
 }
 
-func MakeTurn(game Game, t *testing.T, tilePosition position.Position, meepleParams MeepleParams) {
-	tile, err := game.GetCurrentTile()
+type MakeTurn struct {
+	Game         Game
+	T            *testing.T
+	TilePosition position.Position
+	MeepleParams MeepleParams
+}
+
+func (turn MakeTurn) Run() {
+	tile, err := turn.Game.GetCurrentTile()
 	if err != nil {
-		t.Fatal(err.Error())
+		turn.T.Fatal(err.Error())
 	}
 
-	var player = game.CurrentPlayer()
+	var player = turn.Game.CurrentPlayer()
 
 	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = tilePosition
-	if meepleParams.MeepleType != elements.NoneMeeple {
-		ptile.GetPlacedFeatureAtSide(meepleParams.FeatureSide, meepleParams.FeatureType).Meeple = elements.Meeple{
-			Type:     meepleParams.MeepleType,
+	ptile.Position = turn.TilePosition
+	if turn.MeepleParams.MeepleType != elements.NoneMeeple {
+		ptile.GetPlacedFeatureAtSide(turn.MeepleParams.FeatureSide, turn.MeepleParams.FeatureType).Meeple = elements.Meeple{
+			Type:     turn.MeepleParams.MeepleType,
 			PlayerID: player.ID(),
 		}
 	}
 
-	err = game.PlayTurn(ptile)
+	err = turn.Game.PlayTurn(ptile)
 
 	if err != nil {
-		t.Fatal(err.Error())
+		turn.T.Fatal(err.Error())
 	}
 }
 

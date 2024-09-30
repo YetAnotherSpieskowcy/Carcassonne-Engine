@@ -25,7 +25,12 @@ func TestMakeTurn(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	test.MakeTurn(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road})
+	test.MakeTurn{
+		Game:         game,
+		T:            t,
+		TilePosition: position.New(0, 1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
+	}.Run()
 
 	board := game.GetBoard()
 	ptile, ok := board.GetTileAt(position.New(0, 1))
