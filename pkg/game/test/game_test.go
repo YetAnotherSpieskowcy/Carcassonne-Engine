@@ -55,8 +55,25 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	test.MakeTurnValidCheck(game, t, position.New(0, 1), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, false, 1) // do any wrong move, and catch it
-	test.MakeTurnValidCheck(game, t, position.New(1, 0), test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 1)  // do any correct move
+	// do any wrong move, and catch it
+	test.MakeTurnValidCheck{
+		Game:         game,
+		T:            t,
+		TilePosition: position.New(0, 1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		CorrectMove:  true,
+		TurnNumber:   1,
+	}.Run()
+
+	// do any correct move
+	test.MakeTurnValidCheck{
+		Game:         game,
+		T:            t,
+		TilePosition: position.New(1, 0),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		CorrectMove:  true,
+		TurnNumber:   1,
+	}.Run()
 
 	// check if meeple was placed
 	ptile, exist := game.GetBoard().GetTileAt(position.New(1, 0))
@@ -81,7 +98,13 @@ func TestCheckMeeplesAndScore(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	test.CheckMeeplesAndScore(game, t, []uint32{0, 0}, []uint8{7, 7}, 1)
+	test.CheckMeeplesAndScore{
+		Game:          game,
+		T:             t,
+		PlayerScores:  []uint32{0, 0},
+		PlayerMeeples: []uint8{7, 7},
+		TurnNumber:    1,
+	}.Run()
 }
 
 func TestVerifyMeepleExistence(t *testing.T) {
@@ -95,8 +118,34 @@ func TestVerifyMeepleExistence(t *testing.T) {
 	}
 
 	pos := position.New(1, 0)
-	test.MakeTurnValidCheck(game, t, pos, test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road}, true, 1) // do any correct move
+	test.MakeTurnValidCheck{
+		Game:         game,
+		T:            t,
+		TilePosition: pos,
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		CorrectMove:  true,
+		TurnNumber:   1,
+	}.Run()
 
-	test.VerifyMeepleExistence(t, game, pos, side.Bottom, feature.Road, true, 1)           // verify that meeple truly exists
-	test.VerifyMeepleExistence(t, game, pos, side.BottomLeftEdge, feature.Field, false, 1) // verify that meeple truly exists
+	// verify that meeple truly exists
+	test.VerifyMeepleExistence{
+		T:           t,
+		Game:        game,
+		Pos:         pos,
+		S:           side.Bottom,
+		FeatureType: feature.Road,
+		MeepleExist: true,
+		TurnNumber:  1,
+	}.Run()
+
+	// verify that meeple does not exists
+	test.VerifyMeepleExistence{
+		T:           t,
+		Game:        game,
+		Pos:         pos,
+		S:           side.BottomLeftEdge,
+		FeatureType: feature.Field,
+		MeepleExist: false,
+		TurnNumber:  1,
+	}.Run()
 }
