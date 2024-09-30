@@ -235,7 +235,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 		return err
 	}
 
-	if !currentTile.Equals(elements.ToTile(move)) {
+	if !move.EqualsTile(currentTile) {
 		return fmt.Errorf("%w: %#v", elements.ErrWrongTile, currentTile)
 	}
 	player := game.CurrentPlayer()
