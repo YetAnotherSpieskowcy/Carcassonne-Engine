@@ -60,9 +60,6 @@ def test_two_player_game(tmp_path: Path) -> None:
     game_id, game = check_eleventh_turn(engine, game, game_id)
     game_id, game = check_twelfth_turn(engine, game, game_id)
 
-    # TODO check final score
-    #game_id, game = finalize(engine, game, game_id)
-
     assert game.current_tile is None
 
 

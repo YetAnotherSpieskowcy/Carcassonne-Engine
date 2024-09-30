@@ -8,7 +8,7 @@ from carcassonne_engine.placed_tile import Position
 
 """
  diagonal edges represent cities, dots fields, straight lines roads.
- Player meeples will be represented as !@#$ signs ( you know, writing number but with shift!) 1->!, 2->@ and so on
+ Player meeples will be represented as !@ signs ( you know, writing number but with shift!) 1->!, 2->@
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number in hex :/)
 
 |				  0	   1    2    3
@@ -74,9 +74,6 @@ def test_two_player_game2(tmp_path: Path) -> None:
     game_id, game = check_tenth_turn(engine, game, game_id)
     game_id, game = check_eleventh_turn(engine, game, game_id)
     game_id, game = check_twelfth_turn(engine, game, game_id)
-
-    # TODO check final score
-    game_id, game = finalize(engine, game, game_id)
 
     assert game.current_tile is None
 
@@ -260,7 +257,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 |
 |               |   |.....
 |               .\ /......
-|1              ..2....4-$
+|1              ..2....4-@
 |               ./ \...|..
 |               |   |..|..
 |               |   |..|..|   |
@@ -303,7 +300,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |
 |               |   |.....
 |               .\ /......
-|1              ..2....4-$
+|1              ..2....4-@
 |               ./ \...|..
 |               |   |..|..
 |               |   |..|..|   |
@@ -347,7 +344,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 |
 |               |   |.....
 |               .\ /......
-|1              ..2....4-$
+|1              ..2....4-@
 |               ./ \...|..
 |               |   |..|..
 |               |   |..|..|   |
@@ -490,7 +487,7 @@ Player2 scores 3 points for finished road
 |               .......|...\ /
 |-1             --6----5....7..
 |               ........!../ \.
-|               ..........| # |
+|               ..........| ! |
 |
 |
 |-2
@@ -534,7 +531,7 @@ player1 and player4 score 4 points for their roads
 |          ..|.........|...\ /
 |-1        ..B----6----5....7..
 |          ..|..........!../ \.
-|          ..!............| # |
+|          ..!............| ! |
 |
 |
 |-2
@@ -577,7 +574,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
 |          ..|.........|...\ /
 |-1        ..B----6----5....7..
 |          ..|..........!../ \.
-|          ..#............| # |
+|          ..!............| ! |
 |               .....
 |               .....
 |-2             --C-@
@@ -595,22 +592,26 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
         featureType=FeatureType.Road,
     )
 
-    game_id, game = make_turn(engine, game, game_id, turn_params)
+    game_id, game = make_turn(engine, game, game_id, turn_params,True,
+                              {
+                                  1: 8 + 11,
+                                  2: 12 + 4
+                              }
+                              )
     check_points(game, [8, 12])
 
     return game_id, game
 
 
 """
-player1 scores 12 points in total:
-    - 2*3points for farmer on 9 tile
-    - 2*3points for meeple on 5 tile    
-
-player2 scores 6 points in total:
+player1 scores 11 points in total:
+    - 3*3points for farmer on 9 and 5 tile
     - 1 point for road on B tile
+    - 1 point for city on 7 tile        
+
+player2 scores 4 points in total:    
     - 1 point for road on C tile
-    - 3 points for monastery on A tile
-    - 1 point for city on 7 tile
+    - 3 points for monastery on A tile    
 
 |				  0	   1    2    3
 |
@@ -629,15 +630,10 @@ player2 scores 6 points in total:
 |          ..|.........|...\ /
 |-1        ..B----6----5....7..
 |          ..|..........!../ \.
-|          ..#............| # |
+|          ..!............| ! |
 |               .....
 |               .....
 |-2             --C-@
 |               .....
 |               .....
 """
-
-
-def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):
-    check_final_points([8 + 12, 11 + 6])
-    return
