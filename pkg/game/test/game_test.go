@@ -16,6 +16,18 @@ import (
 
 // If test functions contain logic, they need to be tested as well :)
 
+type CaptureFail struct {
+	failureCaught bool
+}
+
+func (t *CaptureFail) Fatal(_ ...any) {
+	t.failureCaught = true
+}
+
+func (t *CaptureFail) Fatalf(_ string, _ ...any) {
+	t.failureCaught = true
+}
+
 func TestMakeTurn(t *testing.T) {
 	minitileSet := tilesets.OrderedMiniTileSet1()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
@@ -61,7 +73,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 	}
 
 	// Treat illegal move as correct (create error)
-	captureFail := test.NewMyT()
+	captureFail := CaptureFail{}
 	test.MakeTurnValidCheck{
 		Game:         game,
 		T:            &captureFail,
@@ -70,12 +82,12 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		CorrectMove:  true,
 		TurnNumber:   1,
 	}.Run()
-	if !captureFail.FailCaught() {
+	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 
 	// // Treat legal move as incorrect (create error)
-	captureFail = test.NewMyT()
+	captureFail = CaptureFail{}
 	test.MakeTurnValidCheck{
 		Game:         game,
 		T:            &captureFail,
@@ -84,7 +96,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		CorrectMove:  false,
 		TurnNumber:   1,
 	}.Run()
-	if !captureFail.FailCaught() {
+	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 }
@@ -162,7 +174,7 @@ func TestCheckMeeplesAndScoreCatchFailScore(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	captureFail := test.NewMyT()
+	captureFail := CaptureFail{}
 	test.CheckMeeplesAndScore{
 		Game:          game,
 		T:             &captureFail,
@@ -170,7 +182,7 @@ func TestCheckMeeplesAndScoreCatchFailScore(t *testing.T) {
 		PlayerMeeples: []uint8{7, 7},
 		TurnNumber:    1,
 	}.Run()
-	if !captureFail.FailCaught() {
+	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 }
@@ -185,7 +197,7 @@ func TestCheckMeeplesAndScoreCatchFailMeeples(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	captureFail := test.NewMyT()
+	captureFail := CaptureFail{}
 	test.CheckMeeplesAndScore{
 		Game:          game,
 		T:             &captureFail,
@@ -193,7 +205,7 @@ func TestCheckMeeplesAndScoreCatchFailMeeples(t *testing.T) {
 		PlayerMeeples: []uint8{6, 6}, // should be {7,7}, so error
 		TurnNumber:    1,
 	}.Run()
-	if !captureFail.FailCaught() {
+	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 }
@@ -263,7 +275,7 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	}.Run()
 
 	// Wrongly assume, that there is no meeeple (there is meeple)
-	captureFail := test.NewMyT()
+	captureFail := CaptureFail{}
 	test.VerifyMeepleExistence{
 		T:           &captureFail,
 		Game:        game,
@@ -273,12 +285,12 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 		MeepleExist: false,
 		TurnNumber:  1,
 	}.Run()
-	if !captureFail.FailCaught() {
+	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 
 	// Wrongly assume that there is meeple
-	captureFail = test.NewMyT()
+	captureFail = CaptureFail{}
 	test.VerifyMeepleExistence{
 		T:           &captureFail,
 		Game:        game,
@@ -288,7 +300,7 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 		MeepleExist: true,
 		TurnNumber:  1,
 	}.Run()
-	if !captureFail.FailCaught() {
+	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 }

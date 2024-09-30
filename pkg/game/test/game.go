@@ -24,29 +24,6 @@ type T interface {
 	Fatalf(format string, args ...any)
 }
 
-type CaptureFail struct {
-	correctBehaviour bool
-}
-
-func NewMyT() CaptureFail {
-	return CaptureFail{correctBehaviour: false}
-}
-
-func (myT CaptureFail) FailCaught() bool {
-	return myT.correctBehaviour
-}
-
-func (myT *CaptureFail) Fatal(args ...any) {
-	_ = args
-	myT.correctBehaviour = true
-}
-
-func (myT *CaptureFail) Fatalf(format string, args ...any) {
-	_ = format
-	_ = args
-	myT.correctBehaviour = true
-}
-
 type MeepleParams struct {
 	MeepleType  elements.MeepleType
 	FeatureSide side.Side
