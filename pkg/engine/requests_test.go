@@ -471,3 +471,175 @@ func TestGameEngineSendGetMidGameScoreBatchAtMidGameReturnsExpectedScores(t *tes
 		t.Fatalf("Player 2 score: %#v, expected: %#v", midGameScoreResp.Scores[2], expected)
 	}
 }
+
+func TestPlaySingleTurnGameWithNoLogger(t *testing.T) {
+	engine, err := StartGameEngine(4, "")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	tileset := tilesets.TileSet{
+		Tiles:        []tiles.Tile{tiletemplates.StraightRoads()},
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+	}
+
+	game, err := engine.GenerateGame(tileset)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ptile := elements.ToPlacedTile(game.Game.CurrentTile)
+	ptile.Position = position.New(1, 0)
+	ptile.GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{PlayerID: elements.ID(1), Type: elements.NormalMeeple}
+
+	playTurnRequest := &PlayTurnRequest{
+		GameID: game.ID,
+		Move:   ptile,
+	}
+	playTurnResp := engine.SendPlayTurnBatch([]*PlayTurnRequest{playTurnRequest})[0]
+	if playTurnResp.err != nil {
+		t.Fatal(playTurnResp.err.Error())
+	}
+
+	expectedScore := uint32(2)
+	if playTurnResp.FinalScores[elements.ID(1)] != expectedScore {
+		t.Fatalf("Expected score of player1: %#v, got: %#v", expectedScore, playTurnResp.FinalScores[elements.ID(1)])
+	}
+}
+
+func TestGetLegalMovesAndPlayItWithPlayTurnRequestWithNoLogger(t *testing.T) {
+	engine, err := StartGameEngine(4, "")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	game, err := engine.GenerateGame(tilesets.StandardTileSet()) // Preferably change for GenerateSeededGame when benchmarks are merged
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	legalMovesReq := &GetLegalMovesRequest{
+		BaseGameID: game.ID, TileToPlace: game.Game.CurrentTile,
+	}
+	legalMovesResp := engine.SendGetLegalMovesBatch(
+		[]*GetLegalMovesRequest{legalMovesReq},
+	)[0]
+
+	playTurnRequest := &PlayTurnRequest{
+		GameID: game.ID,
+		Move:   legalMovesResp.Moves[1].Move,
+	}
+	playTurnResp := engine.SendPlayTurnBatch([]*PlayTurnRequest{playTurnRequest})[0]
+	if playTurnResp.err != nil {
+		t.Fatal(playTurnResp.err.Error())
+	}
+}
+
+func TestGetRemainingTilesNoLogger(t *testing.T) {
+	engine, err := StartGameEngine(4, "")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	game, err := engine.GenerateGame(tilesets.StandardTileSet()) // Preferably change for GenerateSeededGame when benchmarks are merged
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	remainingTileRequest := &GetRemainingTilesRequest{
+		BaseGameID: game.ID,
+	}
+	remainingTileResponse := engine.SendGetRemainingTilesBatch([]*GetRemainingTilesRequest{remainingTileRequest})[0]
+	if remainingTileResponse.err != nil {
+		t.Fatal(remainingTileResponse.err.Error())
+	}
+}
+
+func TestGetMidGameScoreRequestWithNoLogger(t *testing.T) {
+	engine, err := StartGameEngine(4, "")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	tileset := tilesets.TileSet{
+		Tiles: []tiles.Tile{
+			tiletemplates.StraightRoads(),
+			tiletemplates.StraightRoads(),
+		},
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+	}
+
+	game, err := engine.GenerateGame(tileset)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// play first turn
+	ptile := elements.ToPlacedTile(game.Game.CurrentTile)
+	ptile.Position = position.New(1, 0)
+	ptile.GetPlacedFeatureAtSide(side.Right, feature.Road).Meeple = elements.Meeple{PlayerID: elements.ID(1), Type: elements.NormalMeeple}
+
+	playTurnRequest := &PlayTurnRequest{
+		GameID: game.ID,
+		Move:   ptile,
+	}
+	playTurnResp := engine.SendPlayTurnBatch([]*PlayTurnRequest{playTurnRequest})[0]
+	if playTurnResp.err != nil {
+		t.Fatal(playTurnResp.err.Error())
+	}
+
+	// make mid game score request
+	scoreRequest := &GetMidGameScoreRequest{
+		BaseGameID: game.ID,
+	}
+	scoreResponse := engine.SendGetMidGameScoreBatch([]*GetMidGameScoreRequest{scoreRequest})[0]
+	if scoreResponse.err != nil {
+		t.Fatal(playTurnResp.err.Error())
+	}
+	expectedScore := uint32(2)
+	if scoreResponse.Scores[elements.ID(1)] != expectedScore {
+		t.Fatalf("Expected score of player1: %#v, got: %#v", expectedScore, playTurnResp.FinalScores[elements.ID(1)])
+	}
+}
+
+func TestCloneGameFullWithNoLogger(t *testing.T) {
+	engine, err := StartGameEngine(4, "")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	game, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	games, err := engine.cloneGame(game.ID, 10, true)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if len(games) != 10 {
+		t.Fatal(err.Error())
+	}
+}
+
+func TestCloneGameNotFullWithNoLogger(t *testing.T) {
+	engine, err := StartGameEngine(4, "")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	game, err := engine.GenerateGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	games, err := engine.cloneGame(game.ID, 10, false)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if len(games) != 10 {
+		t.Fatal(err.Error())
+	}
+}
