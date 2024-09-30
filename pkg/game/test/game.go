@@ -19,6 +19,31 @@ type Game interface {
 	GetBoard() elements.Board
 }
 
+type T interface {
+	Fatal(args ...any)
+	Fatalf(format string, args ...any)
+}
+
+type CaptureFail struct {
+	correctBehaviour bool
+}
+
+func NewMyT() CaptureFail {
+	return CaptureFail{correctBehaviour: false}
+}
+
+func (myT CaptureFail) FailCaught() bool {
+	return myT.correctBehaviour
+}
+
+func (myT *CaptureFail) Fatal(args ...any) {
+	myT.correctBehaviour = true
+}
+
+func (myT *CaptureFail) Fatalf(format string, args ...any) {
+	myT.correctBehaviour = true
+}
+
 type MeepleParams struct {
 	MeepleType  elements.MeepleType
 	FeatureSide side.Side
@@ -66,7 +91,7 @@ func (turn MakeTurn) Run() {
 
 type MakeTurnValidCheck struct {
 	Game         Game
-	T            *testing.T
+	T            T
 	TilePosition position.Position
 	MeepleParams MeepleParams
 	CorrectMove  bool
@@ -101,7 +126,7 @@ func (turn MakeTurnValidCheck) Run() {
 
 type CheckMeeplesAndScore struct {
 	Game          Game
-	T             *testing.T
+	T             T
 	PlayerScores  []uint32
 	PlayerMeeples []uint8
 	TurnNumber    uint
@@ -126,7 +151,7 @@ func (turn CheckMeeplesAndScore) Run() {
 
 type VerifyMeepleExistence struct {
 	Game        Game
-	T           *testing.T
+	T           T
 	Pos         position.Position
 	S           side.Side
 	FeatureType feature.Type

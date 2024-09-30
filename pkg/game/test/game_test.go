@@ -60,7 +60,47 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
+	// Treat illegal move as correct (create error)
+	captureFail := test.CaptureFail{}
+	test.MakeTurnValidCheck{
+		Game:         game,
+		T:            &captureFail,
+		TilePosition: position.New(0, 1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		CorrectMove:  true,
+		TurnNumber:   1,
+	}.Run()
+	if !captureFail.FailCaught() {
+		t.Fatalf("Did not catch fail")
+	}
+
+	// // Treat legal move as incorrect (create error)
+	captureFail = test.CaptureFail{}
+	test.MakeTurnValidCheck{
+		Game:         game,
+		T:            &captureFail,
+		TilePosition: position.New(1, 0),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		CorrectMove:  false,
+		TurnNumber:   1,
+	}.Run()
+	if !captureFail.FailCaught() {
+		t.Fatalf("Did not catch fail")
+	}
+}
+
+func TestMakeTurnValidCheckCatchFail(t *testing.T) {
+	// create game
+	minitileSet := tilesets.OrderedMiniTileSet2()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 4)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	// do any wrong move, and catch it
+
 	test.MakeTurnValidCheck{
 		Game:         game,
 		T:            t,
@@ -112,7 +152,53 @@ func TestCheckMeeplesAndScore(t *testing.T) {
 	}.Run()
 }
 
-func TestVerifyMeepleExistence(t *testing.T) {
+func TestCheckMeeplesAndScoreCatchFailScore(t *testing.T) {
+	// create game
+	minitileSet := tilesets.OrderedMiniTileSet2()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 4)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	captureFail := test.CaptureFail{}
+	test.CheckMeeplesAndScore{
+		Game:          game,
+		T:             &captureFail,
+		PlayerScores:  []uint32{2, 2}, // should be {0,0}, so error
+		PlayerMeeples: []uint8{7, 7},
+		TurnNumber:    1,
+	}.Run()
+	if !captureFail.FailCaught() {
+		t.Fatalf("Did not catch fail")
+	}
+}
+
+func TestCheckMeeplesAndScoreCatchFailMeeples(t *testing.T) {
+	// create game
+	minitileSet := tilesets.OrderedMiniTileSet2()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 4)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	captureFail := test.CaptureFail{}
+	test.CheckMeeplesAndScore{
+		Game:          game,
+		T:             &captureFail,
+		PlayerScores:  []uint32{0, 0},
+		PlayerMeeples: []uint8{6, 6}, // should be {7,7}, so error
+		TurnNumber:    1,
+	}.Run()
+	if !captureFail.FailCaught() {
+		t.Fatalf("Did not catch fail")
+	}
+}
+
+func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 	// create game
 	minitileSet := tilesets.OrderedMiniTileSet2()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
@@ -153,4 +239,56 @@ func TestVerifyMeepleExistence(t *testing.T) {
 		MeepleExist: false,
 		TurnNumber:  1,
 	}.Run()
+}
+
+func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
+
+	// create game
+	minitileSet := tilesets.OrderedMiniTileSet2()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 4)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	pos := position.New(1, 0)
+	test.MakeTurnValidCheck{
+		Game:         game,
+		T:            t,
+		TilePosition: pos,
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		CorrectMove:  true,
+		TurnNumber:   1,
+	}.Run()
+
+	// Wrongly assume, that there is no meeeple (there is meeple)
+	captureFail := test.CaptureFail{}
+	test.VerifyMeepleExistence{
+		T:           &captureFail,
+		Game:        game,
+		Pos:         pos,
+		S:           side.Bottom,
+		FeatureType: feature.Road,
+		MeepleExist: false,
+		TurnNumber:  1,
+	}.Run()
+	if !captureFail.FailCaught() {
+		t.Fatalf("Did not catch fail")
+	}
+
+	// Wrongly assume that there is meeple
+	captureFail = test.CaptureFail{}
+	test.VerifyMeepleExistence{
+		T:           &captureFail,
+		Game:        game,
+		Pos:         pos,
+		S:           side.BottomLeftEdge,
+		FeatureType: feature.Field,
+		MeepleExist: true,
+		TurnNumber:  1,
+	}.Run()
+	if !captureFail.FailCaught() {
+		t.Fatalf("Did not catch fail")
+	}
 }
