@@ -336,9 +336,7 @@ func (board *board) addTileToBoard(tile elements.PlacedTile) error {
 	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
-		index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
-			return tile.EqualsTile(candidate)
-		})
+		index := slices.IndexFunc(setTiles, tile.EqualsTile)
 		if index == -1 {
 			return errors.New("Placed tile not found in the tile set, logic error?")
 		}
