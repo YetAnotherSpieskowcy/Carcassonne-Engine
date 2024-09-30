@@ -40,7 +40,7 @@ from pathlib import Path
 
 import pytest
 from pytest import approx
-from utils import TurnParams, check_final_points, check_points, make_turn
+from end_utils import TurnParams, check_final_points, check_points, make_turn
 
 from carcassonne_engine import GameEngine, SerializedGame, models, tiletemplates
 from carcassonne_engine._bindings.feature import Type as FeatureType

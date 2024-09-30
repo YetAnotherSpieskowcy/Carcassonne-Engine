@@ -25,7 +25,7 @@ def find_meeple_in_placed_tile(ptile: PlacedTile):
         if feature.Meeple.Type != 0:
             print(f"sides: {feature.Sides}, feat type: {feature.FeatureType}")
             return feature.Meeple
-    print(f"NONE")
+    print("NONE")
     return None
 
 
@@ -53,8 +53,8 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
                     featureType=turnParams.featureType.value,
                 )
                 if (
-                        feature is not None
-                        and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value
+                    feature is not None
+                    and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value
                 ):
                     return move.move
 
@@ -67,7 +67,7 @@ def make_turn(
     game_id: int,
     turn_params: TurnParams,
     final=False,
-    final_scores=None
+    final_scores=None,
 ) -> (int, SerializedGame):
 
     # get legal moves

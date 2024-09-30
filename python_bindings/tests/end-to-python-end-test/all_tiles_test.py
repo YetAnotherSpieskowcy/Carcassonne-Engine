@@ -48,7 +48,7 @@
 import logging
 from pathlib import Path
 
-from utils import TurnParams, check_final_points, check_points, make_turn
+from end_utils import TurnParams, check_final_points, check_points, make_turn
 
 from carcassonne_engine import GameEngine, SerializedGame, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
@@ -1398,7 +1398,7 @@ def check_turn_O(engine: GameEngine, game, game_id) -> (int, SerializedGame):
     )
 
     game_id, game = make_turn(
-        engine, game, game_id, turn_params, True,{1: 11 + 34 + 11, 2: 8 + 34 + 22}
+        engine, game, game_id, turn_params, True, {1: 11 + 34 + 11, 2: 8 + 34 + 22}
     )
     check_points(game, [11 + 34, 8 + 34])
 

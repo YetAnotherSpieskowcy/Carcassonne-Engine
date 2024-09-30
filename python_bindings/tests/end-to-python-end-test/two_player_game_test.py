@@ -29,7 +29,7 @@
 import logging
 from pathlib import Path
 
-from utils import TurnParams, check_final_points, check_points, make_turn
+from end_utils import TurnParams, check_final_points, check_points, make_turn
 
 from carcassonne_engine import GameEngine, SerializedGame, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
