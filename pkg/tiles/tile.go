@@ -92,14 +92,7 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	var newFeatures []featureMod.Feature
 
 	for _, feature := range tile.Features {
-		newFeatures = append(
-			newFeatures,
-			featureMod.Feature{
-				FeatureType:  feature.FeatureType,
-				ModifierType: feature.ModifierType,
-				Sides:        feature.Sides.Rotate(rotations),
-			},
-		)
+		newFeatures = append(newFeatures, feature.Rotate(rotations))
 	}
 
 	tile.Features = newFeatures
