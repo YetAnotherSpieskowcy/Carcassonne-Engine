@@ -71,6 +71,7 @@ def make_turn(
 ) -> Tuple[int, SerializedGame]:
 
     # get legal moves
+    assert game.current_tile is not None
     legal_moves_req = GetLegalMovesRequest(
         base_game_id=game_id, tile_to_place=game.current_tile
     )
@@ -101,7 +102,7 @@ def check_points(game: SerializedGame, scores: list[int]):
     return
 
 
-def check_final_points(player_scores, scores: dict[int:int]):
+def check_final_points(player_scores, scores: dict[int, int]):
     for id, player_score in player_scores.items():
         assert player_score == scores[id], (
             f"Player:{id} has {player_score} points, should " f"have {scores[id]}"
