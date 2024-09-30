@@ -1397,11 +1397,9 @@ def check_turn_O(engine: GameEngine, game, game_id) -> (int, SerializedGame):
         featureType=FeatureType.NoneType,
     )
 
-    game_id, game = make_turn(engine, game, game_id, turn_params, True,
-                              {
-                                  1: 11 + 34 + 11,
-                                  2: 8 + 34 + 22
-                              })
+    game_id, game = make_turn(
+        engine, game, game_id, turn_params, True,{1: 11 + 34 + 11, 2: 8 + 34 + 22}
+    )
     check_points(game, [11 + 34, 8 + 34])
 
     return game_id, game

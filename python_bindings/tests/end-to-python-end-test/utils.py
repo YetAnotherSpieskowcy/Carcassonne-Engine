@@ -52,14 +52,22 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
                     sideToCheck=turnParams.side.value,
                     featureType=turnParams.featureType.value,
                 )
-                if feature is not None and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value:
+                if (
+                        feature is not None
+                        and feature.Meeple.Type != turnParams.meepleType.NoneMeeple.value
+                ):
                     return move.move
 
     raise KeyError("did not find the specified tile")
 
 
 def make_turn(
-    engine: GameEngine, game: SerializedGame, game_id: int, turn_params: TurnParams, final=False, final_scores=None
+    engine: GameEngine,
+    game: SerializedGame,
+    game_id: int,
+    turn_params: TurnParams,
+    final=False,
+    final_scores=None
 ) -> (int, SerializedGame):
 
     # get legal moves
@@ -94,10 +102,9 @@ def check_points(game: SerializedGame, scores: list[int]):
     return
 
 
-def check_final_points(player_scores,scores: dict[int:int]):
+def check_final_points(player_scores, scores: dict[int:int]):
     for id, player_score in player_scores.items():
         assert player_score == scores[id], (
-            f"Player:{id} has {player_score} points, should "
-            f"have {scores[id]}"
+            f"Player:{id} has {player_score} points, should " f"have {scores[id]}"
         )
     return
