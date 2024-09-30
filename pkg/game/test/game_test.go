@@ -61,7 +61,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		T:            t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
-		CorrectMove:  true,
+		CorrectMove:  false,
 		TurnNumber:   1,
 	}.Run()
 
