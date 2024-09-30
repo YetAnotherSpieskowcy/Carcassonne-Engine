@@ -61,7 +61,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 	}
 
 	// Treat illegal move as correct (create error)
-	captureFail := test.CaptureFail{}
+	captureFail := test.NewMyT()
 	test.MakeTurnValidCheck{
 		Game:         game,
 		T:            &captureFail,
@@ -75,7 +75,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 	}
 
 	// // Treat legal move as incorrect (create error)
-	captureFail = test.CaptureFail{}
+	captureFail = test.NewMyT()
 	test.MakeTurnValidCheck{
 		Game:         game,
 		T:            &captureFail,
@@ -162,7 +162,7 @@ func TestCheckMeeplesAndScoreCatchFailScore(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	captureFail := test.CaptureFail{}
+	captureFail := test.NewMyT()
 	test.CheckMeeplesAndScore{
 		Game:          game,
 		T:             &captureFail,
@@ -185,7 +185,7 @@ func TestCheckMeeplesAndScoreCatchFailMeeples(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	captureFail := test.CaptureFail{}
+	captureFail := test.NewMyT()
 	test.CheckMeeplesAndScore{
 		Game:          game,
 		T:             &captureFail,
@@ -263,7 +263,7 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	}.Run()
 
 	// Wrongly assume, that there is no meeeple (there is meeple)
-	captureFail := test.CaptureFail{}
+	captureFail := test.NewMyT()
 	test.VerifyMeepleExistence{
 		T:           &captureFail,
 		Game:        game,
@@ -278,7 +278,7 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	}
 
 	// Wrongly assume that there is meeple
-	captureFail = test.CaptureFail{}
+	captureFail = test.NewMyT()
 	test.VerifyMeepleExistence{
 		T:           &captureFail,
 		Game:        game,
