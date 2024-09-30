@@ -85,4 +85,4 @@ class PlacedTile:
         return Tile(_go_elements.ToTile(self._go_obj))
 
     def to_bits(self) -> int:
-        return _go_binarytiles.FromPlacedTile(self._go_obj, True)
+        return _go_binarytiles.FromPlacedTile(self._go_obj)
