@@ -167,14 +167,9 @@ func (game *Game) CurrentPlayer() elements.Player {
 	return game.players[game.currentPlayer]
 }
 
+// Meant to be used only in tests
 func (game *Game) GetPlayerByID(playerID elements.ID) elements.Player {
-	for _, player := range game.players {
-		if player.ID() == playerID {
-			return player
-		}
-	}
-	errorString := fmt.Sprintf("Player with desired ID=%d doesn't exist!", playerID)
-	panic(errorString)
+	return game.players[playerID-1]
 }
 
 func (game *Game) GetBoard() elements.Board {
