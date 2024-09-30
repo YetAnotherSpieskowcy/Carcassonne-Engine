@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Tuple
 
 from carcassonne_engine import GameEngine, SerializedGame
 from carcassonne_engine._bindings.elements import MeepleType
@@ -68,7 +68,7 @@ def make_turn(
     turn_params: TurnParams,
     final=False,
     final_scores=None,
-) -> (int, SerializedGame):
+) -> Tuple[int, SerializedGame]:
 
     # get legal moves
     legal_moves_req = GetLegalMovesRequest(
@@ -77,8 +77,7 @@ def make_turn(
     (legal_moves_resp,) = engine.send_get_legal_moves_batch([legal_moves_req])
 
     # find the desired one
-    if legal_moves_resp.moves is None:
-        return
+    assert legal_moves_resp.moves is not None
     move = get_placed_tile(legal_moves_resp.moves, turn_params)
 
     # play turn
