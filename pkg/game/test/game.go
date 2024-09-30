@@ -37,10 +37,13 @@ func (myT CaptureFail) FailCaught() bool {
 }
 
 func (myT *CaptureFail) Fatal(args ...any) {
+	_ = args
 	myT.correctBehaviour = true
 }
 
 func (myT *CaptureFail) Fatalf(format string, args ...any) {
+	_ = format
+	_ = args
 	myT.correctBehaviour = true
 }
 
