@@ -93,7 +93,7 @@ func TestFullGame(t *testing.T) {
 		t.Logf(
 			"iteration %v selecting move: %v at position %v\n",
 			i,
-			binarytiles.FromPlacedTile(move),
+			binarytiles.FromPlacedTile(move, true),
 			move.Position,
 		)
 		playTurnReq := &PlayTurnRequest{GameID: gameID, Move: move}

@@ -154,12 +154,15 @@ func FromTile(tile tiles.Tile) BinaryTile {
 	return binaryTile
 }
 
-func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
+func FromPlacedTile(tile elements.PlacedTile, isPlaced bool) BinaryTile {
 	binaryTile := fromPlacedFeatures(tile.Features)
 
 	binaryTile.addPosition(tile.Position)
 
-	binaryTile.setBit(isPlacedBit)
+	if isPlaced {
+		// turns out not all PlacedTiles are placed
+		binaryTile.setBit(isPlacedBit)
+	}
 
 	return binaryTile
 }

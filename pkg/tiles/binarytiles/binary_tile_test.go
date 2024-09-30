@@ -21,7 +21,7 @@ func TestFromPlacedTileCityWithShield(t *testing.T) {
 	tile.Position = position.New(85, 42)
 
 	expected := BinaryTile(0b01010101_00101010_1_10_000000011_00_0011_0000010011_0001001100_1000001110)
-	actual := FromPlacedTile(tile)
+	actual := FromPlacedTile(tile, true)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
@@ -60,8 +60,8 @@ func TestFromPlacedTileUnconnectedField(t *testing.T) {
 		elements.Meeple{PlayerID: 1, Type: elements.NormalMeeple}
 	tile.Position = position.New(-21, -37)
 
-	expected := BinaryTile(0b11101011_11011011_1_01_100000000_10_1000_0000001111_0000000000_0000000000)
-	actual := FromPlacedTile(tile)
+	expected := BinaryTile(0b11101011_11011011_0_01_100000000_10_1000_0000001111_0000000000_0000000000)
+	actual := FromPlacedTile(tile, false)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
@@ -75,7 +75,7 @@ func TestFromPlacedTileMonastery(t *testing.T) {
 	tile.Position = position.New(-128, 127)
 
 	expected := BinaryTile(0b10000000_01111111_1_10_100000000_01_0000_0000000000_0000000100_1111111111)
-	actual := FromPlacedTile(tile)
+	actual := FromPlacedTile(tile, true)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
