@@ -69,16 +69,15 @@ func (turn MakeTurn) Run() {
 	}
 }
 
-type MakeTurnValidCheck struct {
+type MakeWrongTurn struct {
 	Game         Game
 	T            T
 	TilePosition position.Position
 	MeepleParams MeepleParams
-	CorrectMove  bool
 	TurnNumber   uint
 }
 
-func (turn MakeTurnValidCheck) Run() {
+func (turn MakeWrongTurn) Run() {
 	tile, err := turn.Game.GetCurrentTile()
 	if err != nil {
 		turn.T.Fatal(err.Error())
@@ -97,10 +96,8 @@ func (turn MakeTurnValidCheck) Run() {
 
 	err = turn.Game.PlayTurn(ptile)
 
-	if err != nil && turn.CorrectMove {
-		turn.T.Fatal(err.Error())
-	} else if err == nil && !turn.CorrectMove {
-		turn.T.Fatalf("Turn %d: Wrongly placed meeple wasn't detected by engine!", turn.TurnNumber)
+	if err == nil {
+		turn.T.Fatalf("Turn %d: Wrongly placed tile wasn't detected by engine!", turn.TurnNumber)
 	}
 }
 
