@@ -64,7 +64,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	// first turn
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
@@ -73,7 +73,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	// second turn
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(-1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
@@ -82,7 +82,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	// third turn
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(-2, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 	}.Run()
@@ -91,7 +91,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	// fourth turn
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
 	}.Run()

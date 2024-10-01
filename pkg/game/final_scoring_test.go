@@ -50,7 +50,7 @@ func TestFinalScoreRoad(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
@@ -111,25 +111,25 @@ func TestFinalScoreMultipleRoads(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, -1),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -2),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
@@ -178,7 +178,7 @@ func TestFinalScoreMonastery(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
@@ -234,19 +234,19 @@ func TestFinalScoreMonasteries(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, -1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
@@ -300,7 +300,7 @@ func TestFinalScoreCity(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
 	}.Run()
@@ -357,19 +357,19 @@ func TestFinalScoreCities(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(-1, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
 	}.Run()
@@ -423,7 +423,7 @@ func TestFinalScoreField(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 	}.Run()
@@ -493,31 +493,31 @@ func TestFinalScoreFields1(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -2),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 0),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, 1),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()
@@ -579,14 +579,14 @@ func TestFinalScoreFields2(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Field},
 	}.Run()
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, 2),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 	}.Run()
@@ -687,14 +687,14 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 		if rotation == 2 {
 			test.MakeTurn{
 				Game:         game,
-				T:            t,
+				TestingT:     t,
 				TilePosition: position.New(0, 1).Rotate(rotation),
 				MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 			}.Run()
 		} else {
 			test.MakeTurn{
 				Game:         game,
-				T:            t,
+				TestingT:     t,
 				TilePosition: position.New(0, 1).Rotate(rotation),
 				MeepleParams: test.NoneMeeple(),
 			}.Run()
@@ -706,7 +706,7 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 		for _, offset := range offsets {
 			test.MakeTurn{
 				Game:         game,
-				T:            t,
+				TestingT:     t,
 				TilePosition: position.New(0, 2).Rotate(rotation).Add(offset.Rotate(rotation)),
 				MeepleParams: test.NoneMeeple(),
 			}.Run()
@@ -717,7 +717,7 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 	for _, rotation := range rotations {
 		test.MakeTurn{
 			Game:         game,
-			T:            t,
+			TestingT:     t,
 			TilePosition: position.New(1, 1).Rotate(rotation),
 			MeepleParams: test.NoneMeeple(),
 		}.Run()
@@ -728,7 +728,7 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 		if rotation == 1 {
 			test.MakeTurn{
 				Game:         game,
-				T:            t,
+				TestingT:     t,
 				TilePosition: position.New(2, 2).Rotate(rotation),
 				MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 			}.Run()
@@ -736,7 +736,7 @@ func TestFinalScoreFields3(t *testing.T) { //nolint:gocyclo
 		} else {
 			test.MakeTurn{
 				Game:         game,
-				T:            t,
+				TestingT:     t,
 				TilePosition: position.New(2, 2).Rotate(rotation),
 				MeepleParams: test.NoneMeeple(),
 			}.Run()
@@ -782,25 +782,25 @@ func TestFinalScoreMultipleRoads123(t *testing.T) {
 
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, -1),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(1, -2),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()
 	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: position.New(0, -2),
 		MeepleParams: test.NoneMeeple(),
 	}.Run()

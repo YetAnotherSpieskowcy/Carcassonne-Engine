@@ -40,7 +40,7 @@ func NoneMeeple() MeepleParams {
 
 type MakeTurn struct {
 	Game         Game
-	T            *testing.T
+	TestingT     *testing.T
 	TilePosition position.Position
 	MeepleParams MeepleParams
 }
@@ -48,7 +48,7 @@ type MakeTurn struct {
 func (turn MakeTurn) Run() {
 	tile, err := turn.Game.GetCurrentTile()
 	if err != nil {
-		turn.T.Fatal(err.Error())
+		turn.TestingT.Fatal(err.Error())
 	}
 
 	var player = turn.Game.CurrentPlayer()
@@ -65,13 +65,13 @@ func (turn MakeTurn) Run() {
 	err = turn.Game.PlayTurn(ptile)
 
 	if err != nil {
-		turn.T.Fatal(err.Error())
+		turn.TestingT.Fatal(err.Error())
 	}
 }
 
 type MakeWrongTurn struct {
 	Game         Game
-	T            T
+	TestingT     T
 	TilePosition position.Position
 	MeepleParams MeepleParams
 	TurnNumber   uint
@@ -80,7 +80,7 @@ type MakeWrongTurn struct {
 func (turn MakeWrongTurn) Run() {
 	tile, err := turn.Game.GetCurrentTile()
 	if err != nil {
-		turn.T.Fatal(err.Error())
+		turn.TestingT.Fatal(err.Error())
 	}
 
 	var player = turn.Game.CurrentPlayer()
@@ -97,13 +97,13 @@ func (turn MakeWrongTurn) Run() {
 	err = turn.Game.PlayTurn(ptile)
 
 	if err == nil {
-		turn.T.Fatalf("Turn %d: Wrongly placed tile wasn't detected by engine!", turn.TurnNumber)
+		turn.TestingT.Fatalf("Turn %d: Wrongly placed tile wasn't detected by engine!", turn.TurnNumber)
 	}
 }
 
 type CheckMeeplesAndScore struct {
 	Game          Game
-	T             T
+	TestingT      T
 	PlayerScores  []uint32
 	PlayerMeeples []uint8
 	TurnNumber    uint
@@ -116,21 +116,21 @@ func (turn CheckMeeplesAndScore) Run() {
 
 		// check meeples
 		if player.MeepleCount(elements.NormalMeeple) != turn.PlayerMeeples[i] {
-			turn.T.Fatalf("Turn %d: meeples count does not match for player %d. Expected: %d  Got: %d", turn.TurnNumber, i+1, turn.PlayerMeeples[i], player.MeepleCount(elements.NormalMeeple))
+			turn.TestingT.Fatalf("Turn %d: meeples count does not match for player %d. Expected: %d  Got: %d", turn.TurnNumber, i+1, turn.PlayerMeeples[i], player.MeepleCount(elements.NormalMeeple))
 		}
 
 		// check points
 		if player.Score() != turn.PlayerScores[i] {
-			turn.T.Fatalf("Turn %d: Player %d received wrong amount of points! Expected: %d  Got: %d ", turn.TurnNumber, i+1, turn.PlayerScores[i], player.Score())
+			turn.TestingT.Fatalf("Turn %d: Player %d received wrong amount of points! Expected: %d  Got: %d ", turn.TurnNumber, i+1, turn.PlayerScores[i], player.Score())
 		}
 	}
 }
 
 type VerifyMeepleExistence struct {
 	Game        Game
-	T           T
-	Pos         position.Position
-	S           side.Side
+	TestingT    T
+	Position    position.Position
+	Side        side.Side
 	FeatureType feature.Type
 	MeepleExist bool
 	TurnNumber  uint
@@ -138,18 +138,18 @@ type VerifyMeepleExistence struct {
 
 func (turn VerifyMeepleExistence) Run() {
 	board := turn.Game.GetBoard()
-	placedTile, tileExists := board.GetTileAt(turn.Pos)
+	placedTile, tileExists := board.GetTileAt(turn.Position)
 	if !tileExists {
-		turn.T.Fatalf("Turn %d: There is no tile on desired positon: %#v", turn.TurnNumber, turn.Pos)
+		turn.TestingT.Fatalf("Turn %d: There is no tile on desired positon: %#v", turn.TurnNumber, turn.Position)
 	}
-	placedFeature := placedTile.GetPlacedFeatureAtSide(turn.S, turn.FeatureType)
+	placedFeature := placedTile.GetPlacedFeatureAtSide(turn.Side, turn.FeatureType)
 	if turn.MeepleExist {
 		if placedFeature.Meeple.Type != elements.NormalMeeple {
-			turn.T.Fatalf("Turn %d: Missing meeple on a tile!", turn.TurnNumber)
+			turn.TestingT.Fatalf("Turn %d: Missing meeple on a tile!", turn.TurnNumber)
 		}
 	} else {
 		if placedFeature.Meeple.Type != elements.NoneMeeple {
-			turn.T.Fatalf("Turn %d: Meeple hasn't been removed!", turn.TurnNumber)
+			turn.TestingT.Fatalf("Turn %d: Meeple hasn't been removed!", turn.TurnNumber)
 		}
 	}
 }
