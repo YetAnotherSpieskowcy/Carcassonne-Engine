@@ -28,7 +28,7 @@ func (t *CaptureFail) Fatalf(_ string, _ ...any) {
 	t.failureCaught = true
 }
 
-func TestMakeTurn(t *testing.T) {
+func TestMakeTurnLegalMove(t *testing.T) {
 	minitileSet := tilesets.OrderedMiniTileSet1()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
@@ -62,7 +62,30 @@ func TestMakeTurn(t *testing.T) {
 	}
 }
 
-func TestMakeTurnValidCheck(t *testing.T) {
+func TestMakeTurnIllegalMove(t *testing.T) {
+	minitileSet := tilesets.OrderedMiniTileSet2()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 2)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	captureFail := CaptureFail{}
+	test.MakeTurn{
+		Game:         game,
+		TestingT:     &captureFail,
+		TilePosition: position.New(0, 1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
+		TurnNumber:   1,
+	}.Run()
+	if !captureFail.failureCaught {
+		t.Fatalf("Did not catch fail")
+	}
+
+}
+
+func TestMakeWrongTurnWithLegalTurn(t *testing.T) {
 	// create game
 	minitileSet := tilesets.OrderedMiniTileSet2()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
@@ -72,7 +95,7 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	// Treat illegal move as correct (create error)
+	// Treat correct move as illegal (create error)
 	captureFail := CaptureFail{}
 	test.MakeWrongTurn{
 		Game:         game,
@@ -81,12 +104,23 @@ func TestMakeTurnValidCheck(t *testing.T) {
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
-	if !captureFail.failureCaught {
+	if captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
+}
 
-	// // Treat legal move as incorrect (create error)
-	captureFail = CaptureFail{}
+func TestMakeWrongTurnWithIllegalTurn(t *testing.T) {
+	// create game
+	minitileSet := tilesets.OrderedMiniTileSet2()
+	deckStack := stack.NewOrdered(minitileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
+	game, err := game.NewFromDeck(deck, nil, 4)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Treat invcrrect move as illegal (do not create error)
+	captureFail := CaptureFail{}
 	test.MakeWrongTurn{
 		Game:         game,
 		TestingT:     &captureFail,
@@ -120,7 +154,7 @@ func TestMakeTurnValidCheckCatchFail(t *testing.T) {
 	}.Run()
 
 	// do any correct move
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		TilePosition: position.New(1, 0),
@@ -217,7 +251,7 @@ func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 	}
 
 	pos := position.New(1, 0)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		TilePosition: pos,
@@ -260,7 +294,7 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	}
 
 	pos := position.New(1, 0)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		TilePosition: pos,

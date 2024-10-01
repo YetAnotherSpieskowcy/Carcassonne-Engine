@@ -1,8 +1,6 @@
 package test
 
 import (
-	"testing"
-
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
@@ -40,9 +38,10 @@ func NoneMeeple() MeepleParams {
 
 type MakeTurn struct {
 	Game         Game
-	TestingT     *testing.T
+	TestingT     T
 	TilePosition position.Position
 	MeepleParams MeepleParams
+	TurnNumber   uint
 }
 
 func (turn MakeTurn) Run() {

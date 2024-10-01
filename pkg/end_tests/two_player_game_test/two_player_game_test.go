@@ -69,21 +69,20 @@ func Test2PlayerFullGame(t *testing.T) {
 */
 func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(0, 1)
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.City},
-		CorrectMove:  true,
 		TurnNumber:   1,
 	}.Run()
 
 	// remoed meeple
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Bottom,
+		Position:    pos,
+		Side:        side.Bottom,
 		FeatureType: feature.City,
 		MeepleExist: false,
 		TurnNumber:  1,
@@ -91,7 +90,7 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 0},
 		PlayerMeeples: []uint8{7, 7},
 		TurnNumber:    1,
@@ -112,20 +111,19 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 1)
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
-		CorrectMove:  true,
 		TurnNumber:   2,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Left,
+		Position:    pos,
+		Side:        side.Left,
 		FeatureType: feature.Road,
 		MeepleExist: true,
 		TurnNumber:  2,
@@ -133,7 +131,7 @@ func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 0},
 		PlayerMeeples: []uint8{7, 6},
 		TurnNumber:    2,
@@ -156,30 +154,28 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 0)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road},
-		CorrectMove:  false,
 		TurnNumber:   3,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.TopLeftEdge, FeatureType: feature.Field},
-		CorrectMove:  true,
 		TurnNumber:   3,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.TopLeftEdge,
+		Position:    pos,
+		Side:        side.TopLeftEdge,
 		FeatureType: feature.Field,
 		MeepleExist: true,
 		TurnNumber:  3,
@@ -187,7 +183,7 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 0},
 		PlayerMeeples: []uint8{6, 6},
 		TurnNumber:    3,
@@ -210,30 +206,28 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 0)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
-		CorrectMove:  false,
 		TurnNumber:   4,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
-		CorrectMove:  true,
 		TurnNumber:   4,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Bottom,
+		Position:    pos,
+		Side:        side.Bottom,
 		FeatureType: feature.Road,
 		MeepleExist: true,
 		TurnNumber:  4,
@@ -241,7 +235,7 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 0},
 		PlayerMeeples: []uint8{6, 5},
 		TurnNumber:    4,
@@ -268,39 +262,37 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, -1)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road},
-		CorrectMove:  false,
 		TurnNumber:   5,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
-		CorrectMove:  true,
 		TurnNumber:   5,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         position.New(-1, 0),
-		S:           side.Bottom,
+		Position:    position.New(-1, 0),
+		Side:        side.Bottom,
 		FeatureType: feature.Road,
 		MeepleExist: false,
 		TurnNumber:  5,
 	}.Run()
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.NoSide,
+		Position:    pos,
+		Side:        side.NoSide,
 		FeatureType: feature.Monastery,
 		MeepleExist: true,
 		TurnNumber:  5,
@@ -308,7 +300,7 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 2},
 		PlayerMeeples: []uint8{5, 6},
 		TurnNumber:    5,
@@ -333,20 +325,19 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 */
 func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, -1)
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City},
-		CorrectMove:  true,
 		TurnNumber:   6,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Right,
+		Position:    pos,
+		Side:        side.Right,
 		FeatureType: feature.City,
 		MeepleExist: true,
 		TurnNumber:  6,
@@ -354,7 +345,7 @@ func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 2},
 		PlayerMeeples: []uint8{5, 5},
 		TurnNumber:    6,
@@ -382,40 +373,38 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, -1)
 
 	// try illegal turn first (put meeple on a city)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.City},
-		CorrectMove:  false,
 		TurnNumber:   7,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City},
-		CorrectMove:  true,
 		TurnNumber:   7,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         position.New(1, -1),
-		S:           side.Right,
+		Position:    position.New(1, -1),
+		Side:        side.Right,
 		FeatureType: feature.City,
 		MeepleExist: false,
 		TurnNumber:  7,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Right,
+		Position:    pos,
+		Side:        side.Right,
 		FeatureType: feature.City,
 		MeepleExist: true,
 		TurnNumber:  7,
@@ -423,7 +412,7 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 6},
 		PlayerMeeples: []uint8{4, 6},
 		TurnNumber:    7,
@@ -449,20 +438,19 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 func checkEightthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 1)
 
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
-		CorrectMove:  true,
 		TurnNumber:   8,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Bottom,
+		Position:    pos,
+		Side:        side.Bottom,
 		FeatureType: feature.Road,
 		MeepleExist: true,
 		TurnNumber:  8,
@@ -470,7 +458,7 @@ func checkEightthTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 6},
 		PlayerMeeples: []uint8{4, 5},
 		TurnNumber:    8,
@@ -498,40 +486,38 @@ func checkNinethTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 1)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
-		CorrectMove:  false,
 		TurnNumber:   9,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.TopRightEdge, FeatureType: feature.Field},
-		CorrectMove:  true,
 		TurnNumber:   9,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         position.New(1, 1),
-		S:           side.Left,
+		Position:    position.New(1, 1),
+		Side:        side.Left,
 		FeatureType: feature.Road,
 		MeepleExist: false,
 		TurnNumber:  9,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.TopRightEdge,
+		Position:    pos,
+		Side:        side.TopRightEdge,
 		FeatureType: feature.Field,
 		MeepleExist: true,
 		TurnNumber:  9,
@@ -539,7 +525,7 @@ func checkNinethTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{4, 12},
 		PlayerMeeples: []uint8{3, 6},
 		TurnNumber:    9,
@@ -567,30 +553,29 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, -1)
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.City},
-		CorrectMove:  true,
 		TurnNumber:   10,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         position.New(2, -1),
-		S:           side.Right,
+		Position:    position.New(2, -1),
+		Side:        side.Right,
 		FeatureType: feature.City,
 		MeepleExist: false,
 		TurnNumber:  10,
 	}.Run()
 
 	test.VerifyMeepleExistence{
-		T:           t,
+		TestingT:    t,
 		Game:        game,
-		Pos:         pos,
-		S:           side.Right,
+		Position:    pos,
+		Side:        side.Right,
 		FeatureType: feature.City,
 		MeepleExist: true,
 		TurnNumber:  10,
@@ -598,7 +583,7 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{8, 12},
 		PlayerMeeples: []uint8{4, 5},
 		TurnNumber:    10,
@@ -624,28 +609,26 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 0)
 
 	// try illegal turn first (put meeple on a field)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field},
-		CorrectMove:  false,
 		TurnNumber:   11,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.NoneMeeple(),
-		CorrectMove:  true,
 		TurnNumber:   11,
 	}.Run()
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{8, 12},
 		PlayerMeeples: []uint8{4, 5},
 		TurnNumber:    11,
@@ -670,28 +653,26 @@ func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 0)
 
 	// try illegal turn first (put meeple on a field)
-	test.MakeTurnValidCheck{
+	test.MakeWrongTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field},
-		CorrectMove:  false,
 		TurnNumber:   12,
 	}.Run()
 
 	// normal correct turn
-	test.MakeTurnValidCheck{
+	test.MakeTurn{
 		Game:         game,
-		T:            t,
+		TestingT:     t,
 		TilePosition: pos,
 		MeepleParams: test.NoneMeeple(),
-		CorrectMove:  true,
 		TurnNumber:   12,
 	}.Run()
 
 	test.CheckMeeplesAndScore{
 		Game:          game,
-		T:             t,
+		TestingT:      t,
 		PlayerScores:  []uint32{8, 12},
 		PlayerMeeples: []uint8{4, 5},
 		TurnNumber:    12,
