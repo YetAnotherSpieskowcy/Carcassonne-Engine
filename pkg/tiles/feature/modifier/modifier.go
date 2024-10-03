@@ -1,6 +1,6 @@
 package modifier
 
-type Type int64
+type Type int8
 
 const (
 	NoneType Type = iota
