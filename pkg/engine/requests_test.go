@@ -541,7 +541,7 @@ func TestGetRemainingTilesNoLogger(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	game, err := engine.GenerateGame(tilesets.StandardTileSet()) // TODO Change for GenerateSeededGame when benchmarks are merged
+	game, err := engine.GenerateGame(tilesets.StandardTileSet()) // TODO: Change for GenerateSeededGame when benchmarks are merged
 	if err != nil {
 		t.Fatal(err.Error())
 	}
