@@ -23,6 +23,7 @@ type cloneGameRequest struct {
 	GameID      int
 	ReservedIDs []int
 	LogDir      string
+	FullClone   bool
 }
 
 func (req *cloneGameRequest) gameID() int {
@@ -38,9 +39,17 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 	clones := make([]*game.Game, count)
 	resp := &cloneGameResponse{BaseResponse: BaseResponse{gameID: req.GameID}}
 
-	if req.LogDir == "" {
+	if !req.FullClone {
 		for i := range req.ReservedIDs {
 			clones[i] = g.DeepCloneWithSwappableTiles()
+		}
+		resp.Clones = clones
+		return resp
+	}
+
+	if req.LogDir == "" {
+		for i := range req.ReservedIDs {
+			clones[i] = g.DeepClone()
 		}
 		resp.Clones = clones
 		return resp

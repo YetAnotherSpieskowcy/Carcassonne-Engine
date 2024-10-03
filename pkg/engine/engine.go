@@ -120,8 +120,10 @@ type GameEngine struct {
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
-	if err := os.MkdirAll(logDir, 0700); err != nil {
-		return nil, err
+	if logDir != "" {
+		if err := os.MkdirAll(logDir, 0700); err != nil {
+			return nil, err
+		}
 	}
 	comm := newCommunicator()
 	engine := &GameEngine{
@@ -177,13 +179,17 @@ func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWi
 	id := engine.nextGameID
 	engine.nextGameID++
 
-	logFile := path.Join(engine.logDir, fmt.Sprintf("%v.jsonl", id))
-	logger, err := logger.NewFromFile(logFile)
-	if err != nil {
-		return SerializedGameWithID{}, err
+	var log logger.Logger
+	if engine.logDir != "" {
+		logFile := path.Join(engine.logDir, fmt.Sprintf("%v.jsonl", id))
+		fileLog, err := logger.NewFromFile(logFile)
+		if err != nil {
+			return SerializedGameWithID{}, err
+		}
+		log = &fileLog
 	}
 
-	g, err := game.NewFromDeck(deck, &logger)
+	g, err := game.NewFromDeck(deck, log)
 	if err != nil {
 		return SerializedGameWithID{}, err
 	}
@@ -247,11 +253,12 @@ func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, er
 		engine.nextGameID++
 	}
 
-	logDir := ""
-	if full {
-		logDir = engine.logDir
+	req := &cloneGameRequest{
+		GameID:      gameID,
+		ReservedIDs: reservedIDs,
+		LogDir:      engine.logDir,
+		FullClone:   full,
 	}
-	req := &cloneGameRequest{GameID: gameID, ReservedIDs: reservedIDs, LogDir: logDir}
 	responses := engine.sendBatch([]Request{req})
 	if err := responses[0].Err(); err != nil {
 		return nil, err
