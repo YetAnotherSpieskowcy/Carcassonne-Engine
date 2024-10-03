@@ -159,7 +159,10 @@ func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
 
 	binaryTile.addPosition(tile.Position)
 
-	binaryTile.setBit(isPlacedBit)
+	if tile.Features != nil {
+		// turns out not all PlacedTiles are placed
+		binaryTile.setBit(isPlacedBit)
+	}
 
 	return binaryTile
 }

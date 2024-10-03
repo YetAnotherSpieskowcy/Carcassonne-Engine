@@ -121,7 +121,7 @@ func (game *Game) Serialized() SerializedGame {
 	// create serialized tiles
 	serializedTiles := []binarytiles.BinaryTile{}
 	for _, tile := range game.board.Tiles() {
-		serializedTiles = append(serializedTiles, binarytiles.FromTile(elements.ToTile(tile)))
+		serializedTiles = append(serializedTiles, binarytiles.FromPlacedTile(tile))
 	}
 
 	serialized := SerializedGame{
