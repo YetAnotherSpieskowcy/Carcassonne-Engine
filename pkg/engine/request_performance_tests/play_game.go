@@ -12,7 +12,7 @@ type TestedRequest func(games *[]engine.SerializedGameWithID, eng *engine.GameEn
 func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
 	b.StopTimer()
 
-	eng, err := engine.StartGameEngine(4, b.TempDir())
+	eng, err := engine.StartGameEngine(4, "")
 	if err != nil {
 		b.Fatal()
 	}
