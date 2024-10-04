@@ -5,7 +5,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-type Type int64
+type Type int8
 
 const (
 	NoneType Type = iota
