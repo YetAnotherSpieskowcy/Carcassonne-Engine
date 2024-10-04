@@ -65,7 +65,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(1, 0),
+		Position:     position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
 	validateScores(game, []uint32{2, 0}, t)
@@ -74,7 +74,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(-1, 0),
+		Position:     position.New(-1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 	}.Run()
 	validateScores(game, []uint32{2, 3}, t)
@@ -83,7 +83,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(-2, 0),
+		Position:     position.New(-2, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
 	}.Run()
 	validateScores(game, []uint32{2, 4}, t)
@@ -92,7 +92,7 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(0, 1),
+		Position:     position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
 	}.Run()
 	validateScores(game, []uint32{6, 5}, t)

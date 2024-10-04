@@ -40,7 +40,7 @@ func TestMakeTurnLegalMove(t *testing.T) {
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(0, 1),
+		Position:     position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
 	}.Run()
 
@@ -75,7 +75,7 @@ func TestMakeTurnIllegalMove(t *testing.T) {
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     &captureFail,
-		TilePosition: position.New(0, 1),
+		Position:     position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
@@ -100,7 +100,7 @@ func TestMakeWrongTurnWithLegalTurn(t *testing.T) {
 	test.MakeWrongTurn{
 		Game:         game,
 		TestingT:     &captureFail,
-		TilePosition: position.New(0, 1),
+		Position:     position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
@@ -124,7 +124,7 @@ func TestMakeWrongTurnWithIllegalTurn(t *testing.T) {
 	test.MakeWrongTurn{
 		Game:         game,
 		TestingT:     &captureFail,
-		TilePosition: position.New(1, 0),
+		Position:     position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
@@ -148,7 +148,7 @@ func TestMakeTurnValidCheckCatchFail(t *testing.T) {
 	test.MakeWrongTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(0, 1),
+		Position:     position.New(0, 1),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
@@ -157,7 +157,7 @@ func TestMakeTurnValidCheckCatchFail(t *testing.T) {
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: position.New(1, 0),
+		Position:     position.New(1, 0),
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
@@ -254,31 +254,31 @@ func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: pos,
+		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
 
 	// verify that meeple truly exists
 	test.VerifyMeepleExistence{
-		TestingT:    t,
-		Game:        game,
-		Position:    pos,
-		Side:        side.Bottom,
-		FeatureType: feature.Road,
-		MeepleExist: true,
-		TurnNumber:  1,
+		TestingT:     t,
+		Game:         game,
+		Position:     pos,
+		Side:         side.Bottom,
+		FeatureType:  feature.Road,
+		MeepleExists: true,
+		TurnNumber:   1,
 	}.Run()
 
 	// verify that meeple does not exist
 	test.VerifyMeepleExistence{
-		TestingT:    t,
-		Game:        game,
-		Position:    pos,
-		Side:        side.BottomLeftEdge,
-		FeatureType: feature.Field,
-		MeepleExist: false,
-		TurnNumber:  1,
+		TestingT:     t,
+		Game:         game,
+		Position:     pos,
+		Side:         side.BottomLeftEdge,
+		FeatureType:  feature.Field,
+		MeepleExists: false,
+		TurnNumber:   1,
 	}.Run()
 }
 
@@ -297,7 +297,7 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		TilePosition: pos,
+		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
 		TurnNumber:   1,
 	}.Run()
@@ -305,13 +305,13 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	// Wrongly assume, that there is no meeeple (there is meeple)
 	captureFail := CaptureFail{}
 	test.VerifyMeepleExistence{
-		TestingT:    &captureFail,
-		Game:        game,
-		Position:    pos,
-		Side:        side.Bottom,
-		FeatureType: feature.Road,
-		MeepleExist: false,
-		TurnNumber:  1,
+		TestingT:     &captureFail,
+		Game:         game,
+		Position:     pos,
+		Side:         side.Bottom,
+		FeatureType:  feature.Road,
+		MeepleExists: false,
+		TurnNumber:   1,
 	}.Run()
 	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
@@ -320,13 +320,13 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 	// Wrongly assume that there is meeple
 	captureFail = CaptureFail{}
 	test.VerifyMeepleExistence{
-		TestingT:    &captureFail,
-		Game:        game,
-		Position:    pos,
-		Side:        side.BottomLeftEdge,
-		FeatureType: feature.Field,
-		MeepleExist: true,
-		TurnNumber:  1,
+		TestingT:     &captureFail,
+		Game:         game,
+		Position:     pos,
+		Side:         side.BottomLeftEdge,
+		FeatureType:  feature.Field,
+		MeepleExists: true,
+		TurnNumber:   1,
 	}.Run()
 	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")

@@ -39,7 +39,7 @@ func NoneMeeple() MeepleParams {
 type MakeTurn struct {
 	Game         Game
 	TestingT     T
-	TilePosition position.Position
+	Position     position.Position
 	MeepleParams MeepleParams
 	TurnNumber   uint
 }
@@ -53,7 +53,7 @@ func (turn MakeTurn) Run() {
 	var player = turn.Game.CurrentPlayer()
 
 	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = turn.TilePosition
+	ptile.Position = turn.Position
 	if turn.MeepleParams.MeepleType != elements.NoneMeeple {
 		ptile.GetPlacedFeatureAtSide(turn.MeepleParams.FeatureSide, turn.MeepleParams.FeatureType).Meeple = elements.Meeple{
 			Type:     turn.MeepleParams.MeepleType,
@@ -71,7 +71,7 @@ func (turn MakeTurn) Run() {
 type MakeWrongTurn struct {
 	Game         Game
 	TestingT     T
-	TilePosition position.Position
+	Position     position.Position
 	MeepleParams MeepleParams
 	TurnNumber   uint
 }
@@ -85,7 +85,7 @@ func (turn MakeWrongTurn) Run() {
 	var player = turn.Game.CurrentPlayer()
 
 	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = turn.TilePosition
+	ptile.Position = turn.Position
 	if turn.MeepleParams.MeepleType != elements.NoneMeeple {
 		ptile.GetPlacedFeatureAtSide(turn.MeepleParams.FeatureSide, turn.MeepleParams.FeatureType).Meeple = elements.Meeple{
 			Type:     turn.MeepleParams.MeepleType,
@@ -126,13 +126,13 @@ func (turn CheckMeeplesAndScore) Run() {
 }
 
 type VerifyMeepleExistence struct {
-	Game        Game
-	TestingT    T
-	Position    position.Position
-	Side        side.Side
-	FeatureType feature.Type
-	MeepleExist bool
-	TurnNumber  uint
+	Game         Game
+	TestingT     T
+	Position     position.Position
+	Side         side.Side
+	FeatureType  feature.Type
+	MeepleExists bool
+	TurnNumber   uint
 }
 
 func (turn VerifyMeepleExistence) Run() {
@@ -142,7 +142,7 @@ func (turn VerifyMeepleExistence) Run() {
 		turn.TestingT.Fatalf("Turn %d: There is no tile on desired positon: %#v", turn.TurnNumber, turn.Position)
 	}
 	placedFeature := placedTile.GetPlacedFeatureAtSide(turn.Side, turn.FeatureType)
-	if turn.MeepleExist {
+	if turn.MeepleExists {
 		if placedFeature.Meeple.Type != elements.NormalMeeple {
 			turn.TestingT.Fatalf("Turn %d: Missing meeple on a tile!", turn.TurnNumber)
 		}
