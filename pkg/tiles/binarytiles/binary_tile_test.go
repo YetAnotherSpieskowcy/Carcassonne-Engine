@@ -81,3 +81,14 @@ func TestFromPlacedTileMonastery(t *testing.T) {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
 	}
 }
+
+func TestFromPlacedTileEmptyTile(t *testing.T) {
+	var tile elements.PlacedTile
+
+	expected := BinaryTile(0b00000000_00000000_0_00_000000000_00_0000_0000000000_0000000000_0000000000)
+	actual := FromPlacedTile(tile)
+
+	if expected != actual {
+		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
+	}
+}
