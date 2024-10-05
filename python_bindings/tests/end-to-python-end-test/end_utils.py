@@ -96,6 +96,6 @@ def check_final_points(player_scores, scores: dict[int, int]):
     for player_id, player_score in player_scores.items():
         assert player_score == scores[player_id], (
             f"Player:{player_id} has {player_score} points, "
-            f"should " f"have {scores[player_id]}"
+            f"should have {scores[player_id]}"
         )
     return

@@ -151,7 +151,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialize
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [0, 0+4])
+    check_points(game, [0, 0 + 4])
 
     return game_id, game
 
@@ -367,7 +367,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> tuple[int, Serializ
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [0+4, 4])
+    check_points(game, [0 + 4, 4])
 
     return game_id, game
 
@@ -498,7 +498,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialized
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [4, 4+4])
+    check_points(game, [4, 4 + 4])
 
     return game_id, game
 
@@ -544,7 +544,7 @@ def check_eleventh_turn(
     )
 
     game_id, game = make_turn(engine, game, game_id, turn_params)
-    check_points(game, [4+4, 8+4])
+    check_points(game, [4 + 4, 8 + 4])
 
     return game_id, game
 
