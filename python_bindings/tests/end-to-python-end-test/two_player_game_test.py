@@ -14,7 +14,6 @@ from carcassonne_engine.models import SerializedGame
 from carcassonne_engine.placed_tile import Position
 from carcassonne_engine.tilesets import ordered_mini_tile_set1
 
-
 """
  diagonal edges represent cities, dots fields, straight lines roads.
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number in hex :/)
