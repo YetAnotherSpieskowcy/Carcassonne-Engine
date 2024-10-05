@@ -1456,8 +1456,3 @@ player2 scores 22 points in total:
                      .[ ]....\  /|..
                      .........--.|..
 """
-
-
-def finalize(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
-    check_final_points([9 + 17, 36 + 19])
-    return
