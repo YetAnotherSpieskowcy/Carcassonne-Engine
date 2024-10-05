@@ -1,6 +1,5 @@
 # flake8: noqa ascci drawing makes a lot errors
 # mypy: ignore-errors
-""""""
 
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.side import Side
@@ -38,19 +37,12 @@ from carcassonne_engine.placed_tile import Position
 import logging
 from pathlib import Path
 
-import pytest
-from end_utils import TurnParams, check_final_points, check_points, make_turn
-from pytest import approx
+from end_utils import TurnParams, check_points, make_turn
 
-from carcassonne_engine import GameEngine, SerializedGame, models, tiletemplates
+from carcassonne_engine import GameEngine, tiletemplates
 from carcassonne_engine._bindings.feature import Type as FeatureType
-from carcassonne_engine.requests import (
-    GetLegalMovesRequest,
-    GetRemainingTilesRequest,
-    PlayTurnRequest,
-)
-from carcassonne_engine.tilesets import TileSet, mini_tile_set, ordered_mini_tile_set2
-from carcassonne_engine.utils import format_binary_tile_bits
+from carcassonne_engine.models import SerializedGame
+from carcassonne_engine.tilesets import ordered_mini_tile_set2
 
 log = logging.getLogger(__name__)
 

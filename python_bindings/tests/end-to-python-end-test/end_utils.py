@@ -1,9 +1,10 @@
 from typing import NamedTuple, Tuple
 
-from carcassonne_engine import GameEngine, SerializedGame
+from carcassonne_engine import GameEngine
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
+from carcassonne_engine.models import SerializedGame
 from carcassonne_engine.placed_tile import PlacedTile, Position, Tile
 from carcassonne_engine.requests import (
     GetLegalMovesRequest,
@@ -92,8 +93,8 @@ def check_points(game: SerializedGame, scores: list[int]):
 
 
 def check_final_points(player_scores, scores: dict[int, int]):
-    for id, player_score in player_scores.items():
-        assert player_score == scores[id], (
-            f"Player:{id} has {player_score} points, should " f"have {scores[id]}"
+    for player_id, player_score in player_scores.items():
+        assert player_score == scores[player_id], (
+            f"Player:{player_id} has {player_score} points, should " f"have {scores[player_id]}"
         )
     return

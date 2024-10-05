@@ -1,6 +1,19 @@
 # flake8: noqa ascci drawing makes a lot errors
 # mypy: ignore-errors
-""""""
+
+import logging
+from pathlib import Path
+
+from end_utils import TurnParams, check_points, make_turn
+
+from carcassonne_engine import GameEngine, tiletemplates
+from carcassonne_engine._bindings.elements import MeepleType
+from carcassonne_engine._bindings.feature import Type as FeatureType
+from carcassonne_engine._bindings.side import Side
+from carcassonne_engine.models import SerializedGame
+from carcassonne_engine.placed_tile import Position
+from carcassonne_engine.tilesets import ordered_mini_tile_set1
+
 
 """
  diagonal edges represent cities, dots fields, straight lines roads.
@@ -26,17 +39,6 @@
            .[ ].      /.\  /.\  /.\ 
            .....     -...--   --...-
 """
-import logging
-from pathlib import Path
-
-from end_utils import TurnParams, check_final_points, check_points, make_turn
-
-from carcassonne_engine import GameEngine, SerializedGame, tiletemplates
-from carcassonne_engine._bindings.elements import MeepleType
-from carcassonne_engine._bindings.feature import Type as FeatureType
-from carcassonne_engine._bindings.side import Side
-from carcassonne_engine.placed_tile import Position
-from carcassonne_engine.tilesets import mini_tile_set, ordered_mini_tile_set1
 
 log = logging.getLogger(__name__)
 

@@ -1,12 +1,25 @@
 # flake8: noqa ascci drawing makes a lot errors
 # mypy: ignore-errors
-""""""
+
+import logging
+from pathlib import Path
+
+from end_utils import TurnParams, check_points, make_turn
+
+from carcassonne_engine import GameEngine
+from carcassonne_engine._bindings.elements import MeepleType
+from carcassonne_engine._bindings.feature import Type as FeatureType
+from carcassonne_engine._bindings.side import Side
+from carcassonne_engine.models import SerializedGame
+from carcassonne_engine.placed_tile import Position
+from carcassonne_engine.tilesets import every_tile_once_tile_set
 
 """
  diagonal edges represent cities, dots fields, straight lines roads.
  Player meeples will be represented as !@ signs (you know, writing number but with shift!) 1->!, 2->@
  Final board: (each tile is represented by 5x5 ascii signs, at the center is the turn number :/)
- Tiles are played in order of: https://docs.google.com/spreadsheets/d/1TnPvB6oyisNGs7GZ0xpu-3LPp1V5-t0xH4vocCUPvsY/edit?gid=0#gid=0
+ Tiles are played in order of: 
+ https://docs.google.com/spreadsheets/d/1TnPvB6oyisNGs7GZ0xpu-3LPp1V5-t0xH4vocCUPvsY/edit?gid=0#gid=0
  
  GIANT CITY!
 
@@ -45,17 +58,6 @@
                      .........--.|..
                
 """
-import logging
-from pathlib import Path
-
-from end_utils import TurnParams, check_final_points, check_points, make_turn
-
-from carcassonne_engine import GameEngine, SerializedGame, tiletemplates
-from carcassonne_engine._bindings.elements import MeepleType
-from carcassonne_engine._bindings.feature import Type as FeatureType
-from carcassonne_engine._bindings.side import Side
-from carcassonne_engine.placed_tile import Position
-from carcassonne_engine.tilesets import every_tile_once_tile_set
 
 log = logging.getLogger(__name__)
 
