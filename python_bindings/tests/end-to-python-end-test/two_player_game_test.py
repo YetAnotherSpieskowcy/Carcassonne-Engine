@@ -65,7 +65,7 @@ def test_two_player_game(tmp_path: Path) -> None:
 
 """
 // straight road with city edge
-// player 1 places meeple on city, and closes it
+// player1 places meeple on city, and closes it
 
             -1    0    1    2    3
             
@@ -88,7 +88,7 @@ def test_two_player_game(tmp_path: Path) -> None:
 """
 
 
-def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_first_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=0, y=1),
         tile=game.current_tile,
@@ -105,7 +105,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 """
 // road turn
-// player 2 places meeple (@) on a road
+// player2 places meeple (@) on a road
             -1    0    1    2    3
             
             
@@ -127,7 +127,7 @@ def check_first_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 """
 
 
-def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_second_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=1, y=1),
         tile=tiletemplates.roads_turn(),
@@ -144,7 +144,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 
 """
 // road turn
-// player 1 places meeple (!) on a field
+// player1 places meeple (!) on a field
             -1    0    1    2    3
             
             
@@ -166,7 +166,7 @@ def check_second_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 """
 
 
-def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_third_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=1, y=0),
         tile=game.current_tile,
@@ -205,7 +205,7 @@ def check_third_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 """
 
 
-def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_fourth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=-1, y=0),
         tile=game.current_tile,
@@ -245,7 +245,7 @@ def check_fourth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 """
 
 
-def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_fifth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=-1, y=-1),
         tile=game.current_tile,
@@ -262,7 +262,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 """
 // Two city edges not connected
-// player 2 places meeple(@) on the right city
+// player2 places meeple(@) on the right city
             -1    0    1    2    3
             
             
@@ -284,7 +284,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 """
 
 
-def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_sixth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=1, y=-1),
         tile=game.current_tile,
@@ -301,8 +301,8 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 
 """
 // Two city edges not connected
-// player 1 places meeple (!) on the right city
-// playey 2 scores points for finished city
+// player1 places meeple (!) on the right city
+// player2 scores points for finished city
             -1    0    1    2    3
             
             
@@ -324,7 +324,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 """
 
 
-def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_seventh_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=2, y=-1),
         tile=game.current_tile,
@@ -341,7 +341,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
 
 """
 // straight road
-// player 2 places meeple (@) on a bottom road
+// player2 places meeple (@) on a bottom road
             -1    0    1    2    3
             
             
@@ -363,7 +363,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGam
 """
 
 
-def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_eighth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=2, y=1),
         tile=game.current_tile,
@@ -381,7 +381,7 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 """
 // T cross road
 // road is finished. Player 2 scores 6 points for a road
-// player 1 places meeple (!) on a field
+// player1 places meeple (!) on a field
             -1    0    1    2    3
             
             
@@ -403,7 +403,7 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 """
 
 
-def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_nineth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=-1, y=1),
         tile=game.current_tile,
@@ -420,8 +420,8 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 
 """
 // Two city edges not connected
-// player 2 places meeple (@) on the right city
-// player 1 scores points for city
+// player2 places meeple (@) on the right city
+// player1 scores points for city
             -1    0    1    2    3
             
             
@@ -443,7 +443,7 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame
 """
 
 
-def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_tenth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=3, y=-1),
         tile=game.current_tile,
@@ -481,7 +481,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame)
 """
 
 
-def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_eleventh_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=2, y=0),
         tile=game.current_tile,
@@ -519,7 +519,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> (int, SerializedGa
 """
 
 
-def check_twelfth_turn(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def check_twelfth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=3, y=0),
         tile=tiletemplates.straight_roads(),
@@ -567,6 +567,6 @@ player2 scores 4 points in total:
 """
 
 
-def finalize(engine: GameEngine, game, game_id) -> (int, SerializedGame):
+def finalize(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     check_final_points([8 + 12, 12 + 4])
     return
