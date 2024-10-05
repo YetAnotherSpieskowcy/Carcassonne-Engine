@@ -8,7 +8,12 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
 )
 from .placed_tile import Tile
 
-__all__ = ("TileSet", "standard_tile_set", "ordered_mini_tile_set1", "ordered_mini_tile_set2")
+__all__ = (
+    "TileSet",
+    "standard_tile_set",
+    "ordered_mini_tile_set1",
+    "ordered_mini_tile_set2",
+)
 
 
 class TileSet:

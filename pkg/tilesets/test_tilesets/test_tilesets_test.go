@@ -1,4 +1,4 @@
-package test_tilesets
+package testtilesets
 
 import (
 	"testing"

@@ -533,7 +533,7 @@ player1 and player2 score 4 points for their roads
 
 
 def check_eleventh_turn(
-        engine: GameEngine, game, game_id
+    engine: GameEngine, game, game_id
 ) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=-1, y=-1),

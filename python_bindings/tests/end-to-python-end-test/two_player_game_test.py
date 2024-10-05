@@ -485,7 +485,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialized
 
 
 def check_eleventh_turn(
-        engine: GameEngine, game, game_id
+    engine: GameEngine, game, game_id
 ) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=2, y=0),
