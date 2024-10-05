@@ -529,7 +529,7 @@ def check_twelfth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serializ
     )
 
     game_id, game = make_turn(
-        engine, game, game_id, turn_params, True, {1: 8 + 12, 2: 12 + 4}
+        engine, game, game_id, turn_params, {1: 8 + 12, 2: 12 + 4}
     )
     check_points(game, [8, 12])
 

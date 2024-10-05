@@ -862,6 +862,7 @@ def check_turn_E(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame
 
 """
 player1 places meeple(!) on a field
+player1 closes city
 player2 scores 4 points
 
        -3   -2   -1    0    1    2    3
@@ -1348,6 +1349,7 @@ def check_turn_N(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame
 
 
 """
+player2 closes city
 both players score: 13*2 + 3*2 = 26+6=32 (huge city)
     14 tile city
     3 shield in a city
@@ -1399,7 +1401,7 @@ def check_turn_O(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame
     )
 
     game_id, game = make_turn(
-        engine, game, game_id, turn_params, True, {1: 11 + 34 + 11, 2: 8 + 34 + 22}
+        engine, game, game_id, turn_params, {1: 11 + 34 + 11, 2: 8 + 34 + 22}
     )
     check_points(game, [11 + 34, 8 + 34])
 

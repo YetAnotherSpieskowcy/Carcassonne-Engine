@@ -66,7 +66,6 @@ def make_turn(
     game: SerializedGame,
     game_id: int,
     turn_params: TurnParams,
-    final=False,
     final_scores=None,
 ) -> Tuple[int, SerializedGame]:
 
@@ -87,7 +86,7 @@ def make_turn(
     assert play_turn_resp.exception is None
     assert play_turn_resp.game is not None
 
-    if final:
+    if play_turn_resp.final_scores is not None:
         check_final_points(play_turn_resp.final_scores, final_scores)
 
     return play_turn_resp.game_id, play_turn_resp.game
