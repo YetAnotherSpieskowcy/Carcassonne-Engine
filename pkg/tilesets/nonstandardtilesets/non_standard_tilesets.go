@@ -1,4 +1,4 @@
-package testtilesets
+package nonstandardtilesets
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"

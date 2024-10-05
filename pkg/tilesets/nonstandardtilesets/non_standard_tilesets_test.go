@@ -1,4 +1,4 @@
-package testtilesets
+package nonstandardtilesets
 
 import (
 	"testing"

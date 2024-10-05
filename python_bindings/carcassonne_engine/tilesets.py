@@ -4,7 +4,7 @@ from typing import Self
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
     engine as _go_engine,
     tilesets as _go_tilesets,
-    test_tilesets as _go_test_tilesets,
+    nonstandardtilesets as _go_non_standard_tilesets,
 )
 from .placed_tile import Tile
 
@@ -62,12 +62,12 @@ def mini_tile_set() -> TileSet:
 
 
 def ordered_mini_tile_set1() -> TileSet:
-    return TileSet(_go_test_tilesets.OrderedMiniTileSet1())
+    return TileSet(_go_non_standard_tilesets.OrderedMiniTileSet1())
 
 
 def ordered_mini_tile_set2() -> TileSet:
-    return TileSet(_go_test_tilesets.OrderedMiniTileSet2())
+    return TileSet(_go_non_standard_tilesets.OrderedMiniTileSet2())
 
 
 def every_tile_once_tile_set() -> TileSet:
-    return TileSet(_go_test_tilesets.EveryTileOnceTileSet())
+    return TileSet(_go_non_standard_tilesets.EveryTileOnceTileSet())
