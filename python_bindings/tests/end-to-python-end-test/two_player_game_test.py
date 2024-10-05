@@ -55,7 +55,7 @@ def test_two_player_game(tmp_path: Path) -> None:
     game_id, game = check_sixth_turn(engine, game, game_id)
     game_id, game = check_seventh_turn(engine, game, game_id)
     game_id, game = check_eighth_turn(engine, game, game_id)
-    game_id, game = check_nineth_turn(engine, game, game_id)
+    game_id, game = check_ninth_turn(engine, game, game_id)
     game_id, game = check_tenth_turn(engine, game, game_id)
     game_id, game = check_eleventh_turn(engine, game, game_id)
     game_id, game = check_twelfth_turn(engine, game, game_id)
@@ -66,6 +66,7 @@ def test_two_player_game(tmp_path: Path) -> None:
 """
 // straight road with city edge
 // player1 places meeple on city, and closes it
+// player 1 scores 4 points
 
             -1    0    1    2    3
             
@@ -262,7 +263,7 @@ def check_fifth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialized
 
 """
 // Two city edges not connected
-// player2 places meeple(@) on the right city
+// player2 places meeple (@) on the right city
             -1    0    1    2    3
             
             
@@ -320,7 +321,7 @@ def check_sixth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialized
            .[ ].      \./  \./     
 -1         .[5].       6    7 !   
            .[!].      /.\  /.\      
-           .....     -...--   - 
+           .....     -...--...- 
 """
 
 
@@ -341,7 +342,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> tuple[int, Serializ
 
 """
 // straight road
-// player2 places meeple (@) on a bottom road
+// player2 places meeple (@) on the road
             -1    0    1    2    3
             
             
@@ -359,7 +360,7 @@ def check_seventh_turn(engine: GameEngine, game, game_id) -> tuple[int, Serializ
            .[ ].      \./  \./     
 -1         .[5].       6    7 !   
            .[!].      /.\  /.\      
-           .....     -...--   -   
+           .....     -...--...-   
 """
 
 
@@ -399,11 +400,11 @@ def check_eighth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialize
            .[ ].      \./  \./     
 -1         .[5].       6    7 !    
            .[!].      /.\  /.\      
-           .....     -...--   -     
+           .....     -...--...-     
 """
 
 
-def check_nineth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
+def check_ninth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=-1, y=1),
         tile=game.current_tile,
@@ -439,7 +440,7 @@ def check_nineth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialize
            .[ ].      \./  \./  \./
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
-           .....     -...--   --...-
+           .....     -...--...--...-
 """
 
 
@@ -477,7 +478,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialized
            .[ ].      \./  \./  \./
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
-           .....     -...--   --...-
+           .....     -...--...--...-
 """
 
 
@@ -515,7 +516,7 @@ def check_eleventh_turn(engine: GameEngine, game, game_id) -> tuple[int, Seriali
            .[ ].      \|/  \./  \./
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
-           .....     -...--   --...-
+           .....     -...--...--...-
 """
 
 
@@ -563,5 +564,5 @@ player2 scores 4 points in total:
            .[ ].      \|/  \./  \./
 -1         .[5].       6    7    A @
            .[!].      /.\  /.\  /.\ 
-           .....     -...--   --...-
+           .....     -...--...--...-
 """

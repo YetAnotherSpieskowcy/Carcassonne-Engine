@@ -70,7 +70,7 @@ def test_two_player_game2(tmp_path: Path) -> None:
     game_id, game = check_sixth_turn(engine, game, game_id)
     game_id, game = check_seventh_turn(engine, game, game_id)
     game_id, game = check_eighth_turn(engine, game, game_id)
-    game_id, game = check_nineth_turn(engine, game, game_id)
+    game_id, game = check_ninth_turn(engine, game, game_id)
     game_id, game = check_tenth_turn(engine, game, game_id)
     game_id, game = check_eleventh_turn(engine, game, game_id)
     game_id, game = check_twelfth_turn(engine, game, game_id)
@@ -452,7 +452,7 @@ No one scores for the finished city
 """
 
 
-def check_nineth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
+def check_ninth_turn(engine: GameEngine, game, game_id) -> tuple[int, SerializedGame]:
     turn_params = TurnParams(
         pos=Position(x=2, y=1),
         tile=game.current_tile,
@@ -513,7 +513,7 @@ def check_tenth_turn(engine: GameEngine, game, game_id) -> tuple[int, Serialized
 
 """
 // player1 places T cross road, with a meeple on a bottom road
-player1 and player4 score 4 points for their roads
+player1 and player2 score 4 points for their roads
 |                 0    1    2    3
 |
 |
