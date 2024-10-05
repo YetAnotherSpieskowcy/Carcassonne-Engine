@@ -62,11 +62,11 @@ func Test4PlayerFullGame(t *testing.T) {
 	checkFifthTurn(game, t)    // Road Turn
 	checkSixthTurn(game, t)    // Straight Road
 	checkSeventhTurn(game, t)  // Two city edges not connected
-	checkEightthTurn(game, t)  // Road turn
-	checkNinethTurn(game, t)   // Straight road with city edge
+	checkEighthTurn(game, t)   // Road turn
+	checkNinthTurn(game, t)    // Straight road with city edge
 	checkTenthTurn(game, t)    // Monastery with road
 	checkEleventhTurn(game, t) // T cross road
-	checkTwelvethTurn(game, t) // Straight road
+	checkTwelfthTurn(game, t)  // Straight road
 	checkFinalResult(game, t)
 
 }
@@ -292,13 +292,13 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 		Game:          game,
 		TestingT:      t,
 		PlayerScores:  []uint32{0, 4, 0, 0},
-		PlayerMeeples: []uint8{6, 7, 6, 6},
+		PlayerMeeples: []uint8{6, 7, 6, 7 - 1},
 		TurnNumber:    4,
 	}.Run()
 }
 
 /*
-// Player1 places Road turn with a farmer on the right bototn
+// Player1 places Road turn with a farmer on the right bottom field
 
 |				  0	   1    2    3
 |
@@ -525,7 +525,7 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 |
 |
 */
-func checkEightthTurn(game *gameMod.Game, t *testing.T) {
+func checkEighthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 0)
 
 	// try illegal turn first (put meeple on a field)
@@ -593,7 +593,7 @@ No one scores for the finished city
 |
 |
 */
-func checkNinethTurn(game *gameMod.Game, t *testing.T) {
+func checkNinthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 1)
 
 	// try illegal turn first (put meeple on a road)
@@ -827,7 +827,7 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 |				.....
 */
 
-func checkTwelvethTurn(game *gameMod.Game, t *testing.T) {
+func checkTwelfthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(0, -2)
 
 	// try illegal turn first (put meeple on a field)
