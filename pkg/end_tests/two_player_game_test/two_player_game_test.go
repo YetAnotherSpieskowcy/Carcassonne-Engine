@@ -16,16 +16,26 @@ import (
 
 /*
  diagonal edges represent cities, dots fields, straight lines roads. The big vertical line on the left is to prevent comment formating
- Final board: (each tile is represented by 3x3 ascii signs, at the center is the turn number in hex :/)
-| 	.|........|.
-| 	.9--1--2..8.
-| 	.|./ \ |..|.
-| 	.| \ / |..|....
-| 	.4--0--3..B--C-
-| 	.|.............
-|	.|.   .........
-| 	.5.   >6<>7<>A<
-| 	...   .........
+ Final board: (each tile is represented by 5x ascii signs, at the center is the turn number in hex :/)
+
+|           -1    0    1    2    3
+|
+|
+|          ..|..............|..
+|          ..|..............|..
+|1         ..9----1----2....8..
+|          ..|.../ \...|....|..
+|          ..|..|   |..|....|..
+|          ..|..|   |..|....|.......
+|          ..|...\ /...|....|.......
+|0         ..4----0----3....B----C--
+|          ..|......................
+|          ..|......................
+|          ..|..     -...--...--...-
+|          .[ ].      \./  \./  \./
+|-1        .[5].       6    7    A
+|          .[ ].      /.\  /.\  /.\
+|          .....     -...--...--...-
 */
 
 func Test2PlayerFullGame(t *testing.T) {
@@ -58,14 +68,24 @@ func Test2PlayerFullGame(t *testing.T) {
 // straight road with city edge
 // player 1 places meeple on city, and closes it
 /*
-|       0
+|           -1    0    1    2    3
 |
-| 	   ...
-|1 	   -1-
-| 	   / \
-| 	   \ /
-|0 	   -0-
-| 	   ...
+|
+|               .....
+|               .....
+|1              --1--
+|               ./ \.
+|               |   |
+|               |   |
+|               .\ /.
+|0              --0--
+|               .....
+|               .....
+|
+|
+|-1
+|
+|
 */
 func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(0, 1)
@@ -98,16 +118,26 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // road turn
-// player 2 places meeple (M) on a road
+// player 2 places meeple (@) on a road
 /*
-|       0  1
+|           -1    0    1    2    3
 |
-| 	   ......
-|1 	   -1-M2.
-| 	   / \ |.
-| 	   \ /
-|0 	   -0-
-| 	   ...
+|
+|               ..........
+|               ..........
+|1              --1--@-2..
+|               ./ \...|..
+|               |   |..|..
+|               |   |
+|               .\ /.
+|0              --0--
+|               .....
+|               .....
+|
+|
+|-1
+|
+|
 */
 func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 1)
@@ -139,16 +169,26 @@ func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // road turn
-// player 1 places meeple (m) on a field
+// player 1 places meeple (!) on a field
 /*
-|       0  1
+|           -1    0    1    2    3
 |
-| 	   ......
-|1 	   -1-M2.
-| 	   / \ |.
-| 	   \ /m|.
-|0 	   -0--3.
-| 	   ......
+|
+|               ..........
+|               ..........
+|1              --1--@-2..
+|               ./ \...|..
+|               |   |..|..
+|               |   |..|..
+|               .\ /.!.|..
+|0              --0----3..
+|               ..........
+|               ..........
+|
+|
+|-1
+|
+|
 */
 func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 0)
@@ -191,16 +231,26 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // T cross road
-// player2 places meeple on road going down
+// player2 places meeple (@) on road going down
 /*
-|   -1  0  1
+|           -1    0    1    2    3
 |
-| 	   ......
-|1 	   -1-M2.
-| 	   / \ |.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.M.......
+|
+|               ..........
+|               ..........
+|1              --1--@-2..
+|               ./ \...|..
+|               |   |..|..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..@............
+|
+|
+|-1
+|
+|
 */
 func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 0)
@@ -243,20 +293,27 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // monastery with single road
-// player1 places meeple on a monastery
+// player1 places meeple (!) on a monastery
 // road from 4 to 5 is finished, so player2 scores 2 points
 /*
-|   -1  0  1
+|           -1    0    1    2    3
 |
-| 	   ......
-|1 	   -1-M2.
-| 	   / \ |.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.|.......
-|	.|.
-|-1 .5.
-| 	...
+|
+|               ..........
+|               ..........
+|1              --1--@-2..
+|               ./ \...|..
+|               |   |..|..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..|............
+|          ..|..
+|          .[ ].
+|-1        .[5].
+|          .[!].
+|          .....
 */
 func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, -1)
@@ -309,19 +366,26 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // Two city edges not connected
-// player 2 places meeple(M) on the right city
+// player 2 places meeple (@) on the right city
 /*
-|   -1  0  1
+|           -1    0    1    2    3
 |
-| 	   ......
-|1 	   -1-M2.
-| 	   / \ |.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.|.......
-|	.|.   ...
-|-1 .5.   >6<M
-| 	...   ...
+|
+|               ..........
+|               ..........
+|1              --1--@-2..
+|               ./ \...|..
+|               |   |..|..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..|............
+|          ..|..     -...-
+|          .[ ].      \./
+|-1        .[5].       6 @
+|          .[!].      /.\
+|          .....     -...-
 */
 func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, -1)
@@ -353,21 +417,28 @@ func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // Two city edges not connected
-// player 1 places meeple on the right city
+// player 1 places meeple (!) on the right city
 // playey 2 scores points for finished city
 
 /*
-|   -1  0  1  2
+|           -1    0    1    2    3
 |
-| 	   ......
-|1 	   -1-M2.
-| 	   / \ |.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.|.......
-|	.|.   ......
-|-1	.5.   >6<>7<m
-| 	...   ......
+|
+|               ..........
+|               ..........
+|1              --1--@-2..
+|               ./ \...|..
+|               |   |..|..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..|............
+|          ..|..     -...--...-
+|          .[ ].      \./  \./
+|-1        .[5].       6    7 !
+|          .[!].      /.\  /.\
+|          .....     -...--...-
 */
 func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, -1)
@@ -420,20 +491,27 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // straight road
-// player 2 places meeple on a bottom road
+// player 2 places meeple (@) on a bottom road
 
 /*
-|   -1  0  1  2  3
+|           -1    0    1    2    3
 |
-| 	   .......|.
-|1 	   -1-M2..8.
-| 	   / \ |..M.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.|.......
-|	.|.   ......
-|-1 .5.   >6<>7<m
-| 	...   ......
+|
+|               ............|..
+|               ............|..
+|1              --1--@-2....8..
+|               ./ \...|....|..
+|               |   |..|....@..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..|............
+|          ..|..     -...--...-
+|          .[ ].      \./  \./
+|-1        .[5].       6    7 !
+|          .[!].      /.\  /.\
+|          .....     -...--...-
 */
 func checkEighthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 1)
@@ -467,20 +545,27 @@ func checkEighthTurn(game *gameMod.Game, t *testing.T) {
 
 // T cross road
 // road is finished. Player 2 scores 6 points for a road
-// player 1 places meeple (m) on a field
+// player 1 places meeple (!) on a field
 
 /*
-|   -1  0  1  2  3
+|           -1    0    1    2    3
 |
-| 	.|m.......|.
-|1 	.9--1--2..8.
-| 	.|./ \ |..M.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.|.......
-|	.|.   ......
-|-1	.5.   >6<>7<m
-| 	...   ......
+|
+|          ..|.!............|..
+|          ..|..............|..
+|1         ..9----1----2....8..
+|          ..|.../ \...|....|..
+|          ..|..|   |..|....@..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..|............
+|          ..|..     -...--...-
+|          .[ ].      \./  \./
+|-1        .[5].       6    7 !
+|          .[!].      /.\  /.\
+|          .....     -...--...-
 */
 func checkNinthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 1)
@@ -533,21 +618,28 @@ func checkNinthTurn(game *gameMod.Game, t *testing.T) {
 }
 
 // Two city edges not connected
-// player 2 places meeple (M) on the right city
+// player 2 places meeple (@) on the right city
 // player 1 scores points for city
 
 /*
-|   -1  0  1  2  3
+|           -1    0    1    2    3
 |
-| 	.|m.......|.
-|1 	.9--1--2..8.
-| 	.|./ \ |..M.
-| 	.| \ /m|.
-|0 	.4--0--3.
-| 	.|.......
-|	.|.    .  .  .
-|-1	.5.   >6<>7<>A<M
-| 	...    .  .  .
+|
+|          ..|.!............|..
+|          ..|..............|..
+|1         ..9----1----2....8..
+|          ..|.../ \...|....|..
+|          ..|..|   |..|....@..
+|          ..|..|   |..|..
+|          ..|...\ /.!.|..
+|0         ..4----0----3..
+|          ..|............
+|          ..|............
+|          ..|..     -...--...--...-
+|          .[ ].      \./  \./  \./
+|-1        .[5].       6    7    A @
+|          .[ ].      /.\  /.\  /.\
+|          .....     -...--...--...-
 */
 func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, -1)
@@ -593,17 +685,24 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 // road turn
 
 /*
-|   -1  0  1  2  3
+|           -1    0    1    2    3
 |
-| 	.|m.......|.
-|1 	.9--1--2..8.
-| 	.|./ \ |..M.
-| 	.| \ /m|..|.
-|0 	.4--0--3..B-
-| 	.|..........
-|	.|.   .........
-|-1	.5.   >6<>7<>A<M
-| 	...   .........
+|
+|          ..|.!............|..
+|          ..|..............|..
+|1         ..9----1----2....8..
+|          ..|.../ \...|....|..
+|          ..|..|   |..|....@..
+|          ..|..|   |..|....|..
+|          ..|...\ /.!.|....|..
+|0         ..4----0----3....B--
+|          ..|.................
+|          ..|.................
+|          ..|..     -...--...--...-
+|          .[ ].      \./  \./  \./
+|-1        .[5].       6    7    A @
+|          .[ ].      /.\  /.\  /.\
+|          .....     -...--...--...-
 */
 func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 0)
@@ -637,17 +736,25 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 
 // straight road
 /*
-|   -1  0  1  2  3
+
+|           -1    0    1    2    3
 |
-| 	.|m.......|.
-|1 	.9--1--2..8.
-| 	.|./ \ |..M.
-| 	.| \ /m|..|....
-|0 	.4--0--3..B--C-
-| 	.|.............
-|	.|.   .........
-|-1	.5.   >6<>7<>A<M
-| 	...   .........
+|
+|          ..|.!............|..
+|          ..|..............|..
+|1         ..9----1----2....8..
+|          ..|.../ \...|....|..
+|          ..|..|   |..|....@..
+|          ..|..|   |..|....|.......
+|          ..|...\ /.!.|....|.......
+|0         ..4----0----3....B----C--
+|          ..|......................
+|          ..|......................
+|          ..|..     -...--...--...-
+|          .[ ].      \./  \./  \./
+|-1        .[5].       6    7    A @
+|          .[ ].      /.\  /.\  /.\
+|          .....     -...--...--...-
 */
 func checkTwelfthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 0)
