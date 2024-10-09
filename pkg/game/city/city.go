@@ -21,7 +21,7 @@ func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City 
 	var shields = uint8(0)
 	for _, feat := range cityFeatures {
 		if feat.ModifierType == modifier.Shield {
-			shields += 1
+			shields++
 		}
 	}
 	return City{
@@ -36,7 +36,7 @@ func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City 
 
 func (city City) DeepClone() City {
 	city.features = maps.Clone(city.features)
-	city.shields = city.shields
+	// shields number is already copied for being uint8
 	return city
 }
 
