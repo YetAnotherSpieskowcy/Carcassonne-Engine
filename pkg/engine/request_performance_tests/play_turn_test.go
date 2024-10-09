@@ -56,5 +56,5 @@ func SendPlayTurnRequest(games *[]engine.SerializedGameWithID, eng *engine.GameE
 	b.StopTimer()
 }
 func BenchmarkPlayTurnTest(b *testing.B) {
-	PlayGame(100, b, SendPlayTurnRequest)
+	PlayGame(100, SendPlayTurnRequest, b)
 }

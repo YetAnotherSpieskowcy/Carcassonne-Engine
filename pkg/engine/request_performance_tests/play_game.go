@@ -9,7 +9,7 @@ import (
 
 type TestedRequest func(games *[]engine.SerializedGameWithID, eng *engine.GameEngine, b *testing.B)
 
-func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
+func PlayGame(gameCount int, testedRequest TestedRequest, b *testing.B) {
 	b.StopTimer()
 
 	eng, err := engine.StartGameEngine(4, "")
@@ -29,7 +29,7 @@ func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
 	// for each turn
 	for range len(tilesets.StandardTileSet().Tiles) {
 
-		// at start before makiny any turn
+		// at the start before making any turn
 		// test desired requests
 		for range b.N {
 			testedRequest(&games, eng, b)
@@ -66,10 +66,10 @@ func PlayGame(gameCount int, b *testing.B, testedRequest TestedRequest) {
 
 		// update games
 		for i := range gameCount {
-			games[i].Game = playTurnResp[i].Game
 			if playTurnResp[i].Err() != nil {
 				b.Fatalf("%#v play turn failed. Reason: %#v", i, playTurnResp[i].Err().Error())
 			}
+			games[i].Game = playTurnResp[i].Game
 		}
 	}
 }

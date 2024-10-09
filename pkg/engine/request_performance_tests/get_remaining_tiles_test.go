@@ -21,5 +21,5 @@ func SendGetRemainingTilesRequest(games *[]engine.SerializedGameWithID, eng *eng
 }
 
 func BenchmarkGetRemainingTilesTest(b *testing.B) {
-	PlayGame(100, b, SendGetRemainingTilesRequest)
+	PlayGame(100, SendGetRemainingTilesRequest, b)
 }
