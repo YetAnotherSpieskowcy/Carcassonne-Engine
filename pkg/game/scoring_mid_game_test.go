@@ -6,6 +6,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/deck"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -54,26 +55,46 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 	deckStack := stack.NewOrdered(tileset.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
 
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
 	var expectedScores []uint32
 	// first turn
-	makeTurn(game, t, position.New(1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery})
+	test.MakeTurn{
+		Game:         game,
+		TestingT:     t,
+		Position:     position.New(1, 0),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
+	}.Run()
 	validateScores(game, []uint32{2, 0}, t)
 
 	// second turn
-	makeTurn(game, t, position.New(-1, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road})
+	test.MakeTurn{
+		Game:         game,
+		TestingT:     t,
+		Position:     position.New(-1, 0),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
+	}.Run()
 	validateScores(game, []uint32{2, 3}, t)
 
 	// third turn
-	makeTurn(game, t, position.New(-2, 0), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field})
+	test.MakeTurn{
+		Game:         game,
+		TestingT:     t,
+		Position:     position.New(-2, 0),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Field},
+	}.Run()
 	validateScores(game, []uint32{2, 4}, t)
 
 	// fourth turn
-	makeTurn(game, t, position.New(0, 1), MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City})
+	test.MakeTurn{
+		Game:         game,
+		TestingT:     t,
+		Position:     position.New(0, 1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.City},
+	}.Run()
 	validateScores(game, []uint32{6, 5}, t)
 
 	// finalize

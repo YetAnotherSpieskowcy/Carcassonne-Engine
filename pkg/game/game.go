@@ -40,26 +40,32 @@ type Game struct {
 	canSwapTiles  bool
 }
 
-func NewFromTileSet(tileSet tilesets.TileSet, log logger.Logger) (*Game, error) {
+func NewFromTileSet(tileSet tilesets.TileSet, log logger.Logger, playerCount uint8) (*Game, error) {
 	deckStack := stack.New(tileSet.Tiles)
 	deck := deck.Deck{
 		Stack:        &deckStack,
 		StartingTile: tileSet.StartingTile,
 	}
-	return NewFromDeck(deck, log)
+	return NewFromDeck(deck, log, playerCount)
 }
 
 func NewFromDeck(
-	deck deck.Deck, log logger.Logger,
+	deck deck.Deck, log logger.Logger, playerCount uint8,
 ) (*Game, error) {
 	if log == nil {
 		nullLogger := logger.NewEmpty()
 		log = &nullLogger
 	}
+
+	var players = make([]elements.Player, playerCount)
+	for i := range playerCount {
+		players[i] = player.New(elements.ID(i + 1))
+	}
+
 	game := &Game{
 		board:         NewBoard(deck.TileSet()),
 		deck:          deck,
-		players:       []elements.Player{player.New(1), player.New(2)},
+		players:       players,
 		currentPlayer: 0,
 		log:           log,
 	}
@@ -159,6 +165,15 @@ func (game *Game) GetRemainingTiles() []tiles.Tile {
 
 func (game *Game) CurrentPlayer() elements.Player {
 	return game.players[game.currentPlayer]
+}
+
+// Meant to be used only in tests
+func (game *Game) GetPlayerByID(playerID elements.ID) elements.Player {
+	return game.players[playerID-1]
+}
+
+func (game *Game) GetBoard() elements.Board {
+	return game.board
 }
 
 func (game *Game) PlayerCount() int {

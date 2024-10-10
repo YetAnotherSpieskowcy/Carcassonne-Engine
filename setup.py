@@ -18,6 +18,9 @@ GO_EXCLUDED_PACKAGES = (
     "stack",
     # nothing depends on performance tests
     f"game{os.sep}performancetests",
+    "end_tests",
+    f"end_tests{os.sep}four_player_game_test",
+    f"end_tests{os.sep}two_player_game_test",
 )
 GO_MAIN_PACKAGE = f"{GO_BASE_PACKAGE}{os.sep}{GO_MAIN_PACKAGE_NAME}"
 

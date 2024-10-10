@@ -26,7 +26,7 @@ func PlayNTileGame(tileCount int, tile tiles.Tile, b *testing.B) error {
 
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
-	Game, err := game.NewFromDeck(deck, nil)
+	Game, err := game.NewFromDeck(deck, nil, 2)
 	if err != nil {
 		return err
 	}
