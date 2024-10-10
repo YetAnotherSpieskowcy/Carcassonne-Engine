@@ -16,3 +16,14 @@ func TestStandardTileSet(t *testing.T) {
 		t.Fatalf("got %#v tiles, should be %#v", actual, expected)
 	}
 }
+
+func TestMiniTileSet(t *testing.T) {
+	var set = MiniTileSet()
+	expected := 12
+
+	actual := len(set.Tiles)
+
+	if expected != actual {
+		t.Fatalf("got %#v tiles, should be %#v", actual, expected)
+	}
+}

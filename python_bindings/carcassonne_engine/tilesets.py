@@ -3,11 +3,17 @@ from typing import Self
 
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
     engine as _go_engine,
+    nonstandardtilesets as _go_non_standard_tilesets,
     tilesets as _go_tilesets,
 )
-from .models import Tile
+from .placed_tile import Tile
 
-__all__ = ("TileSet", "standard_tile_set")
+__all__ = (
+    "TileSet",
+    "standard_tile_set",
+    "ordered_mini_tile_set1",
+    "ordered_mini_tile_set2",
+)
 
 
 class TileSet:
@@ -49,3 +55,19 @@ class TileSet:
 
 def standard_tile_set() -> TileSet:
     return TileSet(_go_tilesets.StandardTileSet())
+
+
+def mini_tile_set() -> TileSet:
+    return TileSet(_go_tilesets.MiniTileSet())
+
+
+def ordered_mini_tile_set1() -> TileSet:
+    return TileSet(_go_non_standard_tilesets.OrderedMiniTileSet1())
+
+
+def ordered_mini_tile_set2() -> TileSet:
+    return TileSet(_go_non_standard_tilesets.OrderedMiniTileSet2())
+
+
+def every_tile_once_tile_set() -> TileSet:
+    return TileSet(_go_non_standard_tilesets.EveryTileOnceTileSet())
