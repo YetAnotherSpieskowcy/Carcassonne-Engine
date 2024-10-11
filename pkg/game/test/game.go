@@ -42,6 +42,7 @@ type MakeTurn struct {
 	Position     position.Position
 	MeepleParams MeepleParams
 	TurnNumber   uint
+	WrongTurn    bool
 }
 
 func (turn MakeTurn) Run() {
@@ -63,41 +64,16 @@ func (turn MakeTurn) Run() {
 
 	err = turn.Game.PlayTurn(ptile)
 
-	if err != nil {
-		turn.TestingT.Fatal(err.Error())
-	}
-}
-
-type MakeWrongTurn struct {
-	Game         Game
-	TestingT     T
-	Position     position.Position
-	MeepleParams MeepleParams
-	TurnNumber   uint
-}
-
-func (turn MakeWrongTurn) Run() {
-	tile, err := turn.Game.GetCurrentTile()
-	if err != nil {
-		turn.TestingT.Fatal(err.Error())
-	}
-
-	var player = turn.Game.CurrentPlayer()
-
-	ptile := elements.ToPlacedTile(tile)
-	ptile.Position = turn.Position
-	if turn.MeepleParams.MeepleType != elements.NoneMeeple {
-		ptile.GetPlacedFeatureAtSide(turn.MeepleParams.FeatureSide, turn.MeepleParams.FeatureType).Meeple = elements.Meeple{
-			Type:     turn.MeepleParams.MeepleType,
-			PlayerID: player.ID(),
+	if turn.WrongTurn {
+		if err == nil {
+			turn.TestingT.Fatalf("Turn %d: Wrongly placed tile wasn't detected by engine!", turn.TurnNumber)
+		}
+	} else {
+		if err != nil {
+			turn.TestingT.Fatal(err.Error())
 		}
 	}
 
-	err = turn.Game.PlayTurn(ptile)
-
-	if err == nil {
-		turn.TestingT.Fatalf("Turn %d: Wrongly placed tile wasn't detected by engine!", turn.TurnNumber)
-	}
 }
 
 type CheckMeeplesAndScore struct {

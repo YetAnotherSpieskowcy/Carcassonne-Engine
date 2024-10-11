@@ -194,12 +194,13 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(1, 0)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road},
 		TurnNumber:   3,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn
@@ -256,12 +257,13 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 0)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 		TurnNumber:   4,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn
@@ -319,12 +321,13 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, -1)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Top, FeatureType: feature.Road},
 		TurnNumber:   5,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn
@@ -444,12 +447,13 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, -1)
 
 	// try illegal turn first (put meeple on a city)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.City},
 		TurnNumber:   7,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn
@@ -571,12 +575,13 @@ func checkNinthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(-1, 1)
 
 	// try illegal turn first (put meeple on a road)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Right, FeatureType: feature.Road},
 		TurnNumber:   9,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn
@@ -708,12 +713,13 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(2, 0)
 
 	// try illegal turn first (put meeple on a field)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field},
 		TurnNumber:   11,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn
@@ -760,12 +766,13 @@ func checkTwelfthTurn(game *gameMod.Game, t *testing.T) {
 	pos := position.New(3, 0)
 
 	// try illegal turn first (put meeple on a field)
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
 		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Field},
 		TurnNumber:   12,
+		WrongTurn:    true,
 	}.Run()
 
 	// normal correct turn

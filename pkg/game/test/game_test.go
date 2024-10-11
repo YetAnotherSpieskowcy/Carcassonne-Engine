@@ -29,7 +29,7 @@ func (t *CaptureFail) Fatalf(_ string, _ ...any) {
 }
 
 func TestMakeTurnLegalMove(t *testing.T) {
-	minitileSet := tilesets.OrderedMiniTileSet1()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 2)
@@ -40,14 +40,14 @@ func TestMakeTurnLegalMove(t *testing.T) {
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
-		Position:     position.New(0, 1),
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
+		Position:     position.New(0, -1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 	}.Run()
 
 	board := game.GetBoard()
-	ptile, ok := board.GetTileAt(position.New(0, 1))
+	ptile, ok := board.GetTileAt(position.New(0, -1))
 	if !ok {
-		t.Fatal("expected to find a tile at (0, 1)")
+		t.Fatal("expected to find a tile at (0, -1)")
 	}
 
 	tile := elements.ToTile(ptile)
@@ -56,14 +56,14 @@ func TestMakeTurnLegalMove(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", expected, tile)
 	}
 
-	feat := ptile.GetPlacedFeatureAtSide(side.Left, feature.Road)
+	feat := ptile.GetPlacedFeatureAtSide(side.NoSide, feature.Monastery)
 	if feat.Meeple.Type != elements.NormalMeeple {
 		t.Fatalf("expected normal meeple on road tile feature, got %#v instead", feat.Meeple.Type)
 	}
 }
 
 func TestMakeTurnIllegalMove(t *testing.T) {
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 2)
@@ -76,10 +76,11 @@ func TestMakeTurnIllegalMove(t *testing.T) {
 		Game:         game,
 		TestingT:     &captureFail,
 		Position:     position.New(0, 1),
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 		TurnNumber:   1,
+		WrongTurn:    true,
 	}.Run()
-	if !captureFail.failureCaught {
+	if captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 
@@ -87,7 +88,7 @@ func TestMakeTurnIllegalMove(t *testing.T) {
 
 func TestMakeWrongTurnWithLegalTurn(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -97,45 +98,22 @@ func TestMakeWrongTurnWithLegalTurn(t *testing.T) {
 
 	// Treat correct move as illegal (create error)
 	captureFail := CaptureFail{}
-	test.MakeWrongTurn{
+	test.MakeTurn{
 		Game:         game,
 		TestingT:     &captureFail,
-		Position:     position.New(0, 1),
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		Position:     position.New(0, -1),
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 		TurnNumber:   1,
-	}.Run()
-	if captureFail.failureCaught {
-		t.Fatalf("Did not catch fail")
-	}
-}
-
-func TestMakeWrongTurnWithIllegalTurn(t *testing.T) {
-	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
-	deckStack := stack.NewOrdered(minitileSet.Tiles)
-	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
-	game, err := game.NewFromDeck(deck, nil, 4)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	// Treat invcrrect move as illegal (do not create error)
-	captureFail := CaptureFail{}
-	test.MakeWrongTurn{
-		Game:         game,
-		TestingT:     &captureFail,
-		Position:     position.New(1, 0),
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
-		TurnNumber:   1,
+		WrongTurn:    true,
 	}.Run()
 	if !captureFail.failureCaught {
 		t.Fatalf("Did not catch fail")
 	}
 }
 
-func TestMakeTurnValidCheckCatchFail(t *testing.T) {
+func TestMakeTurnWithLegalTurnWichIsActuallyIncorect(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -143,36 +121,18 @@ func TestMakeTurnValidCheckCatchFail(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	// do any wrong move, and catch it
-
-	test.MakeWrongTurn{
-		Game:         game,
-		TestingT:     t,
-		Position:     position.New(0, 1),
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
-		TurnNumber:   1,
-	}.Run()
-
-	// do any correct move
+	// Treat invcorrect move as legal (create error)
+	captureFail := CaptureFail{}
 	test.MakeTurn{
 		Game:         game,
-		TestingT:     t,
+		TestingT:     &captureFail,
 		Position:     position.New(1, 0),
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 		TurnNumber:   1,
 	}.Run()
-
-	// check if meeple was placed
-	ptile, exist := game.GetBoard().GetTileAt(position.New(1, 0))
-	if !exist {
-		t.Fatalf("Tile doesn't exist!")
+	if !captureFail.failureCaught {
+		t.Fatalf("Did not catch fail")
 	}
-	pfeature := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.Road)
-	if pfeature.Meeple.PlayerID != elements.ID(1) &&
-		pfeature.Meeple.Type != elements.NormalMeeple {
-		t.Fatalf("Wrong meeple params!")
-	}
-
 }
 
 func TestCheckMeeplesAndScore(t *testing.T) {
