@@ -14,14 +14,14 @@ type City struct {
 	completed bool
 	scored    bool
 	features  map[position.Position][]elements.PlacedFeature
-	shields   map[position.Position]bool
+	shields   uint8
 }
 
 func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City {
-	hasShield := false
+	var shields = uint8(0)
 	for _, feat := range cityFeatures {
 		if feat.ModifierType == modifier.Shield {
-			hasShield = true
+			shields++
 		}
 	}
 	return City{
@@ -30,15 +30,13 @@ func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City 
 		features: map[position.Position][]elements.PlacedFeature{
 			pos: cityFeatures,
 		},
-		shields: map[position.Position]bool{
-			pos: hasShield,
-		},
+		shields: shields,
 	}
 }
 
 func (city City) DeepClone() City {
 	city.features = maps.Clone(city.features)
-	city.shields = maps.Clone(city.shields)
+	// shields number is already copied for being uint8
 	return city
 }
 
@@ -88,11 +86,9 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 			}
 		}
 		totalScore += 2
-		shield := city.shields[pos]
-		if shield {
-			totalScore += 2
-		}
 	}
+	totalScore += uint32(city.shields) * 2
+
 	if !city.completed {
 		totalScore /= 2
 	}
@@ -117,12 +113,15 @@ func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedF
 	_, tileInCity := city.GetFeaturesFromTile(pos)
 	if !tileInCity {
 		city.features[pos] = cityFeatures
-		city.shields[pos] = hasShield
+		if hasShield {
+			city.shields++
+		}
+
 	} else {
 		city.features[pos] = append(city.features[pos], cityFeatures...)
-		if !city.shields[pos] {
-			city.shields[pos] = hasShield
-		}
+		// If the tile being checked is already in the city, it must have the shield already counted,
+		// because tiles with shields, has only one city feature, so it's impossible
+		// that there are multiple city features on that tile.
 	}
 	city.checkCompleted()
 }
@@ -138,8 +137,8 @@ func (city *City) JoinCities(other City) {
 			city.features[pos] = features
 		} else {
 			city.features[pos] = otherFeature
-			city.shields[pos] = other.shields[pos]
 		}
 	}
+	city.shields += other.shields
 	city.checkCompleted()
 }
