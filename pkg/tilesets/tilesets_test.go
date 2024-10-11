@@ -16,25 +16,3 @@ func TestStandardTileSet(t *testing.T) {
 		t.Fatalf("got %#v tiles, should be %#v", actual, expected)
 	}
 }
-
-func TestOrderedMiniTileSet1(t *testing.T) {
-	var set = OrderedMiniTileSet1()
-	expected := 12
-
-	actual := len(set.Tiles)
-
-	if expected != actual {
-		t.Fatalf("got %#v tiles, should be %#v", actual, expected)
-	}
-}
-
-func TestOrderedMiniTileSet2(t *testing.T) {
-	var set = OrderedMiniTileSet2()
-	expected := 12
-
-	actual := len(set.Tiles)
-
-	if expected != actual {
-		t.Fatalf("got %#v tiles, should be %#v", actual, expected)
-	}
-}

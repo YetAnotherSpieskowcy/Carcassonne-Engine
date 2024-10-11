@@ -137,7 +137,7 @@ func TestMakeTurnWithLegalTurnWichIsActuallyIncorect(t *testing.T) {
 
 func TestCheckMeeplesAndScore(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -156,7 +156,7 @@ func TestCheckMeeplesAndScore(t *testing.T) {
 
 func TestCheckMeeplesAndScoreCatchFailScore(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -179,7 +179,7 @@ func TestCheckMeeplesAndScoreCatchFailScore(t *testing.T) {
 
 func TestCheckMeeplesAndScoreCatchFailMeeples(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -202,7 +202,7 @@ func TestCheckMeeplesAndScoreCatchFailMeeples(t *testing.T) {
 
 func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -210,12 +210,12 @@ func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	pos := position.New(1, 0)
+	pos := position.New(0, -1)
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 		TurnNumber:   1,
 	}.Run()
 
@@ -224,8 +224,8 @@ func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 		TestingT:     t,
 		Game:         game,
 		Position:     pos,
-		Side:         side.Bottom,
-		FeatureType:  feature.Road,
+		Side:         side.NoSide,
+		FeatureType:  feature.Monastery,
 		MeepleExists: true,
 		TurnNumber:   1,
 	}.Run()
@@ -245,7 +245,7 @@ func TestVerifyMeepleExistenceCorrectCheck(t *testing.T) {
 func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := tilesets.StandardTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := game.NewFromDeck(deck, nil, 4)
@@ -253,12 +253,12 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	pos := position.New(1, 0)
+	pos := position.New(0, -1)
 	test.MakeTurn{
 		Game:         game,
 		TestingT:     t,
 		Position:     pos,
-		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+		MeepleParams: test.MeepleParams{MeepleType: elements.NormalMeeple, FeatureSide: side.NoSide, FeatureType: feature.Monastery},
 		TurnNumber:   1,
 	}.Run()
 
@@ -268,8 +268,8 @@ func TestVerifyMeepleExistenceFailCapture(t *testing.T) {
 		TestingT:     &captureFail,
 		Game:         game,
 		Position:     pos,
-		Side:         side.Bottom,
-		FeatureType:  feature.Road,
+		Side:         side.NoSide,
+		FeatureType:  feature.Monastery,
 		MeepleExists: false,
 		TurnNumber:   1,
 	}.Run()

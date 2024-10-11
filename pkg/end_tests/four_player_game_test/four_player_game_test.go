@@ -9,8 +9,10 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -47,7 +49,7 @@ import (
 
 func Test4PlayerFullGame(t *testing.T) {
 	// create game
-	minitileSet := tilesets.OrderedMiniTileSet2()
+	minitileSet := MiniTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: minitileSet.StartingTile}
 	game, err := gameMod.NewFromDeck(deck, nil, 4)
@@ -69,6 +71,35 @@ func Test4PlayerFullGame(t *testing.T) {
 	checkTwelfthTurn(game, t)  // Straight road
 	checkFinalResult(game, t)
 
+}
+
+func MiniTileSet() tilesets.TileSet { //nolint:gocyclo
+	var tiles []tiles.Tile
+	// mini simple set containing (12 tiles in total):
+	// 1 monastery with road
+	// 2 straight roads
+	// 1 straight road with city
+	// 3 road turns
+	// 2 T crossroads
+	// 3 city edges up and down not connected
+
+	tiles = append(tiles, tiletemplates.TCrossRoad().Rotate(1)) // 1 turn
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	tiles = append(tiles, tiletemplates.RoadsTurn().Rotate(3))
+	tiles = append(tiles, tiletemplates.RoadsTurn().Rotate(1)) // 5 turn
+	tiles = append(tiles, tiletemplates.StraightRoads())
+	tiles = append(tiles, tiletemplates.TwoCityEdgesUpAndDownNotConnected())
+	tiles = append(tiles, tiletemplates.RoadsTurn().Rotate(3))
+	tiles = append(tiles, tiletemplates.SingleCityEdgeStraightRoads().Rotate(2))
+	tiles = append(tiles, tiletemplates.MonasteryWithSingleRoad().Rotate(1)) // 10 turn
+	tiles = append(tiles, tiletemplates.TCrossRoad().Rotate(3))
+	tiles = append(tiles, tiletemplates.StraightRoads())
+
+	return tilesets.TileSet{
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+		Tiles:        tiles,
+	}
 }
 
 /*
