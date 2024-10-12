@@ -189,7 +189,7 @@ func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWi
 		log = &fileLog
 	}
 
-	g, err := game.NewFromDeck(deck, log)
+	g, err := game.NewFromDeck(deck, log, 2)
 	if err != nil {
 		return SerializedGameWithID{}, err
 	}

@@ -35,7 +35,7 @@ func TestRemoveSingleMeeple(t *testing.T) {
 	}
 
 	// ------ create game --------
-	game, err := NewFromTileSet(tileset, nil)
+	game, err := NewFromTileSet(tileset, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -109,7 +109,7 @@ func TestRemoveTwoMeeples(t *testing.T) {
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
 
 	// ------ create game --------
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
