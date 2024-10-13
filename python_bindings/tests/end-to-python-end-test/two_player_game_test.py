@@ -84,6 +84,7 @@ def create_tileset() -> TileSet:
         tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
     )
 
+
 """
 // straight road with city edge
 // player1 places meeple on city, and closes it

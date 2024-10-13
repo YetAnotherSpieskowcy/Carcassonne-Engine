@@ -90,6 +90,7 @@ def create_tileset() -> TileSet:
         tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
     )
 
+
 """
 // player1 places T Cross road with meeple on a bottom road
 |                 0    1    2    3

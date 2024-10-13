@@ -52,4 +52,3 @@ class TileSet:
 
 def standard_tile_set() -> TileSet:
     return TileSet(_go_tilesets.StandardTileSet())
-

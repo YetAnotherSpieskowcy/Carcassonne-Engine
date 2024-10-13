@@ -128,6 +128,7 @@ def create_tileset() -> TileSet:
         tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
     )
 
+
 """
 player1 places meeple (!) on a monastery 
        -3   -2   -1    0    1    2    3
