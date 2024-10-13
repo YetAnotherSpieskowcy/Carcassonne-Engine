@@ -84,10 +84,11 @@ def create_tileset() -> TileSet:
         tiletemplates.monastery_with_single_road().rotate(1),
         tiletemplates.t_cross_road().rotate(3),
         tiletemplates.straight_roads(),
-
     ]
 
-    return TileSet.from_tiles(tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
+    return TileSet.from_tiles(
+        tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
+    )
 
 """
 // player1 places T Cross road with meeple on a bottom road

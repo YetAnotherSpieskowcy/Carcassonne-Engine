@@ -80,7 +80,9 @@ def create_tileset() -> TileSet:
         tiletemplates.straight_roads(),
     ]
 
-    return TileSet.from_tiles(tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
+    return TileSet.from_tiles(
+        tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
+    )
 
 """
 // straight road with city edge

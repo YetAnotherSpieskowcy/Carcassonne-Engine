@@ -124,7 +124,9 @@ def create_tileset() -> TileSet:
         tiletemplates.four_city_edges_connected_shield(),
     ]
 
-    return TileSet.from_tiles(tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
+    return TileSet.from_tiles(
+        tiles, starting_tile=tiletemplates.single_city_edge_straight_roads()
+    )
 
 """
 player1 places meeple (!) on a monastery 

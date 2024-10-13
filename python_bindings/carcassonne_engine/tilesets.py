@@ -3,7 +3,6 @@ from typing import Self
 
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
     engine as _go_engine,
-    nonstandardtilesets as _go_non_standard_tilesets,
     tilesets as _go_tilesets,
 )
 from .placed_tile import Tile
