@@ -6,13 +6,13 @@ from pathlib import Path
 
 from end_utils import TurnParams, check_points, make_turn
 
-from carcassonne_engine import GameEngine
+from carcassonne_engine import GameEngine, tiletemplates
 from carcassonne_engine._bindings.elements import MeepleType
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine._bindings.side import Side
 from carcassonne_engine.models import SerializedGame
 from carcassonne_engine.placed_tile import Position
-from carcassonne_engine.tilesets import every_tile_once_tile_set
+from carcassonne_engine.tilesets import TileSet
 
 """
  diagonal edges represent cities, dots fields, straight lines roads.
@@ -64,7 +64,7 @@ log = logging.getLogger(__name__)
 
 def test_all_tiles_game(tmp_path: Path) -> None:
     engine = GameEngine(4, tmp_path)
-    tile_set = every_tile_once_tile_set()
+    tile_set = create_tileset()
 
     game_id, game = engine.generate_ordered_game(tile_set)
 
@@ -95,6 +95,36 @@ def test_all_tiles_game(tmp_path: Path) -> None:
 
     assert game.current_tile is None
 
+
+def create_tileset() -> TileSet:
+    tiles = [
+        tiletemplates.monastery_without_roads(),
+        tiletemplates.monastery_with_single_road().rotate(1),
+        tiletemplates.straight_roads(),
+        tiletemplates.roads_turn().rotate(2),
+        tiletemplates.t_cross_road().rotate(1),
+        tiletemplates.x_cross_road(),
+        tiletemplates.single_city_edge_no_roads().rotate(1),
+        tiletemplates.single_city_edge_straight_roads().rotate(2),
+        tiletemplates.single_city_edge_left_road_turn().rotate(3),
+        tiletemplates.single_city_edge_right_road_turn().rotate(2),
+        tiletemplates.single_city_edge_cross_road(),
+        tiletemplates.two_city_edges_up_and_down_not_connected(),
+        tiletemplates.two_city_edges_up_and_down_connected(),
+        tiletemplates.two_city_edges_up_and_down_connected_shield(),
+        tiletemplates.two_city_edges_corner_not_connected(),
+        tiletemplates.two_city_edges_corner_connected().rotate(3),
+        tiletemplates.two_city_edges_corner_connected_shield().rotate(2),
+        tiletemplates.two_city_edges_corner_connected_road_turn().rotate(1),
+        tiletemplates.two_city_edges_corner_connected_road_turn_shield().rotate(2),
+        tiletemplates.three_city_edges_connected().rotate(2),
+        tiletemplates.three_city_edges_connected_shield(),
+        tiletemplates.three_city_edges_connected_road(),
+        tiletemplates.three_city_edges_connected_road_shield().rotate(2),
+        tiletemplates.four_city_edges_connected_shield(),
+    ]
+
+    return TileSet.from_tiles(tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
 
 """
 player1 places meeple (!) on a monastery 

@@ -593,7 +593,7 @@ func TestGenerateOrderedGame(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	_, err = engine.GenerateOrderedGame(tilesets.MiniTileSet())
+	_, err = engine.GenerateOrderedGame(tilesets.StandardTileSet())
 	if err != nil {
 		t.Fatal(err.Error())
 	}

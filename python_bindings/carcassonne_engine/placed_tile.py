@@ -46,6 +46,9 @@ class Tile:
     def to_bits(self) -> int:
         return _go_binarytiles.FromTile(self._go_obj)
 
+    def rotate(self, rotations: int) -> Self:
+        return Tile(self._go_obj.Rotate(rotations))
+
 
 class Position(NamedTuple):
     """Position of a tile on the board."""

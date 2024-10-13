@@ -42,7 +42,7 @@ from end_utils import TurnParams, check_points, make_turn
 from carcassonne_engine import GameEngine, tiletemplates
 from carcassonne_engine._bindings.feature import Type as FeatureType
 from carcassonne_engine.models import SerializedGame
-from carcassonne_engine.tilesets import ordered_mini_tile_set2
+from carcassonne_engine.tilesets import TileSet
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ log = logging.getLogger(__name__)
 def test_two_player_game2(tmp_path: Path) -> None:
     print(tmp_path)
     engine = GameEngine(4, tmp_path)
-    tile_set = ordered_mini_tile_set2()
+    tile_set = create_tileset()
 
     game_id, game = engine.generate_ordered_game(tile_set)
 
@@ -69,6 +69,25 @@ def test_two_player_game2(tmp_path: Path) -> None:
 
     assert game.current_tile is None
 
+
+def create_tileset() -> TileSet:
+    tiles = [
+        tiletemplates.t_cross_road().rotate(1),
+        tiletemplates.two_city_edges_up_and_down_not_connected(),
+        tiletemplates.two_city_edges_up_and_down_not_connected(),
+        tiletemplates.roads_turn().rotate(3),
+        tiletemplates.roads_turn().rotate(1),
+        tiletemplates.straight_roads(),
+        tiletemplates.two_city_edges_up_and_down_not_connected(),
+        tiletemplates.roads_turn().rotate(3),
+        tiletemplates.single_city_edge_straight_roads().rotate(2),
+        tiletemplates.monastery_with_single_road().rotate(1),
+        tiletemplates.t_cross_road().rotate(3),
+        tiletemplates.straight_roads(),
+
+    ]
+
+    return TileSet.from_tiles(tiles, starting_tile=tiletemplates.single_city_edge_straight_roads())
 
 """
 // player1 places T Cross road with meeple on a bottom road
