@@ -46,7 +46,7 @@ class Tile:
     def to_bits(self) -> int:
         return _go_binarytiles.FromTile(self._go_obj)
 
-    def rotate(self, rotations: int) -> Self:
+    def rotate(self, rotations: int) -> "Tile":
         return Tile(self._go_obj.Rotate(rotations))
 
 
