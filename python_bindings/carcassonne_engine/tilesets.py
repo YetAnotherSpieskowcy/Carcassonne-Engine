@@ -5,9 +5,12 @@ from ._bindings import (  # type: ignore[attr-defined] # no stubs
     engine as _go_engine,
     tilesets as _go_tilesets,
 )
-from .models import Tile
+from .placed_tile import Tile
 
-__all__ = ("TileSet", "standard_tile_set")
+__all__ = (
+    "TileSet",
+    "standard_tile_set",
+)
 
 
 class TileSet:
