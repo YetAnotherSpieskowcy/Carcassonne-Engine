@@ -47,7 +47,7 @@ class Tile:
         return _go_binarytiles.FromTile(self._go_obj)
 
     def rotate(self, rotations: int) -> Self:
-        return Tile(self._go_obj.Rotate(rotations))
+        return type(self)(Tile(self._go_obj.Rotate(rotations)))
 
 
 class Position(NamedTuple):
