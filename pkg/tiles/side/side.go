@@ -132,6 +132,7 @@ func (side Side) String() string {
 // - (Right|Top).HasSide(Right) == true
 // - (Right|Top).HasSide(TopRightEdge) == true
 // - (Right|Top).HasSide(Left) == false
+// - (AnySide).HasSide(NoSide) == always True !
 func (side Side) HasSide(otherSide Side) bool {
 	return side&otherSide == otherSide
 }

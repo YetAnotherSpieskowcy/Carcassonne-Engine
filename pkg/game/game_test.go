@@ -40,7 +40,7 @@ func TestDeepClone(t *testing.T) {
 	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
 
 	originalLogger := &TestLogger{}
-	original, err := NewFromTileSet(tileSet, originalLogger)
+	original, err := NewFromTileSet(tileSet, originalLogger, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -123,7 +123,7 @@ func TestFullGame(t *testing.T) {
 	}
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -192,7 +192,7 @@ func TestFullGame(t *testing.T) {
 }
 
 func TestGameFinalizeErrorsBeforeGameIsFinished(t *testing.T) {
-	game, err := NewFromTileSet(tilesets.StandardTileSet(), nil)
+	game, err := NewFromTileSet(tilesets.StandardTileSet(), nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -211,7 +211,7 @@ func TestGameSerializedCurrentTileNotSetWhenStackOutOfBounds(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -225,7 +225,7 @@ func TestGameSerializedCurrentTileNotSetWhenStackOutOfBounds(t *testing.T) {
 func TestGameSerializedCurrentTileNotSetForClonesWithSwappableTiles(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -250,7 +250,7 @@ func TestGameGetLegalMovesForIncludesMeepleTypesCurrentPlayerDoesHave(t *testing
 		Tiles:        []tiles.Tile{tile},
 	}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -279,7 +279,7 @@ func TestGameGetLegalMovesForExcludesMeepleTypesCurrentPlayerDoesNotHave(t *test
 		Tiles:        []tiles.Tile{tile},
 	}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -305,7 +305,7 @@ func TestGameSwapCurrentTileReturnsErrorOnOriginalGame(t *testing.T) {
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
 
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -337,7 +337,7 @@ func TestGameSwapCurrentTileSwapTileOnCloneWithSwappableTiles(t *testing.T) {
 	deckStack := stack.NewOrdered(tileSet.Tiles)
 	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
 
-	game, err := NewFromDeck(deck, nil)
+	game, err := NewFromDeck(deck, nil, 2)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -362,7 +362,7 @@ func TestGamePlayTurnDoesNotMutateInput(t *testing.T) {
 	tileSet := tilesets.StandardTileSet()
 	tileSet.Tiles = []tiles.Tile{tiletemplates.SingleCityEdgeNoRoads().Rotate(2)}
 
-	game, err := NewFromTileSet(tileSet, nil)
+	game, err := NewFromTileSet(tileSet, nil, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -383,5 +383,66 @@ func TestGamePlayTurnDoesNotMutateInput(t *testing.T) {
 	actual := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple
 	if expected != actual {
 		t.Fatalf("expected %#v, got %#v instead", expected, actual)
+	}
+}
+
+func TestGameGetPlayerById(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	game, err := NewFromTileSet(tileSet, nil, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	player1 := game.GetPlayerByID(elements.ID(1))
+	player2 := game.GetPlayerByID(elements.ID(2))
+
+	// ID
+	if player1.ID() != elements.ID(1) {
+		t.Fatalf("Player1 id not valid expected 1")
+	}
+
+	if player2.ID() != elements.ID(2) {
+		t.Fatalf("Player1 id not valid expected 2")
+	}
+
+	// score
+	if player1.Score() != 0 {
+		t.Fatalf("Player1 score not 0")
+	}
+
+	if player2.Score() != 0 {
+		t.Fatalf("Player2 score not 0")
+	}
+}
+
+func TestGameGetPlayerByIdNotFound(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	game, err := NewFromTileSet(tileSet, nil, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatalf("Found not existing player, panic didn't happen")
+		}
+	}()
+
+	game.GetPlayerByID(elements.ID(10))
+
+}
+
+func TestGetBoard(t *testing.T) {
+	tileSet := tilesets.StandardTileSet()
+	deckStack := stack.NewOrdered(tileSet.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+
+	game, err := NewFromDeck(deck, nil, 2)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if game.GetBoard() == nil {
+		t.Fatalf("Couldn't get board")
 	}
 }
