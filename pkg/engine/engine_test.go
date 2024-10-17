@@ -587,3 +587,54 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicEverywhere(t *testi
 	}
 	engine.Close()
 }
+
+/*
+Engine api doesn't allow accessing the board, so it tests if
+playing whole game results in the same order of tiles as in seeded stack.
+*/
+func TestGenerateSeededGame(t *testing.T) {
+	eng, err := StartGameEngine(4, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	seed := int64(0)
+
+	deckStack := stack.NewSeeded(tilesets.StandardTileSet().Tiles, seed)
+
+	serializedGameWithID, err := eng.GenerateSeededGame(tilesets.StandardTileSet(), seed)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	serializedGame := serializedGameWithID.Game
+	gameID := serializedGameWithID.ID
+
+	for turn, tile := range deckStack.GetTiles() {
+		// check if the same tile as in seeded stack
+		if tile.ExactEquals(serializedGame.CurrentTile) {
+			t.Fatalf("Turn: %#v Different tile found: %#v, expected: %#v", turn, serializedGame.CurrentTile, tile)
+		}
+
+		// -------- get moves -----------
+		legalMovesRequests := []*GetLegalMovesRequest{}
+		legalMovesRequests = append(legalMovesRequests, &GetLegalMovesRequest{
+			BaseGameID:  gameID,
+			TileToPlace: tile,
+		})
+
+		legalMoves := eng.SendGetLegalMovesBatch(legalMovesRequests)[0]
+		if legalMoves.Err() != nil {
+			t.Fatalf("%#v legal move failed. Reason: %#v", turn, legalMoves.Err().Error())
+		}
+
+		// make move
+		makeTurnRequests := []*PlayTurnRequest{}
+		makeTurnRequests = append(makeTurnRequests, &PlayTurnRequest{
+			GameID: gameID,
+			Move:   legalMoves.Moves[0].Move,
+		})
+
+		playTurnResp := eng.SendPlayTurnBatch(makeTurnRequests)[0]
+		serializedGame = playTurnResp.Game
+	}
+}
