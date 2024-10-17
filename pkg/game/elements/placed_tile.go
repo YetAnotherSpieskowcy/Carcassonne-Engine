@@ -67,6 +67,63 @@ func ToTile(tile PlacedTile) tiles.Tile {
 	}
 }
 
+// Returns true if placedTile equals tile and false otherwise
+// The comparison ignores meeples, position and orientation
+// Features of tile *MUST* be in the same order as in placedTile for the tiles to be considered equal
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
+func (placedTile PlacedTile) EqualsTile(tile tiles.Tile) bool {
+	if len(tile.Features) != len(placedTile.Features) {
+		return false
+	}
+outer:
+	for rotations := range uint(4) {
+		rotated := tile.Rotate(rotations)
+		for i, placedFeature := range placedTile.Features {
+			if placedFeature.Feature != rotated.Features[i] {
+				continue outer
+			}
+		}
+		return true
+	}
+	return false
+}
+
+// Returns true if placedTile equals tile and false otherwise
+// The comparison ignores meeples and position but includes orientation
+// Features of tile *MUST* be in the same order as in placedTile for the tiles to be considered equal
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
+func (placedTile PlacedTile) ExactEqualsTile(tile tiles.Tile) bool {
+	if len(tile.Features) != len(placedTile.Features) {
+		return false
+	}
+	for i := range tile.Features {
+		if tile.Features[i] != placedTile.Features[i].Feature {
+			return false
+		}
+	}
+	return true
+}
+
+// Returns true if placedTile equals other and false otherwise
+// The comparison includes only the features - it ignores meeples, position and orientation
+// Features of both tiles *MUST* be in the same order for the tiles to be considered equal
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
+func (placedTile PlacedTile) FeatureEquals(other PlacedTile) bool {
+	if len(other.Features) != len(placedTile.Features) {
+		return false
+	}
+outer:
+	for rotations := range uint(4) {
+		for i, placedFeature := range placedTile.Features {
+			if placedFeature.Feature != other.Features[i].Feature.Rotate(rotations) {
+				continue outer
+			}
+		}
+		return true
+	}
+	return false
+}
+
 // Returns a list of all features of the given type on this tile
 func (placedTile PlacedTile) GetFeaturesOfType(featureType feature.Type) []PlacedFeature {
 	features := []PlacedFeature{}
