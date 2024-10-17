@@ -1,6 +1,7 @@
 name: Performance tests
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -26,4 +27,6 @@ jobs:
       - name: Set up gotestfmt
         uses: GoTestTools/gotestfmt-action@v2            
       - name: Run tests
-        run: go test -v ./pkg/game/performancetests -bench=. -run=xxx -benchmem    
+        run: |
+          go test -v ./pkg/game/performancetests -bench=. -run=xxx -benchmem
+          go test -v ./pkg/engine/request_performance_tests -bench=. -run=xxx -benchmem -benchtime=1x -memprofile

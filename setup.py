@@ -18,6 +18,7 @@ GO_EXCLUDED_PACKAGES = (
     "stack",
     # nothing depends on performance tests
     f"game{os.sep}performancetests",
+    f"engine{os.sep}request_performance_tests",
     "end_tests",
     f"end_tests{os.sep}four_player_game_test",
     f"end_tests{os.sep}two_player_game_test",

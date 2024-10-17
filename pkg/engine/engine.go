@@ -165,6 +165,13 @@ func (engine *GameEngine) GenerateGame(tileSet tilesets.TileSet) (SerializedGame
 	return engine.generateGameFromDeck(deck)
 }
 
+// Generate a random game from the given tileset and seed.
+func (engine *GameEngine) GenerateSeededGame(tileSet tilesets.TileSet, seed int64) (SerializedGameWithID, error) {
+	deckStack := stack.NewSeeded(tileSet.Tiles, seed)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileSet.StartingTile}
+	return engine.generateGameFromDeck(deck)
+}
+
 // Generate a game from the given tileset using its defined tile order.
 //
 // Usage for games played by an agent is ill-advised - the serialized game reveals
