@@ -65,7 +65,7 @@ func (*EmptyLogger) AsWriter() io.Writer {
 	return nil
 }
 
-func (*EmptyLogger) LogEvent(eventName EventType, event interface{}) error { //nolint:revive // causes gopy to fail
+func (*EmptyLogger) LogEvent(entry pb.Entry) error { //nolint:revive // causes gopy to fail
 	return nil
 }
 
