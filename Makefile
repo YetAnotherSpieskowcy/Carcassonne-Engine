@@ -10,7 +10,7 @@ build-go: compile-proto
 	go build "./pkg/..."
 
 .PHONY: build-python
-build-python: .venv
+build-python: .venv compile-proto
 	@echo "Generating and building Python bindings..."
 	@mkdir -p built_wheels
 	go install "github.com/go-python/gopy@v0.4.10"
@@ -20,6 +20,7 @@ build-python: .venv
 .PHONY: compile-proto
 compile-proto: 
 	@echo "Compiling Protobuf..."
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	protoc --proto_path=./proto --go_out=./pkg ./proto/*.proto
 
 .PHONY: install-python

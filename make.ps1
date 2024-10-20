@@ -106,6 +106,7 @@ function build-go() {
 
 function build-python() {
     New-Venv-If-Needed
+    compile-proto
 
     Write-Output "Generating and building Python bindings..."
     New-Item -ItemType Directory -Force -Path built_wheels | Out-Null
