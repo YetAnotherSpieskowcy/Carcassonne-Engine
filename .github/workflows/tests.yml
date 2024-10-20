@@ -24,7 +24,7 @@ jobs:
         with:
           go-version: "${{ env.GO_VERSION }}"
       - name: Install Protobuf
-        run: apt update && apt install protobuf-compiler
+        run: sudo apt update && sudo apt install protobuf-compiler
       - name: Install gocover-cobertura
         run: |
           go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
