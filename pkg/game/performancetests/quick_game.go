@@ -35,7 +35,7 @@ func PlayNTileGame(tileCount int, tile tiles.Tile, b *testing.B) error {
 	// play game
 	b.StartTimer()
 	for i := range tileCount {
-		ptile.Position = position.New(int16(i+1), 0)
+		ptile.Position = position.New(int8(i+1), 0)
 		err = Game.PlayTurn(ptile)
 		if err != nil {
 			return err

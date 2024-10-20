@@ -130,8 +130,8 @@ func TestPositionMarshalTextWithNegativeCoords(t *testing.T) {
 
 func TestPositionUnmarshalTextWithPositiveCoords(t *testing.T) {
 	text := []byte("1,3")
-	expectedX := int16(1)
-	expectedY := int16(3)
+	expectedX := int8(1)
+	expectedY := int8(3)
 
 	actual := Position{}
 	err := actual.UnmarshalText(text)
@@ -148,8 +148,8 @@ func TestPositionUnmarshalTextWithPositiveCoords(t *testing.T) {
 
 func TestPositionUnmarshalTextWithNegativeCoords(t *testing.T) {
 	text := []byte("-31,-5")
-	expectedX := int16(-31)
-	expectedY := int16(-5)
+	expectedX := int8(-31)
+	expectedY := int8(-5)
 
 	actual := Position{}
 	err := actual.UnmarshalText(text)

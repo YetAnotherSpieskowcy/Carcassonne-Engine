@@ -7,20 +7,19 @@ import (
 )
 
 type Position struct {
-	// int8 would be fine for base game (72 tiles) but let's be a bit more generous
-	x int16
-	y int16
+	x int8
+	y int8
 }
 
-func New(x int16, y int16) Position {
+func New(x int8, y int8) Position {
 	return Position{x, y}
 }
 
-func (pos Position) X() int16 {
+func (pos Position) X() int8 {
 	return pos.x
 }
 
-func (pos Position) Y() int16 {
+func (pos Position) Y() int8 {
 	return pos.y
 }
 

@@ -577,13 +577,13 @@ func TestScoreNotFinalMeeplesOnSameFeature(t *testing.T) {
 
 	// set positions
 	for i := range 7 {
-		tileSlice[i].Position = position.New(int16(i), 1)
+		tileSlice[i].Position = position.New(int8(i), 1)
 	}
 	for i := range 3 {
-		tileSlice[i+7].Position = position.New(int16(2*i+2), 0)
+		tileSlice[i+7].Position = position.New(int8(2*i+2), 0)
 	}
 	for i := range 2 {
-		tileSlice[i+7+3].Position = position.New(int16(2*i+3), 0)
+		tileSlice[i+7+3].Position = position.New(int8(2*i+3), 0)
 	}
 	tileSlice[7+5].Position = position.New(7, 0)
 
