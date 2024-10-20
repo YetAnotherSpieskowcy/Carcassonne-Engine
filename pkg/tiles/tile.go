@@ -15,13 +15,15 @@ type Tile struct {
 }
 
 // checks if two tiles are the same, ignoring their orientation
+// features of both tiles *MUST* be in the same order for the tiles to be considered equal
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
 func (tile Tile) Equals(other Tile) bool {
+	if len(tile.Features) != len(other.Features) {
+		return false
+	}
 outer:
 	for rotations := range uint(4) {
 		rotated := other.Rotate(rotations)
-		if len(tile.Features) != len(rotated.Features) {
-			continue
-		}
 		for i, feature := range tile.Features {
 			if feature != rotated.Features[i] {
 				continue outer
@@ -33,6 +35,8 @@ outer:
 }
 
 // checks if two tiles are the same, including their orientation
+// features of both tiles *MUST* be in the same order for the tiles to be considered equal
+// (e.g. tile with monastery and field != tile with field and monastery, even if their sides are the same)
 func (tile Tile) ExactEquals(other Tile) bool {
 	return slices.Equal(tile.Features, other.Features)
 }
@@ -88,14 +92,7 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	var newFeatures []featureMod.Feature
 
 	for _, feature := range tile.Features {
-		newFeatures = append(
-			newFeatures,
-			featureMod.Feature{
-				FeatureType:  feature.FeatureType,
-				ModifierType: feature.ModifierType,
-				Sides:        feature.Sides.Rotate(rotations),
-			},
-		)
+		newFeatures = append(newFeatures, feature.Rotate(rotations))
 	}
 
 	tile.Features = newFeatures
