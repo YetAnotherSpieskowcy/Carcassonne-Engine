@@ -23,12 +23,16 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: "${{ env.GO_VERSION }}"
+      - name: Install Protobuf
+        run: apt update && apt install protobuf-compiler
       - name: Install gocover-cobertura
         run: |
           go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
       # Install gotestfmt on the VM running the action.
       - name: Set up gotestfmt
-        uses: GoTestTools/gotestfmt-action@v2            
+        uses: GoTestTools/gotestfmt-action@v2        
+      - name: Compile Protobuf
+        run: protoc --proto_path=./proto --go_out=./pkg ./proto/*.proto
       - name: Run tests
         run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
       - name: Convert go coverage to corbetura format

@@ -77,7 +77,7 @@ func NewFromDeck(
 		return nil, err
 	}
 	if err := log.LogEvent(
-		logger.StartEvent, logger.NewStartEntryContent(game.deck.StartingTile, game.deck.GetRemaining(), len(game.players)),
+		logger.NewStartEntry(0, 0, uint8(len(game.players)), game.deck.StartingTile),
 	); err != nil {
 		return nil, err
 	}
@@ -266,7 +266,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 	game.currentPlayer = (game.currentPlayer + 1) % game.PlayerCount()
 
 	if err = game.log.LogEvent(
-		logger.PlaceTileEvent, logger.NewPlaceTileEntryContent(player.ID(), move),
+		logger.NewPlaceTileEntry(player.ID(), move),
 	); err != nil {
 		return err
 	}
@@ -290,7 +290,7 @@ func (game *Game) PlayTurn(move elements.PlacedTile) error {
 
 	if !scoreReport.IsEmpty() {
 		if err = game.log.LogEvent(
-			logger.ScoreEvent, logger.NewScoreEntryContent(scoreReport),
+			logger.NewScoreEntry(logger.ScoreEvent, scoreReport),
 		); err != nil {
 			return err
 		}
@@ -325,11 +325,11 @@ func (game *Game) Finalize() (elements.ScoreReport, error) {
 	meeplesReport := game.board.ScoreMeeples(true)
 	playerScores.Join(meeplesReport)
 
-	if err := game.log.LogEvent(logger.ScoreEvent, logger.NewScoreEntryContent(meeplesReport)); err != nil {
+	if err := game.log.LogEvent(logger.NewScoreEntry(logger.ScoreEvent, meeplesReport)); err != nil {
 		return playerScores, err
 	}
 
-	if err := game.log.LogEvent(logger.FinalScoreEvent, logger.NewFinalScoreEntryContent(playerScores)); err != nil {
+	if err := game.log.LogEvent(logger.NewScoreEntry(logger.FinalScoreEvent, playerScores)); err != nil {
 		return playerScores, err
 	}
 

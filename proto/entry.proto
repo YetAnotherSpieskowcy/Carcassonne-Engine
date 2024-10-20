@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "content.proto";
+
+option go_package = "./proto";
+
+message Entry {
+  EventType event = 1;
+
+  oneof content {
+    StartEntryContent startEntryContent = 2;
+    PlaceTileEntryContent placeTileEntryContent = 3;
+    ScoreEntryContent scoreEntryContent = 4;
+  }
+}
+
+enum EventType {
+  START_EVENT = 0;
+  PLACE_TILE_EVENT = 1;
+  SCORE_EVENT = 2;
+  FINAL_SCORE_EVENT = 3;
+}

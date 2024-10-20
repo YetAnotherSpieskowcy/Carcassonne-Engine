@@ -10,6 +10,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/logger"
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -22,7 +23,7 @@ type TestLogger struct {
 	callCount int
 }
 
-func (l *TestLogger) LogEvent(_ logger.EventType, _ interface{}) error {
+func (l *TestLogger) LogEvent(_ pb.Entry) error {
 	l.callCount++
 	return nil
 }
