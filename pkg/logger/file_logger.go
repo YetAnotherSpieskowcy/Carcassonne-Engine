@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io"
 	"os"
 )
 
@@ -27,7 +28,6 @@ func (fl *FileLogger) Close() error {
 	return err
 }
 
-/*
 func (fl *FileLogger) CopyTo(dst Logger) error {
 	currentOffset, err := fl.file.Seek(0, io.SeekCurrent)
 	if err != nil {
@@ -46,4 +46,4 @@ func (fl *FileLogger) CopyTo(dst Logger) error {
 	_, err = fl.file.Seek(currentOffset, io.SeekStart)
 
 	return err
-}*/
+}
