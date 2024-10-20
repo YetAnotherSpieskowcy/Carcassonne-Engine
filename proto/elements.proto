@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message Meeple {
+  uint32 playerID = 1;
+  MeepleType meepleType = 2;
+}
+
+enum MeepleType {
+  NONE_MEEPLE = 0;
+  NORMAL_MEEPLE = 1;
+}
+
+message Feature {
+  FeatureType type = 1;
+  ModifierType modifier = 2;
+  Side side = 3;
+  optional Meeple meeple = 4;
+}
+
+enum FeatureType {
+  NO_FEATURE = 0;
+  ROAD = 1;
+  CITY = 2;
+  FIELED = 3;
+  MONASTERY = 4;
+}
+
+enum ModifierType {
+  NO_MODIFIER = 0;
+  SHIELD = 1;
+}
+
+enum Side {
+  NO_SIDE = 0;
+  LEFT_TOP = 1;
+  LEFT_BOTTOM = 2;
+  LEFT = 3;
+  BOTTOM_LEFT = 4;
+  BOTTOM_RIGHT = 8;
+  BOTTOM = 12;
+  RIGHT_BOTTOM = 16;
+  RIGHT_TOP = 32;
+  RIGHT = 48;
+  TOP_RIGHT = 64;
+  TOP_LEFT = 128;
+  TOP = 192;
+  ALL = 255;
+}
+
+message Tile {
+  repeated Feature features = 1;
+  Position position = 2;
+}
+
+message ReturnedMeeple {
+  Meeple meeple = 1;
+  Position position = 2;
+  uint32 playerId = 3;
+}
+
+message ReceivedPoints {
+  uint32 playerId = 1;
+  uint32 score = 2;
+}
+
+message ScoreReport {
+  repeated ReceivedPoints receivedPoints = 1;
+  repeated ReturnedMeeple returnedMeeples = 2;
+}

@@ -1,16 +1,19 @@
 package logger
 
 import (
-	"encoding/json"
+	"encoding/binary"
 	"errors"
 	"io"
+
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 var ErrCopyToNotImplemented = errors.New("the type does not implement the CopyTo() method")
 
 type Logger interface {
 	AsWriter() io.Writer // only meant to be called by other (i.e. public) methods
-	LogEvent(EventType, interface{}) error
+	LogEvent(pb.Entry) error
 	CopyTo(Logger) error
 }
 
@@ -26,24 +29,21 @@ func (logger *BaseLogger) AsWriter() io.Writer {
 	return logger.writer
 }
 
-func (logger *BaseLogger) LogEvent(eventName EventType, event interface{}) error {
-	jsonData, err := json.Marshal(event)
+func (logger *BaseLogger) LogEvent(entry pb.Entry) error {
+	out, err := proto.Marshal(&entry)
 	if err != nil {
 		return err
 	}
 
-	entry := NewEntry(eventName, jsonData)
-	jsonEntry, err := json.Marshal(entry)
-	if err != nil {
+	// write dize of entry to the file
+	buf := make([]byte, 4)
+	binary.LittleEndian.PutUint32(buf, uint32(len(out)))
+	if _, err := logger.writer.Write(buf); err != nil {
 		return err
 	}
 
-	_, err = logger.writer.Write(jsonEntry)
-	if err != nil {
-		return err
-	}
-	_, err = logger.writer.Write([]byte("\n"))
-	if err != nil {
+	// write message
+	if _, err := logger.writer.Write(out); err != nil {
 		return err
 	}
 

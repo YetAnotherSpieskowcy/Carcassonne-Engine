@@ -1,9 +1,8 @@
 package logger
 
 import (
-	"encoding/json"
-
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
@@ -16,92 +15,115 @@ const (
 	FinalScoreEvent EventType = "final_score"
 )
 
-type Entry struct {
-	Event   EventType `json:"event"`
-	Content []byte    `json:"content"`
-}
+func NewStartEntry(gameID uint32, gameSeed uint32, playerCount uint8, startingTile tiles.Tile) pb.Entry {
+	tile := &pb.Tile{
+		Position: &pb.Position{
+			X: 0,
+			Y: 0,
+		},
+		Features: []*pb.Feature{},
+	}
 
-func NewEntry(event EventType, content []byte) Entry {
-	return Entry{
-		Event:   event,
-		Content: content,
+	for _, f := range startingTile.Features {
+		feature := &pb.Feature{
+			Type:     pb.FeatureType(f.FeatureType),
+			Modifier: pb.ModifierType(f.ModifierType),
+			Side:     pb.Side(f.Sides),
+			Meeple: &pb.Meeple{
+				PlayerID:   uint32(elements.NoneMeeple),
+				MeepleType: pb.MeepleType(elements.NonePlayer),
+			},
+		}
+		tile.Features = append(tile.Features, feature)
+	}
+
+	return pb.Entry{
+		Event: pb.EventType_START_EVENT,
+		Content: &pb.Entry_StartEntryContent{
+			StartEntryContent: &pb.StartEntryContent{
+				GameID:      gameID,
+				GameSeed:    gameSeed,
+				PlayerCount: uint32(playerCount),
+				StartTile:   tile,
+			},
+		},
 	}
 }
 
-type StartEntryContent struct {
-	StartingTile tiles.Tile   `json:"startingTile"`
-	Stack        []tiles.Tile `json:"stack"`
-	PlayerCount  int          `json:"playerCount"`
-}
+func NewPlaceTileEntry(playerID elements.ID, tile elements.PlacedTile) pb.Entry {
+	move := &pb.Tile{
+		Position: &pb.Position{
+			X: int32(tile.Position.X()),
+			Y: int32(tile.Position.Y()),
+		},
+		Features: []*pb.Feature{},
+	}
+	for _, f := range tile.Features {
+		feature := &pb.Feature{
+			Type:     pb.FeatureType(f.FeatureType),
+			Modifier: pb.ModifierType(f.ModifierType),
+			Side:     pb.Side(f.Sides),
+			Meeple: &pb.Meeple{
+				PlayerID:   uint32(f.Meeple.PlayerID),
+				MeepleType: pb.MeepleType(f.Meeple.Type),
+			},
+		}
+		move.Features = append(move.Features, feature)
+	}
 
-func NewStartEntryContent(startingTile tiles.Tile, stack []tiles.Tile, playerCount int) StartEntryContent {
-	return StartEntryContent{
-		StartingTile: startingTile,
-		Stack:        stack,
-		PlayerCount:  playerCount,
+	return pb.Entry{
+		Event: pb.EventType_PLACE_TILE_EVENT,
+		Content: &pb.Entry_PlaceTileEntryContent{
+			PlaceTileEntryContent: &pb.PlaceTileEntryContent{
+				PlayerID: uint32(playerID),
+				Move:     move,
+			},
+		},
 	}
 }
 
-func ParseStartEntryContent(entryContent []byte) StartEntryContent {
-	var content StartEntryContent
-	err := json.Unmarshal(entryContent, &content)
-	if err != nil {
-		panic(err)
+func NewScoreEntry(event EventType, scoreReport elements.ScoreReport) pb.Entry {
+	scores := &pb.ScoreReport{
+		ReceivedPoints:  []*pb.ReceivedPoints{},
+		ReturnedMeeples: []*pb.ReturnedMeeple{},
 	}
-	return content
-}
 
-type PlaceTileEntryContent struct {
-	PlayerID elements.ID         `json:"playerID"`
-	Move     elements.PlacedTile `json:"move"`
-}
-
-func NewPlaceTileEntryContent(player elements.ID, move elements.PlacedTile) PlaceTileEntryContent {
-	return PlaceTileEntryContent{
-		PlayerID: player,
-		Move:     move,
+	for playerID, points := range scoreReport.ReceivedPoints {
+		scores.ReceivedPoints = append(scores.ReceivedPoints, &pb.ReceivedPoints{
+			PlayerId: uint32(playerID),
+			Score:    points,
+		})
 	}
-}
 
-func ParsePlaceTileEntryContent(entryContent []byte) PlaceTileEntryContent {
-	var content PlaceTileEntryContent
-	err := json.Unmarshal(entryContent, &content)
-	if err != nil {
-		panic(err)
+	for playerID, meeples := range scoreReport.ReturnedMeeples {
+		for _, meeple := range meeples {
+			scores.ReturnedMeeples = append(scores.ReturnedMeeples, &pb.ReturnedMeeple{
+				Meeple: &pb.Meeple{
+					PlayerID:   uint32(playerID),
+					MeepleType: pb.MeepleType(meeple.Type),
+				},
+				Position: &pb.Position{
+					X: int32(meeple.Position.X()),
+					Y: int32(meeple.Position.Y()),
+				},
+			})
+		}
 	}
-	return content
-}
 
-type ScoreEntryContent struct {
-	Scores elements.ScoreReport `json:"scores"`
-}
+	var eventType pb.EventType
 
-func NewScoreEntryContent(scores elements.ScoreReport) ScoreEntryContent {
-	return ScoreEntryContent{Scores: scores}
-}
-
-func ParseScoreEntryContent(entryContent []byte) ScoreEntryContent {
-	var content ScoreEntryContent
-	err := json.Unmarshal(entryContent, &content)
-	if err != nil {
-		panic(err)
+	if event == FinalScoreEvent {
+		eventType = pb.EventType_FINAL_SCORE_EVENT
+	} else {
+		eventType = pb.EventType_SCORE_EVENT
 	}
-	return content
-}
 
-type FinalScoreEntryContent struct {
-	Scores elements.ScoreReport `json:"scores"`
-}
-
-func NewFinalScoreEntryContent(scores elements.ScoreReport) FinalScoreEntryContent {
-	return FinalScoreEntryContent{Scores: scores}
-}
-
-func ParseFinalScoreEntryContent(entryContent []byte) FinalScoreEntryContent {
-	var content FinalScoreEntryContent
-	err := json.Unmarshal(entryContent, &content)
-	if err != nil {
-		panic(err)
+	return pb.Entry{
+		Event: eventType,
+		Content: &pb.Entry_ScoreEntryContent{
+			ScoreEntryContent: &pb.ScoreEntryContent{
+				ScoreReport: scores,
+			},
+		},
 	}
-	return content
 }
