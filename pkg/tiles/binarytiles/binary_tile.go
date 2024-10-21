@@ -233,9 +233,6 @@ func (binaryTile *BinaryTile) setOwner(ownerID elements.ID) {
 
 // Sets the position X and position Y bits in the binary tile
 func (binaryTile *BinaryTile) addPosition(position position.Position) {
-	if position.X() > 127 || position.Y() > 127 || position.X() < -128 || position.Y() < -128 {
-		panic(fmt.Sprintf("position %#v out of range for binary tile. Allowed range: [-128, 127]", position))
-	}
 	var tmpBinaryTile BinaryTile
 	tmpBinaryTile |= BinaryTile(uint8(position.X()))
 	tmpBinaryTile <<= positionBitSize

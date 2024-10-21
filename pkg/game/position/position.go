@@ -7,20 +7,24 @@ import (
 )
 
 type Position struct {
-	// int8 would be fine for base game (72 tiles) but let's be a bit more generous
-	x int16
-	y int16
+	x int8
+	y int8
 }
 
-func New(x int16, y int16) Position {
+func New(x int8, y int8) Position {
+	if x == 127 || x == -128 || y == 127 || y == -128 {
+		// technically not necessary, but many functions depending on finding neighbouring positions
+		//   can potentially return invalid results or enter infinite loops due to (under/over)flows
+		panic(fmt.Sprintf("Position (%#v, %#v) is outside of allowed range: ([-127, 126], [-127, 126])", x, y))
+	}
 	return Position{x, y}
 }
 
-func (pos Position) X() int16 {
+func (pos Position) X() int8 {
 	return pos.x
 }
 
-func (pos Position) Y() int16 {
+func (pos Position) Y() int8 {
 	return pos.y
 }
 
