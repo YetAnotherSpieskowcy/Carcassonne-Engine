@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto"
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto" //nolint:goanalysis_metalinter
 	"google.golang.org/protobuf/proto"
 )
 
@@ -65,7 +65,7 @@ func (fr FileReader) ReadLogs() <-chan *pb.Entry {
 					offset += int64(itemSize)
 				}
 
-				if entry.Event == pb.EventType_FINAL_SCORE_EVENT {
+				if entry.Event == pb.EventType_EVENT_TYPE_FINAL_SCORE_EVENT {
 					break
 				}
 			}

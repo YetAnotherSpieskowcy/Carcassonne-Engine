@@ -2,7 +2,7 @@ package logger
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto"
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto" //nolint:goanalysis_metalinter
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
@@ -30,7 +30,7 @@ func NewStartEntry(gameID uint32, gameSeed uint32, playerCount uint8, startingTi
 			Modifier: pb.ModifierType(f.ModifierType),
 			Side:     pb.Side(f.Sides),
 			Meeple: &pb.Meeple{
-				PlayerID:   uint32(elements.NoneMeeple),
+				PlayerId:   uint32(elements.NoneMeeple),
 				MeepleType: pb.MeepleType(elements.NonePlayer),
 			},
 		}
@@ -38,10 +38,10 @@ func NewStartEntry(gameID uint32, gameSeed uint32, playerCount uint8, startingTi
 	}
 
 	return pb.Entry{
-		Event: pb.EventType_START_EVENT,
+		Event: pb.EventType_EVENT_TYPE_START_EVENT,
 		Content: &pb.Entry_StartEntryContent{
 			StartEntryContent: &pb.StartEntryContent{
-				GameID:      gameID,
+				GameId:      gameID,
 				GameSeed:    gameSeed,
 				PlayerCount: uint32(playerCount),
 				StartTile:   tile,
@@ -64,7 +64,7 @@ func NewPlaceTileEntry(playerID elements.ID, tile elements.PlacedTile) pb.Entry 
 			Modifier: pb.ModifierType(f.ModifierType),
 			Side:     pb.Side(f.Sides),
 			Meeple: &pb.Meeple{
-				PlayerID:   uint32(f.Meeple.PlayerID),
+				PlayerId:   uint32(f.Meeple.PlayerID),
 				MeepleType: pb.MeepleType(f.Meeple.Type),
 			},
 		}
@@ -72,10 +72,10 @@ func NewPlaceTileEntry(playerID elements.ID, tile elements.PlacedTile) pb.Entry 
 	}
 
 	return pb.Entry{
-		Event: pb.EventType_PLACE_TILE_EVENT,
+		Event: pb.EventType_EVENT_TYPE_PLACE_TILE_EVENT,
 		Content: &pb.Entry_PlaceTileEntryContent{
 			PlaceTileEntryContent: &pb.PlaceTileEntryContent{
-				PlayerID: uint32(playerID),
+				PlayerId: uint32(playerID),
 				Move:     move,
 			},
 		},
@@ -99,7 +99,7 @@ func NewScoreEntry(event EventType, scoreReport elements.ScoreReport) pb.Entry {
 		for _, meeple := range meeples {
 			scores.ReturnedMeeples = append(scores.ReturnedMeeples, &pb.ReturnedMeeple{
 				Meeple: &pb.Meeple{
-					PlayerID:   uint32(playerID),
+					PlayerId:   uint32(playerID),
 					MeepleType: pb.MeepleType(meeple.Type),
 				},
 				Position: &pb.Position{
@@ -113,9 +113,9 @@ func NewScoreEntry(event EventType, scoreReport elements.ScoreReport) pb.Entry {
 	var eventType pb.EventType
 
 	if event == FinalScoreEvent {
-		eventType = pb.EventType_FINAL_SCORE_EVENT
+		eventType = pb.EventType_EVENT_TYPE_FINAL_SCORE_EVENT
 	} else {
-		eventType = pb.EventType_SCORE_EVENT
+		eventType = pb.EventType_EVENT_TYPE_SCORE_EVENT
 	}
 
 	return pb.Entry{

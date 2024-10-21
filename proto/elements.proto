@@ -8,13 +8,13 @@ message Position {
 }
 
 message Meeple {
-  uint32 playerID = 1;
-  MeepleType meepleType = 2;
+  uint32 player_id = 1;
+  MeepleType meeple_type = 2;
 }
 
 enum MeepleType {
-  NONE_MEEPLE = 0;
-  NORMAL_MEEPLE = 1;
+  MEEPLE_TYPE_NONE = 0;
+  MEEPLE_TYPE_NORMAL = 1;
 }
 
 message Feature {
@@ -25,33 +25,33 @@ message Feature {
 }
 
 enum FeatureType {
-  NO_FEATURE = 0;
-  ROAD = 1;
-  CITY = 2;
-  FIELED = 3;
-  MONASTERY = 4;
+  FEATURE_TYPE_NO_FEATURE = 0;
+  FEATURE_TYPE_ROAD = 1;
+  FEATURE_TYPE_CITY = 2;
+  FEATURE_TYPE_FIELED = 3;
+  FEATURE_TYPE_MONASTERY = 4;
 }
 
 enum ModifierType {
-  NO_MODIFIER = 0;
-  SHIELD = 1;
+  MODIFIER_TYPE_NO_MODIFIER = 0;
+  MODIFIER_TYPE_SHIELD = 1;
 }
 
 enum Side {
-  NO_SIDE = 0;
-  LEFT_TOP = 1;
-  LEFT_BOTTOM = 2;
-  LEFT = 3;
-  BOTTOM_LEFT = 4;
-  BOTTOM_RIGHT = 8;
-  BOTTOM = 12;
-  RIGHT_BOTTOM = 16;
-  RIGHT_TOP = 32;
-  RIGHT = 48;
-  TOP_RIGHT = 64;
-  TOP_LEFT = 128;
-  TOP = 192;
-  ALL = 255;
+  SIDE_NO_SIDE = 0;
+  SIDE_LEFT_TOP = 1;
+  SIDE_LEFT_BOTTOM = 2;
+  SIDE_LEFT = 3;
+  SIDE_BOTTOM_LEFT = 4;
+  SIDE_BOTTOM_RIGHT = 8;
+  SIDE_BOTTOM = 12;
+  SIDE_RIGHT_BOTTOM = 16;
+  SIDE_RIGHT_TOP = 32;
+  SIDE_RIGHT = 48;
+  SIDE_TOP_RIGHT = 64;
+  SIDE_TOP_LEFT = 128;
+  SIDE_TOP = 192;
+  SIDE_ALL = 255;
 }
 
 message Tile {
@@ -62,15 +62,15 @@ message Tile {
 message ReturnedMeeple {
   Meeple meeple = 1;
   Position position = 2;
-  uint32 playerId = 3;
+  uint32 player_id = 3;
 }
 
 message ReceivedPoints {
-  uint32 playerId = 1;
+  uint32 player_id = 1;
   uint32 score = 2;
 }
 
 message ScoreReport {
-  repeated ReceivedPoints receivedPoints = 1;
-  repeated ReturnedMeeple returnedMeeples = 2;
+  repeated ReceivedPoints received_points = 1;
+  repeated ReturnedMeeple returned_meeples = 2;
 }

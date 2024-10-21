@@ -8,15 +8,15 @@ message Entry {
   EventType event = 1;
 
   oneof content {
-    StartEntryContent startEntryContent = 2;
-    PlaceTileEntryContent placeTileEntryContent = 3;
-    ScoreEntryContent scoreEntryContent = 4;
+    StartEntryContent start_entry_content = 2;
+    PlaceTileEntryContent place_tile_entry_content = 3;
+    ScoreEntryContent score_entry_content = 4;
   }
 }
 
 enum EventType {
-  START_EVENT = 0;
-  PLACE_TILE_EVENT = 1;
-  SCORE_EVENT = 2;
-  FINAL_SCORE_EVENT = 3;
+  EVENT_TYPE_START_EVENT = 0;
+  EVENT_TYPE_PLACE_TILE_EVENT = 1;
+  EVENT_TYPE_SCORE_EVENT = 2;
+  EVENT_TYPE_FINAL_SCORE_EVENT = 3;
 }
