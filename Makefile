@@ -10,7 +10,7 @@ build-go: compile-protobuf
 	go build "./pkg/..."
 
 .PHONY: build-python
-build-python: .venv compile-protobuf
+build-python: .venv
 	@echo "Generating and building Python bindings..."
 	@mkdir -p built_wheels
 	go install "github.com/go-python/gopy@v0.4.10"
