@@ -14,10 +14,35 @@ import (
 
 func TestFromPlacedTileCityWithShield(t *testing.T) {
 	// tile with city on top and right, with shield in the city and meeple belonging to player 2
-	tile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+
+	tile := elements.ToPlacedTile(tiles.Tile{
+		Features: []feature.Feature{
+			feature.New(
+				feature.City,
+				side.Top|
+					side.Right,
+				modifier.Shield,
+			),
+			feature.New(
+				feature.Road,
+				side.Left|
+					side.Bottom,
+			),
+			feature.New(
+				feature.Field,
+				side.LeftBottomEdge|
+					side.BottomLeftEdge,
+			),
+			feature.New(
+				feature.Field,
+				side.LeftTopEdge|
+					side.BottomRightEdge,
+			),
+		},
+	})
+
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple =
 		elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
-	tile.GetPlacedFeatureAtSide(side.Top, feature.City).ModifierType = modifier.Shield
 	tile.Position = position.New(85, 42)
 
 	expected := BinaryTile(0b01010101_00101010_1_10_000000011_00_0011_0000010011_0001001100_1000001110)
@@ -33,27 +58,28 @@ func TestFromPlacedTileUnconnectedField(t *testing.T) {
 	//      On the middle field is a meeple belonging to player 1
 	tile := elements.ToPlacedTile(tiles.Tile{
 		Features: []feature.Feature{
-			{
-				FeatureType: feature.Field,
-				Sides:       side.NoSide,
-			},
-			{
-				FeatureType: feature.City,
-				Sides:       side.Top,
-			},
-			{
-				FeatureType: feature.City,
-				Sides:       side.Right,
-			},
-			{
-				FeatureType: feature.City,
-				Sides:       side.Bottom,
-			},
-			{
-				FeatureType:  feature.City,
-				ModifierType: modifier.Shield,
-				Sides:        side.Left,
-			},
+			feature.New(
+				feature.Field,
+				side.NoSide,
+			),
+			feature.New(
+				feature.City,
+				side.Top,
+			),
+			feature.New(
+				feature.City,
+				side.Right,
+			),
+			feature.New(
+				feature.City,
+				side.Bottom,
+			),
+			feature.New(
+				feature.City,
+
+				side.Left,
+				modifier.Shield,
+			),
 		},
 	})
 	tile.GetPlacedFeatureAtSide(side.NoSide, feature.Field).Meeple =

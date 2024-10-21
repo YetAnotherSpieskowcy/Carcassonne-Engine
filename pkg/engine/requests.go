@@ -232,11 +232,11 @@ func (req *GetRemainingTilesRequest) execute(baseGame *game.Game) Response {
 			for j := range tile.Features {
 				a := probabilities[i].Tile.Features[j]
 				b := tile.Features[j]
-				if a.FeatureType != b.FeatureType {
-					return a.FeatureType > b.FeatureType
+				if a.Type() != b.Type() {
+					return a.Type() > b.Type()
 				}
-				if a.ModifierType != b.ModifierType {
-					return a.ModifierType > b.ModifierType
+				if a.ModifierType() != b.ModifierType() {
+					return a.ModifierType() > b.ModifierType()
 				}
 				if a.Sides != b.Sides {
 					return a.Sides > b.Sides

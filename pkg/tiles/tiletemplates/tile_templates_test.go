@@ -58,7 +58,7 @@ func TestTileTemplateSidesOverlapInValidWays(t *testing.T) {
 				for _, side := range side.EdgeSides {
 					if tileFeature.Sides.HasSide(side) {
 						featureTypesPerSide[side] = append(
-							featureTypesPerSide[side], tileFeature.FeatureType,
+							featureTypesPerSide[side], tileFeature.Type(),
 						)
 					}
 				}

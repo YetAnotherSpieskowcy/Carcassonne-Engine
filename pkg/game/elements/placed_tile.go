@@ -71,7 +71,7 @@ func ToTile(tile PlacedTile) tiles.Tile {
 func (placedTile PlacedTile) GetFeaturesOfType(featureType feature.Type) []PlacedFeature {
 	features := []PlacedFeature{}
 	for _, feature := range placedTile.Features {
-		if feature.FeatureType == featureType {
+		if feature.Type() == featureType {
 			features = append(features, feature)
 		}
 	}
@@ -82,7 +82,7 @@ func (placedTile PlacedTile) GetFeaturesOfType(featureType feature.Type) []Place
 func (placedTile PlacedTile) GetPlacedFeaturesOverlappingSide(sideToCheck side.Side, featureType feature.Type) []PlacedFeature {
 	features := []PlacedFeature{}
 	for _, feature := range placedTile.Features {
-		if sideToCheck.OverlapsSide(feature.Sides) && feature.FeatureType == featureType {
+		if sideToCheck.OverlapsSide(feature.Sides) && feature.Type() == featureType {
 			features = append(features, feature)
 		}
 	}
@@ -92,7 +92,7 @@ func (placedTile PlacedTile) GetPlacedFeaturesOverlappingSide(sideToCheck side.S
 // Return the feature of certain type on desired side
 func (placedTile *PlacedTile) GetPlacedFeatureAtSide(sideToCheck side.Side, featureType feature.Type) *PlacedFeature {
 	for i, feature := range placedTile.Features {
-		if feature.Sides.HasSide(sideToCheck) && feature.FeatureType == featureType {
+		if feature.Sides.HasSide(sideToCheck) && feature.Type() == featureType {
 			return &placedTile.Features[i]
 		}
 	}
@@ -110,7 +110,7 @@ func (placedTile PlacedTile) HasMeeple() bool {
 
 func (placedTile PlacedTile) Monastery() *PlacedFeature {
 	for i, feat := range placedTile.Features {
-		if feat.FeatureType == feature.Monastery {
+		if feat.Type() == feature.Monastery {
 			return &placedTile.Features[i]
 		}
 	}

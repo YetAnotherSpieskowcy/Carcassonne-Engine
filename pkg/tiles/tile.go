@@ -40,7 +40,7 @@ func (tile Tile) ExactEquals(other Tile) bool {
 func (tile Tile) Cities() []featureMod.Feature {
 	var cities []featureMod.Feature
 	for _, feature := range tile.Features {
-		if feature.FeatureType == featureMod.City {
+		if feature.Type() == featureMod.City {
 			cities = append(cities, feature)
 		}
 	}
@@ -50,7 +50,7 @@ func (tile Tile) Cities() []featureMod.Feature {
 func (tile Tile) Roads() []featureMod.Feature {
 	var roads []featureMod.Feature
 	for _, feature := range tile.Features {
-		if feature.FeatureType == featureMod.Road {
+		if feature.Type() == featureMod.Road {
 			roads = append(roads, feature)
 		}
 	}
@@ -60,7 +60,7 @@ func (tile Tile) Roads() []featureMod.Feature {
 func (tile Tile) Fields() []featureMod.Feature {
 	var fields []featureMod.Feature
 	for _, feature := range tile.Features {
-		if feature.FeatureType == featureMod.Field {
+		if feature.Type() == featureMod.Field {
 			fields = append(fields, feature)
 		}
 	}
@@ -69,7 +69,7 @@ func (tile Tile) Fields() []featureMod.Feature {
 
 func (tile Tile) Monastery() *featureMod.Feature {
 	for i, feature := range tile.Features {
-		if feature.FeatureType == featureMod.Monastery {
+		if feature.Type() == featureMod.Monastery {
 			return &tile.Features[i]
 		}
 	}
@@ -90,11 +90,11 @@ func (tile Tile) Rotate(rotations uint) Tile {
 	for _, feature := range tile.Features {
 		newFeatures = append(
 			newFeatures,
-			featureMod.Feature{
-				FeatureType:  feature.FeatureType,
-				ModifierType: feature.ModifierType,
-				Sides:        feature.Sides.Rotate(rotations),
-			},
+			featureMod.New(
+				feature.Type(),
+				feature.Sides.Rotate(rotations),
+				feature.ModifierType(),
+			),
 		)
 	}
 
@@ -107,7 +107,7 @@ Return the feature of certain type on desired side
 */
 func (tile *Tile) GetFeatureAtSide(sideToCheck sideMod.Side, featureType featureMod.Type) *featureMod.Feature {
 	for _, feature := range tile.Features {
-		if feature.Sides.HasSide(sideToCheck) && feature.FeatureType == featureType {
+		if feature.Sides.HasSide(sideToCheck) && feature.Type() == featureType {
 			return &feature
 		}
 	}

@@ -163,7 +163,7 @@ func (board *board) GetLegalMovesFor(basePlacement elements.PlacedTile) []elemen
 
 			// Doing this for every meeple type may be suboptimal, if more meeple types
 			// are added but that's not very likely at current time.
-			if canBePlacedFunctions[feat.FeatureType](board, placement, feat) {
+			if canBePlacedFunctions[feat.Type()](board, placement, feat) {
 				moves = append(moves, placement)
 			}
 		}
@@ -191,7 +191,7 @@ func (board *board) isPositionValid(tile elements.PlacedTile) bool {
 			if tileFeature.Sides.HasSide(side) {
 				neighbourPosition := position.FromSide(side).Add(tile.Position)
 				neighbouringTile, exists := board.GetTileAt(neighbourPosition)
-				if exists && neighbouringTile.GetPlacedFeatureAtSide(side.Mirror(), tileFeature.FeatureType) == nil {
+				if exists && neighbouringTile.GetPlacedFeatureAtSide(side.Mirror(), tileFeature.Type()) == nil {
 					return false
 				}
 			}
@@ -236,7 +236,7 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 			// player.PlaceTile() and that already validates meeple count
 			// for other reasons.
 			meepleCount++
-			featuresWithMeeples[feat.FeatureType] = feat
+			featuresWithMeeples[feat.Type()] = feat
 			if meepleCount > 1 {
 				return false
 			}
@@ -673,7 +673,7 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 		for _, feat := range pTile.Features {
 			miniReport := elements.NewScoreReport()
 			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
-				switch feat.FeatureType {
+				switch feat.Type() {
 				case feature.Road:
 					miniReport.Join(board.scoreRoads(pTile, true))
 				case feature.Field:

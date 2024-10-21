@@ -16,10 +16,8 @@ const (
 )
 
 type Feature struct {
-	FeatureType  Type
-	ModifierType modifier.Type
-	Sides        side.Side
-	binaryData   uint8
+	Sides      side.Side
+	BinaryData uint8
 }
 
 // interpreting Feature's binaryData:
@@ -36,38 +34,46 @@ const (
 	ownerStartBit   = 4
 )
 
-func New(sides side.Side, featureType Type, hasModifier bool) Feature {
+func New(featureType Type, sides side.Side, modifierType ...modifier.Type) Feature {
 	var binaryData uint8
 	binaryData |= uint8(featureType)
-	if hasModifier {
+	if len(modifierType) != 0 && modifierType[0] != modifier.NoneType {
 		binaryData |= modifierMask
 	}
 
-	return Feature{Sides: sides, binaryData: binaryData}
+	return Feature{Sides: sides, BinaryData: binaryData}
 }
 
-func NewWithMeeple(sides side.Side, featureType Type, hasModifier bool, ownerID uint8) Feature { // todo elements.ID
-	feature := New(sides, featureType, hasModifier)
+func NewWithMeeple(featureType Type, sides side.Side, ownerID uint8, modifierType ...modifier.Type) Feature { // todo elements.ID
+	feature := New(featureType, sides, modifierType...)
 
-	feature.binaryData |= (ownerID << ownerStartBit)
+	feature.BinaryData |= (ownerID << ownerStartBit)
 
 	return feature
 }
 
 func (feature Feature) Type() Type {
-	return Type(feature.binaryData & featureTypeMask)
+	return Type(feature.BinaryData & featureTypeMask)
 }
 
 func (feature Feature) OwnerID() uint8 {
-	return feature.binaryData >> ownerStartBit
+	return feature.BinaryData >> ownerStartBit
+}
+
+func (feature Feature) ModifierType() modifier.Type {
+	// TODO: currently hardcoded to one feature type. Change this when adding more
+	if feature.HasModifier() {
+		return modifier.Shield
+	}
+	return modifier.NoneType
 }
 
 func (feature Feature) HasModifier() bool {
-	return (feature.binaryData & modifierMask) != 0
+	return (feature.BinaryData & modifierMask) != 0
 }
 
 func (feature Feature) HasMeeple() bool {
-	return (feature.binaryData & meepleMask) != 0
+	return (feature.BinaryData & meepleMask) != 0
 }
 
 // structs exposed through the bindings do not implement `__eq__`

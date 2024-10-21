@@ -3,14 +3,15 @@ package feature
 import (
 	"testing"
 
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
 func TestFeatureType(t *testing.T) {
-	cityFeature := New(side.Right|side.Top, City, true)
-	fieldFeature := New(side.All, Field, false)
-	roadFeature := New(side.Right|side.Bottom, Road, false)
-	monasteryFeature := New(side.NoSide, Monastery, false)
+	cityFeature := New(City, side.Right|side.Top, modifier.Shield)
+	fieldFeature := New(Field, side.All)
+	roadFeature := New(Road, side.Right|side.Bottom)
+	monasteryFeature := New(Monastery, side.NoSide)
 
 	if cityFeature.Type() != City {
 		t.Fatalf("expected: %#v\ngot: %#v", City, cityFeature.Type())
@@ -27,22 +28,22 @@ func TestFeatureType(t *testing.T) {
 }
 
 func TestModifier(t *testing.T) {
-	cityFeature1 := New(side.Right|side.Top, City, true)
-	cityFeature2 := New(side.Right|side.Top, City, false)
+	cityFeature1 := New(City, side.Right|side.Top, modifier.Shield)
+	cityFeature2 := New(City, side.Right|side.Top)
 
 	if !cityFeature1.HasModifier() {
 		t.Fatalf("expected: %#v\ngot: %#v", true, cityFeature1.HasModifier())
 	}
-	if cityFeature1.HasModifier() {
+	if cityFeature2.HasModifier() {
 		t.Fatalf("expected: %#v\ngot: %#v", false, cityFeature2.HasModifier())
 	}
 }
 
 func TestMeeples(t *testing.T) {
-	feature1 := New(side.Right|side.Top, City, true)
-	feature2 := NewWithMeeple(side.Right|side.Top, City, true, 0)
-	feature3 := NewWithMeeple(side.Right|side.Top, City, false, 1)
-	feature4 := NewWithMeeple(side.Right|side.Top, City, false, 2)
+	feature1 := New(City, side.Right|side.Top, modifier.Shield)
+	feature2 := NewWithMeeple(City, side.Right|side.Top, 0, modifier.Shield)
+	feature3 := NewWithMeeple(City, side.Right|side.Top, 1)
+	feature4 := NewWithMeeple(City, side.Right|side.Top, 2)
 
 	if feature1.HasMeeple() || feature1.OwnerID() != 0 {
 		t.Fatalf("expected: %#v, %#v\ngot: %#v, %#v", false, 0, feature1.HasMeeple(), feature1.OwnerID())

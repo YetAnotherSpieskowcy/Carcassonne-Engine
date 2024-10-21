@@ -60,7 +60,7 @@ func TestGetPlacedFeatureAtSide(t *testing.T) {
 
 	// city on top of the tile
 	tileFeature := tile.GetPlacedFeatureAtSide(side.Top, feature.City)
-	if tileFeature == nil || tileFeature.FeatureType != feature.City {
+	if tileFeature == nil || tileFeature.Type() != feature.City {
 		t.Fatalf("expected a city feature, got %#v instead", tileFeature)
 	}
 
@@ -81,12 +81,12 @@ func TestGetPlacedFeatureAtSide(t *testing.T) {
 
 	// road on the bottom of the tile
 	tileFeature = tile.GetPlacedFeatureAtSide(side.Left, feature.Road)
-	if tileFeature == nil || tileFeature.FeatureType != feature.Road {
+	if tileFeature == nil || tileFeature.Type() != feature.Road {
 		t.Fatalf("expected a road feature, got %#v instead", tileFeature)
 	}
 
 	tileFeature = tile.GetPlacedFeatureAtSide(side.Right, feature.Road)
-	if tileFeature == nil || tileFeature.FeatureType != feature.Road {
+	if tileFeature == nil || tileFeature.Type() != feature.Road {
 		t.Fatalf("expected a road feature, got %#v instead", tileFeature)
 	}
 
@@ -110,8 +110,8 @@ func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
 		t.Fatalf("expected 1 feature, got %#v features instead", len(tileFeatures))
 	}
 	for _, f := range tileFeatures {
-		if f.FeatureType != feature.City {
-			t.Fatalf("expected a city feature, got %#v instead", f.FeatureType)
+		if f.Type() != feature.City {
+			t.Fatalf("expected a city feature, got %#v instead", f.Type())
 		}
 	}
 
@@ -121,8 +121,8 @@ func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
 		t.Fatalf("expected 3 features, got %#v features instead", len(tileFeatures))
 	}
 	for _, f := range tileFeatures {
-		if f.FeatureType != feature.Road {
-			t.Fatalf("expected a road feature, got %#v instead", f.FeatureType)
+		if f.Type() != feature.Road {
+			t.Fatalf("expected a road feature, got %#v instead", f.Type())
 		}
 	}
 
@@ -132,8 +132,8 @@ func TestGetPlacedFeaturesOverlappingSides(t *testing.T) {
 		t.Fatalf("expected 3 features, got %#v features instead", len(tileFeatures))
 	}
 	for _, f := range tileFeatures {
-		if f.FeatureType != feature.Field {
-			t.Fatalf("expected a road feature, got %#v instead", f.FeatureType)
+		if f.Type() != feature.Field {
+			t.Fatalf("expected a road feature, got %#v instead", f.Type())
 		}
 	}
 

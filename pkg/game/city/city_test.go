@@ -120,7 +120,7 @@ func TestScoreOneTileCity(t *testing.T) {
 
 	aFeatures := []elements.PlacedFeature{}
 	for _, tmp := range a.Features {
-		if tmp.FeatureType == feature.City {
+		if tmp.Type() == feature.City {
 			tmp.Meeple.PlayerID = expectedPlayerID
 			tmp.Meeple.Type = expectedMeepleType
 			aFeatures = append(aFeatures, tmp)

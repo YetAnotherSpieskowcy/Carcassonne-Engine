@@ -88,16 +88,16 @@ func TestTileEqualsReturnsTrueWhenEqualButRotated(t *testing.T) {
 
 func TestTileRotate(t *testing.T) {
 	var tile Tile
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
+	tile.Features = append(tile.Features, feature.New(feature.City, side.Top|side.Left, modifier.Shield))
+	tile.Features = append(tile.Features, feature.New(feature.Road, side.Bottom|side.Right))
+	tile.Features = append(tile.Features, feature.New(feature.Field, side.BottomRightEdge|side.RightBottomEdge))
 
 	var rotated = tile.Rotate(1)
 
 	var expected Tile
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Right | side.Top})
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Left | side.Bottom})
-	expected.Features = append(expected.Features, feature.Feature{FeatureType: feature.Field, Sides: side.LeftBottomEdge | side.BottomLeftEdge})
+	expected.Features = append(expected.Features, feature.New(feature.City, side.Right|side.Top, modifier.Shield))
+	expected.Features = append(expected.Features, feature.New(feature.Road, side.Left|side.Bottom))
+	expected.Features = append(expected.Features, feature.New(feature.Field, side.LeftBottomEdge|side.BottomLeftEdge))
 
 	if !reflect.DeepEqual(rotated, expected) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", rotated, expected)
@@ -106,30 +106,30 @@ func TestTileRotate(t *testing.T) {
 
 func TestTileFeatureGet(t *testing.T) {
 	var tile Tile
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Road, Sides: side.Bottom | side.Right})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge})
-	tile.Features = append(tile.Features, feature.Feature{FeatureType: feature.Monastery})
+	tile.Features = append(tile.Features, feature.New(feature.City, side.Top|side.Left, modifier.Shield))
+	tile.Features = append(tile.Features, feature.New(feature.Road, side.Bottom|side.Right))
+	tile.Features = append(tile.Features, feature.New(feature.Field, side.BottomRightEdge|side.RightBottomEdge))
+	tile.Features = append(tile.Features, feature.New(feature.Monastery, side.NoSide))
 
 	var expectedCities = []feature.Feature{
-		{
-			FeatureType: feature.City, ModifierType: modifier.Shield, Sides: side.Top | side.Left,
-		},
+		feature.New(
+			feature.City, side.Top|side.Left, modifier.Shield,
+		),
 	}
 
 	var expectedRoads = []feature.Feature{
-		{
-			FeatureType: feature.Road, Sides: side.Bottom | side.Right,
-		},
+		feature.New(
+			feature.Road, side.Bottom|side.Right,
+		),
 	}
 
 	var expectedFields = []feature.Feature{
-		{
-			FeatureType: feature.Field, Sides: side.BottomRightEdge | side.RightBottomEdge,
-		},
+		feature.New(
+			feature.Field, side.BottomRightEdge|side.RightBottomEdge,
+		),
 	}
 
-	var expectedMonastery = feature.Feature{FeatureType: feature.Monastery}
+	var expectedMonastery = feature.New(feature.Monastery, side.NoSide)
 
 	if !reflect.DeepEqual(tile.Cities(), expectedCities) {
 		t.Fatalf("got\n %#v \nshould be \n%#v", tile.Cities(), expectedCities)

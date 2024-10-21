@@ -20,7 +20,7 @@ type City struct {
 func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City {
 	var shields = uint8(0)
 	for _, feat := range cityFeatures {
-		if feat.ModifierType == modifier.Shield {
+		if feat.ModifierType() == modifier.Shield {
 			shields++
 		}
 	}
@@ -106,7 +106,7 @@ func (city City) GetFeaturesFromTile(pos position.Position) ([]elements.PlacedFe
 func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedFeature) {
 	hasShield := false
 	for _, feat := range cityFeatures {
-		if feat.ModifierType == modifier.Shield {
+		if feat.ModifierType() == modifier.Shield {
 			hasShield = true
 		}
 	}

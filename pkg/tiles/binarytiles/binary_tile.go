@@ -108,7 +108,7 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 	for _, feature := range features {
 		var bitOffset int
 
-		switch feature.FeatureType {
+		switch feature.Type() {
 		case featureMod.Field:
 			bitOffset = fieldStartBit
 
@@ -129,10 +129,10 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 			panic("unknown feature type")
 		}
 
-		if feature.FeatureType == featureMod.Road || feature.FeatureType == featureMod.City {
+		if feature.Type() == featureMod.Road || feature.Type() == featureMod.City {
 			binaryTile.addOrthogonalFeature(feature, bitOffset)
 
-		} else if feature.FeatureType == featureMod.Field {
+		} else if feature.Type() == featureMod.Field {
 			if feature.Sides == side.NoSide {
 				binaryTile.setBit(unconnectedFieldBit)
 				if feature.Meeple.Type != elements.NoneMeeple {
@@ -200,7 +200,7 @@ func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeatur
 			tmpBinaryTile.setBit(bitOffset + bitIndex)
 
 			// todo add more feature modifiers when they are implemented
-			if feature.ModifierType == modifier.Shield {
+			if feature.ModifierType() == modifier.Shield {
 				tmpBinaryTile.setBit(shieldStartBit + bitIndex)
 			}
 

@@ -41,7 +41,7 @@ def get_placed_tile(moves: list[MoveWithState], turnParams: TurnParams) -> Place
         # check if meeple in desired position
         feature = move.move._go_obj.GetPlacedFeatureAtSide(
             sideToCheck=turnParams.side.value,
-            featureType=turnParams.featureType.value,
+            featureType=turnParams.Type().value,
         )
         if (
             feature is not None
