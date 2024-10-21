@@ -72,9 +72,9 @@ func TestFromPlacedTileMonastery(t *testing.T) {
 	// monastery with a single road, with a meeple in the monastery belonging to player 2
 	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	tile.Monastery().Meeple = elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
-	tile.Position = position.New(-128, 127)
+	tile.Position = position.New(-127, 126)
 
-	expected := BinaryTile(0b10000000_01111111_1_10_100000000_01_0000_0000000000_0000000100_1111111111)
+	expected := BinaryTile(0b10000001_01111110_1_10_100000000_01_0000_0000000000_0000000100_1111111111)
 	actual := FromPlacedTile(tile)
 
 	if expected != actual {

@@ -12,6 +12,11 @@ type Position struct {
 }
 
 func New(x int8, y int8) Position {
+	if x == 127 || x == -128 || y == 127 || y == -128 {
+		// technically not necessary, but many functions depending on finding neighbouring positions
+		//   can potentially return invalid results or enter infinite loops due to (under/over)flows
+		panic(fmt.Sprintf("Position (%#v, %#v) is outside of allowed range: ([-127, 126], [-127, 126])", x, y))
+	}
 	return Position{x, y}
 }
 
