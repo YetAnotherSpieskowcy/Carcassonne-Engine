@@ -12,7 +12,8 @@ env:
   BUILT_WHEELS_DIR: built_wheels
   PROTO_VERSION: '28.2'
   PROTO_PATH: proto
-  PROTO_GO_OUT: ./pkg 
+  PROTO_GO_OUT: ./pkg
+  PROTO_NAME: proto
 
 permissions: read-all
 jobs:
@@ -38,7 +39,7 @@ jobs:
       - name: Upload proto
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+          name: "${{ env.PROTO_NAME }}"
           path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
       
 
@@ -56,7 +57,7 @@ jobs:
       - name: Download proto
         uses: actions/download-artifact@v4
         with:
-          name: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+          name: "${{ env.PROTO_NAME }}"
           path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
       - name: Install gocover-cobertura
         run: |
@@ -95,7 +96,7 @@ jobs:
       - name: Download proto
         uses: actions/download-artifact@v4
         with:
-          name: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+          name: "${{ env.PROTO_NAME }}"
           path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
       - name: Setup Python "${{ env.PYTHON_VERSION }}"
         uses: actions/setup-python@v4
