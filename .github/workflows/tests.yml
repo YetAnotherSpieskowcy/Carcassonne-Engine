@@ -41,7 +41,6 @@ jobs:
         with:
           name: "${{ env.PROTO_NAME }}"
           path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
-      
 
   go-tests:
     name: Tests

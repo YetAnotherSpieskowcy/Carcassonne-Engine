@@ -10,7 +10,7 @@ Available commands:
    build             Build all Go source files and Python bindings.
    build-go          Build all Go source files.
    build-python      Build Python bindings.
-   compile-proto     Compile Protobuf files.
+   build-protobuf    Compile Protobuf files.
    install-python    Build and install Python bindings.
    test              Run the Go and Python test suite
                      (Python bindings always get freshly built and installed).
@@ -48,7 +48,7 @@ param (
             "build",
             "build-go",
             "build-python",
-            "compile-protobuf",
+            "build-protobuf",
             "install-python",
             "test",
             "test-go",
@@ -98,7 +98,7 @@ function build() {
 }
 
 function build-go() {
-    compile-protobuf
+    build-protobuf
     Write-Output "Building the Go project..."
     & go build "./pkg/..."
     Exit-On-Fail $LASTEXITCODE
@@ -106,7 +106,6 @@ function build-go() {
 
 function build-python() {
     New-Venv-If-Needed
-    compile-protobuf
 
     Write-Output "Generating and building Python bindings..."
     New-Item -ItemType Directory -Force -Path built_wheels | Out-Null
@@ -118,7 +117,7 @@ function build-python() {
     Exit-On-Fail $LASTEXITCODE
 }
 
-function compile-protobuf() {
+function build-protobuf() {
     Write-Output "Compiling Protobuf..."
     & protoc --proto_path=./proto --go_out=./pkg ./proto/*.proto
     Exit-On-Fail $LASTEXITCODE
@@ -138,7 +137,7 @@ function test() {
 }
 
 function test-go() {
-    compile-protobuf
+    build-protobuf
     Write-Output "Running the Go test suite..."
     & go test -race "-coverprofile=coverage.txt" "./pkg/..."
     Exit-On-Fail $LASTEXITCODE
@@ -177,7 +176,7 @@ $script:availableCommands = @(
     "build",
     "build-go",
     "build-python",
-    "compile-protobuf",
+    "build-protobuf",
     "install-python",
     "test",
     "test-go",

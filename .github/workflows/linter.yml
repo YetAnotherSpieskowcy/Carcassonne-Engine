@@ -6,10 +6,45 @@ on:
       - main
   pull_request:
 permissions: read-all
+
+env:
+  GO_VERSION: '1.22.1'
+  PROTO_VERSION: '28.2'
+  PROTO_PATH: proto
+  PROTO_GO_OUT: ./pkg
+  PROTO_NAME: proto
+
 jobs:
-  build:
+  go-build:
+    name: Go Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Install Protobuf
+        run: curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${{ env.PROTO_VERSION }}/protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip &&
+          sudo unzip -o protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip -d /usr/local bin/protoc &&
+          sudo unzip -o protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip -d /usr/local 'include/*' &&
+          sudo chmod a+x /usr/local/bin/protoc
+      - name: Install protoc-gen-go
+        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+      - name: Compile Protobuf
+        run: protoc --proto_path=${{ env.PROTO_PATH }} --go_out=${{env.PROTO_GO_OUT}} ./proto/*.proto
+      - name: Upload proto
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+
+  lint-code:
     name: Lint Code Base
     runs-on: ubuntu-latest
+    needs: go-build
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -17,6 +52,11 @@ jobs:
           # Full git history is needed to get a proper
           # list of changed files within `super-linter`
           fetch-depth: 0
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
       - name: Lint Code Base
         uses: super-linter/super-linter@v6.3.1
         env:
