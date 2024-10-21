@@ -13,8 +13,8 @@ import (
 )
 
 /*
-Quick function for playing a simple game in a straight line.
-Arugment playGame is used for cases when empty game needs to be measured.
+Quick function for playing a simple game
+The tiles are placed in a straight line from x=0 to x=125. After that a new row is started (x=0, y=1) and so on
 */
 func PlayNTileGame(tileCount int, tile tiles.Tile, b *testing.B) error {
 
@@ -34,8 +34,16 @@ func PlayNTileGame(tileCount int, tile tiles.Tile, b *testing.B) error {
 
 	// play game
 	b.StartTimer()
-	for i := range tileCount {
-		ptile.Position = position.New(int8(i+1), 0)
+	x := int8(1)
+	y := int8(0)
+	for range tileCount {
+		ptile.Position = position.New(x, y)
+		x++
+		if x == 126 {
+			x = 0
+			y++
+		}
+
 		err = Game.PlayTurn(ptile)
 		if err != nil {
 			return err
