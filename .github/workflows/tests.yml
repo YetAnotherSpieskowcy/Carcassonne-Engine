@@ -27,7 +27,10 @@ jobs:
         with:
           go-version: "${{ env.GO_VERSION }}"
       - name: Install Protobuf
-        run: sudo apt update && sudo apt install -y protobuf-compiler
+        run: curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${{ env.PROTO_VERSION }}/protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip
+          sudo unzip -o protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip -d /usr/local bin/protoc
+          sudo unzip -o protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip -d /usr/local 'include/*'
+          sudo chmod a+x /usr/local/bin/protoc
       - name: Verify installation
         run: protoc --version
       - name: Compile Protobuf
