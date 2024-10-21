@@ -5,15 +5,15 @@ import "elements.proto";
 option go_package = "./proto";
 
 message StartEntryContent {
-  uint32 gameID = 1;
-  uint32 gameSeed = 2;
-  uint32 playerCount = 3;
-  Tile startTile = 4;
+  uint32 game_id = 1;
+  uint32 game_seed = 2;
+  uint32 player_count = 3;
+  Tile start_tile = 4;
 }
 
 message PlaceTileEntryContent {
-  uint32 playerID = 1;
+  uint32 player_id = 1;
   Tile move = 2;
 }
 
-message ScoreEntryContent { ScoreReport scoreReport = 1; }
+message ScoreEntryContent { ScoreReport score_report = 1; }
