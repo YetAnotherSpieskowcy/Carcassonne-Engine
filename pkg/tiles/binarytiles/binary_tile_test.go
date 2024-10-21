@@ -92,3 +92,29 @@ func TestFromPlacedTileEmptyTile(t *testing.T) {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
 	}
 }
+
+func TestPosition(t *testing.T) {
+	expectedPos := position.New(-127, 126)
+
+	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile.Position = expectedPos
+
+	binaryTile := FromPlacedTile(tile)
+	actualPos := binaryTile.Position()
+
+	if expectedPos != actualPos {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedPos, actualPos)
+	}
+
+	expectedPos = position.New(85, -42)
+
+	tile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile.Position = expectedPos
+
+	binaryTile = FromPlacedTile(tile)
+	actualPos = binaryTile.Position()
+
+	if expectedPos != actualPos {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedPos, actualPos)
+	}
+}

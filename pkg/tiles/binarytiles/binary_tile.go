@@ -30,7 +30,7 @@ type BinaryTile uint64
 //    of the previous four bits (first and second, second and third, etc.)
 //  - first four bits of the meeple section are the sides (same as with shields)
 //  - next four meeple bits are the corners (same as with fields)
-//  - the last meeple bit is the center
+//  - the last meeple bit is the center (used only by monastery and unconnected field)
 //  - the owner bits is just one-hot-encoded player ID. (ID(1) = 00...001, ID(2) = 00...010, etc.)
 //  - is placed bit is always 1 on all placed tiles, and 0 on the non-placed tiles
 //  - position bits are 8-bit reptesentations of tile position
@@ -72,11 +72,11 @@ const (
 	isPlacedBit    = playerEndBit
 	isPlacedEndBit = isPlacedBit + 1
 
-	positionXStartBit = isPlacedEndBit
-	positionXEndBit   = positionXStartBit + positionBitSize
+	positionYStartBit = isPlacedEndBit
+	positionYEndBit   = positionYStartBit + positionBitSize
 
-	// positionYStartBit = positionXEndBit
-	// positionYEndBit   = positionYStartBit + positionBitSize
+	positionXStartBit = positionYEndBit
+	positionXEndBit   = positionXStartBit + positionBitSize
 )
 
 var orthogonalFeaturesBits = []side.Side{
@@ -240,11 +240,18 @@ func (binaryTile *BinaryTile) addPosition(position position.Position) {
 	tmpBinaryTile |= BinaryTile(uint8(position.X()))
 	tmpBinaryTile <<= positionBitSize
 	tmpBinaryTile |= BinaryTile(uint8(position.Y()))
-	tmpBinaryTile <<= positionXStartBit
+	tmpBinaryTile <<= positionYStartBit
 	*binaryTile |= tmpBinaryTile
 }
 
 // Sets the bit at the specified index to 1
 func (binaryTile *BinaryTile) setBit(bitIndex int) {
 	*binaryTile |= (1 << bitIndex)
+}
+
+func (binaryTile BinaryTile) Position() position.Position {
+	return position.New(
+		int16(int8(binaryTile>>positionXStartBit)),
+		int16(int8(binaryTile>>positionYStartBit)),
+	)
 }
