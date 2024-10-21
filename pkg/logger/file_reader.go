@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto" //nolint:goanalysis_metalinter
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto" //nolint:all
 	"google.golang.org/protobuf/proto"
 )
 

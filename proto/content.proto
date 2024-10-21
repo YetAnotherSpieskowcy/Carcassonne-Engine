@@ -16,4 +16,6 @@ message PlaceTileEntryContent {
   Tile move = 2;
 }
 
-message ScoreEntryContent { ScoreReport score_report = 1; }
+message ScoreEntryContent { 
+  ScoreReport score_report = 1; 
+}
