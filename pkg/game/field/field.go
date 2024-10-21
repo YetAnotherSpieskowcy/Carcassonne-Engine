@@ -96,7 +96,7 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		var neighbouringCityFeatures []elements.PlacedFeature
 
 		if element.feature.Sides == side.NoSide {
-			// field neighbours all cities on this tile
+			// unconnected field - neighbours all cities on this tile
 			tile, _ := board.GetTileAt(element.position)
 			neighbouringCityFeatures = tile.GetFeaturesOfType(featureMod.City)
 
