@@ -5,7 +5,7 @@ build-and-install: build-go install-python
 build: build-go build-python
 
 .PHONY: build-go
-build-go: compile-protobuf
+build-go: build-protobuf
 	@echo "Building the Go project..."
 	go build "./pkg/..."
 
@@ -17,8 +17,8 @@ build-python: .venv
 	go install "golang.org/x/tools/cmd/goimports@latest"
 	.venv/bin/python -m pip wheel . --wheel-dir=built_wheels
 
-.PHONY: compile-protobuf
-compile-protobuf: 
+.PHONY: build-protobuf
+build-protobuf: 
 	@echo "Compiling Protobuf..."
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	protoc --proto_path=./proto --go_out=./pkg ./proto/*.proto
@@ -34,7 +34,7 @@ test: test-go test-python
 
 .PHONY: test-go
 test-go:
-	compile-protobuf
+	build-protobuf
 	@echo "Running the Go test suite..."
 	go test -race "-coverprofile=coverage.txt" "./pkg/..."
 
