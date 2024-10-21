@@ -2,7 +2,7 @@ package logger
 
 import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
-	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto" //nolint:all
+	pb "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/proto"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 )
 
