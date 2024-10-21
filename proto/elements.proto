@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message Meeple {
+  uint32 player_id = 1;
+  MeepleType meeple_type = 2;
+}
+
+enum MeepleType {
+  MEEPLE_TYPE_UNSPECIFIED = 0;
+  MEEPLE_TYPE_NORMAL = 1;
+}
+
+message Feature {
+  FeatureType type = 1;
+  ModifierType modifier = 2;
+  Side side = 3;
+  optional Meeple meeple = 4;
+}
+
+enum FeatureType {
+  FEATURE_TYPE_UNSPECIFIED = 0;
+  FEATURE_TYPE_ROAD = 1;
+  FEATURE_TYPE_CITY = 2;
+  FEATURE_TYPE_FIELED = 3;
+  FEATURE_TYPE_MONASTERY = 4;
+}
+
+enum ModifierType {
+  MODIFIER_TYPE_UNSPECIFIED = 0;
+  MODIFIER_TYPE_SHIELD = 1;
+}
+
+enum Side {
+  SIDE_UNSPECIFIED = 0;
+  SIDE_LEFT_TOP = 1;
+  SIDE_LEFT_BOTTOM = 2;
+  SIDE_LEFT = 3;
+  SIDE_BOTTOM_LEFT = 4;
+  SIDE_BOTTOM_RIGHT = 8;
+  SIDE_BOTTOM = 12;
+  SIDE_RIGHT_BOTTOM = 16;
+  SIDE_RIGHT_TOP = 32;
+  SIDE_RIGHT = 48;
+  SIDE_TOP_RIGHT = 64;
+  SIDE_TOP_LEFT = 128;
+  SIDE_TOP = 192;
+  SIDE_ALL = 255;
+}
+
+message Tile {
+  repeated Feature features = 1;
+  Position position = 2;
+}
+
+message ReturnedMeeple {
+  Meeple meeple = 1;
+  Position position = 2;
+  uint32 player_id = 3;
+}
+
+message ReceivedPoints {
+  uint32 player_id = 1;
+  uint32 score = 2;
+}
+
+message ScoreReport {
+  repeated ReceivedPoints received_points = 1;
+  repeated ReturnedMeeple returned_meeples = 2;
+}

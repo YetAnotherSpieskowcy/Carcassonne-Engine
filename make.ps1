@@ -10,6 +10,7 @@ Available commands:
    build             Build all Go source files and Python bindings.
    build-go          Build all Go source files.
    build-python      Build Python bindings.
+   build-protobuf    Compile Protobuf files.
    install-python    Build and install Python bindings.
    test              Run the Go and Python test suite
                      (Python bindings always get freshly built and installed).
@@ -47,6 +48,7 @@ param (
             "build",
             "build-go",
             "build-python",
+            "build-protobuf",
             "install-python",
             "test",
             "test-go",
@@ -96,6 +98,7 @@ function build() {
 }
 
 function build-go() {
+    build-protobuf
     Write-Output "Building the Go project..."
     & go build "./pkg/..."
     Exit-On-Fail $LASTEXITCODE
@@ -114,6 +117,12 @@ function build-python() {
     Exit-On-Fail $LASTEXITCODE
 }
 
+function build-protobuf() {
+    Write-Output "Compiling Protobuf..."
+    & protoc --proto_path=./proto --go_out=./pkg ./proto/*.proto
+    Exit-On-Fail $LASTEXITCODE
+}
+
 function install-python() {
     build-python
     & .venv\Scripts\python.exe -m pip install carcassonne_engine `
@@ -128,6 +137,7 @@ function test() {
 }
 
 function test-go() {
+    build-protobuf
     Write-Output "Running the Go test suite..."
     & go test -race "-coverprofile=coverage.txt" "./pkg/..."
     Exit-On-Fail $LASTEXITCODE
@@ -166,6 +176,7 @@ $script:availableCommands = @(
     "build",
     "build-go",
     "build-python",
+    "build-protobuf",
     "install-python",
     "test",
     "test-go",
