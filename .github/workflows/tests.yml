@@ -35,6 +35,11 @@ jobs:
         run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
       - name: Compile Protobuf
         run: protoc --proto_path=${{ env.PROTO_PATH }} --go_out=${{env.PROTO_GO_OUT}} ./proto/*.proto
+      - name: Upload proto
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
       
 
   go-tests:
