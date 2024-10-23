@@ -139,9 +139,9 @@ type CheckMidGameScore struct {
 
 func (turn CheckMidGameScore) Run() {
 
-	mid_score := turn.Game.GetMidGameScore()
+	midScore := turn.Game.GetMidGameScore()
 
-	for id, score := range mid_score.ReceivedPoints {
+	for id, score := range midScore.ReceivedPoints {
 		// check points
 		if score != turn.PlayerScores[int(id)-1] {
 			turn.TestingT.Fatalf("Turn %d: Player %d received wrong amount of points! Expected: %d  Got: %d ", turn.TurnNumber, id, turn.PlayerScores[int(id)-1], score)
