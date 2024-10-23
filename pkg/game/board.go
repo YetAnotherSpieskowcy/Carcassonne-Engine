@@ -297,6 +297,7 @@ func (board *board) roadCanBePlaced(checkedTile elements.PlacedTile, checkedRoad
 			neighbourTile,
 			neighbourRoad.Feature,
 			true,
+			false,
 		)
 		if len(scoreReport.ReturnedMeeples) != 0 {
 			return false
@@ -392,7 +393,7 @@ func (board *board) checkCompleted(tile elements.PlacedTile) elements.ScoreRepor
 	scoreReport := elements.NewScoreReport()
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
-	scoreReport.Join(board.scoreRoads(tile, false))
+	scoreReport.Join(board.scoreRoads(tile, false, false))
 	scoreReport.Join(board.scoreMonasteries(tile, false))
 
 	for _, returnedMeeples := range scoreReport.ReturnedMeeples {
@@ -554,7 +555,7 @@ Calculates score for road.
 
 returns: ScoreReport, checked sides of the start tile (also including loop)
 */
-func (board *board) scoreRoadCompletion(tile elements.PlacedTile, road feature.Feature, forceScore bool) (elements.ScoreReport, side.Side) {
+func (board *board) scoreRoadCompletion(tile elements.PlacedTile, road feature.Feature, forceScore bool, scoreOnlyRoadWithMeepleOnTile bool) (elements.ScoreReport, side.Side) {
 	var meeples = []elements.MeepleWithPosition{}
 	var leftSide, rightSide side.Side
 	var score = 1
@@ -587,6 +588,11 @@ func (board *board) scoreRoadCompletion(tile elements.PlacedTile, road feature.F
 			roadRight.Meeple,
 			tile.Position),
 		)
+	}
+
+	// if there was no found meeple on a road on the tested tile, when meeple was expected there
+	if len(meeples) == 0 && scoreOnlyRoadWithMeepleOnTile {
+		return elements.NewScoreReport(), leftSide | rightSide
 	}
 
 	// check road in "left" direction
@@ -629,9 +635,13 @@ func (board *board) scoreRoadCompletion(tile elements.PlacedTile, road feature.F
 }
 
 /*
-Calculates summary score report from all roads on a tile
+Calculates summary score report from all roads on a tile.
+
+scoreOnlyRoadWithMeepleOnTile parameter if for edge case, wwhen mid game score is calculated. The same meeple can be couted twice during mid game scoring.
+scoreRoads() counts all roads on a tile. So for each meeple all roads on the tile are checked. Thus due to crossroad, a meeple may be counted twice.
+The simples solution to that, it to force checking only road with the meeple on that tile. :/
 */
-func (board *board) scoreRoads(placedTile elements.PlacedTile, forceScore bool) elements.ScoreReport {
+func (board *board) scoreRoads(placedTile elements.PlacedTile, forceScore bool, scoreOnlyRoadWithMeepleOnTile bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 	var tile = elements.ToTile(placedTile)
 	var roads = tile.Roads()
@@ -641,7 +651,7 @@ func (board *board) scoreRoads(placedTile elements.PlacedTile, forceScore bool) 
 	for _, road := range roads {
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
 		if !checkedRoadSides.OverlapsSide(road.Sides) {
-			scoreReportTemp, roadSide := board.scoreRoadCompletion(placedTile, road, forceScore)
+			scoreReportTemp, roadSide := board.scoreRoadCompletion(placedTile, road, forceScore, scoreOnlyRoadWithMeepleOnTile)
 			scoreReport.Join(scoreReportTemp)
 			checkedRoadSides |= roadSide
 		}
@@ -675,7 +685,7 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
-					miniReport.Join(board.scoreRoads(pTile, true))
+					miniReport.Join(board.scoreRoads(pTile, true, !final))
 				case feature.Field:
 					field := field.New(feat, pTile)
 					field.Expand(board, board.cityManager)
