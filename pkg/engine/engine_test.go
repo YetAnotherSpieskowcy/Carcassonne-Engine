@@ -588,18 +588,17 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicEverywhere(t *testi
 	engine.Close()
 }
 
-
 func TestGenerateOrderedGame(t *testing.T) {
 	engine, err := StartGameEngine(3, t.TempDir())
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 	_, err = engine.GenerateOrderedGame(tilesets.StandardTileSet())
-  if err != nil {
+	if err != nil {
 		t.Fatal(err.Error())
 	}
-  
-  engine.Close()
+
+	engine.Close()
 }
 
 /*
