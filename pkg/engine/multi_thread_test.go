@@ -70,7 +70,7 @@ func PlayFewTurns(engine *GameEngine, game SerializedGameWithID, turnCount int, 
 }
 
 func TestManyThread(t *testing.T) {
-	THREAD_COUNT := 10000
+	ThreadCount := 10000
 
 	engine, err := StartGameEngine(4, "")
 	if err != nil {
@@ -100,8 +100,8 @@ func TestManyThread(t *testing.T) {
 	movesCount := len(legalMoves.Moves)
 
 	// play all turns
-	errs := make(chan error, THREAD_COUNT)
-	for i := range THREAD_COUNT {
+	errs := make(chan error, ThreadCount)
+	for i := range ThreadCount {
 		go func() {
 			err := PlayTurnWithIndex(engine, serializedGameWithID.ID, legalMoves.Moves[i%movesCount].Move, t)
 			errs <- err
@@ -109,7 +109,7 @@ func TestManyThread(t *testing.T) {
 	}
 
 	// wait for all N to finish
-	for i := 0; i < THREAD_COUNT; i++ {
+	for i := 0; i < ThreadCount; i++ {
 		err := <-errs
 		if err != nil {
 			t.Fatal(err)
