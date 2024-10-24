@@ -268,7 +268,6 @@ func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, er
 	}
 	responses := engine.sendBatch([]Request{req})
 	if err := responses[0].Err(); err != nil {
-		fmt.Println("ppp")
 		return nil, err
 	}
 

@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"io"
 	"os"
 )
@@ -32,23 +31,18 @@ func (fl *FileLogger) Close() error {
 func (fl *FileLogger) CopyTo(dst Logger) error {
 	currentOffset, err := fl.file.Seek(0, io.SeekCurrent)
 	if err != nil {
-		fmt.Println("1")
 		return err
 	}
 
 	if _, err = fl.file.Seek(0, io.SeekStart); err != nil {
-		fmt.Println("2")
 		return err
 	}
 
 	writer := dst.AsWriter()
 	if _, err = io.CopyN(writer, fl.file, currentOffset); err != nil {
-		fmt.Println("3")
 		return err
 	}
 
 	_, err = fl.file.Seek(currentOffset, io.SeekStart)
-	fmt.Println("5")
-	fmt.Println(err)
 	return err
 }

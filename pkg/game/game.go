@@ -113,7 +113,6 @@ func (game *Game) DeepCloneWithLog(log logger.Logger) (*Game, error) {
 		return nil, err
 	}
 	clone.log = log
-	fmt.Println("lll")
 	return clone, nil
 }
 

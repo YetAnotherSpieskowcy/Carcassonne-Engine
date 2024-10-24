@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -181,7 +180,6 @@ func TestLoggerReadWhileStillWriting(t *testing.T) {
 
 	channel := reader.ReadLogs()
 	entry := <-channel
-	fmt.Println("aaaa")
 	switch content := entry.GetContent().(type) {
 	case *pb.Entry_StartEntryContent:
 		if entry.Event != pb.EventType_EVENT_TYPE_START_EVENT {
@@ -201,7 +199,6 @@ func TestLoggerReadWhileStillWriting(t *testing.T) {
 	}
 
 	entry = <-channel
-	fmt.Println("aaaa")
 	switch content := entry.GetContent().(type) {
 	case *pb.Entry_PlaceTileEntryContent:
 		if entry.Event != pb.EventType_EVENT_TYPE_PLACE_TILE_EVENT {
@@ -221,7 +218,6 @@ func TestLoggerReadWhileStillWriting(t *testing.T) {
 	}
 
 	entry = <-channel
-	fmt.Println("aaaa")
 	switch content := entry.GetContent().(type) {
 	case *pb.Entry_ScoreEntryContent:
 		if entry.Event == pb.EventType_EVENT_TYPE_SCORE_EVENT {
@@ -249,7 +245,6 @@ func TestLoggerReadWhileStillWriting(t *testing.T) {
 	default:
 		t.Fatalf("Expected ScoreEntryContent")
 	}
-	fmt.Println("ccc")
 
 	expectedFinalScores := elements.NewScoreReport()
 	expectedFinalScores.ReceivedPoints[playerID] = 15

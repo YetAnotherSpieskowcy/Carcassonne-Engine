@@ -71,7 +71,6 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 
 		clones[i] = clone
 	}
-	fmt.Println("done")
 
 	resp.Clones = clones
 	return resp
