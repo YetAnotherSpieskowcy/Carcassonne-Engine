@@ -444,8 +444,11 @@ func (engine *GameEngine) prepareWorkerInput(
 		return workerInput{}, ErrLockAlreadyAcquired
 	}
 
+	engine.threadSafety.Lock() // prevent generating same requestID when called multithreaded
 	requestID := engine.nextRequestID
 	engine.nextRequestID++
+	engine.threadSafety.Unlock()
+
 	return workerInput{
 		requestID:    requestID,
 		waitGroup:    waitGroup,
