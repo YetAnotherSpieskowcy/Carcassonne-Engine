@@ -56,7 +56,7 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 	}
 
 	for i, id := range req.ReservedIDs {
-		logFile := path.Join(req.LogDir, fmt.Sprintf("%v.jsonl", id))
+		logFile := path.Join(req.LogDir, fmt.Sprintf("%v.pb", id))
 		logger, err := logger.NewFromFile(logFile)
 		if err != nil {
 			resp.err = err
@@ -71,6 +71,7 @@ func (req *cloneGameRequest) execute(g *game.Game) Response {
 
 		clones[i] = clone
 	}
+	fmt.Println("done")
 
 	resp.Clones = clones
 	return resp

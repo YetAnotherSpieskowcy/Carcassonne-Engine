@@ -35,14 +35,14 @@ func (fr FileReader) ReadLogs() <-chan *pb.Entry {
 	channel := make(chan *pb.Entry)
 
 	go func() {
-		var offset int64 = 0
+		var offset int64
 		for {
 			entry := &pb.Entry{}
 			buf := make([]byte, 4)
 
 			_, err := fr.file.ReadAt(buf, offset)
 			if err == io.EOF {
-				break
+				time.Sleep(time.Millisecond)
 			} else {
 
 				itemSize := binary.LittleEndian.Uint32(buf)
@@ -52,9 +52,7 @@ func (fr FileReader) ReadLogs() <-chan *pb.Entry {
 				item := make([]byte, itemSize)
 				_, err = fr.file.ReadAt(item, offset)
 
-				if err == io.EOF {
-					time.Sleep(time.Millisecond)
-				} else if err != nil {
+				if err != nil {
 					panic(err)
 				} else {
 					err = proto.Unmarshal(item, entry)

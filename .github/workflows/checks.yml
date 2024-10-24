@@ -1,4 +1,4 @@
-name: Build and test
+name: Checks
 
 on:
   push:
@@ -41,6 +41,37 @@ jobs:
         with:
           name: "${{ env.PROTO_NAME }}"
           path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+
+  lint-code:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    needs: go-build
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+      - name: Lint Code Base
+        uses: super-linter/super-linter@v6.3.1
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: origin/main
+          VALIDATE_GO: false
+          VALIDATE_PYTHON_PYLINT: false
+          LINTER_RULES_PATH: .
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
+          # machine-generated
+          FILTER_REGEX_EXCLUDE: ".*python_bindings/_bindings/.*"
+          # CI-specific
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   go-tests:
     name: Tests

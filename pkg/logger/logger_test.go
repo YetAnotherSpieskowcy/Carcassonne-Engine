@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -133,6 +134,7 @@ func TestLoggerWriteRead(t *testing.T) {
 	reader.Close()
 }
 
+//nolint:gocyclo// Cyclomatic complexity is not a problem in case of these tests
 func TestLoggerReadWhileStillWriting(t *testing.T) {
 	filename := "test_file.pb"
 
@@ -178,61 +180,76 @@ func TestLoggerReadWhileStillWriting(t *testing.T) {
 	}
 
 	channel := reader.ReadLogs()
-	for entry := range channel {
-		switch content := entry.GetContent().(type) {
-		case *pb.Entry_StartEntryContent:
-			if entry.Event != pb.EventType_EVENT_TYPE_START_EVENT {
-				t.Fatalf("expected %#v, got %#v instead", pb.EventType_EVENT_TYPE_START_EVENT, entry.Event)
-			}
-			if content.StartEntryContent.GameId != uint32(expectedGameID) {
-				t.Fatalf("expected %#v, got %#v instead", expectedGameID, content.StartEntryContent.GameId)
-			}
-			if content.StartEntryContent.GameSeed != uint32(expectedSeed) {
-				t.Fatalf("expected %#v, got %#v instead", expectedSeed, content.StartEntryContent.GameSeed)
-			}
-			if content.StartEntryContent.PlayerCount != uint32(expectedPlayerCount) {
-				t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, content.StartEntryContent.PlayerCount)
-			}
-		case *pb.Entry_PlaceTileEntryContent:
-			if entry.Event != pb.EventType_EVENT_TYPE_PLACE_TILE_EVENT {
-				t.Fatalf("expected %#v, got %#v instead", pb.EventType_EVENT_TYPE_PLACE_TILE_EVENT, entry.Event)
-			}
-			if content.PlaceTileEntryContent.PlayerId != uint32(playerID) {
-				t.Fatalf("expected %#v, got %#v instead", playerID, content.PlaceTileEntryContent.PlayerId)
-			}
-			if content.PlaceTileEntryContent.Move.Position.X != int32(expectedTile.Position.X()) {
-				t.Fatalf("expected %#v, got %#v instead", expectedTile.Position.X(), content.PlaceTileEntryContent.Move.Position.X)
-			}
-			if content.PlaceTileEntryContent.Move.Position.Y != int32(expectedTile.Position.Y()) {
-				t.Fatalf("expected %#v, got %#v instead", expectedTile.Position.Y(), content.PlaceTileEntryContent.Move.Position.Y)
-			}
-		case *pb.Entry_ScoreEntryContent:
-			if entry.Event == pb.EventType_EVENT_TYPE_SCORE_EVENT {
-				for _, points := range content.ScoreEntryContent.ScoreReport.ReceivedPoints {
-					if points.Score != expectedScores.ReceivedPoints[elements.ID(points.PlayerId)] {
-						t.Fatalf("SCORE_EVENT: Player %#v expected %#v, got %#v instead",
-							points.PlayerId,
-							expectedScores.ReceivedPoints[elements.ID(points.PlayerId)],
-							points.Score)
-					}
-				}
-				for _, meeple := range content.ScoreEntryContent.ScoreReport.ReturnedMeeples {
-					for _, m := range expectedScores.ReturnedMeeples[elements.ID(meeple.PlayerId)] {
-						if meeple.Meeple.MeepleType != pb.MeepleType(m.Meeple.Type) {
-							t.Fatalf("SCORE_EVENT: Player %#v expected %#v, got %#v instead",
-								meeple.PlayerId,
-								m.Meeple.Type,
-								meeple.Meeple.MeepleType)
-						}
-					}
-				}
-			} else {
-				t.Fatalf("expected SCORE_EVENT, got %#v instead", entry.Event)
-			}
-		default:
-			t.Fatalf("Unknown entry content")
+	entry := <-channel
+	fmt.Println("aaaa")
+	switch content := entry.GetContent().(type) {
+	case *pb.Entry_StartEntryContent:
+		if entry.Event != pb.EventType_EVENT_TYPE_START_EVENT {
+			t.Fatalf("expected %#v, got %#v instead", pb.EventType_EVENT_TYPE_START_EVENT, entry.Event)
 		}
+		if content.StartEntryContent.GameId != uint32(expectedGameID) {
+			t.Fatalf("expected %#v, got %#v instead", expectedGameID, content.StartEntryContent.GameId)
+		}
+		if content.StartEntryContent.GameSeed != uint32(expectedSeed) {
+			t.Fatalf("expected %#v, got %#v instead", expectedSeed, content.StartEntryContent.GameSeed)
+		}
+		if content.StartEntryContent.PlayerCount != uint32(expectedPlayerCount) {
+			t.Fatalf("expected %#v, got %#v instead", expectedPlayerCount, content.StartEntryContent.PlayerCount)
+		}
+	default:
+		t.Fatalf("Unknown entry content")
 	}
+
+	entry = <-channel
+	fmt.Println("aaaa")
+	switch content := entry.GetContent().(type) {
+	case *pb.Entry_PlaceTileEntryContent:
+		if entry.Event != pb.EventType_EVENT_TYPE_PLACE_TILE_EVENT {
+			t.Fatalf("expected %#v, got %#v instead", pb.EventType_EVENT_TYPE_PLACE_TILE_EVENT, entry.Event)
+		}
+		if content.PlaceTileEntryContent.PlayerId != uint32(playerID) {
+			t.Fatalf("expected %#v, got %#v instead", playerID, content.PlaceTileEntryContent.PlayerId)
+		}
+		if content.PlaceTileEntryContent.Move.Position.X != int32(expectedTile.Position.X()) {
+			t.Fatalf("expected %#v, got %#v instead", expectedTile.Position.X(), content.PlaceTileEntryContent.Move.Position.X)
+		}
+		if content.PlaceTileEntryContent.Move.Position.Y != int32(expectedTile.Position.Y()) {
+			t.Fatalf("expected %#v, got %#v instead", expectedTile.Position.Y(), content.PlaceTileEntryContent.Move.Position.Y)
+		}
+	default:
+		t.Fatalf("Expected PlaceTileEntry")
+	}
+
+	entry = <-channel
+	fmt.Println("aaaa")
+	switch content := entry.GetContent().(type) {
+	case *pb.Entry_ScoreEntryContent:
+		if entry.Event == pb.EventType_EVENT_TYPE_SCORE_EVENT {
+			for _, points := range content.ScoreEntryContent.ScoreReport.ReceivedPoints {
+				if points.Score != expectedScores.ReceivedPoints[elements.ID(points.PlayerId)] {
+					t.Fatalf("SCORE_EVENT: Player %#v expected %#v, got %#v instead",
+						points.PlayerId,
+						expectedScores.ReceivedPoints[elements.ID(points.PlayerId)],
+						points.Score)
+				}
+			}
+			for _, meeple := range content.ScoreEntryContent.ScoreReport.ReturnedMeeples {
+				for _, m := range expectedScores.ReturnedMeeples[elements.ID(meeple.PlayerId)] {
+					if meeple.Meeple.MeepleType != pb.MeepleType(m.Meeple.Type) {
+						t.Fatalf("SCORE_EVENT: Player %#v expected %#v, got %#v instead",
+							meeple.PlayerId,
+							m.Meeple.Type,
+							meeple.Meeple.MeepleType)
+					}
+				}
+			}
+		} else {
+			t.Fatalf("expected SCORE_EVENT, got %#v instead", entry.Event)
+		}
+	default:
+		t.Fatalf("Expected ScoreEntryContent")
+	}
+	fmt.Println("ccc")
 
 	expectedFinalScores := elements.NewScoreReport()
 	expectedFinalScores.ReceivedPoints[playerID] = 15
@@ -242,21 +259,21 @@ func TestLoggerReadWhileStillWriting(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	for entry := range channel {
-		switch content := entry.GetContent().(type) {
-		case *pb.Entry_ScoreEntryContent:
-			if entry.Event == pb.EventType_EVENT_TYPE_FINAL_SCORE_EVENT {
-				for _, points := range content.ScoreEntryContent.ScoreReport.ReceivedPoints {
-					if points.Score != expectedFinalScores.ReceivedPoints[elements.ID(points.PlayerId)] {
-						t.Fatalf("FINAL_SCORE_EVENT: Player %#v expected %#v, got %#v instead",
-							points.PlayerId,
-							expectedFinalScores.ReceivedPoints[elements.ID(points.PlayerId)],
-							entry.Event)
-					}
+	entry = <-channel
+	//nolint:gocritic // type must be used with switch case
+	switch content := entry.GetContent().(type) {
+	case *pb.Entry_ScoreEntryContent:
+		if entry.Event == pb.EventType_EVENT_TYPE_FINAL_SCORE_EVENT {
+			for _, points := range content.ScoreEntryContent.ScoreReport.ReceivedPoints {
+				if points.Score != expectedFinalScores.ReceivedPoints[elements.ID(points.PlayerId)] {
+					t.Fatalf("FINAL_SCORE_EVENT: Player %#v expected %#v, got %#v instead",
+						points.PlayerId,
+						expectedFinalScores.ReceivedPoints[elements.ID(points.PlayerId)],
+						entry.Event)
 				}
-			} else {
-				t.Fatalf("expected FINAL_SCORE_ENTRY, got %#v instead", entry.Event)
 			}
+		} else {
+			t.Fatalf("expected FINAL_SCORE_ENTRY, got %#v instead", entry.Event)
 		}
 	}
 

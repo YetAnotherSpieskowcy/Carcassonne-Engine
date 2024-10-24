@@ -188,7 +188,7 @@ func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWi
 
 	var log logger.Logger
 	if engine.logDir != "" {
-		logFile := path.Join(engine.logDir, fmt.Sprintf("%v.jsonl", id))
+		logFile := path.Join(engine.logDir, fmt.Sprintf("%v.pb", id))
 		fileLog, err := logger.NewFromFile(logFile)
 		if err != nil {
 			return SerializedGameWithID{}, err
@@ -268,6 +268,7 @@ func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, er
 	}
 	responses := engine.sendBatch([]Request{req})
 	if err := responses[0].Err(); err != nil {
+		fmt.Println("ppp")
 		return nil, err
 	}
 
