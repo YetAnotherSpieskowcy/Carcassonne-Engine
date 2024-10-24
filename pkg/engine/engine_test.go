@@ -588,6 +588,19 @@ func TestGameEngineSendBatchReturnsExecutionPanicErrorOnPanicEverywhere(t *testi
 	engine.Close()
 }
 
+func TestGenerateOrderedGame(t *testing.T) {
+	engine, err := StartGameEngine(3, t.TempDir())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	_, err = engine.GenerateOrderedGame(tilesets.StandardTileSet())
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	engine.Close()
+}
+
 /*
 Engine api doesn't allow accessing the board, so it tests if
 playing whole game results in the same order of tiles as in seeded stack.
