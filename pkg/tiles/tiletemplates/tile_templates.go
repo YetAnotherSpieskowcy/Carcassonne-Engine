@@ -107,7 +107,6 @@ func RoadsTurn() tiles.Tile {
 				Sides: side.LeftBottomEdge |
 					side.BottomLeftEdge,
 			},
-
 			{
 				FeatureType: feature.Field,
 				Sides: side.LeftTopEdge |
