@@ -61,7 +61,7 @@ func (feature Feature) OwnerID() uint8 {
 }
 
 func (feature Feature) ModifierType() modifier.Type {
-	// TODO: currently hardcoded to one feature type. Change this when adding more
+	// TODO: currently hardcoded to one modifier type. Change this when adding more
 	if feature.HasModifier() {
 		return modifier.Shield
 	}
