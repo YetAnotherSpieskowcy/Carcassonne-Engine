@@ -1,0 +1,166 @@
+name: Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  GO_VERSION: '1.22.1'
+  PYTHON_VERSION: '3.12'
+  BUILT_WHEELS_DIR: built_wheels
+  PROTO_VERSION: '28.2'
+  PROTO_PATH: proto
+  PROTO_GO_OUT: ./pkg
+  PROTO_NAME: proto
+
+permissions: read-all
+jobs:
+  go-build:
+    name: Go Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Install Protobuf
+        run: curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${{ env.PROTO_VERSION }}/protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip &&
+          sudo unzip -o protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip -d /usr/local bin/protoc &&
+          sudo unzip -o protoc-${{ env.PROTO_VERSION }}-linux-x86_64.zip -d /usr/local 'include/*' &&
+          sudo chmod a+x /usr/local/bin/protoc
+      - name: Install protoc-gen-go
+        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+      - name: Compile Protobuf
+        run: protoc --proto_path=${{ env.PROTO_PATH }} --go_out=${{env.PROTO_GO_OUT}} ./proto/*.proto
+      - name: Upload proto
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+
+  lint-code:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    needs: go-build
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+      - name: Lint Code Base
+        uses: super-linter/super-linter@v6.3.1
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: origin/main
+          VALIDATE_GO: false
+          VALIDATE_PYTHON_PYLINT: false
+          LINTER_RULES_PATH: .
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
+          # machine-generated
+          FILTER_REGEX_EXCLUDE: ".*python_bindings/_bindings/.*"
+          # CI-specific
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  go-tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: go-build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+      - name: Install gocover-cobertura
+        run: |
+          go get github.com/boumenot/gocover-cobertura && go install github.com/boumenot/gocover-cobertura
+      # Install gotestfmt on the VM running the action.
+      - name: Set up gotestfmt
+        uses: GoTestTools/gotestfmt-action@v2        
+      - name: Run tests
+        run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+      - name: Remove proto from coverage
+        run: sed -i '/.pb./d' coverage.txt
+      - name: Convert go coverage to corbetura format
+        run: gocover-cobertura < coverage.txt > coverage.xml
+      - name: Generate code coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage.xml
+          badge: false
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '88 100'
+
+  python-build:
+    name: Python Build
+    runs-on: ubuntu-latest
+    needs: go-build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "${{ env.GO_VERSION }}"
+      - name: Download proto
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.PROTO_NAME }}"
+          path: "${{ env.PROTO_GO_OUT }}/${{env.PROTO_PATH}}"
+      - name: Setup Python "${{ env.PYTHON_VERSION }}"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Build Python project
+        run: make build-python
+      - name: Upload built wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.BUILT_WHEELS_DIR }}"
+          path: |
+            ${{ env.BUILT_WHEELS_DIR }}
+
+  python-tests:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    needs: python-build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+      - name: Download built wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ env.BUILT_WHEELS_DIR }}"
+          path: "${{ env.BUILT_WHEELS_DIR }}"
+      - name: Install built wheel
+        run: |
+          make -o build-python .venv install-python
+      - name: Run tests
+        run: make -o install-python test-python

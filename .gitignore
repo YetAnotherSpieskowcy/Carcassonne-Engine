@@ -67,3 +67,7 @@ python_bindings/carcassonne_engine/_bindings/*
 logs/
 
 built_wheels/
+
+# Protobuf
+pkg/proto/
+pkg/proto/*
