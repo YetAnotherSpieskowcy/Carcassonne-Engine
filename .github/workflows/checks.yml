@@ -98,7 +98,7 @@ jobs:
       - name: Run tests
         run: go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
       - name: Remove proto from coverage
-        run: cat coverage.txt | grep -v '.pb.' > coverage.txt
+        run: sed -i '/.pb./d' coverage.txt
       - name: Convert go coverage to corbetura format
         run: gocover-cobertura < coverage.txt > coverage.xml
       - name: Generate code coverage report
