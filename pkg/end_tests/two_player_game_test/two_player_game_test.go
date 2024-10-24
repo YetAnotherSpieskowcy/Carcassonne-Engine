@@ -146,6 +146,13 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{7 - 1 + 1, 7},
 		TurnNumber:    1,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4, 0},
+		TurnNumber:   1,
+	}.Run()
 }
 
 // road turn
@@ -196,6 +203,13 @@ func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{4, 0},
 		PlayerMeeples: []uint8{7, 7 - 1},
 		TurnNumber:    2,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4, 0 + 2},
+		TurnNumber:   2,
 	}.Run()
 }
 
@@ -260,6 +274,13 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{7 - 1, 6},
 		TurnNumber:    3,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3, 0 + 4},
+		TurnNumber:   3,
+	}.Run()
 }
 
 // T cross road
@@ -322,6 +343,13 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{4, 0},
 		PlayerMeeples: []uint8{6, 6 - 1},
 		TurnNumber:    4,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3, 0 + 5 + 1},
+		TurnNumber:   4,
 	}.Run()
 }
 
@@ -397,6 +425,13 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 		TurnNumber:    5,
 	}.Run()
 
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3 + 3, 2 + 5},
+		TurnNumber:   5,
+	}.Run()
+
 }
 
 // Two city edges not connected
@@ -447,6 +482,13 @@ func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{4, 2},
 		PlayerMeeples: []uint8{5, 6 - 1},
 		TurnNumber:    6,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3 + 3, 2 + 5 + 1},
+		TurnNumber:   6,
 	}.Run()
 }
 
@@ -523,6 +565,13 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{5 - 1, 5 + 1},
 		TurnNumber:    7,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3 + 3 + 1, 6 + 5},
+		TurnNumber:   7,
+	}.Run()
 }
 
 // straight road
@@ -575,6 +624,13 @@ func checkEighthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{4, 6},
 		PlayerMeeples: []uint8{4, 6 - 1},
 		TurnNumber:    8,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3 + 1 + 3, 6 + 5 + 1},
+		TurnNumber:   8,
 	}.Run()
 }
 
@@ -651,6 +707,14 @@ func checkNinthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{4 - 1, 5 + 1},
 		TurnNumber:    9,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3 + 3 + 1 + 3, 12 + 1},
+		TurnNumber:   9,
+	}.Run()
+
 }
 
 // Two city edges not connected
@@ -716,6 +780,13 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{3 + 1, 6 - 1},
 		TurnNumber:    10,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{8 + 3 + 3 + 3, 12 + 1 + 1},
+		TurnNumber:   10,
+	}.Run()
 }
 
 // road turn
@@ -769,6 +840,13 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{4, 5},
 		TurnNumber:    11,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{8 + 3*3 + 3, 12 + 2 + 1},
+		TurnNumber:   11,
+	}.Run()
 }
 
 // straight road
@@ -821,6 +899,13 @@ func checkTwelfthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{8, 12},
 		PlayerMeeples: []uint8{4, 5},
 		TurnNumber:    12,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{8 + 3*3 + 3, 12 + 3 + 1},
+		TurnNumber:   12,
 	}.Run()
 }
 

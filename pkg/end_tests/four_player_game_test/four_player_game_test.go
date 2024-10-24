@@ -157,6 +157,13 @@ func checkFirstTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{7 - 1, 7, 7, 7},
 		TurnNumber:    1,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 1, 0, 0, 0},
+		TurnNumber:   1,
+	}.Run()
 }
 
 /*
@@ -212,6 +219,13 @@ func checkSecondTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{0, 0 + 4, 0, 0},
 		PlayerMeeples: []uint8{6, 7 - 1 + 1, 7, 7},
 		TurnNumber:    2,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 1, 4, 0, 0},
+		TurnNumber:   2,
 	}.Run()
 }
 
@@ -270,6 +284,13 @@ func checkThirdTurn(game *gameMod.Game, t *testing.T) {
 		TurnNumber:    3,
 	}.Run()
 
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 1, 4, 0 + 1, 0},
+		TurnNumber:   3,
+	}.Run()
+
 }
 
 /*
@@ -326,6 +347,13 @@ func checkFourthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{6, 7, 6, 7 - 1},
 		TurnNumber:    4,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 1, 4, 0 + 1, 0 + 2},
+		TurnNumber:   4,
+	}.Run()
 }
 
 /*
@@ -381,6 +409,13 @@ func checkFifthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{0, 4, 0, 0},
 		PlayerMeeples: []uint8{6 - 1, 7, 6, 6},
 		TurnNumber:    5,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 2, 4, 0 + 1, 0 + 2},
+		TurnNumber:   5,
 	}.Run()
 }
 
@@ -449,6 +484,13 @@ func checkSixthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{0, 4, 0, 0},
 		PlayerMeeples: []uint8{5, 7 - 1, 6, 6},
 		TurnNumber:    6,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 3, 4, 0 + 1, 0 + 2},
+		TurnNumber:   6,
 	}.Run()
 }
 
@@ -529,6 +571,13 @@ func checkSeventhTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{5, 6, 6 - 1 + 1, 6},
 		TurnNumber:    7,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 3 + 3, 4, 4 + 1, 0 + 2},
+		TurnNumber:   7,
+	}.Run()
 }
 
 /*
@@ -596,6 +645,13 @@ func checkEighthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{0, 4, 4, 0},
 		PlayerMeeples: []uint8{5, 6, 6, 6 - 1},
 		TurnNumber:    8,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 3 + 3, 4, 4 + 1, 0 + 2 + 3},
+		TurnNumber:   8,
 	}.Run()
 }
 
@@ -665,6 +721,13 @@ func checkNinthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{0, 4, 4, 0},
 		PlayerMeeples: []uint8{5 - 1, 6, 6, 5},
 		TurnNumber:    9,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 3 + 3*3, 4, 4 + 1, 0 + 3 + 3},
+		TurnNumber:   9,
 	}.Run()
 }
 
@@ -744,6 +807,13 @@ func checkTenthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{0, 4, 4, 0 + 4},
 		PlayerMeeples: []uint8{4, 6 - 1, 6, 5 + 1},
 		TurnNumber:    10,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{0 + 3 + 3*3, 4 + 3, 4 + 1, 4 + 3},
+		TurnNumber:   10,
 	}.Run()
 }
 
@@ -834,6 +904,13 @@ func checkEleventhTurn(game *gameMod.Game, t *testing.T) {
 		PlayerMeeples: []uint8{4 + 1, 5, 6 - 1, 6 + 1},
 		TurnNumber:    11,
 	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3*3, 4 + 3, 4 + 1 + 1, 8},
+		TurnNumber:   11,
+	}.Run()
 }
 
 /*
@@ -902,6 +979,13 @@ func checkTwelfthTurn(game *gameMod.Game, t *testing.T) {
 		PlayerScores:  []uint32{4, 4, 4, 8},
 		PlayerMeeples: []uint8{5, 5, 5, 7 - 1},
 		TurnNumber:    12,
+	}.Run()
+
+	test.CheckMidGameScore{
+		Game:         game,
+		TestingT:     t,
+		PlayerScores: []uint32{4 + 3*3, 4 + 3, 4 + 1 + 1, 8 + 1},
+		TurnNumber:   12,
 	}.Run()
 }
 

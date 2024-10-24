@@ -15,6 +15,7 @@ type Game interface {
 	PlayTurn(move elements.PlacedTile) error
 	GetPlayerByID(playerID elements.ID) elements.Player
 	GetBoard() elements.Board
+	GetMidGameScore() elements.ScoreReport
 }
 
 type T interface {
@@ -125,6 +126,25 @@ func (turn VerifyMeepleExistence) Run() {
 	} else {
 		if placedFeature.Meeple.Type != elements.NoneMeeple {
 			turn.TestingT.Fatalf("Turn %d: Meeple hasn't been removed!", turn.TurnNumber)
+		}
+	}
+}
+
+type CheckMidGameScore struct {
+	Game         Game
+	TestingT     T
+	PlayerScores []uint32
+	TurnNumber   uint
+}
+
+func (turn CheckMidGameScore) Run() {
+
+	midScore := turn.Game.GetMidGameScore()
+
+	for id, score := range midScore.ReceivedPoints {
+		// check points
+		if score != turn.PlayerScores[int(id)-1] {
+			turn.TestingT.Fatalf("Turn %d: Player %d received wrong amount of points! Expected: %d  Got: %d ", turn.TurnNumber, id, turn.PlayerScores[int(id)-1], score)
 		}
 	}
 }
