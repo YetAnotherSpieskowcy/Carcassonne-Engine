@@ -54,14 +54,14 @@ func (fr FileReader) ReadLogs() <-chan *pb.Entry {
 
 				if err != nil {
 					panic(err)
-				} else {
-					err = proto.Unmarshal(item, entry)
-					if err != nil {
-						panic(err)
-					}
-					channel <- entry
-					offset += int64(itemSize)
 				}
+
+				err = proto.Unmarshal(item, entry)
+				if err != nil {
+					panic(err)
+				}
+				channel <- entry
+				offset += int64(itemSize)
 
 				if entry.Event == pb.EventType_EVENT_TYPE_FINAL_SCORE_EVENT {
 					break

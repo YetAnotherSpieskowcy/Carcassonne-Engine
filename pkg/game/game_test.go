@@ -23,7 +23,7 @@ type TestLogger struct {
 	callCount int
 }
 
-func (l *TestLogger) LogEvent(_ pb.Entry) error {
+func (l *TestLogger) LogEvent(_ *pb.Entry) error {
 	l.callCount++
 	return nil
 }

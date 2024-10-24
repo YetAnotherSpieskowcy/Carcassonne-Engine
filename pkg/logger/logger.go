@@ -13,7 +13,7 @@ var ErrCopyToNotImplemented = errors.New("the type does not implement the CopyTo
 
 type Logger interface {
 	AsWriter() io.Writer // only meant to be called by other (i.e. public) methods
-	LogEvent(pb.Entry) error
+	LogEvent(*pb.Entry) error
 	CopyTo(Logger) error
 }
 
@@ -29,8 +29,8 @@ func (logger *BaseLogger) AsWriter() io.Writer {
 	return logger.writer
 }
 
-func (logger *BaseLogger) LogEvent(entry pb.Entry) error {
-	out, err := proto.Marshal(&entry)
+func (logger *BaseLogger) LogEvent(entry *pb.Entry) error {
+	out, err := proto.Marshal(entry)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (*EmptyLogger) AsWriter() io.Writer {
 	return nil
 }
 
-func (*EmptyLogger) LogEvent(entry pb.Entry) error { //nolint:revive // causes gopy to fail
+func (*EmptyLogger) LogEvent(entry *pb.Entry) error { //nolint:revive // causes gopy to fail
 	return nil
 }
 

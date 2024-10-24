@@ -94,6 +94,7 @@ func TestLoggerWriteRead(t *testing.T) {
 				t.Fatalf("expected %#v, got %#v instead", expectedTile.Position.Y(), content.PlaceTileEntryContent.Move.Position.Y)
 			}
 		case *pb.Entry_ScoreEntryContent:
+			//nolint:gocritic // this is stupid
 			if entry.Event == pb.EventType_EVENT_TYPE_SCORE_EVENT {
 				for _, points := range content.ScoreEntryContent.ScoreReport.ReceivedPoints {
 					if points.Score != expectedScores.ReceivedPoints[elements.ID(points.PlayerId)] {
