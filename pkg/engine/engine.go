@@ -555,6 +555,7 @@ func (batch *requestBatch) cleanupGames() {
 		_, canRemove := batch.removableGames[gameID]
 		_, canRemoveChildren := batch.parentsWithRemovableChildren[gameID]
 
+		batch.engine.threadSafety.Lock()
 		if canRemove {
 			delete(batch.engine.games, gameID)
 			delete(batch.engine.gameMutexes, gameID)
@@ -566,6 +567,7 @@ func (batch *requestBatch) cleanupGames() {
 		} else if canRemoveChildren {
 			delete(batch.engine.childGames, gameID)
 		}
+		batch.engine.threadSafety.Unlock()
 	}
 }
 
