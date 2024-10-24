@@ -34,7 +34,7 @@ func PlayTurnWithIndex(engine *GameEngine, gameID int, ptile elements.PlacedTile
 	return nil
 }
 
-func PlayFewTurns(engine GameEngine, game SerializedGameWithID, turnCount int, t *testing.T) SerializedGameWithID {
+func PlayFewTurns(engine *GameEngine, game SerializedGameWithID, turnCount int, t *testing.T) SerializedGameWithID {
 	for range turnCount {
 		// get legal moves
 		legalMovesReq := &GetLegalMovesRequest{
@@ -70,7 +70,7 @@ func PlayFewTurns(engine GameEngine, game SerializedGameWithID, turnCount int, t
 }
 
 func TestManyThread(t *testing.T) {
-	THREAD_COUNT := 200
+	THREAD_COUNT := 10000
 
 	engine, err := StartGameEngine(4, "")
 	if err != nil {
@@ -84,7 +84,7 @@ func TestManyThread(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	serializedGameWithID = PlayFewTurns(*engine, serializedGameWithID, 10, t)
+	serializedGameWithID = PlayFewTurns(engine, serializedGameWithID, 10, t)
 
 	// get legal moves
 	legalMovesReq := &GetLegalMovesRequest{
@@ -97,11 +97,7 @@ func TestManyThread(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	//var limit = THREAD_COUNT
 	movesCount := len(legalMoves.Moves)
-	// if movesCount < THREAD_COUNT {
-	// 	limit = movesCount
-	// }
 
 	// play all turns
 	errs := make(chan error, THREAD_COUNT)
@@ -120,5 +116,5 @@ func TestManyThread(t *testing.T) {
 		}
 	}
 
-	println("SUCCES")
+	engine.Close()
 }

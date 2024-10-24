@@ -117,6 +117,7 @@ type GameEngine struct {
 	childGames    map[int]map[int]struct{}
 	parentGames   map[int]int
 	appLogger     *log.Logger
+	threadSafety  sync.RWMutex
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -256,8 +257,10 @@ func (engine *GameEngine) DeleteGames(gameIDs []int) {
 func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, error) {
 	reservedIDs := make([]int, count)
 	for i := range count {
+		engine.threadSafety.Lock() // prevent generating same gameID when called multithreaded
 		reservedIDs[i] = engine.nextGameID
 		engine.nextGameID++
+		engine.threadSafety.Unlock()
 	}
 
 	req := &cloneGameRequest{
@@ -273,8 +276,10 @@ func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, er
 
 	resp := responses[0].(*cloneGameResponse)
 	for i, game := range resp.Clones {
+		engine.threadSafety.Lock()
 		engine.games[reservedIDs[i]] = game
 		engine.gameMutexes[reservedIDs[i]] = &sync.RWMutex{}
+		engine.threadSafety.Unlock()
 	}
 
 	return reservedIDs, nil
@@ -421,11 +426,15 @@ func (engine *GameEngine) prepareWorkerInput(
 		return workerInput{}, ErrCommunicatorClosed
 	}
 	gameID := req.gameID()
+	engine.threadSafety.Lock()
 	game, ok := engine.games[gameID]
+	engine.threadSafety.Unlock()
 	if !ok {
 		return workerInput{}, fmt.Errorf("%w: %#v", ErrGameNotFound, gameID)
 	}
+	engine.threadSafety.Lock()
 	mutex := engine.gameMutexes[gameID]
+	engine.threadSafety.Unlock()
 	canWrite := req.requiresWrite()
 	if canWrite {
 		if !mutex.TryLock() {
@@ -498,11 +507,13 @@ func (batch *requestBatch) Process() {
 			outputItemsLock.RUnlock()
 			batch.responses[outputInfo.RequestIndex] = output.resp
 
+			batch.engine.threadSafety.Lock()
 			if outputInfo.AcquiredWrite {
 				batch.engine.gameMutexes[outputInfo.GameID].Unlock()
 			} else {
 				batch.engine.gameMutexes[outputInfo.GameID].RUnlock()
 			}
+			batch.engine.threadSafety.Unlock()
 
 			if respGameRemovable, ok := output.resp.(ResponseGameRemovable); ok {
 				if respGameRemovable.canRemoveGame() {
