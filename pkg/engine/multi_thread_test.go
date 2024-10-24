@@ -7,7 +7,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
-func PlayTurnWithIndex(engine *GameEngine, gameID int, ptile elements.PlacedTile, t *testing.T) error {
+func PlayTurnWithIndex(engine *GameEngine, gameID int, ptile elements.PlacedTile) error {
 	// clone once
 	clones, err := engine.cloneGame(gameID, 1, true)
 	if err != nil {
@@ -103,7 +103,7 @@ func TestManyThread(t *testing.T) {
 	errs := make(chan error, ThreadCount)
 	for i := range ThreadCount {
 		go func() {
-			err := PlayTurnWithIndex(engine, serializedGameWithID.ID, legalMoves.Moves[i%movesCount].Move, t)
+			err := PlayTurnWithIndex(engine, serializedGameWithID.ID, legalMoves.Moves[i%movesCount].Move)
 			errs <- err
 		}()
 	}
