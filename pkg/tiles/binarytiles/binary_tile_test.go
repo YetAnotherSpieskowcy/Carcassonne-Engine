@@ -92,3 +92,115 @@ func TestFromPlacedTileEmptyTile(t *testing.T) {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
 	}
 }
+
+func TestPosition(t *testing.T) {
+	expectedPos := position.New(-127, 126)
+
+	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile.Position = expectedPos
+
+	binaryTile := FromPlacedTile(tile)
+	actualPos := binaryTile.Position()
+
+	if expectedPos != actualPos {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedPos, actualPos)
+	}
+
+	expectedPos = position.New(85, -42)
+
+	tile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile.Position = expectedPos
+
+	binaryTile = FromPlacedTile(tile)
+	actualPos = binaryTile.Position()
+
+	if expectedPos != actualPos {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedPos, actualPos)
+	}
+}
+
+func TestHasMonastery(t *testing.T) {
+	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	binaryTile := FromPlacedTile(tile)
+
+	if !binaryTile.HasMonastery() {
+		t.Fatalf("expected: %#v\ngot: %#v", true, binaryTile.HasMonastery())
+	}
+
+	tile = elements.ToPlacedTile(tiletemplates.RoadsTurn())
+	binaryTile = FromPlacedTile(tile)
+
+	if binaryTile.HasMonastery() {
+		t.Fatalf("expected: %#v\ngot: %#v", false, binaryTile.HasMonastery())
+	}
+}
+
+func TestGetMeepleIDAtSideCenter(t *testing.T) {
+	// tile with cities on all sides, the left one having a shield, and a field in the middle.
+	//      On the middle field is a meeple belonging to player 1
+	tile := elements.ToPlacedTile(tiles.Tile{
+		Features: []feature.Feature{
+			{
+				FeatureType: feature.Field,
+				Sides:       side.NoSide,
+			},
+			{
+				FeatureType: feature.City,
+				Sides:       side.Top,
+			},
+			{
+				FeatureType: feature.City,
+				Sides:       side.Right,
+			},
+			{
+				FeatureType: feature.City,
+				Sides:       side.Bottom,
+			},
+			{
+				FeatureType:  feature.City,
+				ModifierType: modifier.Shield,
+				Sides:        side.Left,
+			},
+		},
+	})
+
+	expectedID := elements.ID(1)
+
+	tile.GetPlacedFeatureAtSide(side.NoSide, feature.Field).Meeple =
+		elements.Meeple{PlayerID: expectedID, Type: elements.NormalMeeple}
+
+	binaryTile := FromPlacedTile(tile)
+
+	actualID := binaryTile.GetMeepleIDAtSide(SideCenter, feature.Field)
+
+	if expectedID != actualID {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
+	}
+
+	expectedID = elements.ID(0)
+	actualID = binaryTile.GetMeepleIDAtSide(SideCenter, feature.Monastery)
+	if expectedID != actualID {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
+	}
+
+	// monastery with a single road, with a meeple in the monastery belonging to player 2
+	tile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+
+	expectedID = elements.ID(2)
+
+	tile.Monastery().Meeple = elements.Meeple{PlayerID: expectedID, Type: elements.NormalMeeple}
+
+	binaryTile = FromPlacedTile(tile)
+
+	actualID = binaryTile.GetMeepleIDAtSide(SideCenter, feature.Monastery)
+
+	if expectedID != actualID {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
+	}
+
+	expectedID = elements.ID(0)
+	actualID = binaryTile.GetMeepleIDAtSide(SideCenter, feature.Field)
+	if expectedID != actualID {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
+	}
+}

@@ -12,6 +12,7 @@ import (
 )
 
 type BinaryTile uint64
+type BinaryTileSide uint16
 
 // interpreting BinaryTile's bits:
 //      00000000_00000000_1_01_000000011_00_0011_0000010011_0001001100_1000001110
@@ -21,7 +22,7 @@ type BinaryTile uint64
 //                     /                 |    |
 //             is placed                 |    |
 //                                       |    |
-//    monastery and unconnected field bits    city shield
+//    unconnected field and monastery bits    city shield
 //
 // counting from right to left (from least to most significant bit):
 //  - first four bits of the field section are the corners, starting from top-right, clockwise
@@ -30,7 +31,7 @@ type BinaryTile uint64
 //    of the previous four bits (first and second, second and third, etc.)
 //  - first four bits of the meeple section are the sides (same as with shields)
 //  - next four meeple bits are the corners (same as with fields)
-//  - the last meeple bit is the center
+//  - the last meeple bit is the center (used only by monastery and unconnected field)
 //  - the owner bits is just one-hot-encoded player ID. (ID(1) = 00...001, ID(2) = 00...010, etc.)
 //  - is placed bit is always 1 on all placed tiles, and 0 on the non-placed tiles
 //  - position bits are 8-bit reptesentations of tile position
@@ -72,11 +73,31 @@ const (
 	isPlacedBit    = playerEndBit
 	isPlacedEndBit = isPlacedBit + 1
 
-	positionXStartBit = isPlacedEndBit
+	positionYStartBit = isPlacedEndBit
+	positionYEndBit   = positionYStartBit + positionBitSize
+
+	positionXStartBit = positionYEndBit
 	positionXEndBit   = positionXStartBit + positionBitSize
 
-	// positionYStartBit = positionXEndBit
-	// positionYEndBit   = positionYStartBit + positionBitSize
+	// bit masks
+	regularFieldMask     = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_0000000000_1111111111
+	unconnectedFieldMask = 0b00000000_00000000_0_00_000000000_10_0000_0000000000_0000000000_0000000000
+	anyFieldMask         = regularFieldMask | unconnectedFieldMask
+
+	roadMask      = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_1111111111_0000000000
+	cityMask      = 0b00000000_00000000_0_00_000000000_00_0000_1111111111_0000000000_0000000000
+	shieldMask    = 0b00000000_00000000_0_00_000000000_00_1111_0000000000_0000000000_0000000000
+	monasteryMask = 0b00000000_00000000_0_00_000000000_01_0000_0000000000_0000000000_0000000000
+	meepleMask    = 0b00000000_00000000_0_00_111111111_00_0000_0000000000_0000000000_0000000000
+	ownerMask     = 0b00000000_00000000_0_11_000000000_00_0000_0000000000_0000000000_0000000000
+)
+
+const ( // binary tile sides (different from side.Side)
+	SideTop    BinaryTileSide = 0b0_0000_0001
+	SideRight  BinaryTileSide = 0b0_0000_0010
+	SideBottom BinaryTileSide = 0b0_0000_0100
+	SideLeft   BinaryTileSide = 0b0_0000_1000
+	SideCenter BinaryTileSide = 0b1_0000_0000
 )
 
 var orthogonalFeaturesBits = []side.Side{
@@ -240,11 +261,75 @@ func (binaryTile *BinaryTile) addPosition(position position.Position) {
 	tmpBinaryTile |= BinaryTile(uint8(position.X()))
 	tmpBinaryTile <<= positionBitSize
 	tmpBinaryTile |= BinaryTile(uint8(position.Y()))
-	tmpBinaryTile <<= positionXStartBit
+	tmpBinaryTile <<= positionYStartBit
 	*binaryTile |= tmpBinaryTile
 }
 
 // Sets the bit at the specified index to 1
 func (binaryTile *BinaryTile) setBit(bitIndex int) {
 	*binaryTile |= (1 << bitIndex)
+}
+
+func (binaryTile BinaryTile) Position() position.Position {
+	return position.New(
+		int16(int8(binaryTile>>positionXStartBit)),
+		int16(int8(binaryTile>>positionYStartBit)),
+	)
+}
+
+func (binaryTile BinaryTile) HasRegularField() bool { // todo test
+	return binaryTile&regularFieldMask != 0
+}
+
+func (binaryTile BinaryTile) HasUnconnectedField() bool { // todo test
+	return binaryTile&unconnectedFieldMask != 0
+}
+
+func (binaryTile BinaryTile) HasAnyField() bool { // todo test
+	return binaryTile&anyFieldMask != 0
+}
+
+func (binaryTile BinaryTile) HasRoad() bool { // todo test
+	return binaryTile&roadMask != 0
+}
+
+func (binaryTile BinaryTile) HasCity() bool { // todo test
+	return binaryTile&cityMask != 0
+}
+
+func (binaryTile BinaryTile) HasMonastery() bool {
+	return binaryTile&monasteryMask != 0
+}
+
+func (binaryTile BinaryTile) HasMeepleAtSide(side BinaryTileSide) bool { // todo test
+	return binaryTile&(BinaryTile(side)<<meepleStartBit) != 0
+}
+
+// Returns player ID of meeple at the given side and on the given feature, or elements.NonePlayer if no such meeple exists
+func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType featureMod.Type) elements.ID { // todo test
+	ownerID := binaryTile & ownerMask
+	if ownerID == 0 {
+		return elements.NonePlayer
+	} else {
+		ownerID >>= playerStartBit
+	}
+
+	switch featureType {
+	case featureMod.Monastery:
+		if binaryTile.HasMonastery() && side == SideCenter {
+			return elements.ID(ownerID)
+		}
+
+	case featureMod.Field:
+		if side == SideCenter && binaryTile&unconnectedFieldMask != 0 {
+			return elements.ID(ownerID)
+		}
+		// todo check normal fields
+
+	case featureMod.City:
+
+	case featureMod.Road:
+	}
+
+	return elements.NonePlayer
 }

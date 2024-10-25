@@ -10,6 +10,7 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
@@ -391,7 +392,8 @@ func (board *board) checkCompleted(tile elements.PlacedTile) elements.ScoreRepor
 	board.cityManager.UpdateCities(tile)
 	scoreReport.Join(board.cityManager.ScoreCities(false))
 	scoreReport.Join(board.scoreRoads(tile, false))
-	scoreReport.Join(board.scoreMonasteries(tile, false))
+	binaryTile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite
+	scoreReport.Join(board.scoreMonasteries(binaryTile, false))
 
 	for _, returnedMeeples := range scoreReport.ReturnedMeeples {
 		for _, meeple := range returnedMeeples {
@@ -412,18 +414,21 @@ In other cases, 'forceScore' should be false
 
 returns: ScoreReport (with one player at most)
 */
-func (board *board) scoreSingleMonastery(tile elements.PlacedTile, forceScore bool) (elements.ScoreReport, error) {
-	var monasteryFeature = tile.Monastery()
-	if monasteryFeature == nil {
+func (board *board) scoreSingleMonastery(tile binarytiles.BinaryTile, forceScore bool) (elements.ScoreReport, error) {
+	if !tile.HasMonastery() {
 		return elements.ScoreReport{}, errors.New("scoreSingleMonastery() called on a tile without a monastery")
 	}
-	if monasteryFeature.Meeple.Type == elements.NoneMeeple {
+
+	ownerID := tile.GetMeepleIDAtSide(binarytiles.SideCenter, feature.Monastery)
+	if ownerID == elements.NonePlayer {
 		return elements.ScoreReport{}, errors.New("scoreSingleMonastery() called on a tile without a meeple")
 	}
 
+	tilePosition := tile.Position()
+
 	var score uint32
-	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
-		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
+	for x := tilePosition.X() - 1; x <= tilePosition.X()+1; x++ {
+		for y := tilePosition.Y() - 1; y <= tilePosition.Y()+1; y++ {
 			_, ok := board.GetTileAt(position.New(x, y))
 			if ok {
 				score++
@@ -433,11 +438,11 @@ func (board *board) scoreSingleMonastery(tile elements.PlacedTile, forceScore bo
 
 	if score == 9 || forceScore {
 		scoreReport := elements.NewScoreReport()
-		scoreReport.ReceivedPoints[monasteryFeature.Meeple.PlayerID] = score
-		scoreReport.ReturnedMeeples[monasteryFeature.Meeple.PlayerID] = []elements.MeepleWithPosition{
-			elements.MeepleWithPosition{
-				Meeple:   monasteryFeature.Meeple,
-				Position: tile.Position,
+		scoreReport.ReceivedPoints[ownerID] = score
+		scoreReport.ReturnedMeeples[ownerID] = []elements.MeepleWithPosition{
+			{
+				Meeple:   elements.Meeple{Type: elements.NormalMeeple, PlayerID: ownerID}, // todo binarytiles rewrite
+				Position: tilePosition,
 			},
 		}
 
@@ -453,15 +458,19 @@ This function should be called after the placement of each tile, in case it neig
 
 returns: ScoreReport
 */
-func (board *board) scoreMonasteries(tile elements.PlacedTile, forceScore bool) elements.ScoreReport {
+func (board *board) scoreMonasteries(tile binarytiles.BinaryTile, forceScore bool) elements.ScoreReport {
 	var finalReport = elements.NewScoreReport()
 
-	for x := tile.Position.X() - 1; x <= tile.Position.X()+1; x++ {
-		for y := tile.Position.Y() - 1; y <= tile.Position.Y()+1; y++ {
+	tilePosition := tile.Position()
+
+	for x := tilePosition.X() - 1; x <= tilePosition.X()+1; x++ {
+		for y := tilePosition.Y() - 1; y <= tilePosition.Y()+1; y++ {
 			adjacentTile, ok := board.GetTileAt(position.New(x, y))
 
+			binaryAdjacentTile := binarytiles.FromPlacedTile(adjacentTile) // todo binarytiles rewrite
+
 			if ok {
-				report, err := board.scoreSingleMonastery(adjacentTile, forceScore)
+				report, err := board.scoreSingleMonastery(binaryAdjacentTile, forceScore)
 				if err == nil {
 					finalReport.Join(report)
 				}
@@ -679,7 +688,8 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 					field.Expand(board, board.cityManager)
 					miniReport.Join(field.GetScoreReport())
 				case feature.Monastery:
-					miniReport.Join(board.scoreMonasteries(pTile, true))
+					binaryTile := binarytiles.FromPlacedTile(pTile) // todo binarytiles rewrite
+					miniReport.Join(board.scoreMonasteries(binaryTile, true))
 				}
 			}
 
