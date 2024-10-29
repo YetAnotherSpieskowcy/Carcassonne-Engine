@@ -337,14 +337,12 @@ func (board *board) addTileToBoard(tile elements.PlacedTile) error {
 	setTiles := board.tileSet.Tiles
 	actualIndex := 1
 	for {
-		index := slices.IndexFunc(setTiles, func(candidate tiles.Tile) bool {
-			return elements.ToTile(tile).Equals(candidate)
-		})
+		index := slices.IndexFunc(setTiles, tile.EqualsTile)
 		if index == -1 {
 			return errors.New("Placed tile not found in the tile set, logic error?")
 		}
 		actualIndex += index
-		if !elements.ToTile(board.tiles[actualIndex]).Equals(elements.ToTile(tile)) {
+		if !board.tiles[actualIndex].FeatureEquals(tile) {
 			break
 		}
 		// position already taken, gotta find another next matching tile
