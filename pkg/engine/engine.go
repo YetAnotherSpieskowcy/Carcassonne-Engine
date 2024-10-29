@@ -107,17 +107,19 @@ type SerializedGameWithID struct {
 // The entry point for Python side of things - the engine keeps track of created games,
 // sends requests to its workers and returns back responses received from them.
 type GameEngine struct {
-	comm          *communicator
-	logDir        string
-	games         map[int]*game.Game
-	gameMutexes   map[int]*sync.RWMutex
-	nextGameID    int
-	nextRequestID int
-	closed        bool
-	childGames    map[int]map[int]struct{}
-	parentGames   map[int]int
-	appLogger     *log.Logger
-	threadSafety  sync.RWMutex
+	comm            *communicator
+	logDir          string
+	games           map[int]*game.Game
+	gameMutexes     map[int]*sync.RWMutex
+	nextGameID      int
+	nextRequestID   int
+	closed          bool
+	childGames      map[int]map[int]struct{}
+	parentGames     map[int]int
+	appLogger       *log.Logger
+	threadSafety    sync.RWMutex
+	cloneIDSafety   sync.RWMutex
+	requestIDSafety sync.RWMutex
 }
 
 func StartGameEngine(workerCount int, logDir string) (*GameEngine, error) {
@@ -257,10 +259,10 @@ func (engine *GameEngine) DeleteGames(gameIDs []int) {
 func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, error) {
 	reservedIDs := make([]int, count)
 	for i := range count {
-		engine.threadSafety.Lock() // prevent generating same gameID when called multithreaded
+		engine.cloneIDSafety.Lock() // prevent generating same gameID when called multithreaded
 		reservedIDs[i] = engine.nextGameID
 		engine.nextGameID++
-		engine.threadSafety.Unlock()
+		engine.cloneIDSafety.Unlock()
 	}
 
 	req := &cloneGameRequest{
@@ -444,10 +446,10 @@ func (engine *GameEngine) prepareWorkerInput(
 		return workerInput{}, ErrLockAlreadyAcquired
 	}
 
-	engine.threadSafety.Lock() // prevent generating same requestID when called multithreaded
+	engine.requestIDSafety.Lock() // prevent generating same requestID when called multithreaded
 	requestID := engine.nextRequestID
 	engine.nextRequestID++
-	engine.threadSafety.Unlock()
+	engine.requestIDSafety.Unlock()
 
 	return workerInput{
 		requestID:    requestID,
