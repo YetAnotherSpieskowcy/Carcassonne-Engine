@@ -99,6 +99,9 @@ const ( // binary tile sides (different from side.Side)
 	SideNone   BinaryTileSide = 0b0_0000_0000
 	SideCenter BinaryTileSide = 0b1_0000_0000
 
+	SideAllDiagonal   BinaryTileSide = 0b0_1111_0000
+	SideAllOrthogonal BinaryTileSide = 0b0_0000_1111
+
 	SideTop    BinaryTileSide = 0b0_0000_0001
 	SideRight  BinaryTileSide = 0b0_0000_0010
 	SideBottom BinaryTileSide = 0b0_0000_0100
@@ -109,6 +112,20 @@ const ( // binary tile sides (different from side.Side)
 	SideBottomLeftCorner  BinaryTileSide = 0b0_0100_0000
 	SideTopLeftCorner     BinaryTileSide = 0b0_1000_0000
 )
+
+var OrthogonalSides = []BinaryTileSide{
+	SideTop,
+	SideRight,
+	SideBottom,
+	SideLeft,
+}
+
+var DiagonalSides = []BinaryTileSide{
+	SideTopRightCorner,
+	SideBottomRightCorner,
+	SideBottomLeftCorner,
+	SideTopLeftCorner,
+}
 
 var orthogonalFeaturesBits = []side.Side{
 	side.Top,
@@ -391,5 +408,46 @@ func (binaryTile BinaryTile) GetConnectedSides(side BinaryTileSide, featureType 
 	}
 
 	return side
+}
+
+// Returns a slice of sides of every feature of the given type of this tile
+//
+// For example, if a type has two cities, one on top and right sides, and one on the left,
+//
+//	the return slice will be: {SideTop|SideRight, SideLeft}
+func (binaryTile BinaryTile) GetFeaturesOfType(featureType featureMod.Type) []BinaryTileSide {
+	var result []BinaryTileSide
+
+	var sidesToCheck [4]BinaryTileSide
+	checkedSides := SideNone
+
+	if featureType == featureMod.Field {
+		sidesToCheck = [4]BinaryTileSide{SideTopRightCorner, SideBottomRightCorner, SideBottomLeftCorner, SideTopLeftCorner}
+	} else {
+		sidesToCheck = [4]BinaryTileSide{SideTop, SideRight, SideBottom, SideLeft}
+	}
+
+	for _, side := range sidesToCheck {
+		if side&checkedSides != 0 {
+			continue
+		}
+		connectedSides := binaryTile.GetConnectedSides(side, featureType)
+		if connectedSides != SideNone {
+			checkedSides |= connectedSides
+			result = append(result, connectedSides)
+		}
+	}
+
+	return result
+}
+
+// Returns whether or not the given side has otherSide
+func (side BinaryTileSide) HasSide(otherSide BinaryTileSide) bool {
+	return side&otherSide == otherSide // todo copy tests from side
+}
+
+// Returns whether or not the given side overlaps otherSide. The overlap does not need to be exact.
+func (side BinaryTileSide) OverlapsSide(otherSide BinaryTileSide) bool {
+	return side&otherSide != 0
 }
 

@@ -1,6 +1,7 @@
 package binarytiles
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
@@ -329,4 +330,38 @@ func TestGetConnectedFeaturesWithMultipleFeaturesSides(t *testing.T) {
 			t.Fatalf("tile.GetConnectedSides(%#v, %#v) expected: %016b\ngot: %016b", sides[i], features[i], expectedResults[i], actualResult)
 		}
 	}
+}
+
+func TestGetFeaturesOfType(t *testing.T) {
+	tile := FromTile(tiletemplates.SingleCityEdgeCrossRoad())
+	expectedFields := []BinaryTileSide{
+		SideTopRightCorner | SideTopLeftCorner,
+		SideBottomRightCorner,
+		SideBottomLeftCorner,
+	}
+	expectedCities := []BinaryTileSide{
+		SideTop,
+	}
+	expectedRoads := []BinaryTileSide{
+		SideRight,
+		SideBottom,
+		SideLeft,
+	}
+
+	actualFields := tile.GetFeaturesOfType(feature.Field)
+	actualCities := tile.GetFeaturesOfType(feature.City)
+	actualRoads := tile.GetFeaturesOfType(feature.Road)
+
+	if !slices.Equal(actualFields, expectedFields) {
+		t.Fatalf("expected %#v, got %#v", expectedFields, actualFields)
+	}
+
+	if !slices.Equal(actualCities, expectedCities) {
+		t.Fatalf("expected %#v, got %#v", expectedCities, actualCities)
+	}
+
+	if !slices.Equal(actualRoads, expectedRoads) {
+		t.Fatalf("expected %#v, got %#v", expectedRoads, actualRoads)
+	}
+
 }
