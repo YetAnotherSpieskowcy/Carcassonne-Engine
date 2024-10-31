@@ -82,6 +82,7 @@ const (
 	// bit masks
 	orthogonalSideMask = 0b0_0000_1111
 	diagonalSideMask   = 0b0_1111_0000
+	centerSideMask     = 0b1_0000_0000
 
 	regularFieldMask     = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_0000000000_1111111111
 	unconnectedFieldMask = 0b00000000_00000000_0_00_000000000_10_0000_0000000000_0000000000_0000000000
@@ -441,6 +442,26 @@ func (binaryTile BinaryTile) GetFeaturesOfType(featureType featureMod.Type) []Bi
 	return result
 }
 
+func (binaryTile BinaryTile) GetFeatureSides(featureType featureMod.Type) BinaryTileSide {
+	switch featureType {
+	case featureMod.Field:
+		output := BinaryTileSide(binaryTile << (fieldStartBit + diagonalSideOffset))
+		if binaryTile.HasUnconnectedField() {
+			output |= SideCenter
+		}
+		return output & (diagonalSideMask + centerSideMask)
+
+	case featureMod.Road:
+		return BinaryTileSide(binaryTile>>roadStartBit) & orthogonalSideMask
+
+	case featureMod.City:
+		return BinaryTileSide(binaryTile>>cityStartBit) & orthogonalSideMask
+
+	default:
+		panic(fmt.Sprintf("method not supported for features of type: %#v", featureType))
+	}
+}
+
 // Returns whether or not the given side has otherSide
 func (side BinaryTileSide) HasSide(otherSide BinaryTileSide) bool {
 	return side&otherSide == otherSide // todo copy tests from side
@@ -449,5 +470,49 @@ func (side BinaryTileSide) HasSide(otherSide BinaryTileSide) bool {
 // Returns whether or not the given side overlaps otherSide. The overlap does not need to be exact.
 func (side BinaryTileSide) OverlapsSide(otherSide BinaryTileSide) bool {
 	return side&otherSide != 0
+}
+
+// Converts corners to sides
+// For example:
+// - SideTopRightCorner -> SideTop|SideRight
+// - SideTopRightCorner|SideTopLeftCorner -> SideTop|SideRight|SideLeft
+func (side BinaryTileSide) CornersToSides() BinaryTileSide {
+	side &= diagonalSideMask // to clear the center bit
+
+	return ((side >> 4) | (side >> 3) | (side >> 7)) & orthogonalSideMask // don't ask why, this just works.
+}
+
+// Converts sides to corners
+// For example:
+// - SideTop -> SideTopRightCorner|SideTopLeftCorner
+// - SideTop|SideLeft -> SideTopRightCorner|SideTopLeftCorner|SideBottomLeftCorner
+func (side BinaryTileSide) SidesToCorners() BinaryTileSide {
+	return ((side << 4) | (side << 3) | (side << 7)) & diagonalSideMask // don't ask why, this just works.
+}
+
+// BinaryTileSide equivalent of position.FromSide(side)
+func (side BinaryTileSide) PositionFromSide() position.Position {
+	primarySides := 0
+	for _, otherSide := range OrthogonalSides {
+		if side.OverlapsSide(otherSide) {
+			primarySides++
+		}
+	}
+
+	if primarySides == 0 {
+		return position.New(0, 0)
+	} else if primarySides == 1 {
+		switch {
+		case side.OverlapsSide(SideTop):
+			return position.New(0, 1)
+		case side.OverlapsSide(SideRight):
+			return position.New(1, 0)
+		case side.OverlapsSide(SideLeft):
+			return position.New(-1, 0)
+		case side.OverlapsSide(SideBottom):
+			return position.New(0, -1)
+		}
+	}
+	panic(fmt.Sprintf("PositionFromSide called with more than one primary side. 'side' = %08b", side))
 }
 
