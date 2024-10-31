@@ -204,3 +204,129 @@ func TestGetMeepleIDAtSideCenter(t *testing.T) {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 }
+
+func TestGetConnectedFeatures(t *testing.T) {
+	tile := FromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	sides := []BinaryTileSide{
+		SideTop,
+		SideRight,
+
+		SideBottom,
+		SideLeft,
+
+		SideBottomRightCorner,
+		SideTopLeftCorner,
+	}
+	features := []feature.Type{
+		feature.City,
+		feature.City,
+
+		feature.Road,
+		feature.Road,
+
+		feature.Field,
+		feature.Field,
+	}
+	expectedResults := []BinaryTileSide{
+		SideTop | SideRight,
+		SideTop | SideRight,
+
+		SideBottom | SideLeft,
+		SideBottom | SideLeft,
+
+		SideBottomRightCorner | SideTopLeftCorner,
+		SideBottomRightCorner | SideTopLeftCorner,
+	}
+
+	for i := range sides {
+		actualResult := tile.GetConnectedSides(sides[i], features[i])
+		if actualResult != expectedResults[i] {
+			t.Fatalf("tile.GetConnectedSides(%#v, %#v) expected: %016b\ngot: %016b", sides[i], features[i], expectedResults[i], actualResult)
+		}
+	}
+}
+
+func TestGetConnectedFeaturesWithNoConnectedFeatures(t *testing.T) {
+	tile := FromTile(tiletemplates.SingleCityEdgeCrossRoad())
+	sides := []BinaryTileSide{
+		SideTop,
+		SideRight,
+		SideBottom,
+		SideLeft,
+
+		SideBottomRightCorner,
+		SideBottomLeftCorner,
+	}
+	features := []feature.Type{
+		feature.City,
+		feature.Road,
+		feature.Road,
+		feature.Road,
+
+		feature.Field,
+		feature.Field,
+	}
+	expectedResults := sides // in this test, no sides have any connections, so the expected output should be the same as input
+
+	for i := range sides {
+		actualResult := tile.GetConnectedSides(sides[i], features[i])
+		if actualResult != expectedResults[i] {
+			t.Fatalf("tile.GetConnectedSides(%#v, %#v) expected: %016b\ngot: %016b", sides[i], features[i], expectedResults[i], actualResult)
+		}
+	}
+}
+
+func TestGetConnectedFeaturesWithNonexistentSides(t *testing.T) {
+	tile := FromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	sides := []BinaryTileSide{
+		SideTop,
+		SideRight,
+		SideBottom,
+		SideLeft,
+
+		SideTopRightCorner,
+		SideTopRightCorner,
+		SideBottomLeftCorner,
+	}
+	features := []feature.Type{
+		feature.Field,
+		feature.Road,
+		feature.City,
+		feature.Field,
+
+		feature.Field,
+		feature.City,
+		feature.Road,
+	}
+	expectedResult := SideNone // none of the features tested has any side at the tested side, so result should always be SideNone
+
+	for i := range sides {
+		actualResult := tile.GetConnectedSides(sides[i], features[i])
+		if actualResult != expectedResult {
+			t.Fatalf("tile.GetConnectedSides(%#v, %#v) expected: %016b\ngot: %016b", sides[i], features[i], expectedResult, actualResult)
+		}
+	}
+}
+
+func TestGetConnectedFeaturesWithMultipleFeaturesSides(t *testing.T) {
+	tile := FromTile(tiletemplates.StraightRoads())
+	sides := []BinaryTileSide{
+		SideTopRightCorner,
+		SideTopRightCorner | SideBottomRightCorner,
+	}
+	features := []feature.Type{
+		feature.Field,
+		feature.Field,
+	}
+	expectedResults := []BinaryTileSide{
+		SideTopRightCorner | SideTopLeftCorner,
+		SideTopRightCorner | SideBottomRightCorner | SideBottomLeftCorner | SideTopLeftCorner,
+	}
+
+	for i := range sides {
+		actualResult := tile.GetConnectedSides(sides[i], features[i])
+		if actualResult != expectedResults[i] {
+			t.Fatalf("tile.GetConnectedSides(%#v, %#v) expected: %016b\ngot: %016b", sides[i], features[i], expectedResults[i], actualResult)
+		}
+	}
+}

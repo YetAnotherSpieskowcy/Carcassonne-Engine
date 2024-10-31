@@ -43,8 +43,8 @@ const (
 	positionBitSize = 8
 	maxPlayers      = 2
 
-	connectionBitOffset  = 4
-	diagonalMeepleOffset = 4
+	connectionBitOffset = 4
+	diagonalSideOffset  = 4
 
 	fieldStartBit = 0
 	fieldEndBit   = fieldStartBit + featureBitSize
@@ -80,6 +80,9 @@ const (
 	positionXEndBit   = positionXStartBit + positionBitSize
 
 	// bit masks
+	orthogonalSideMask = 0b0_0000_1111
+	diagonalSideMask   = 0b0_1111_0000
+
 	regularFieldMask     = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_0000000000_1111111111
 	unconnectedFieldMask = 0b00000000_00000000_0_00_000000000_10_0000_0000000000_0000000000_0000000000
 	anyFieldMask         = regularFieldMask | unconnectedFieldMask
@@ -93,11 +96,18 @@ const (
 )
 
 const ( // binary tile sides (different from side.Side)
+	SideNone   BinaryTileSide = 0b0_0000_0000
+	SideCenter BinaryTileSide = 0b1_0000_0000
+
 	SideTop    BinaryTileSide = 0b0_0000_0001
 	SideRight  BinaryTileSide = 0b0_0000_0010
 	SideBottom BinaryTileSide = 0b0_0000_0100
 	SideLeft   BinaryTileSide = 0b0_0000_1000
-	SideCenter BinaryTileSide = 0b1_0000_0000
+
+	SideTopRightCorner    BinaryTileSide = 0b0_0001_0000
+	SideBottomRightCorner BinaryTileSide = 0b0_0010_0000
+	SideBottomLeftCorner  BinaryTileSide = 0b0_0100_0000
+	SideTopLeftCorner     BinaryTileSide = 0b0_1000_0000
 )
 
 var orthogonalFeaturesBits = []side.Side{
@@ -199,7 +209,7 @@ func (binaryTile *BinaryTile) addDiagonalFeature(feature elements.PlacedFeature,
 			// todo add more meeple types when they are implemented
 			if feature.Meeple.Type != elements.NoneMeeple {
 				binaryTile.setOwner(feature.Meeple.PlayerID)
-				tmpBinaryTile.setBit(meepleStartBit + bitIndex + diagonalMeepleOffset)
+				tmpBinaryTile.setBit(meepleStartBit + bitIndex + diagonalSideOffset)
 			}
 		}
 	}
@@ -333,3 +343,53 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 
 	return elements.NonePlayer
 }
+
+// Returns all sides of the feature(s) of the given type connected to the given side
+// Returns SideNone if no feature of the given type is at the given side
+//
+// In most use cases the sides in "side" argument should belong to only one feature
+// For example, in tile with features (Top|Right, Bottom|Left):
+// - argument side=Top will return Top|Right
+// - argument side=Top|Left will return Top|Right|Bottom|Left
+func (binaryTile BinaryTile) GetConnectedSides(side BinaryTileSide, featureType featureMod.Type) BinaryTileSide {
+	switch featureType {
+	case featureMod.Field:
+		binaryTile &= regularFieldMask // todo: the masking *might* be unnecessary and can probably be safely removed
+		binaryTile >>= fieldStartBit
+		side >>= diagonalSideOffset // field sides are at the first four bits in binaryTiles, despite being diagonal
+
+	case featureMod.Road:
+		binaryTile &= roadMask
+		binaryTile >>= roadStartBit
+		side &= orthogonalSideMask
+
+	case featureMod.City:
+		binaryTile &= cityMask
+		binaryTile >>= cityStartBit
+		side &= orthogonalSideMask
+
+	default:
+		panic(fmt.Sprintf("method not supported for features of type: %#v", featureType))
+	}
+
+	if BinaryTile(side)&binaryTile == 0 {
+		return SideNone
+	}
+
+	for i, mask := range connectionMasks {
+		sideMask := BinaryTileSide(mask)
+
+		if sideMask&side != 0 { // if any of the mask's sides is present
+			if BinaryTile(1<<(i+connectionBitOffset))&binaryTile != 0 { // if connection bit [i] is set
+				side |= sideMask
+			}
+		}
+	}
+
+	if featureType == featureMod.Field {
+		side <<= diagonalSideOffset // reversing the earlier shift for diagonal sides
+	}
+
+	return side
+}
+
