@@ -136,6 +136,31 @@ func TestHasMonastery(t *testing.T) {
 	}
 }
 
+func TestGetMeepleIDAtSide(t *testing.T) {
+	tile := elements.ToPlacedTile(tiletemplates.RoadsTurn())
+	expectedID := elements.ID(1)
+
+	tile.GetPlacedFeatureAtSide(side.BottomLeftEdge, feature.Field).Meeple =
+		elements.Meeple{PlayerID: expectedID, Type: elements.NormalMeeple}
+
+	binaryTile := FromPlacedTile(tile)
+
+	actualID := binaryTile.GetMeepleIDAtSide(SideBottomLeftCorner, feature.Field)
+	if expectedID != actualID {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
+	}
+
+	expectedID = elements.ID(0)
+	actualID = binaryTile.GetMeepleIDAtSide(SideTopRightCorner, feature.Field)
+	if expectedID != actualID {
+		t.Fatalf("%064b\n%016b\n\nexpected: %#v\ngot: %#v", binaryTile, SideTopRightCorner, expectedID, actualID)
+	}
+	actualID = binaryTile.GetMeepleIDAtSide(SideTopRightCorner|SideTopLeftCorner|SideBottomRightCorner, feature.Field)
+	if expectedID != actualID {
+		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
+	}
+}
+
 func TestGetMeepleIDAtSideCenter(t *testing.T) {
 	// tile with cities on all sides, the left one having a shield, and a field in the middle.
 	//      On the middle field is a meeple belonging to player 1
@@ -433,5 +458,43 @@ func TestGetFeatureSides(t *testing.T) {
 
 	if expectedRoadSides != actualRoadSides {
 		t.Fatalf("expected %016b, got %016b", expectedRoadSides, actualRoadSides)
+	}
+}
+
+func TestCornerFromSide(t *testing.T) {
+	corners := []BinaryTileSide{
+		SideTopLeftCorner,
+		SideTopLeftCorner,
+		SideTopLeftCorner | SideTopRightCorner,
+		SideTopLeftCorner | SideTopRightCorner,
+		SideTopLeftCorner | SideTopRightCorner,
+		SideTopLeftCorner,
+		SideTopLeftCorner | SideTopRightCorner,
+	}
+	directions := []BinaryTileSide{
+		SideTop,
+		SideLeft,
+		SideTop,
+		SideRight,
+		SideLeft,
+		SideRight,
+		SideBottom,
+	}
+
+	expected := []BinaryTileSide{
+		SideBottomLeftCorner,
+		SideTopRightCorner,
+		SideBottomRightCorner | SideBottomLeftCorner,
+		SideTopLeftCorner,
+		SideTopRightCorner,
+		SideNone,
+		SideNone,
+	}
+
+	for i := range corners {
+		actual := CornerFromSide(corners[i], directions[i])
+		if actual != expected[i] {
+			t.Fatalf("%v expected: %016b\ngot: %016b", i, expected[i], actual)
+		}
 	}
 }

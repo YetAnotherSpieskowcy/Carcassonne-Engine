@@ -5,6 +5,7 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
@@ -37,6 +38,21 @@ func (manager Manager) GetCity(position position.Position, feature elements.Plac
 		if exists {
 			for _, cityFeature := range cityFeatures {
 				if cityFeature.Sides == feature.Sides {
+					return &manager.cities[cityIndex], cityIndex
+				}
+			}
+		}
+	}
+	return nil, -1
+}
+
+// todo binarytiles rewrite
+func (manager Manager) GetCityTODO(position position.Position, sides binarytiles.BinaryTileSide) (*City, int) {
+	for cityIndex, city := range manager.cities {
+		cityFeatures, exists := city.features[position]
+		if exists {
+			for _, cityFeature := range cityFeatures {
+				if binarytiles.SideToBinaryTileSide(cityFeature.Sides, true) == sides {
 					return &manager.cities[cityIndex], cityIndex
 				}
 			}

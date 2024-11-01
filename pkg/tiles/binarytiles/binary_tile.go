@@ -342,6 +342,10 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 		ownerID >>= playerStartBit
 	}
 
+	if BinaryTileSide(binaryTile>>meepleStartBit)&side == 0 {
+		return elements.NonePlayer
+	}
+
 	switch featureType {
 	case featureMod.Monastery:
 		if binaryTile.HasMonastery() && side == SideCenter {
@@ -352,11 +356,16 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 		if side == SideCenter && binaryTile&unconnectedFieldMask != 0 {
 			return elements.ID(ownerID)
 		}
-		// todo check normal fields
+		side &= diagonalSideMask
+		if BinaryTileSide((binaryTile>>fieldStartBit))&(side>>diagonalSideOffset) != 0 {
+			return elements.ID(ownerID)
+		}
 
 	case featureMod.City:
+		panic("not implemented")
 
 	case featureMod.Road:
+		panic("not implemented")
 	}
 
 	return elements.NonePlayer
@@ -368,6 +377,7 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 // In most use cases the sides in "side" argument should belong to only one feature
 // For example, in tile with features (Top|Right, Bottom|Left):
 // - argument side=Top will return Top|Right
+// - argument side=Right will return Top|Right
 // - argument side=Top|Left will return Top|Right|Bottom|Left
 func (binaryTile BinaryTile) GetConnectedSides(side BinaryTileSide, featureType featureMod.Type) BinaryTileSide {
 	switch featureType {
@@ -424,6 +434,9 @@ func (binaryTile BinaryTile) GetFeaturesOfType(featureType featureMod.Type) []Bi
 
 	if featureType == featureMod.Field {
 		sidesToCheck = [4]BinaryTileSide{SideTopRightCorner, SideBottomRightCorner, SideBottomLeftCorner, SideTopLeftCorner}
+		if binaryTile.HasUnconnectedField() {
+			result = append(result, SideCenter)
+		}
 	} else {
 		sidesToCheck = [4]BinaryTileSide{SideTop, SideRight, SideBottom, SideLeft}
 	}
@@ -442,6 +455,7 @@ func (binaryTile BinaryTile) GetFeaturesOfType(featureType featureMod.Type) []Bi
 	return result
 }
 
+// Returns all sides of features of the given type, ignoring feature connections
 func (binaryTile BinaryTile) GetFeatureSides(featureType featureMod.Type) BinaryTileSide {
 	switch featureType {
 	case featureMod.Field:
@@ -516,3 +530,71 @@ func (side BinaryTileSide) PositionFromSide() position.Position {
 	panic(fmt.Sprintf("PositionFromSide called with more than one primary side. 'side' = %08b", side))
 }
 
+func SideToBinaryTileSide(sideToConvert side.Side, orthogonal bool) BinaryTileSide {
+	result := SideNone
+
+	if orthogonal {
+		if sideToConvert.OverlapsSide(side.Top) {
+			result |= SideTop
+		}
+		if sideToConvert.OverlapsSide(side.Right) {
+			result |= SideRight
+		}
+		if sideToConvert.OverlapsSide(side.Bottom) {
+			result |= SideBottom
+		}
+		if sideToConvert.OverlapsSide(side.Left) {
+			result |= SideLeft
+		}
+
+	} else {
+		if sideToConvert.OverlapsSide(side.TopRightEdge | side.RightTopEdge) {
+			result |= SideTopRightCorner
+		}
+		if sideToConvert.OverlapsSide(side.RightBottomEdge | side.BottomRightEdge) {
+			result |= SideBottomRightCorner
+		}
+		if sideToConvert.OverlapsSide(side.BottomLeftEdge | side.LeftBottomEdge) {
+			result |= SideBottomLeftCorner
+		}
+		if sideToConvert.OverlapsSide(side.LeftTopEdge | side.TopLeftEdge) {
+			result |= SideTopLeftCorner
+		}
+	}
+
+	return result
+}
+
+// Returns a corner neighbouring the given corner(s) from the given direction
+// Returns SideNone if no such corner exist
+//
+// Examples:
+// - CornerFromSide(SideTopRightCorner, SideRight) -> SideTopLeftCorner
+// - CornerFromSide(SideTopRightCorner, SideTop) -> SideBottomRightCorner
+// - CornerFromSide(SideTopRightCorner, SideLeft) -> SideNone
+//
+// Picture:
+//
+//	     ---
+//	     | |
+//	     N-N
+//
+//	|-N  C-C  N-|
+//	| |  | |  | |
+//	|-N  C-C  N-|
+//
+//	     N-N
+//	     | |
+//	     ---
+//
+// C - input corners
+// N - neighbours
+// (each corner has two directions where it returns a neighbour, and two where it returns SideNone)
+func CornerFromSide(corner BinaryTileSide, direction BinaryTileSide) BinaryTileSide {
+	sideCorners := direction.SidesToCorners()
+	corner &= sideCorners
+
+	corner = (corner >> 3) | (corner >> 1) | (corner << 3) | (corner << 1) //neighbouring corners
+
+	return diagonalSideMask & (^sideCorners) & corner
+}

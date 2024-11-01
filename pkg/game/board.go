@@ -262,9 +262,13 @@ func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.Pla
 	// This means we don't have to care about whether our field expands into
 	// a different feature on our tile - we will only expand the feature
 	// if it has a meeple and that only happens once.
-	field := field.New(feat, tile)
 
-	return field.IsFieldValid(board, 1)
+	binaryTile := binarytiles.FromPlacedTile(tile)                    // todo binarytiles rewrite
+	binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+
+	field := field.New(binarySide, binaryTile)
+
+	return field.IsFieldValid(board, 1) // assuming that feat already has a meeple
 }
 
 func (board *board) monasteryCanBePlaced(_ elements.PlacedTile, _ elements.PlacedFeature) bool {
@@ -684,7 +688,9 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 				case feature.Road:
 					miniReport.Join(board.scoreRoads(pTile, true))
 				case feature.Field:
-					field := field.New(feat, pTile)
+					binaryTile := binarytiles.FromPlacedTile(pTile)                   // todo binarytiles rewrite
+					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+					field := field.New(binarySide, binaryTile)
 					field.Expand(board, board.cityManager)
 					miniReport.Join(field.GetScoreReport())
 				case feature.Monastery:

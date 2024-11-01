@@ -6,8 +6,8 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/utilities"
 )
 
@@ -17,15 +17,11 @@ Assumptions:
  - if the field feature doesn't have any sides (i.e. its sides==side.NoSide), it neighbours ALL cities on this tile
    (this rule is only applicable to tiles from the expansions, as there are no such tiles in the base game)
  - in other cases, fields neighbour all cities they share a common tile corner with
-
-Observation:
- - fieldFeature.sides.FlipCorners() produces different sides ONLY when the field neighbours a city,
-   because only in that case the field doesn't contain both edge sides around the corner
 */
 
 type fieldKey struct {
-	feature  elements.PlacedFeature
-	position position.Position
+	side binarytiles.BinaryTileSide
+	tile binarytiles.BinaryTile
 }
 
 // Represents a field on the board
@@ -34,12 +30,12 @@ type Field struct {
 	neighbouringCities map[int]struct{}              // this is a set of cities' IDs
 	meeples            []elements.MeepleWithPosition // returned meeples for each player ID (same as in elements.ScoreReport)
 
-	startingTile elements.PlacedTile
+	startingTile binarytiles.BinaryTile
 }
 
-func New(feature elements.PlacedFeature, startingTile elements.PlacedTile) Field {
+func New(side binarytiles.BinaryTileSide, startingTile binarytiles.BinaryTile) Field {
 	features := map[fieldKey]struct{}{
-		{feature: feature, position: startingTile.Position}: {},
+		{side: startingTile.GetConnectedSides(side, featureMod.Field), tile: startingTile}: {},
 	}
 	return Field{
 		features:           features,
@@ -61,7 +57,7 @@ func (field Field) CitiesCount() int {
 // Expands this field to maximum possible size (like flood fill) and finds all neighbouring cities
 // Has to be called on a field which starting tile has already been placed (mostly only at the end of the game)
 func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
-	_, startingTileExists := board.GetTileAt(field.startingTile.Position)
+	_, startingTileExists := board.GetTileAt(field.startingTile.Position())
 	if !startingTileExists {
 		panic("the field's starting tile does not exist on the board")
 	}
@@ -84,42 +80,21 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		}
 
 		// add meeple if it exists
-		meeple := element.feature.Meeple
-		if meeple.Type != elements.NoneMeeple {
+		meepleID := element.tile.GetMeepleIDAtSide(element.side, featureMod.Field)
+		if meepleID != elements.NonePlayer {
 			field.meeples = append(field.meeples, elements.NewMeepleWithPosition(
-				meeple,
-				element.position,
+				elements.Meeple{Type: elements.NormalMeeple, PlayerID: meepleID},
+				element.tile.Position(),
 			))
 		}
 
 		// find neighbouring city features
-		var neighbouringCityFeatures []elements.PlacedFeature
-
-		if element.feature.Sides == side.NoSide {
-			// field neighbours all cities on this tile
-			tile, _ := board.GetTileAt(element.position)
-			neighbouringCityFeatures = tile.GetFeaturesOfType(featureMod.City)
-
-		} else {
-			cornerFlippedSide := element.feature.Sides.FlipCorners()
-
-			if cornerFlippedSide != element.feature.Sides {
-				tile, _ := board.GetTileAt(element.position)
-				if len(tile.GetFeaturesOfType(featureMod.Field)) == 1 {
-					// field neighbours all cities on this tile
-					neighbouringCityFeatures = tile.GetFeaturesOfType(featureMod.City)
-
-				} else {
-					// field neighbours only the cities it shares a common corner with
-					neighbouringCityFeatures = tile.GetPlacedFeaturesOverlappingSide(cornerFlippedSide, featureMod.City)
-				}
-			} // else { the field feature doesn't neighbour any cities }
-		}
+		neighbouringCityFeatures := findNeighbouringCityFeatures(element)
 
 		for _, cityFeature := range neighbouringCityFeatures {
-			city, cityID := cityManager.GetCity(element.position, cityFeature)
+			city, cityID := cityManager.GetCityTODO(element.tile.Position(), cityFeature)
 			if city == nil {
-				panic(fmt.Sprintf("city manager did not find city: %#v at position %#v", cityFeature, element.position))
+				panic(fmt.Sprintf("city manager did not find city: %#v at position %#v", cityFeature, element.tile.Position()))
 			}
 			if city.IsCompleted() {
 				field.neighbouringCities[cityID] = struct{}{}
@@ -163,8 +138,8 @@ func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 		}
 
 		// add meeple if it exists
-		meeple := element.feature.Meeple
-		if meeple.Type != elements.NoneMeeple {
+		meepleID := element.tile.GetMeepleIDAtSide(element.side, featureMod.Field)
+		if meepleID != elements.NonePlayer {
 			meeples++
 			if meeples > maxMeepleCount {
 				return false
@@ -182,37 +157,75 @@ func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 func (field *Field) findNeighbours(fieldK fieldKey, board elements.Board) []fieldKey {
 	neighbours := []fieldKey{}
 
-	for _, side := range side.EdgeSides {
-		if fieldK.feature.Sides.OverlapsSide(side) {
-			neighbourPosition := fieldK.position.Add(position.FromSide(side))
+	neighbouringSides := fieldK.side.CornersToSides()
+	neighbouringSides &= ^fieldK.tile.GetFeatureSides(featureMod.City) // clear sides that also have cities
 
-			tile, tileExists := field.getTile(neighbourPosition, board)
-			if tileExists {
-				mirroredSide := side.Mirror()
-
-				feature := tile.GetPlacedFeatureAtSide(mirroredSide, featureMod.Field)
-				if feature == nil {
-					panic("No matching field found on adjacent tile! The field is directly touching another feature (e.g. city or road). This should never happen")
-				}
-				neighbours = append(neighbours, fieldKey{feature: *feature, position: neighbourPosition})
+	for _, side := range binarytiles.OrthogonalSides {
+		if neighbouringSides.OverlapsSide(side) {
+			neighbourTile, ok := field.getTile(side.PositionFromSide().Add(fieldK.tile.Position()), board)
+			if ok {
+				neighbours = append(neighbours, fieldKey{
+					tile: neighbourTile,
+					side: neighbourTile.GetConnectedSides(binarytiles.CornerFromSide(fieldK.side&side.SidesToCorners(), side), featureMod.Field),
+				})
 			}
 		}
 	}
+
 	return neighbours
 }
 
 // If a tile exists in board at the given position, returns board.GetTileAt(position)
 // If the tile doesn't exist in board, but the position is the same as field.startingTile, returns (field.startingTile, true)
 // Otherwise returns board.GetTileAt(position) (that is, empty tile and false)
-func (field Field) getTile(position position.Position, board elements.Board) (elements.PlacedTile, bool) {
+func (field Field) getTile(position position.Position, board elements.Board) (binarytiles.BinaryTile, bool) {
 	tile, ok := board.GetTileAt(position)
+	binarytile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite
+
 	if ok {
-		return tile, ok
+		return binarytile, ok
 	}
-	if position == field.startingTile.Position {
+	if position == field.startingTile.Position() {
 		return field.startingTile, true
 	}
-	return tile, ok
+	return binarytile, ok
+}
+
+// Returns a slice of neighbouring city features* on the same tile
+// *feature = all sides that a city feature occupies
+func findNeighbouringCityFeatures(fieldKey fieldKey) []binarytiles.BinaryTileSide {
+	side := fieldKey.side
+	tile := fieldKey.tile
+
+	cityFeatures := tile.GetFeaturesOfType(featureMod.City)
+
+	if side == binarytiles.SideCenter {
+		// unconnected field - neighbours all cities on this tile
+		return cityFeatures
+
+	} else {
+		fieldFeatures := tile.GetFeaturesOfType(featureMod.Field)
+
+		if len(fieldFeatures) == 1 { // only one field - neighbours all cities on this tile
+			return cityFeatures
+
+		} else { // field neighbours only the cities it shares a common corner with
+			sidesNeighbouringFieldCorners := side.CornersToSides()
+
+			// iterate over cityFeatures and leave only the elements that overlap sidesNeighbouringFieldCorners (delete the rest)
+			// solution adapted from: https://stackoverflow.com/a/20551116
+			i := 0
+			for _, citySides := range cityFeatures {
+				if citySides.OverlapsSide(sidesNeighbouringFieldCorners) {
+					cityFeatures[i] = citySides
+					i++
+				}
+			}
+			cityFeatures = cityFeatures[:i]
+
+			return cityFeatures
+		}
+	}
 }
 
 // Returns score report for this field. Has to be called after field.Expand() (todo?)
