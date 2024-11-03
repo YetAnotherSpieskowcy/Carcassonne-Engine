@@ -75,7 +75,7 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
-		report = board.scoreRoads(tiles[i], false, false)
+		report = board.scoreRoads(tiles[i], false)
 		for _, playerID := range []elements.ID{1, 2} {
 			if report.ReceivedPoints[playerID] != expectedScores[i] {
 				t.Fatalf("placing tile number: %#v failed. expected %+v for player %v, got %+v instead", i, expectedScores[i], playerID, report.ReceivedPoints[playerID])
@@ -190,7 +190,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		report = board.scoreRoads(tiles[i], false, false)
+		report = board.scoreRoads(tiles[i], false)
 		if report.ReceivedPoints[1] != expectedScores[i] {
 			t.Fatalf("placing tile number: %#v failed. expected %+v, got %+v instead", i, expectedScores[i], report.ReceivedPoints[1])
 		}
@@ -255,7 +255,7 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		report = board.scoreRoads(tiles[i], false, false)
+		report = board.scoreRoads(tiles[i], false)
 		if report.ReceivedPoints[1] != expectedScores[i] {
 			t.Fatalf("placing tile number: %#v failed. expected %+v, got %+v instead", i, expectedScores[i], report.ReceivedPoints[1])
 		}
@@ -355,7 +355,7 @@ func TestScoreRoadPreventCheckingWithNoSideAtTile5(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i+1)
 		}
 
-		report = board.scoreRoads(tiles[i], false, false)
+		report = board.scoreRoads(tiles[i], false)
 		for playerID, points := range report.ReceivedPoints {
 			if points != expectedScores[i][playerID] {
 				t.Fatalf("Player %#v placing tile number: %#v failed. Received points:%#v,  expected %#v", playerID, i+1, points, expectedScores[i][playerID])
