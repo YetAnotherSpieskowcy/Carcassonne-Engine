@@ -199,7 +199,7 @@ func findNeighbouringCityFeatures(fieldKey fieldKey) []binarytiles.BinaryTileSid
 
 	cityFeatures := tile.GetFeaturesOfType(featureMod.City)
 
-	if side == binarytiles.SideCenter {
+	if side == binarytiles.SideNone {
 		// unconnected field - neighbours all cities on this tile
 		return cityFeatures
 

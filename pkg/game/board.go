@@ -423,7 +423,7 @@ func (board *board) scoreSingleMonastery(tile binarytiles.BinaryTile, forceScore
 		return elements.ScoreReport{}, errors.New("scoreSingleMonastery() called on a tile without a monastery")
 	}
 
-	ownerID := tile.GetMeepleIDAtSide(binarytiles.SideCenter, feature.Monastery)
+	ownerID := tile.GetMeepleIDAtCenter(feature.Monastery)
 	if ownerID == elements.NonePlayer {
 		return elements.ScoreReport{}, errors.New("scoreSingleMonastery() called on a tile without a meeple")
 	}

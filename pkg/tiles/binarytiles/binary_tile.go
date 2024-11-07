@@ -79,10 +79,6 @@ const (
 	positionXEndBit   = positionXStartBit + positionBitSize
 
 	// bit masks
-	orthogonalSideMask = 0b0_0000_1111
-	diagonalSideMask   = 0b0_1111_0000
-	centerSideMask     = 0b1_0000_0000
-
 	regularFieldMask     = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_0000000000_1111111111
 	unconnectedFieldMask = 0b00000000_00000000_0_00_000000000_10_0000_0000000000_0000000000_0000000000
 	anyFieldMask         = regularFieldMask | unconnectedFieldMask
@@ -300,6 +296,36 @@ func (binaryTile BinaryTile) HasMeepleAtSide(side BinaryTileSide) bool { // todo
 	return binaryTile&(BinaryTile(side)<<meepleStartBit) != 0
 }
 
+// Returns player ID of meeple in the tile's center (monastery or unconnected field) and on the given feature, or elements.NonePlayer if no such meeple exists
+func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) elements.ID { // todo test
+	ownerID := binaryTile & ownerMask
+	if ownerID == 0 {
+		return elements.NonePlayer
+	} else {
+		ownerID >>= playerStartBit
+	}
+
+	switch featureType {
+	case featureMod.Monastery:
+		if binaryTile.HasMonastery() {
+			return elements.ID(ownerID)
+		}
+
+	case featureMod.Field:
+		if binaryTile&unconnectedFieldMask != 0 {
+			return elements.ID(ownerID)
+		}
+
+	case featureMod.City:
+		panic("not implemented")
+
+	case featureMod.Road:
+		panic("not implemented")
+	}
+
+	return elements.NonePlayer
+}
+
 // Returns player ID of meeple at the given side and on the given feature, or elements.NonePlayer if no such meeple exists
 func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType featureMod.Type) elements.ID { // todo test
 	ownerID := binaryTile & ownerMask
@@ -314,15 +340,8 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 	}
 
 	switch featureType {
-	case featureMod.Monastery:
-		if binaryTile.HasMonastery() && side == SideCenter {
-			return elements.ID(ownerID)
-		}
 
 	case featureMod.Field:
-		if side == SideCenter && binaryTile&unconnectedFieldMask != 0 {
-			return elements.ID(ownerID)
-		}
 		side &= diagonalSideMask
 		if BinaryTileSide((binaryTile>>fieldStartBit))&(side>>diagonalSideOffset) != 0 {
 			return elements.ID(ownerID)
@@ -332,6 +351,9 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 		panic("not implemented")
 
 	case featureMod.Road:
+		panic("not implemented")
+
+	case featureMod.Monastery:
 		panic("not implemented")
 	}
 
@@ -396,16 +418,16 @@ func (binaryTile BinaryTile) GetConnectedSides(side BinaryTileSide, featureType 
 func (binaryTile BinaryTile) GetFeaturesOfType(featureType featureMod.Type) []BinaryTileSide {
 	var result []BinaryTileSide
 
-	var sidesToCheck [4]BinaryTileSide
+	var sidesToCheck []BinaryTileSide
 	checkedSides := SideNone
 
 	if featureType == featureMod.Field {
-		sidesToCheck = [4]BinaryTileSide{SideTopRightCorner, SideBottomRightCorner, SideBottomLeftCorner, SideTopLeftCorner}
+		sidesToCheck = DiagonalSides
 		if binaryTile.HasUnconnectedField() {
-			result = append(result, SideCenter)
+			result = append(result, SideNone)
 		}
 	} else {
-		sidesToCheck = [4]BinaryTileSide{SideTop, SideRight, SideBottom, SideLeft}
+		sidesToCheck = OrthogonalSides
 	}
 
 	for _, side := range sidesToCheck {
@@ -427,9 +449,6 @@ func (binaryTile BinaryTile) GetFeatureSides(featureType featureMod.Type) Binary
 	switch featureType {
 	case featureMod.Field:
 		output := BinaryTileSide(binaryTile << (fieldStartBit + diagonalSideOffset))
-		if binaryTile.HasUnconnectedField() {
-			output |= SideCenter
-		}
 		return output & (diagonalSideMask + centerSideMask)
 
 	case featureMod.Road:

@@ -7,24 +7,28 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 )
 
-type BinaryTileSide uint16
+type BinaryTileSide uint8
 
 const ( // binary tile sides (different from side.Side)
-	SideNone   BinaryTileSide = 0b0_0000_0000
-	SideCenter BinaryTileSide = 0b1_0000_0000
+	SideNone BinaryTileSide = 0b0000_0000
 
-	SideAllDiagonal   BinaryTileSide = 0b0_1111_0000
-	SideAllOrthogonal BinaryTileSide = 0b0_0000_1111
+	SideAllDiagonal   BinaryTileSide = 0b1111_0000
+	SideAllOrthogonal BinaryTileSide = 0b0000_1111
 
-	SideTop    BinaryTileSide = 0b0_0000_0001
-	SideRight  BinaryTileSide = 0b0_0000_0010
-	SideBottom BinaryTileSide = 0b0_0000_0100
-	SideLeft   BinaryTileSide = 0b0_0000_1000
+	SideTop    BinaryTileSide = 0b0000_0001
+	SideRight  BinaryTileSide = 0b0000_0010
+	SideBottom BinaryTileSide = 0b0000_0100
+	SideLeft   BinaryTileSide = 0b0000_1000
 
-	SideTopRightCorner    BinaryTileSide = 0b0_0001_0000
-	SideBottomRightCorner BinaryTileSide = 0b0_0010_0000
-	SideBottomLeftCorner  BinaryTileSide = 0b0_0100_0000
-	SideTopLeftCorner     BinaryTileSide = 0b0_1000_0000
+	SideTopRightCorner    BinaryTileSide = 0b0001_0000
+	SideBottomRightCorner BinaryTileSide = 0b0010_0000
+	SideBottomLeftCorner  BinaryTileSide = 0b0100_0000
+	SideTopLeftCorner     BinaryTileSide = 0b1000_0000
+
+	// bit masks
+	orthogonalSideMask = 0b0000_1111
+	diagonalSideMask   = 0b1111_0000
+	centerSideMask     = 0b0000_0000
 )
 
 var OrthogonalSides = []BinaryTileSide{

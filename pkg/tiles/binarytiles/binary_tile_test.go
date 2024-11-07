@@ -197,14 +197,14 @@ func TestGetMeepleIDAtSideCenter(t *testing.T) {
 
 	binaryTile := FromPlacedTile(tile)
 
-	actualID := binaryTile.GetMeepleIDAtSide(SideCenter, feature.Field)
+	actualID := binaryTile.GetMeepleIDAtCenter(feature.Field)
 
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 
 	expectedID = elements.ID(0)
-	actualID = binaryTile.GetMeepleIDAtSide(SideCenter, feature.Monastery)
+	actualID = binaryTile.GetMeepleIDAtCenter(feature.Monastery)
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
@@ -218,14 +218,14 @@ func TestGetMeepleIDAtSideCenter(t *testing.T) {
 
 	binaryTile = FromPlacedTile(tile)
 
-	actualID = binaryTile.GetMeepleIDAtSide(SideCenter, feature.Monastery)
+	actualID = binaryTile.GetMeepleIDAtCenter(feature.Monastery)
 
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 
 	expectedID = elements.ID(0)
-	actualID = binaryTile.GetMeepleIDAtSide(SideCenter, feature.Field)
+	actualID = binaryTile.GetMeepleIDAtCenter(feature.Field)
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
