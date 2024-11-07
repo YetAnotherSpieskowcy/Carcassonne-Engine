@@ -627,7 +627,7 @@ func (board *board) scoreRoadCompletion(tile elements.PlacedTile, road feature.F
 }
 
 /*
-Calculates summary score report from all roads on a tile
+Calculates summary score report from all roads on a tile.
 */
 func (board *board) scoreRoads(placedTile elements.PlacedTile, forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
@@ -673,7 +673,8 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
-					miniReport.Join(board.scoreRoads(pTile, true))
+					report, _ := board.scoreRoadCompletion(pTile, feat.Feature, true)
+					miniReport.Join(report)
 				case feature.Field:
 					field := field.New(feat, pTile)
 					field.Expand(board, board.cityManager)
