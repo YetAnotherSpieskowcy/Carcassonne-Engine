@@ -89,10 +89,10 @@ func (tile Tile) Rotate(rotations uint) Tile {
 		return tile
 	}
 
-	var newFeatures []featureMod.Feature
+	var newFeatures = make([]featureMod.Feature, len(tile.Features))
 
-	for _, feature := range tile.Features {
-		newFeatures = append(newFeatures, feature.Rotate(rotations))
+	for i, feature := range tile.Features {
+		newFeatures[i] = feature.Rotate(rotations)
 	}
 
 	tile.Features = newFeatures
