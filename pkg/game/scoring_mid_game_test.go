@@ -110,3 +110,92 @@ func TestScoringMidGame(t *testing.T) { // nolint: gocyclo
 		}
 	}
 }
+
+/*
+board drawing:
+|			-1	  0	   1    2    3
+|
+|
+|               |   |.....
+|               .\ /......
+|0              --0--!-1..
+|               .......|..
+|               .......|..
+|          ..|.........|.......
+|          ..|.........|.......
+|-1        ..5----3----2...4...
+|          ..|.................
+|          ..!.................
+*/
+func TestMidGameScorePreventCalculatingSameMeepleOnRoadsMultipleTimes(t *testing.T) {
+	// ------ create tileset --------
+	var err error
+	tiles := []tiles.Tile{
+		tiletemplates.RoadsTurn(),            // 1
+		tiletemplates.RoadsTurn().Rotate(1),  // 2
+		tiletemplates.StraightRoads(),        // 3
+		tiletemplates.TestOnlyField(),        // 4
+		tiletemplates.TCrossRoad().Rotate(3), // 5
+	}
+
+	tileset := tilesets.TileSet{
+		StartingTile: tiletemplates.SingleCityEdgeStraightRoads(),
+		Tiles:        tiles,
+	}
+
+	// create turns
+	tilePositions := []position.Position{
+		position.New(1, 0),
+		position.New(1, -1),
+		position.New(0, -1),
+		position.New(2, -1),
+		position.New(-1, -1),
+	}
+
+	meepleParams := []test.MeepleParams{
+		{MeepleType: elements.NormalMeeple, FeatureSide: side.Left, FeatureType: feature.Road},
+		test.NoneMeeple(),
+		test.NoneMeeple(),
+		test.NoneMeeple(),
+		{MeepleType: elements.NormalMeeple, FeatureSide: side.Bottom, FeatureType: feature.Road},
+	}
+
+	// ------ create game --------
+	deckStack := stack.NewOrdered(tileset.Tiles)
+	deck := deck.Deck{Stack: &deckStack, StartingTile: tileset.StartingTile}
+
+	game, err := NewFromDeck(deck, nil, 2)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	expectedScores := []map[elements.ID]uint32{
+		{1: 2, 2: 0},
+		{1: 3, 2: 0},
+		{1: 4, 2: 0},
+		{1: 4, 2: 0},
+		{1: 6, 2: 0},
+	}
+
+	// --------------- Placing tile ----------------------
+	for i := range len(tiles) {
+		// first turn
+		test.MakeTurn{
+			Game:         game,
+			TestingT:     t,
+			Position:     tilePositions[i],
+			MeepleParams: meepleParams[i],
+		}.Run()
+
+		if err != nil {
+			t.Fatalf("error placing tile number: %#v ", i+1)
+		}
+
+		midGameScore := game.GetMidGameScore()
+		for playerID, points := range midGameScore.ReceivedPoints {
+			if points != expectedScores[i][playerID] {
+				t.Fatalf("Player %#v placing tile number: %#v failed. Received points:%#v,  expected %#v", playerID, i+1, points, expectedScores[i][playerID])
+			}
+		}
+	}
+}

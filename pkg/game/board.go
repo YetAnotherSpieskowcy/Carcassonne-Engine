@@ -659,7 +659,7 @@ func (board *board) scoreRoadCompletion(tile binarytiles.BinaryTile, roadSides b
 }
 
 /*
-Calculates summary score report from all roads on a tile
+Calculates summary score report from all roads on a tile.
 */
 func (board *board) scoreRoads(tile binarytiles.BinaryTile, forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
@@ -705,8 +705,10 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
-					binaryTile := binarytiles.FromPlacedTile(pTile) // todo binarytiles rewrite
-					miniReport.Join(board.scoreRoads(binaryTile, true))
+					binaryTile := binarytiles.FromPlacedTile(pTile)                   // todo binarytiles rewrite
+					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+					report, _ := board.scoreRoadCompletion(binaryTile, binarySide, true)
+					miniReport.Join(report)
 				case feature.Field:
 					binaryTile := binarytiles.FromPlacedTile(pTile)                   // todo binarytiles rewrite
 					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
