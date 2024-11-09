@@ -177,3 +177,46 @@ func CornerFromSide(corner BinaryTileSide, direction BinaryTileSide) BinaryTileS
 
 	return diagonalSideMask & (^sideCorners) & corner
 }
+
+/*
+Returns other connected side on the same tile.
+It allows getting other side of the road feature.
+direction must indicate only one cardinal direction!
+*/
+func (side BinaryTileSide) GetConnectedOtherCardinalDirection(direction BinaryTileSide) BinaryTileSide {
+	for _, cardinal := range OrthogonalSides {
+		if cardinal != direction && side.OverlapsSide(cardinal) {
+			return cardinal
+		}
+	}
+	return SideNone
+}
+
+/*
+Return nth existing direction indicated by Side.
+For example Side indicates Top,Right,Bottom at once.
+First cardinal direction would be Top, second Right, third Bottom.
+If nth direction doesn't exist, NoSide is returned.
+*/
+func (side BinaryTileSide) GetNthCardinalDirection(n uint8) BinaryTileSide {
+	found := uint8(0)
+	for _, cardinal := range OrthogonalSides {
+		if side.OverlapsSide(cardinal) {
+			found++
+		}
+		if found > n {
+			return cardinal
+		}
+	}
+	return SideNone
+}
+
+func (side BinaryTileSide) GetCardinalDirectionsLength() int {
+	found := int(0)
+	for _, cardinal := range OrthogonalSides {
+		if side.OverlapsSide(cardinal) {
+			found++
+		}
+	}
+	return found
+}

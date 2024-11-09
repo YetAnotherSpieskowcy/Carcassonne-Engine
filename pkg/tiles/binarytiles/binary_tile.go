@@ -365,7 +365,10 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 		}
 
 	case featureMod.Road:
-		panic("not implemented")
+		side &= orthogonalSideMask
+		if BinaryTileSide(binaryTile>>roadStartBit)&side != 0 {
+			return elements.ID(ownerID)
+		}
 
 	case featureMod.Monastery:
 		panic("not implemented")
