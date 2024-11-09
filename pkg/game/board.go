@@ -53,7 +53,8 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 	startingTile := elements.NewStartingTile(tileSet)
 	tiles[0] = startingTile
 	cityManager := city.NewCityManager()
-	cityManager.UpdateCities(startingTile)
+	binaryStartingTile := binarytiles.FromPlacedTile(startingTile) // todo binarytiles rewrite
+	cityManager.UpdateCities(binaryStartingTile)
 	return &board{
 		tileSet: tileSet,
 		tiles:   tiles,
@@ -254,7 +255,10 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 }
 
 func (board *board) cityCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
-	return board.cityManager.CanBePlaced(tile, feat)
+	binaryTile := binarytiles.FromPlacedTile(tile)                    // todo binarytiles rewrite
+	binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+
+	return board.cityManager.CanBePlaced(binaryTile, binarySide)
 }
 
 func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
@@ -393,10 +397,12 @@ func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 
 func (board *board) checkCompleted(tile elements.PlacedTile) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
-	board.cityManager.UpdateCities(tile)
+
+	binaryTile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite)
+	board.cityManager.UpdateCities(binaryTile)
+
 	scoreReport.Join(board.cityManager.ScoreCities(false))
 	scoreReport.Join(board.scoreRoads(tile, false))
-	binaryTile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite
 	scoreReport.Join(board.scoreMonasteries(binaryTile, false))
 
 	for _, returnedMeeples := range scoreReport.ReturnedMeeples {

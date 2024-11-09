@@ -73,6 +73,16 @@ func (side BinaryTileSide) SidesToCorners() BinaryTileSide {
 	return ((side << 4) | (side << 3) | (side << 7)) & diagonalSideMask // don't ask why, this just works.
 }
 
+// Mirrors the side
+// For example:
+// - SideTop <-> SideBottom
+// - SideRight <-> SideLeft
+// - SideTopLeftCorner <-> SideBottomRightCorner
+// - SideBottomLeftCorner <-> SideTopRightCorner
+func (side BinaryTileSide) Mirror() BinaryTileSide { // todo test
+	return ((side & 0b1100_1100) >> 2) | ((side & 0b0011_0011) << 2)
+}
+
 // BinaryTileSide equivalent of position.FromSide(side)
 func (side BinaryTileSide) PositionFromSide() position.Position {
 	primarySides := 0

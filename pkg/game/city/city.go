@@ -5,30 +5,32 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature/modifier"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
 // Represents cities on board
 type City struct {
 	completed bool
 	scored    bool
-	features  map[position.Position][]elements.PlacedFeature
+	features  map[position.Position][]binarytiles.BinaryTileFeature
 	shields   uint8
 }
 
-func NewCity(pos position.Position, cityFeatures []elements.PlacedFeature) City {
+func NewCity(tile binarytiles.BinaryTile, cityFeatures []binarytiles.BinaryTileSide) City {
+	features := make([]binarytiles.BinaryTileFeature, len(cityFeatures))
 	var shields = uint8(0)
-	for _, feat := range cityFeatures {
-		if feat.ModifierType == modifier.Shield {
+	for i, feature := range cityFeatures {
+		if tile.HasShieldAtSide(feature) {
 			shields++
 		}
+		features[i] = binarytiles.BinaryTileFeature{Side: feature, Tile: tile}
 	}
 	return City{
 		completed: false,
 		scored:    false,
-		features: map[position.Position][]elements.PlacedFeature{
-			pos: cityFeatures,
+		features: map[position.Position][]binarytiles.BinaryTileFeature{
+			tile.Position(): features,
 		},
 		shields: shields,
 	}
@@ -47,23 +49,21 @@ func (city City) IsCompleted() bool {
 // Checks if city is closed and sets city.completed.
 func (city *City) checkCompleted() bool {
 	city.completed = true
-	for pos, placedFeatures := range city.features {
-		for _, placedFeature := range placedFeatures {
-			sides := placedFeature.Feature.Sides
-			mask := side.Top
-			for range 4 {
-				if sides.HasSide(mask) {
-					_, ok := city.GetFeaturesFromTile(pos.Add(position.FromSide(mask)))
+	for pos, features := range city.features {
+		for _, feature := range features {
+			for _, side := range binarytiles.OrthogonalSides {
+				if feature.Side.OverlapsSide(side) {
+					neighbouringPosition := side.PositionFromSide()
+					_, ok := city.GetFeaturesFromTile(pos.Add(neighbouringPosition))
 					if !ok {
 						city.completed = false
-						break
+						return false
 					}
 				}
-				mask = mask.Rotate(1)
 			}
 		}
 	}
-	return city.completed
+	return true
 }
 
 func (city *City) SetScored(scored bool) {
@@ -74,20 +74,21 @@ func (city *City) SetScored(scored bool) {
 // determines players that should receive points.
 func (city *City) GetScoreReport() elements.ScoreReport {
 	var returnedMeeples = []elements.MeepleWithPosition{}
-	var totalScore uint32
+	var totalScore uint8
 	// calculate total value of the city and get all meeples
 	for pos, features := range city.features {
-		for _, feature := range features {
-			if feature.Meeple.Type != elements.NoneMeeple {
+		for _, feat := range features {
+			playerID := feat.Tile.GetMeepleIDAtSide(feat.Side, feature.City)
+			if playerID != elements.NonePlayer {
 				returnedMeeples = append(returnedMeeples, elements.NewMeepleWithPosition(
-					feature.Meeple,
+					elements.Meeple{Type: elements.NormalMeeple, PlayerID: playerID},
 					pos,
 				))
 			}
 		}
 		totalScore += 2
 	}
-	totalScore += uint32(city.shields) * 2
+	totalScore += city.shields * 2
 
 	if !city.completed {
 		totalScore /= 2
@@ -98,27 +99,30 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 
 // Returns all features from a tile at a given position that are part of a city
 // and whether such a tile is in the city.
-func (city City) GetFeaturesFromTile(pos position.Position) ([]elements.PlacedFeature, bool) {
+func (city City) GetFeaturesFromTile(pos position.Position) ([]binarytiles.BinaryTileFeature, bool) {
 	cities, ok := city.features[pos]
 	return cities, ok
 }
 
-func (city *City) AddTile(pos position.Position, cityFeatures []elements.PlacedFeature) {
+func (city *City) AddTile(tile binarytiles.BinaryTile, cityFeatures []binarytiles.BinaryTileSide) {
 	hasShield := false
-	for _, feat := range cityFeatures {
-		if feat.ModifierType == modifier.Shield {
+	features := make([]binarytiles.BinaryTileFeature, len(cityFeatures))
+	for i, feature := range cityFeatures {
+		if !hasShield && tile.HasShieldAtSide(feature) {
 			hasShield = true
 		}
+		features[i] = binarytiles.BinaryTileFeature{Side: feature, Tile: tile}
 	}
-	_, tileInCity := city.GetFeaturesFromTile(pos)
+
+	_, tileInCity := city.GetFeaturesFromTile(tile.Position())
 	if !tileInCity {
-		city.features[pos] = cityFeatures
+		city.features[tile.Position()] = features
 		if hasShield {
 			city.shields++
 		}
 
 	} else {
-		city.features[pos] = append(city.features[pos], cityFeatures...)
+		city.features[tile.Position()] = append(city.features[tile.Position()], features...)
 		// If the tile being checked is already in the city, it must have the shield already counted,
 		// because tiles with shields, has only one city feature, so it's impossible
 		// that there are multiple city features on that tile.
