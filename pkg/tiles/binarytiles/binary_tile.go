@@ -302,7 +302,7 @@ func (binaryTile BinaryTile) HasMeepleAtSide(side BinaryTileSide) bool { // todo
 	return binaryTile&(BinaryTile(side)<<meepleStartBit) != 0
 }
 
-func (binaryTile BinaryTile) HasShieldAtSide(side BinaryTileSide) bool { //todo test
+func (binaryTile BinaryTile) HasShieldAtSide(side BinaryTileSide) bool { // todo test
 	return binaryTile&(BinaryTile(side)<<shieldStartBit) != 0
 }
 
@@ -312,9 +312,8 @@ func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) el
 	ownerID := binaryTile & ownerMask
 	if ownerID == 0 {
 		return elements.NonePlayer
-	} else {
-		ownerID >>= playerStartBit
 	}
+	ownerID >>= playerStartBit
 
 	switch featureType {
 	case featureMod.Monastery:
@@ -342,9 +341,8 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 	ownerID := binaryTile & ownerMask
 	if ownerID == 0 {
 		return elements.NonePlayer
-	} else {
-		ownerID >>= playerStartBit
 	}
+	ownerID >>= playerStartBit
 
 	if BinaryTileSide(binaryTile>>meepleStartBit)&side == 0 {
 		return elements.NonePlayer

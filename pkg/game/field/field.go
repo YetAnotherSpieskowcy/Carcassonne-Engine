@@ -198,29 +198,29 @@ func findNeighbouringCityFeatures(fieldKey binarytiles.BinaryTileFeature) []bina
 		// unconnected field - neighbours all cities on this tile
 		return cityFeatures
 
-	} else {
-		fieldFeatures := tile.GetFeaturesOfType(featureMod.Field)
+	}
 
-		if len(fieldFeatures) == 1 { // only one field - neighbours all cities on this tile
-			return cityFeatures
+	fieldFeatures := tile.GetFeaturesOfType(featureMod.Field)
+	if len(fieldFeatures) == 1 { // only one field - neighbours all cities on this tile
+		return cityFeatures
+	}
 
-		} else { // field neighbours only the cities it shares a common corner with
-			sidesNeighbouringFieldCorners := side.CornersToSides()
+	// field neighbours only the cities it shares a common corner with
+	sidesNeighbouringFieldCorners := side.CornersToSides()
 
-			// iterate over cityFeatures and leave only the elements that overlap sidesNeighbouringFieldCorners (delete the rest)
-			// solution adapted from: https://stackoverflow.com/a/20551116
-			i := 0
-			for _, citySides := range cityFeatures {
-				if citySides.OverlapsSide(sidesNeighbouringFieldCorners) {
-					cityFeatures[i] = citySides
-					i++
-				}
-			}
-			cityFeatures = cityFeatures[:i]
-
-			return cityFeatures
+	// iterate over cityFeatures and leave only the elements that overlap sidesNeighbouringFieldCorners (delete the rest)
+	// solution adapted from: https://stackoverflow.com/a/20551116
+	i := 0
+	for _, citySides := range cityFeatures {
+		if citySides.OverlapsSide(sidesNeighbouringFieldCorners) {
+			cityFeatures[i] = citySides
+			i++
 		}
 	}
+	cityFeatures = cityFeatures[:i]
+
+	return cityFeatures
+
 }
 
 // Returns score report for this field. Has to be called after field.Expand() (todo?)

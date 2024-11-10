@@ -173,7 +173,7 @@ func CornerFromSide(corner BinaryTileSide, direction BinaryTileSide) BinaryTileS
 	sideCorners := direction.SidesToCorners()
 	corner &= sideCorners
 
-	corner = (corner >> 3) | (corner >> 1) | (corner << 3) | (corner << 1) //neighbouring corners
+	corner = (corner >> 3) | (corner >> 1) | (corner << 3) | (corner << 1) // neighbouring corners
 
 	return diagonalSideMask & (^sideCorners) & corner
 }
