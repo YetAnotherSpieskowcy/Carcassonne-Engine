@@ -109,7 +109,7 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 // In such cases, maxMeepleCount should be set to 1 if the tested tile already has a meeple and 0 if it does not.
 func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 	newFeatures := map[binarytiles.BinaryTileFeature]struct{}{}
-	meeples := 0
+	meeplePositions := map[position.Position]struct{}{}
 
 	// copy the original field.features into features, to avoid modifying it
 	features := map[binarytiles.BinaryTileFeature]struct{}{}
@@ -135,8 +135,8 @@ func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 		// add meeple if it exists
 		meepleID := element.Tile.GetMeepleIDAtSide(element.Side, featureMod.Field)
 		if meepleID != elements.NonePlayer {
-			meeples++
-			if meeples > maxMeepleCount {
+			meeplePositions[element.Tile.Position()] = struct{}{}
+			if len(meeplePositions) > maxMeepleCount {
 				return false
 			}
 		}

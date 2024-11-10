@@ -255,8 +255,8 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 }
 
 func (board *board) cityCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
-	binaryTile := binarytiles.FromPlacedTile(tile)                    // todo binarytiles rewrite
-	binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+	binaryTile := binarytiles.FromPlacedTile(tile)                   // todo binarytiles rewrite
+	binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, true) // todo binarytiles rewrite
 
 	return board.cityManager.CanBePlaced(binaryTile, binarySide)
 }
@@ -705,8 +705,8 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
-					binaryTile := binarytiles.FromPlacedTile(pTile)                   // todo binarytiles rewrite
-					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+					binaryTile := binarytiles.FromPlacedTile(pTile)                  // todo binarytiles rewrite
+					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, true) // todo binarytiles rewrite
 					report, _ := board.scoreRoadCompletion(binaryTile, binarySide, true)
 					miniReport.Join(report)
 				case feature.Field:
