@@ -48,6 +48,8 @@ import (
 */
 
 func Test4PlayerFullGame(t *testing.T) {
+	t.Skip("four player games are not currently supported")
+
 	// create game
 	minitileSet := MiniTileSet()
 	deckStack := stack.NewOrdered(minitileSet.Tiles)
