@@ -411,3 +411,59 @@ func TestGetFeatureSides(t *testing.T) {
 		t.Fatalf("expected %016b, got %016b", expectedRoadSides, actualRoadSides)
 	}
 }
+
+func TestBinaryTileRotate(t *testing.T) {
+	tiles := []tiles.Tile{
+		tiletemplates.RoadsTurn(),
+		tiletemplates.MonasteryWithSingleRoad(),
+		tiletemplates.FourCityEdgesConnectedShield(),
+		tiletemplates.ThreeCityEdgesConnectedRoadShield(),
+		tiletemplates.TwoCityEdgesCornerConnectedRoadTurnShield(),
+		tiletemplates.XCrossRoad(),
+		tiletemplates.StraightRoads(),
+	}
+
+	for _, tile := range tiles {
+		binaryTile := BinaryTileFromTile(tile)
+		for range 4 {
+			for i := uint(1); i <= 3; i++ {
+				binaryTile.Rotate(i)
+				tile = tile.Rotate(i)
+
+				expected := BinaryTileFromTile(tile)
+				if expected != binaryTile {
+					t.Fatalf("expected: %#v\ngot: %#v", expected, binaryTile)
+				}
+			}
+		}
+	}
+}
+
+func TestGetBinaryTileRotations(t *testing.T) {
+	tiles := []tiles.Tile{
+		tiletemplates.RoadsTurn(),
+		tiletemplates.MonasteryWithSingleRoad(),
+		tiletemplates.FourCityEdgesConnectedShield(),
+		tiletemplates.ThreeCityEdgesConnectedRoadShield(),
+		tiletemplates.TwoCityEdgesCornerConnectedRoadTurnShield(),
+		tiletemplates.XCrossRoad(),
+		tiletemplates.StraightRoads(),
+	}
+	expectedLengths := []int{
+		4,
+		4,
+		1,
+		4,
+		4,
+		1,
+		2,
+	}
+
+	for i, tile := range tiles {
+		binaryTile := BinaryTileFromTile(tile)
+		actualLength := len(binaryTile.GetTileRotations())
+		if actualLength != expectedLengths[i] {
+			t.Fatalf("expected: %#v\ngot: %#v", expectedLengths[i], actualLength)
+		}
+	}
+}

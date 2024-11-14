@@ -2,6 +2,7 @@ package elements
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
@@ -82,13 +83,27 @@ const (
 	unconnectedFieldMask = 0b00000000_00000000_0_00_000000000_10_0000_0000000000_0000000000_0000000000
 	anyFieldMask         = regularFieldMask | unconnectedFieldMask
 
-	roadMask           = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_1111111111_0000000000
-	cityMask           = 0b00000000_00000000_0_00_000000000_00_0000_1111111111_0000000000_0000000000
-	shieldMask         = 0b00000000_00000000_0_00_000000000_00_1111_0000000000_0000000000_0000000000
-	monasteryMask      = 0b00000000_00000000_0_00_000000000_01_0000_0000000000_0000000000_0000000000
-	meepleMask         = 0b00000000_00000000_0_00_111111111_00_0000_0000000000_0000000000_0000000000
-	ownerMask          = 0b00000000_00000000_0_11_000000000_00_0000_0000000000_0000000000_0000000000
-	meepleAndOwnerMask = meepleMask | ownerMask
+	roadMask             = 0b00000000_00000000_0_00_000000000_00_0000_0000000000_1111111111_0000000000
+	cityMask             = 0b00000000_00000000_0_00_000000000_00_0000_1111111111_0000000000_0000000000
+	shieldMask           = 0b00000000_00000000_0_00_000000000_00_1111_0000000000_0000000000_0000000000
+	monasteryMask        = 0b00000000_00000000_0_00_000000000_01_0000_0000000000_0000000000_0000000000
+	orthogonalMeepleMask = 0b00000000_00000000_0_00_000001111_00_0000_0000000000_0000000000_0000000000
+	diagonalMeepleMask   = 0b00000000_00000000_0_00_011110000_00_0000_0000000000_0000000000_0000000000
+	centerMeepleMask     = 0b00000000_00000000_0_00_100000000_00_0000_0000000000_0000000000_0000000000
+	meepleMask           = diagonalMeepleMask | orthogonalMeepleMask | centerMeepleMask
+	ownerMask            = 0b00000000_00000000_0_11_000000000_00_0000_0000000000_0000000000_0000000000
+	meepleAndOwnerMask   = meepleMask | ownerMask
+
+	isPlacedMask = 0b00000000_00000000_1_00_00000000_00_0000_0000000000_0000000000_0000000000
+
+	// bit masks for rotations
+	rotationFeatureMask     = 0b00000000_00000000_0_00_000000000_00_0000_0000001111_0000001111_0000001111
+	rotationConnectionMask1 = 0b00000000_00000000_0_00_000000000_00_0000_0011110000_0011110000_0011110000 // neighbouring connections (e.g. Top+Right)
+	rotationConnectionMask2 = 0b00000000_00000000_0_00_000000000_00_0000_1100000000_1100000000_1100000000 // non-neighbouring connections (e.g. Right+Left)
+	rotationFinalMask1      = rotationFeatureMask | shieldMask | diagonalMeepleMask
+	rotationFinalMask2      = rotationConnectionMask1 | orthogonalMeepleMask
+	rotationFinalMask3      = rotationConnectionMask2
+	rotationFullMask        = rotationFinalMask1 | rotationFinalMask2 | rotationFinalMask3
 )
 
 var orthogonalFeaturesBits = []side.Side{
@@ -157,7 +172,6 @@ func binaryTileFromPlacedFeatures(features []PlacedFeature) BinaryTile {
 			}
 		}
 	}
-
 	return binaryTile
 }
 
@@ -169,7 +183,7 @@ func BinaryTileFromTile(tile tiles.Tile) BinaryTile {
 func BinaryTileFromPlacedTile(tile PlacedTile) BinaryTile {
 	binaryTile := binaryTileFromPlacedFeatures(tile.Features)
 
-	binaryTile.addPosition(tile.Position)
+	binaryTile.SetPosition(tile.Position)
 
 	if tile.Features != nil {
 		// turns out not all PlacedTiles are placed
@@ -244,7 +258,7 @@ func (binaryTile *BinaryTile) setOwner(ownerID ID) {
 }
 
 // Sets the position X and position Y bits in the binary tile
-func (binaryTile *BinaryTile) addPosition(position position.Position) {
+func (binaryTile *BinaryTile) SetPosition(position position.Position) {
 	if position.X() > 127 || position.Y() > 127 || position.X() < -128 || position.Y() < -128 {
 		panic(fmt.Sprintf("position %#v out of range for binary tile. Allowed range: [-128, 127]", position))
 	}
@@ -271,6 +285,10 @@ func (binaryTile BinaryTile) Position() position.Position {
 		int16(int8(binaryTile>>positionXStartBit)),
 		int16(int8(binaryTile>>positionYStartBit)),
 	)
+}
+
+func (binaryTile BinaryTile) IsPlaced() bool {
+	return binaryTile&isPlacedMask != 0
 }
 
 func (binaryTile BinaryTile) HasRegularField() bool { // todo test
@@ -474,4 +492,37 @@ func (binaryTile BinaryTile) GetFeatureSides(featureType featureMod.Type) Binary
 	default:
 		panic(fmt.Sprintf("method not supported for features of type: %#v", featureType))
 	}
+}
+
+// Rotates the tile by a given number of rotation
+func (binaryTile *BinaryTile) Rotate(rotations uint) {
+	if rotations < 1 || rotations > 3 {
+		panic("invalid number of rotations. Allowed range: [1, 3]")
+	}
+
+	// rotations of the connection bits describing the connections of opposite sides (Top-Bottom or Right-Left)
+	// these connection can be only in two distinct states, so cRotations is either 0 or 1
+	cRotations := 1
+	if rotations == 2 {
+		cRotations = 0
+	}
+
+	*binaryTile = (*binaryTile &^ rotationFullMask) |
+		(((*binaryTile&rotationFinalMask1)<<rotations)|((*binaryTile&rotationFinalMask1)>>(4-rotations)))&rotationFinalMask1 |
+		(((*binaryTile&rotationFinalMask2)<<rotations)|((*binaryTile&rotationFinalMask2)>>(4-rotations)))&rotationFinalMask2 |
+		(((*binaryTile&rotationFinalMask3)<<cRotations)|((*binaryTile&rotationFinalMask3)>>(2-cRotations)))&rotationFinalMask3
+}
+
+// Returns all possible rotations of the input tile,
+// while ensuring that no duplicates are included in the result.
+func (binaryTile BinaryTile) GetTileRotations() []BinaryTile {
+	rotations := []BinaryTile{binaryTile}
+
+	for range 3 {
+		binaryTile.Rotate(1)
+		if !slices.Contains(rotations, binaryTile) {
+			rotations = append(rotations, binaryTile)
+		}
+	}
+	return rotations
 }
