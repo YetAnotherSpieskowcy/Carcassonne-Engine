@@ -161,7 +161,7 @@ func TestGetMeepleIDAtSide(t *testing.T) {
 	}
 }
 
-func TestGetMeepleIDAtSideCenter(t *testing.T) {
+func TestGetMeepleIDAtCenter(t *testing.T) {
 	// tile with cities on all sides, the left one having a shield, and a field in the middle.
 	//      On the middle field is a meeple belonging to player 1
 	tile := elements.ToPlacedTile(tiles.Tile{
@@ -231,7 +231,7 @@ func TestGetMeepleIDAtSideCenter(t *testing.T) {
 	}
 }
 
-func TestGetConnectedFeatures(t *testing.T) {
+func TestGetConnectedSides(t *testing.T) {
 	tile := FromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	sides := []BinaryTileSide{
 		SideTop,
@@ -272,7 +272,7 @@ func TestGetConnectedFeatures(t *testing.T) {
 	}
 }
 
-func TestGetConnectedFeaturesWithNoConnectedFeatures(t *testing.T) {
+func TestGetConnectedSidesWithNoConnectedSides(t *testing.T) {
 	tile := FromTile(tiletemplates.SingleCityEdgeCrossRoad())
 	sides := []BinaryTileSide{
 		SideTop,
@@ -302,7 +302,7 @@ func TestGetConnectedFeaturesWithNoConnectedFeatures(t *testing.T) {
 	}
 }
 
-func TestGetConnectedFeaturesWithNonexistentSides(t *testing.T) {
+func TestGetConnectedSidesWithNonexistentSides(t *testing.T) {
 	tile := FromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	sides := []BinaryTileSide{
 		SideTop,
@@ -334,7 +334,7 @@ func TestGetConnectedFeaturesWithNonexistentSides(t *testing.T) {
 	}
 }
 
-func TestGetConnectedFeaturesWithMultipleFeaturesSides(t *testing.T) {
+func TestGetConnectedSidesWithMultipleFeaturesSides(t *testing.T) {
 	tile := FromTile(tiletemplates.StraightRoads())
 	sides := []BinaryTileSide{
 		SideTopRightCorner,

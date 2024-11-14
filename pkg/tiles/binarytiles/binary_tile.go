@@ -307,7 +307,7 @@ func (binaryTile BinaryTile) HasShieldAtSide(side BinaryTileSide) bool { // todo
 }
 
 // Returns player ID of meeple in the tile's center (monastery or unconnected field) and on the given feature, or elements.NonePlayer if no such meeple exists
-func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) elements.ID { // todo test
+func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) elements.ID {
 	// todo maybe alternatively treat 0b1111_1111 as center? (in no case should sides have both diagonal and orthogonal bits set, so it should work)
 	ownerID := binaryTile & ownerMask
 	if ownerID == 0 {
@@ -337,7 +337,7 @@ func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) el
 }
 
 // Returns player ID of meeple at the given side and on the given feature, or elements.NonePlayer if no such meeple exists
-func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType featureMod.Type) elements.ID { // todo test
+func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType featureMod.Type) elements.ID {
 	ownerID := binaryTile & ownerMask
 	if ownerID == 0 {
 		return elements.NonePlayer
@@ -464,7 +464,7 @@ func (binaryTile BinaryTile) GetFeatureSides(featureType featureMod.Type) Binary
 	switch featureType {
 	case featureMod.Field:
 		output := BinaryTileSide(binaryTile << (fieldStartBit + diagonalSideOffset))
-		return output & (diagonalSideMask + centerSideMask)
+		return output & diagonalSideMask
 
 	case featureMod.Road:
 		return BinaryTileSide(binaryTile>>roadStartBit) & orthogonalSideMask

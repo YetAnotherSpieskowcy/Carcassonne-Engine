@@ -28,7 +28,6 @@ const ( // binary tile sides (different from side.Side)
 	// bit masks
 	orthogonalSideMask = 0b0000_1111
 	diagonalSideMask   = 0b1111_0000
-	centerSideMask     = 0b0000_0000
 )
 
 var OrthogonalSides = []BinaryTileSide{
@@ -47,7 +46,7 @@ var DiagonalSides = []BinaryTileSide{
 
 // Returns whether or not the given side has otherSide
 func (side BinaryTileSide) HasSide(otherSide BinaryTileSide) bool {
-	return side&otherSide == otherSide // todo copy tests from side
+	return side&otherSide == otherSide
 }
 
 // Returns whether or not the given side overlaps otherSide. The overlap does not need to be exact.
@@ -79,11 +78,11 @@ func (side BinaryTileSide) SidesToCorners() BinaryTileSide {
 // - SideRight <-> SideLeft
 // - SideTopLeftCorner <-> SideBottomRightCorner
 // - SideBottomLeftCorner <-> SideTopRightCorner
-func (side BinaryTileSide) Mirror() BinaryTileSide { // todo test
+func (side BinaryTileSide) Mirror() BinaryTileSide {
 	return ((side & 0b1100_1100) >> 2) | ((side & 0b0011_0011) << 2)
 }
 
-// BinaryTileSide equivalent of position.FromSide(side)
+// BinaryTileSide equivalent of position.FromSide(side). Works only for orthogonal sides
 func (side BinaryTileSide) PositionFromSide() position.Position {
 	primarySides := 0
 	for _, otherSide := range OrthogonalSides {
@@ -109,7 +108,7 @@ func (side BinaryTileSide) PositionFromSide() position.Position {
 	panic(fmt.Sprintf("PositionFromSide called with more than one primary side. 'side' = %08b", side))
 }
 
-func SideToBinaryTileSide(sideToConvert side.Side, orthogonal bool) BinaryTileSide {
+func SideToBinaryTileSide(sideToConvert side.Side, orthogonal bool) BinaryTileSide { // todo test
 	result := SideNone
 
 	if orthogonal {
