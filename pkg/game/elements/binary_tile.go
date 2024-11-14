@@ -1,9 +1,8 @@
-package binarytiles
+package elements
 
 import (
 	"fmt"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -115,7 +114,7 @@ var connectionMasks = []BinaryTile{
 	0b1010,
 }
 
-func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
+func binaryTileFromPlacedFeatures(features []PlacedFeature) BinaryTile {
 	var binaryTile BinaryTile
 
 	for _, feature := range features {
@@ -133,7 +132,7 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 
 		case featureMod.Monastery:
 			binaryTile.setBit(monasteryBit)
-			if feature.Meeple.Type != elements.NoneMeeple {
+			if feature.Meeple.Type != NoneMeeple {
 				binaryTile.setOwner(feature.Meeple.PlayerID)
 				binaryTile.setBit(meepleEndBit - 1) // last meeple bit is meeple in the center
 			}
@@ -148,7 +147,7 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 		} else if feature.FeatureType == featureMod.Field {
 			if feature.Sides == side.NoSide {
 				binaryTile.setBit(unconnectedFieldBit)
-				if feature.Meeple.Type != elements.NoneMeeple {
+				if feature.Meeple.Type != NoneMeeple {
 					binaryTile.setOwner(feature.Meeple.PlayerID)
 					binaryTile.setBit(meepleEndBit - 1) // last meeple bit is meeple in the center
 				}
@@ -162,13 +161,13 @@ func fromPlacedFeatures(features []elements.PlacedFeature) BinaryTile {
 	return binaryTile
 }
 
-func FromTile(tile tiles.Tile) BinaryTile {
-	binaryTile := fromPlacedFeatures(elements.ToPlacedTile(tile).Features)
+func BinaryTileFromTile(tile tiles.Tile) BinaryTile {
+	binaryTile := binaryTileFromPlacedFeatures(ToPlacedTile(tile).Features)
 	return binaryTile
 }
 
-func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
-	binaryTile := fromPlacedFeatures(tile.Features)
+func BinaryTileFromPlacedTile(tile PlacedTile) BinaryTile {
+	binaryTile := binaryTileFromPlacedFeatures(tile.Features)
 
 	binaryTile.addPosition(tile.Position)
 
@@ -181,7 +180,7 @@ func FromPlacedTile(tile elements.PlacedTile) BinaryTile {
 }
 
 // Sets all necessary bits in the binary tile for a diagonal feature (field)
-func (binaryTile *BinaryTile) addDiagonalFeature(feature elements.PlacedFeature, bitOffset int) {
+func (binaryTile *BinaryTile) addDiagonalFeature(feature PlacedFeature, bitOffset int) {
 	var tmpBinaryTile BinaryTile
 
 	for bitIndex, side := range diagonalFeaturesBits {
@@ -189,7 +188,7 @@ func (binaryTile *BinaryTile) addDiagonalFeature(feature elements.PlacedFeature,
 			tmpBinaryTile.setBit(bitOffset + bitIndex)
 
 			// todo add more meeple types when they are implemented
-			if feature.Meeple.Type != elements.NoneMeeple {
+			if feature.Meeple.Type != NoneMeeple {
 				binaryTile.setOwner(feature.Meeple.PlayerID)
 				tmpBinaryTile.setBit(meepleStartBit + bitIndex + diagonalSideOffset)
 			}
@@ -205,7 +204,7 @@ func (binaryTile *BinaryTile) addDiagonalFeature(feature elements.PlacedFeature,
 }
 
 // Sets all necessary bits in the binary tile for an orthogonal feature (city, road). Also handles city shields
-func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeature, bitOffset int) {
+func (binaryTile *BinaryTile) addOrthogonalFeature(feature PlacedFeature, bitOffset int) {
 	var tmpBinaryTile BinaryTile
 
 	for bitIndex, side := range orthogonalFeaturesBits {
@@ -218,7 +217,7 @@ func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeatur
 			}
 
 			// todo add more meeple types when they are implemented
-			if feature.Meeple.Type != elements.NoneMeeple {
+			if feature.Meeple.Type != NoneMeeple {
 				binaryTile.setOwner(feature.Meeple.PlayerID)
 				tmpBinaryTile.setBit(meepleStartBit + bitIndex)
 			}
@@ -234,7 +233,7 @@ func (binaryTile *BinaryTile) addOrthogonalFeature(feature elements.PlacedFeatur
 }
 
 // Sets the appropriate owner bit in the binary tile, if the owner ID is not 0. Panics if ownerID is greater than maxPlayers
-func (binaryTile *BinaryTile) setOwner(ownerID elements.ID) {
+func (binaryTile *BinaryTile) setOwner(ownerID ID) {
 	if ownerID != 0 {
 		if ownerID > maxPlayers {
 			panic(fmt.Sprintf("cannot use player ID = %#v in binary tile. Max number of players = %#v", ownerID, maxPlayers))
@@ -306,24 +305,24 @@ func (binaryTile BinaryTile) HasShieldAtSide(side BinaryTileSide) bool { // todo
 	return binaryTile&(BinaryTile(side)<<shieldStartBit) != 0
 }
 
-// Returns player ID of meeple in the tile's center (monastery or unconnected field) and on the given feature, or elements.NonePlayer if no such meeple exists
-func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) elements.ID {
+// Returns player ID of meeple in the tile's center (monastery or unconnected field) and on the given feature, or NonePlayer if no such meeple exists
+func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) ID {
 	// todo maybe alternatively treat 0b1111_1111 as center? (in no case should sides have both diagonal and orthogonal bits set, so it should work)
 	ownerID := binaryTile & ownerMask
 	if ownerID == 0 {
-		return elements.NonePlayer
+		return NonePlayer
 	}
 	ownerID >>= playerStartBit
 
 	switch featureType {
 	case featureMod.Monastery:
 		if binaryTile.HasMonastery() {
-			return elements.ID(ownerID)
+			return ID(ownerID)
 		}
 
 	case featureMod.Field:
 		if binaryTile&unconnectedFieldMask != 0 {
-			return elements.ID(ownerID)
+			return ID(ownerID)
 		}
 
 	case featureMod.City:
@@ -333,19 +332,19 @@ func (binaryTile BinaryTile) GetMeepleIDAtCenter(featureType featureMod.Type) el
 		panic("not implemented")
 	}
 
-	return elements.NonePlayer
+	return NonePlayer
 }
 
-// Returns player ID of meeple at the given side and on the given feature, or elements.NonePlayer if no such meeple exists
-func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType featureMod.Type) elements.ID {
+// Returns player ID of meeple at the given side and on the given feature, or NonePlayer if no such meeple exists
+func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType featureMod.Type) ID {
 	ownerID := binaryTile & ownerMask
 	if ownerID == 0 {
-		return elements.NonePlayer
+		return NonePlayer
 	}
 	ownerID >>= playerStartBit
 
 	if BinaryTileSide(binaryTile>>meepleStartBit)&side == 0 {
-		return elements.NonePlayer
+		return NonePlayer
 	}
 
 	switch featureType {
@@ -353,26 +352,26 @@ func (binaryTile BinaryTile) GetMeepleIDAtSide(side BinaryTileSide, featureType 
 	case featureMod.Field:
 		side &= diagonalSideMask
 		if BinaryTileSide(binaryTile>>fieldStartBit)&(side>>diagonalSideOffset) != 0 {
-			return elements.ID(ownerID)
+			return ID(ownerID)
 		}
 
 	case featureMod.City:
 		side &= orthogonalSideMask
 		if BinaryTileSide(binaryTile>>cityStartBit)&side != 0 {
-			return elements.ID(ownerID)
+			return ID(ownerID)
 		}
 
 	case featureMod.Road:
 		side &= orthogonalSideMask
 		if BinaryTileSide(binaryTile>>roadStartBit)&side != 0 {
-			return elements.ID(ownerID)
+			return ID(ownerID)
 		}
 
 	case featureMod.Monastery:
 		panic("not implemented")
 	}
 
-	return elements.NonePlayer
+	return NonePlayer
 }
 
 // Returns all sides of the feature(s) of the given type connected to the given side

@@ -11,7 +11,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/player"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
 
@@ -27,7 +26,7 @@ type SerializedGame struct {
 	PlayerCount         int
 	Tiles               []elements.PlacedTile
 	TileSet             tilesets.TileSet
-	BinaryTiles         []binarytiles.BinaryTile // contains info about all placed tiles, not placed tiles are equal to 0
+	BinaryTiles         []elements.BinaryTile // contains info about all placed tiles, not placed tiles are equal to 0
 }
 
 type Game struct {
@@ -125,9 +124,9 @@ func (game *Game) Serialized() SerializedGame {
 	}
 
 	// create serialized tiles
-	serializedTiles := []binarytiles.BinaryTile{}
+	serializedTiles := []elements.BinaryTile{}
 	for _, tile := range game.board.Tiles() {
-		serializedTiles = append(serializedTiles, binarytiles.FromPlacedTile(tile))
+		serializedTiles = append(serializedTiles, elements.BinaryTileFromPlacedTile(tile))
 	}
 
 	serialized := SerializedGame{

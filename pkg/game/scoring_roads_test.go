@@ -6,7 +6,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -79,7 +78,7 @@ func TestBoardScoreRoadLoop(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		binaryTile := binarytiles.FromPlacedTile(tiles[i]) // todo binarytiles rewrite
+		binaryTile := elements.BinaryTileFromPlacedTile(tiles[i]) // todo binarytiles rewrite
 
 		report = board.scoreRoads(binaryTile, false)
 		for _, playerID := range []elements.ID{1, 2} {
@@ -195,7 +194,7 @@ func TestBoardScoreRoadCityMonastery(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		binaryTile := binarytiles.FromPlacedTile(tiles[i]) // todo binarytiles rewrite
+		binaryTile := elements.BinaryTileFromPlacedTile(tiles[i]) // todo binarytiles rewrite
 
 		report = board.scoreRoads(binaryTile, false)
 		if report.ReceivedPoints[1] != expectedScores[i] {
@@ -262,7 +261,7 @@ func TestBoardScoreRoadMultipleMeeplesOnSameRoad(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i)
 		}
 
-		binaryTile := binarytiles.FromPlacedTile(tiles[i]) // todo binarytiles rewrite
+		binaryTile := elements.BinaryTileFromPlacedTile(tiles[i]) // todo binarytiles rewrite
 
 		report = board.scoreRoads(binaryTile, false)
 		if report.ReceivedPoints[1] != expectedScores[i] {
@@ -364,7 +363,7 @@ func TestScoreRoadPreventCheckingWithNoSideAtTile5(t *testing.T) {
 			t.Fatalf("error placing tile number: %#v ", i+1)
 		}
 
-		binaryTile := binarytiles.FromPlacedTile(tiles[i]) // todo binarytiles rewrite
+		binaryTile := elements.BinaryTileFromPlacedTile(tiles[i]) // todo binarytiles rewrite
 
 		report = board.scoreRoads(binaryTile, false)
 		for playerID, points := range report.ReceivedPoints {

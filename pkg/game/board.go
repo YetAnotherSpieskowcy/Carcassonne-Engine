@@ -10,7 +10,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
@@ -53,7 +52,7 @@ func NewBoard(tileSet tilesets.TileSet) elements.Board {
 	startingTile := elements.NewStartingTile(tileSet)
 	tiles[0] = startingTile
 	cityManager := city.NewCityManager()
-	binaryStartingTile := binarytiles.FromPlacedTile(startingTile) // todo binarytiles rewrite
+	binaryStartingTile := elements.BinaryTileFromPlacedTile(startingTile) // todo binarytiles rewrite
 	cityManager.UpdateCities(binaryStartingTile)
 	return &board{
 		tileSet: tileSet,
@@ -255,8 +254,8 @@ func (board *board) CanBePlaced(tile elements.PlacedTile) bool {
 }
 
 func (board *board) cityCanBePlaced(tile elements.PlacedTile, feat elements.PlacedFeature) bool {
-	binaryTile := binarytiles.FromPlacedTile(tile)                   // todo binarytiles rewrite
-	binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, true) // todo binarytiles rewrite
+	binaryTile := elements.BinaryTileFromPlacedTile(tile)         // todo binarytiles rewrite
+	binarySide := elements.SideToBinaryTileSide(feat.Sides, true) // todo binarytiles rewrite
 
 	return board.cityManager.CanBePlaced(binaryTile, binarySide)
 }
@@ -267,8 +266,8 @@ func (board *board) fieldCanBePlaced(tile elements.PlacedTile, feat elements.Pla
 	// a different feature on our tile - we will only expand the feature
 	// if it has a meeple and that only happens once.
 
-	binaryTile := binarytiles.FromPlacedTile(tile)                    // todo binarytiles rewrite
-	binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+	binaryTile := elements.BinaryTileFromPlacedTile(tile)          // todo binarytiles rewrite
+	binarySide := elements.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
 
 	field := field.New(binarySide, binaryTile)
 
@@ -282,12 +281,12 @@ func (board *board) monasteryCanBePlaced(_ elements.PlacedTile, _ elements.Place
 
 func (board *board) roadCanBePlaced(placedCheckedTile elements.PlacedTile, checkedRoad elements.PlacedFeature) bool {
 
-	checkedTile := binarytiles.FromPlacedTile(placedCheckedTile)
-	checkedRoadSides := binarytiles.SideToBinaryTileSide(checkedRoad.Sides, true)
+	checkedTile := elements.BinaryTileFromPlacedTile(placedCheckedTile)
+	checkedRoadSides := elements.SideToBinaryTileSide(checkedRoad.Sides, true)
 
 	// get the two sides connected by the road which we will use to
 	// score roads on the neighbouring tiles (but not the tile itself)
-	sides := []binarytiles.BinaryTileSide{
+	sides := []elements.BinaryTileSide{
 		checkedRoadSides.GetNthCardinalDirection(0), // 1st side
 		checkedRoadSides.GetNthCardinalDirection(1), // 2nd side
 	}
@@ -299,7 +298,7 @@ func (board *board) roadCanBePlaced(placedCheckedTile elements.PlacedTile, check
 			// no existing tile found on this side of the road
 			continue
 		}
-		neighbourTile := binarytiles.FromPlacedTile(placedNeighbourTile) // todo binarytiles rewrite
+		neighbourTile := elements.BinaryTileFromPlacedTile(placedNeighbourTile) // todo binarytiles rewrite
 
 		// an existing tile found on this side of the road - we need to check,
 		// if they have *any* meeple placed
@@ -403,7 +402,7 @@ func (board *board) updateValidPlacements(tile elements.PlacedTile) {
 func (board *board) checkCompleted(tile elements.PlacedTile) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 
-	binaryTile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite)
+	binaryTile := elements.BinaryTileFromPlacedTile(tile) // todo binarytiles rewrite)
 	board.cityManager.UpdateCities(binaryTile)
 
 	scoreReport.Join(board.cityManager.ScoreCities(false))
@@ -429,7 +428,7 @@ In other cases, 'forceScore' should be false
 
 returns: ScoreReport (with one player at most)
 */
-func (board *board) scoreSingleMonastery(tile binarytiles.BinaryTile, forceScore bool) (elements.ScoreReport, error) {
+func (board *board) scoreSingleMonastery(tile elements.BinaryTile, forceScore bool) (elements.ScoreReport, error) {
 	if !tile.HasMonastery() {
 		return elements.ScoreReport{}, errors.New("scoreSingleMonastery() called on a tile without a monastery")
 	}
@@ -473,7 +472,7 @@ This function should be called after the placement of each tile, in case it neig
 
 returns: ScoreReport
 */
-func (board *board) scoreMonasteries(tile binarytiles.BinaryTile, forceScore bool) elements.ScoreReport {
+func (board *board) scoreMonasteries(tile elements.BinaryTile, forceScore bool) elements.ScoreReport {
 	var finalReport = elements.NewScoreReport()
 
 	tilePosition := tile.Position()
@@ -482,7 +481,7 @@ func (board *board) scoreMonasteries(tile binarytiles.BinaryTile, forceScore boo
 		for y := tilePosition.Y() - 1; y <= tilePosition.Y()+1; y++ {
 			adjacentTile, ok := board.GetTileAt(position.New(x, y))
 
-			binaryAdjacentTile := binarytiles.FromPlacedTile(adjacentTile) // todo binarytiles rewrite
+			binaryAdjacentTile := elements.BinaryTileFromPlacedTile(adjacentTile) // todo binarytiles rewrite
 
 			if ok {
 				report, err := board.scoreSingleMonastery(binaryAdjacentTile, forceScore)
@@ -502,12 +501,12 @@ param roadSide: always indicates only one cardinal direction!
 returns: road_finished, score, [meeples on road], loop, sideFinishedOn
 sideFinishedOn matters only if loop is True. Variable used to prevent checking the same road twice in scoreRoads function
 */
-func (board *board) checkRoadInDirection(roadSide binarytiles.BinaryTileSide, startTile binarytiles.BinaryTile) (bool, int, []elements.MeepleWithPosition, bool, binarytiles.BinaryTileSide, position.Position) {
+func (board *board) checkRoadInDirection(roadSide elements.BinaryTileSide, startTile elements.BinaryTile) (bool, int, []elements.MeepleWithPosition, bool, elements.BinaryTileSide, position.Position) {
 	var meeples = []elements.MeepleWithPosition{}
 	var tile = startTile
 	var tileExists bool
 	var score = 0
-	var road binarytiles.BinaryTileSide
+	var road elements.BinaryTileSide
 	var finished bool
 	var pos position.Position
 	var placedTile elements.PlacedTile
@@ -517,7 +516,7 @@ func (board *board) checkRoadInDirection(roadSide binarytiles.BinaryTileSide, st
 	for {
 		pos = tile.Position().Add(roadSide.PositionFromSide())
 		placedTile, tileExists = board.GetTileAt(pos) // todo binarytiles rewrite
-		tile = binarytiles.FromPlacedTile(placedTile)
+		tile = elements.BinaryTileFromPlacedTile(placedTile)
 		roadSide = roadSide.Mirror()
 		// check if tile exists
 		if !tileExists {
@@ -579,9 +578,9 @@ Calculates score for road.
 
 returns: ScoreReport, checked sides of the start tile (also including loop)
 */
-func (board *board) scoreRoadCompletion(tile binarytiles.BinaryTile, roadSides binarytiles.BinaryTileSide, forceScore bool) (elements.ScoreReport, binarytiles.BinaryTileSide) {
+func (board *board) scoreRoadCompletion(tile elements.BinaryTile, roadSides elements.BinaryTileSide, forceScore bool) (elements.ScoreReport, elements.BinaryTileSide) {
 	var meeples = []elements.MeepleWithPosition{}
-	var leftSide, rightSide binarytiles.BinaryTileSide
+	var leftSide, rightSide elements.BinaryTileSide
 	var score = 1
 	leftSide = roadSides.GetNthCardinalDirection(0)  // first side
 	rightSide = roadSides.GetNthCardinalDirection(1) // second side
@@ -591,15 +590,15 @@ func (board *board) scoreRoadCompletion(tile binarytiles.BinaryTile, roadSides b
 	var scoreResult int
 	var meeplesResult []elements.MeepleWithPosition
 	var loopResult bool
-	var loopSide binarytiles.BinaryTileSide
+	var loopSide elements.BinaryTileSide
 
 	// check meeples on start tile
 	var roadLeft = tile.GetConnectedSides(leftSide, feature.Road)
-	var roadRight binarytiles.BinaryTileSide
+	var roadRight elements.BinaryTileSide
 
 	// If a road doesn't connect two sides (i.e. ends in the centre)
 	// then it will not have a "right" side and this variable will be 0
-	if rightSide != binarytiles.SideNone {
+	if rightSide != elements.SideNone {
 		roadRight = roadLeft
 	}
 
@@ -609,7 +608,7 @@ func (board *board) scoreRoadCompletion(tile binarytiles.BinaryTile, roadSides b
 			elements.Meeple{Type: elements.NormalMeeple, PlayerID: leftMeepleID}, // todo binarytiles rewrite
 			tile.Position()),
 		)
-	} else if roadRight != binarytiles.SideNone {
+	} else if roadRight != elements.SideNone {
 		rightMeepleID := tile.GetMeepleIDAtSide(roadRight, feature.Road)
 		if rightMeepleID != elements.NonePlayer {
 			meeples = append(meeples, elements.NewMeepleWithPosition(
@@ -626,7 +625,7 @@ func (board *board) scoreRoadCompletion(tile binarytiles.BinaryTile, roadSides b
 	meeples = append(meeples, meeplesResult...)
 
 	// check road in "right" direction
-	if !loopResult && rightSide != binarytiles.SideNone {
+	if !loopResult && rightSide != elements.SideNone {
 		roadFinishedResult, scoreResult, meeplesResult, _, _, finishedPosRight := board.checkRoadInDirection(rightSide, tile)
 		score += scoreResult
 		roadFinished = roadFinished && roadFinishedResult
@@ -661,12 +660,12 @@ func (board *board) scoreRoadCompletion(tile binarytiles.BinaryTile, roadSides b
 /*
 Calculates summary score report from all roads on a tile.
 */
-func (board *board) scoreRoads(tile binarytiles.BinaryTile, forceScore bool) elements.ScoreReport {
+func (board *board) scoreRoads(tile elements.BinaryTile, forceScore bool) elements.ScoreReport {
 	scoreReport := elements.NewScoreReport()
 
 	var roads = tile.GetFeaturesOfType(feature.Road)
 
-	var checkedRoadSides binarytiles.BinaryTileSide
+	var checkedRoadSides elements.BinaryTileSide
 
 	for _, roadSides := range roads {
 		// check if the side of the tile was not already checked (special test case reference: TestBoardScoreRoadLoopCrossroad)
@@ -705,18 +704,18 @@ func (board *board) ScoreMeeples(final bool) elements.ScoreReport {
 			if feat.Meeple.PlayerID != 0 && !meeplesReport.MeepleInReport(elements.NewMeepleWithPosition(feat.Meeple, pTile.Position)) {
 				switch feat.FeatureType {
 				case feature.Road:
-					binaryTile := binarytiles.FromPlacedTile(pTile)                  // todo binarytiles rewrite
-					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, true) // todo binarytiles rewrite
+					binaryTile := elements.BinaryTileFromPlacedTile(pTile)        // todo binarytiles rewrite
+					binarySide := elements.SideToBinaryTileSide(feat.Sides, true) // todo binarytiles rewrite
 					report, _ := board.scoreRoadCompletion(binaryTile, binarySide, true)
 					miniReport.Join(report)
 				case feature.Field:
-					binaryTile := binarytiles.FromPlacedTile(pTile)                   // todo binarytiles rewrite
-					binarySide := binarytiles.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
+					binaryTile := elements.BinaryTileFromPlacedTile(pTile)         // todo binarytiles rewrite
+					binarySide := elements.SideToBinaryTileSide(feat.Sides, false) // todo binarytiles rewrite
 					field := field.New(binarySide, binaryTile)
 					field.Expand(board, board.cityManager)
 					miniReport.Join(field.GetScoreReport())
 				case feature.Monastery:
-					binaryTile := binarytiles.FromPlacedTile(pTile) // todo binarytiles rewrite
+					binaryTile := elements.BinaryTileFromPlacedTile(pTile) // todo binarytiles rewrite
 					miniReport.Join(board.scoreMonasteries(binaryTile, true))
 				}
 			}

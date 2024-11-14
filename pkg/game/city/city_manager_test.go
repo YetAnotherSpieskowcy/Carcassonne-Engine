@@ -6,7 +6,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -16,7 +15,7 @@ import (
 func TestDeepClone(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	original := NewCityManager()
 	original.UpdateCities(a)
 
@@ -24,7 +23,7 @@ func TestDeepClone(t *testing.T) {
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	clone.UpdateCities(b)
 
 	if reflect.DeepEqual(original.cities[0], clone.cities[0]) {
@@ -40,7 +39,7 @@ func TestUpdateCitiesWhenNoCities(t *testing.T) {
 	manager := NewCityManager()
 
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	if len(manager.cities) != 1 {
@@ -51,13 +50,13 @@ func TestUpdateCitiesWhenNoCities(t *testing.T) {
 func TestUpdateCitiesWhenNoAddToExistingCity(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pb.Position = position.New(2, 1)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 2 {
@@ -68,13 +67,13 @@ func TestUpdateCitiesWhenNoAddToExistingCity(t *testing.T) {
 func TestUpdateCitiesWhenAddToExistingCity(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 1 {
@@ -85,13 +84,13 @@ func TestUpdateCitiesWhenAddToExistingCity(t *testing.T) {
 func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	pb.Position = position.New(2, 1)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 1 {
@@ -102,13 +101,13 @@ func TestUpdateCitiesWhenNoCityAdded(t *testing.T) {
 func TestUpdateCitiesWhenOneCityClosedSeconedOpen(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	if len(manager.cities) != 2 {
@@ -121,22 +120,22 @@ func TestUpdateCityWhenTwoFeaturesAdded(t *testing.T) {
 
 	pa := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected().Rotate(1))
 	pa.Position = position.New(1, 0)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected())
 	pb.Position = position.New(2, 0)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pc.Position = position.New(2, 1)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	pd := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerNotConnected().Rotate(1))
 	pd.Position = position.New(1, 1)
-	d := binarytiles.FromPlacedTile(pd) // todo binarytiles rewrite
+	d := elements.BinaryTileFromPlacedTile(pd) // todo binarytiles rewrite
 	manager.UpdateCities(d)
 
 	if len(manager.cities) != 1 {
@@ -154,18 +153,18 @@ func TestUpdateCityWhenTwoFeaturesAdded(t *testing.T) {
 func TestJoinCitiesOnAdd(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
 	pb.Position = position.New(2, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	if len(manager.cities) != 1 {
@@ -176,18 +175,18 @@ func TestJoinCitiesOnAdd(t *testing.T) {
 func TestJoinCitiesOnAddCityNotClosed(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
 	pb.Position = position.New(2, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	if len(manager.cities) != 1 {
@@ -198,28 +197,28 @@ func TestJoinCitiesOnAddCityNotClosed(t *testing.T) {
 func TestJoinCitiesFourEdgeCity(t *testing.T) {
 	pa1 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 	pa1.Position = position.New(1, 1)
-	a1 := binarytiles.FromPlacedTile(pa1) // todo binarytiles rewrite
+	a1 := elements.BinaryTileFromPlacedTile(pa1) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a1)
 
 	pa2 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield().Rotate(1))
 	pa2.Position = position.New(1, 2)
-	a2 := binarytiles.FromPlacedTile(pa2) // todo binarytiles rewrite
+	a2 := elements.BinaryTileFromPlacedTile(pa2) // todo binarytiles rewrite
 	manager.UpdateCities(a2)
 
 	pa3 := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnectedShield())
 	pa3.Position = position.New(2, 1)
-	a3 := binarytiles.FromPlacedTile(pa3) // todo binarytiles rewrite
+	a3 := elements.BinaryTileFromPlacedTile(pa3) // todo binarytiles rewrite
 	manager.UpdateCities(a3)
 
 	pd := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnected())
 	pd.Position = position.New(1, 3)
-	d := binarytiles.FromPlacedTile(pd) // todo binarytiles rewrite
+	d := elements.BinaryTileFromPlacedTile(pd) // todo binarytiles rewrite
 	manager.UpdateCities(d)
 
 	pe := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pe.Position = position.New(2, 2)
-	e := binarytiles.FromPlacedTile(pe) // todo binarytiles rewrite
+	e := elements.BinaryTileFromPlacedTile(pe) // todo binarytiles rewrite
 	manager.UpdateCities(e)
 
 	if len(manager.cities) != 2 {
@@ -230,38 +229,38 @@ func TestJoinCitiesFourEdgeCity(t *testing.T) {
 func TestJoinCitiesFourEdgeCityTwoCitiesConnected(t *testing.T) {
 	pa1 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 	pa1.Position = position.New(1, 1)
-	a1 := binarytiles.FromPlacedTile(pa1) // todo binarytiles rewrite
+	a1 := elements.BinaryTileFromPlacedTile(pa1) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a1)
 
 	pa2 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield().Rotate(1))
 	pa2.Position = position.New(1, 2)
-	a2 := binarytiles.FromPlacedTile(pa2) // todo binarytiles rewrite
+	a2 := elements.BinaryTileFromPlacedTile(pa2) // todo binarytiles rewrite
 	manager.UpdateCities(a2)
 
 	pa3 := elements.ToPlacedTile(tiletemplates.ThreeCityEdgesConnectedShield())
 	pa3.Position = position.New(2, 1)
-	a3 := binarytiles.FromPlacedTile(pa3) // todo binarytiles rewrite
+	a3 := elements.BinaryTileFromPlacedTile(pa3) // todo binarytiles rewrite
 	manager.UpdateCities(a3)
 
 	pb1 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
 	pb1.Position = position.New(2, 3)
-	b1 := binarytiles.FromPlacedTile(pb1) // todo binarytiles rewrite
+	b1 := elements.BinaryTileFromPlacedTile(pb1) // todo binarytiles rewrite
 	manager.UpdateCities(b1)
 
 	pb2 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(2))
 	pb2.Position = position.New(3, 3)
-	b2 := binarytiles.FromPlacedTile(pb2) // todo binarytiles rewrite
+	b2 := elements.BinaryTileFromPlacedTile(pb2) // todo binarytiles rewrite
 	manager.UpdateCities(b2)
 
 	pb3 := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(3))
 	pb3.Position = position.New(3, 2)
-	b3 := binarytiles.FromPlacedTile(pb3) // todo binarytiles rewrite
+	b3 := elements.BinaryTileFromPlacedTile(pb3) // todo binarytiles rewrite
 	manager.UpdateCities(b3)
 
 	pe := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pe.Position = position.New(2, 2)
-	e := binarytiles.FromPlacedTile(pe) // todo binarytiles rewrite
+	e := elements.BinaryTileFromPlacedTile(pe) // todo binarytiles rewrite
 	manager.UpdateCities(e)
 
 	if len(manager.cities) != 1 {
@@ -276,7 +275,7 @@ func TestForceScore(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 
 	manager := NewCityManager()
 	manager.UpdateCities(a)
@@ -305,13 +304,13 @@ func TestScore(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	report := manager.ScoreCities(false)
@@ -344,13 +343,13 @@ func TestScoreTwice(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	report := manager.ScoreCities(false)
@@ -380,18 +379,18 @@ func TestScoreAfterJoin(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
 	pb.Position = position.New(2, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected().Rotate(1))
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -414,18 +413,18 @@ func TestScoreAfterJoinNotClosed(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
 	pb.Position = position.New(2, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -448,18 +447,18 @@ func TestForceScoreAfterJoinNotClosedWithShield(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager := NewCityManager()
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
 	pb.Position = position.New(2, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(true)
@@ -485,19 +484,19 @@ func TestScoreTwoCitiesNotConnected(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
 	pb.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.Type = expectedMeepleType
 	pb.Position = position.New(1, 3)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -526,19 +525,19 @@ func TestScoreTwoPlayersCityConnected(t *testing.T) {
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.PlayerID = expectedPlayerID1
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple.Type = expectedMeepleType
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.PlayerID = expectedPlayerID2
 	pb.GetPlacedFeatureAtSide(side.Bottom, feature.City).Meeple.Type = expectedMeepleType
 	pb.Position = position.New(1, 3)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
 	pc := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 	manager.UpdateCities(c)
 
 	report := manager.ScoreCities(false)
@@ -560,26 +559,26 @@ func TestGetCity(t *testing.T) {
 
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
 	pb.Position = position.New(2, 1)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 	manager.UpdateCities(b)
 
-	aCity, aCityID := manager.GetCity(position.New(1, 1), a.GetConnectedSides(binarytiles.SideTop, feature.City))
+	aCity, aCityID := manager.GetCity(position.New(1, 1), a.GetConnectedSides(elements.SideTop, feature.City))
 	if !reflect.DeepEqual(*aCity, manager.cities[aCityID]) {
 		t.Fatalf("expected %#v, got %#v instead", *aCity, manager.cities[aCityID])
 	}
 
-	bTopCity, bTopCityID := manager.GetCity(position.New(2, 1), b.GetConnectedSides(binarytiles.SideTop, feature.City))
+	bTopCity, bTopCityID := manager.GetCity(position.New(2, 1), b.GetConnectedSides(elements.SideTop, feature.City))
 
 	if !reflect.DeepEqual(*bTopCity, manager.cities[bTopCityID]) {
 		t.Fatalf("expected %#v, got %#v instead", *bTopCity, manager.cities[bTopCityID])
 	}
 
-	bBottomCity, bBottomCityID := manager.GetCity(position.New(2, 1), b.GetConnectedSides(binarytiles.SideBottom, feature.City))
+	bBottomCity, bBottomCityID := manager.GetCity(position.New(2, 1), b.GetConnectedSides(elements.SideBottom, feature.City))
 
 	if !reflect.DeepEqual(*bBottomCity, manager.cities[bBottomCityID]) {
 		t.Fatalf("expected %#v, got %#v instead", *bBottomCity, manager.cities[bBottomCityID])
@@ -593,7 +592,7 @@ func TestGetCity(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v instead", 3, len(manager.cities))
 	}
 
-	nilCity, nilCityID := manager.GetCity(position.New(21, 37), a.GetConnectedSides(binarytiles.SideTop, feature.City))
+	nilCity, nilCityID := manager.GetCity(position.New(21, 37), a.GetConnectedSides(elements.SideTop, feature.City))
 	if nilCity != nil {
 		t.Fatalf("expected %#v, got %#v instead", nil, nilCity)
 	}
@@ -610,15 +609,15 @@ func TestGetCityWhenMeepleWasOnTile(t *testing.T) {
 	placedTile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	placedTile.Position = position.New(1, 1)
 	placedTile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = meeple
-	tile := binarytiles.FromPlacedTile(placedTile) // todo binarytiles rewrite
+	tile := elements.BinaryTileFromPlacedTile(placedTile) // todo binarytiles rewrite
 
 	manager.UpdateCities(tile)
 
-	city1, _ := manager.GetCity(position.New(1, 1), tile.GetConnectedSides(binarytiles.SideTop, feature.City))
+	city1, _ := manager.GetCity(position.New(1, 1), tile.GetConnectedSides(elements.SideTop, feature.City))
 
 	tile.RemoveMeeple()
 
-	city, _ := manager.GetCity(position.New(1, 1), tile.GetConnectedSides(binarytiles.SideTop, feature.City))
+	city, _ := manager.GetCity(position.New(1, 1), tile.GetConnectedSides(elements.SideTop, feature.City))
 	if !reflect.DeepEqual(city, city1) {
 		t.Fatalf("expected %#v, got %#v instead", city1, city)
 	}
@@ -628,15 +627,15 @@ func TestCanBePlacedReturnsTrueWhenOpeningNewCity(t *testing.T) {
 	manager := NewCityManager()
 
 	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
-	binaryStartingTile := binarytiles.FromPlacedTile(startingTile) // todo binarytiles rewrite
+	binaryStartingTile := elements.BinaryTileFromPlacedTile(startingTile) // todo binarytiles rewrite
 	manager.UpdateCities(binaryStartingTile)
 
 	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	ptile.Position = position.New(0, -1)
-	tile := binarytiles.FromPlacedTile(ptile) // todo binarytiles rewrite
+	tile := elements.BinaryTileFromPlacedTile(ptile) // todo binarytiles rewrite
 
 	expected := true
-	actual := manager.CanBePlaced(tile, tile.GetConnectedSides(binarytiles.SideBottom, feature.City))
+	actual := manager.CanBePlaced(tile, tile.GetConnectedSides(elements.SideBottom, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -647,17 +646,17 @@ func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndOpeningNewCityWithMeepl
 	manager := NewCityManager()
 
 	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
-	binaryStartingTile := binarytiles.FromPlacedTile(startingTile) // todo binarytiles rewrite
+	binaryStartingTile := elements.BinaryTileFromPlacedTile(startingTile) // todo binarytiles rewrite
 	manager.UpdateCities(binaryStartingTile)
 
 	ptile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownNotConnected())
 	ptile.Position = position.New(0, 1)
 	feat := ptile.GetPlacedFeatureAtSide(side.Top, feature.City)
 	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
-	tile := binarytiles.FromPlacedTile(ptile) // todo binarytiles rewrite
+	tile := elements.BinaryTileFromPlacedTile(ptile) // todo binarytiles rewrite
 
 	expected := true
-	actual := manager.CanBePlaced(tile, tile.GetConnectedSides(binarytiles.SideTop, feature.City))
+	actual := manager.CanBePlaced(tile, tile.GetConnectedSides(elements.SideTop, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -668,17 +667,17 @@ func TestCanBePlacedReturnsTrueWhenClosingExistingCityAndPlacingFirstMeeple(t *t
 	manager := NewCityManager()
 
 	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
-	binaryStartingTile := binarytiles.FromPlacedTile(startingTile) // todo binarytiles rewrite
+	binaryStartingTile := elements.BinaryTileFromPlacedTile(startingTile) // todo binarytiles rewrite
 	manager.UpdateCities(binaryStartingTile)
 
 	ptile := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	ptile.Position = position.New(0, 1)
 	feat := ptile.GetPlacedFeatureAtSide(side.Bottom, feature.City)
 	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 1}
-	tile := binarytiles.FromPlacedTile(ptile) // todo binarytiles rewrite
+	tile := elements.BinaryTileFromPlacedTile(ptile) // todo binarytiles rewrite
 
 	expected := true
-	actual := manager.CanBePlaced(tile, tile.GetConnectedSides(binarytiles.SideBottom, feature.City))
+	actual := manager.CanBePlaced(tile, tile.GetConnectedSides(elements.SideBottom, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -692,17 +691,17 @@ func TestCanBePlacedReturnsFalseWhenClosingExistingCityAndTryingToPlaceSecondMee
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
 		Type: elements.NormalMeeple, PlayerID: 1,
 	}
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(0, 1)
 	feat := pb.GetPlacedFeatureAtSide(side.Bottom, feature.City)
 	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	expected := false
-	actual := manager.CanBePlaced(b, b.GetConnectedSides(binarytiles.SideBottom, feature.City))
+	actual := manager.CanBePlaced(b, b.GetConnectedSides(elements.SideBottom, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -713,17 +712,17 @@ func TestCanBePlacedReturnsTrueWhenExpandingExistingCityAndPlacingFirstMeeple(t 
 	manager := NewCityManager()
 
 	startingTile := elements.NewStartingTile(tilesets.StandardTileSet())
-	binaryStartingTile := binarytiles.FromPlacedTile(startingTile) // todo binarytiles rewrite
+	binaryStartingTile := elements.BinaryTileFromPlacedTile(startingTile) // todo binarytiles rewrite
 	manager.UpdateCities(binaryStartingTile)
 
 	pb := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
 	pb.Position = position.New(0, 1)
 	feat := pb.GetPlacedFeatureAtSide(side.Bottom, feature.City)
 	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	expected := true
-	actual := manager.CanBePlaced(b, b.GetConnectedSides(binarytiles.SideBottom, feature.City))
+	actual := manager.CanBePlaced(b, b.GetConnectedSides(elements.SideBottom, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)
@@ -737,17 +736,17 @@ func TestCanBePlacedReturnsFalseWhenExpandingExistingCityAndTryingToPlaceSecondM
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{
 		Type: elements.NormalMeeple, PlayerID: 1,
 	}
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	manager.UpdateCities(a)
 
 	pb := elements.ToPlacedTile(tiletemplates.TwoCityEdgesUpAndDownConnected())
 	pb.Position = position.New(0, 1)
 	feat := pb.GetPlacedFeatureAtSide(side.Bottom, feature.City)
 	feat.Meeple = elements.Meeple{Type: elements.NormalMeeple, PlayerID: 2}
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	expected := false
-	actual := manager.CanBePlaced(b, b.GetConnectedSides(binarytiles.SideBottom, feature.City))
+	actual := manager.CanBePlaced(b, b.GetConnectedSides(elements.SideBottom, feature.City))
 
 	if expected != actual {
 		t.Fatalf("expected %v, got %v instead", expected, actual)

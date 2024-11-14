@@ -1,4 +1,4 @@
-package binarytiles
+package elements
 
 import (
 	"fmt"

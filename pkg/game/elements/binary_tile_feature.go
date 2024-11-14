@@ -1,4 +1,4 @@
-package binarytiles
+package elements
 
 type BinaryTileFeature struct {
 	Side BinaryTileSide

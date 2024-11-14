@@ -10,7 +10,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/test"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -412,7 +411,7 @@ func TestBoardScoreIncompleteMonastery(t *testing.T) {
 
 	// place tiles
 	for i, tile := range tiles {
-		binaryTile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite
+		binaryTile := elements.BinaryTileFromPlacedTile(tile) // todo binarytiles rewrite
 		err := board.addTileToBoard(tile)
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
@@ -425,7 +424,7 @@ func TestBoardScoreIncompleteMonastery(t *testing.T) {
 	}
 
 	// test forceScore
-	binaryTile := binarytiles.FromPlacedTile(tiles[0]) // todo binarytiles rewrite
+	binaryTile := elements.BinaryTileFromPlacedTile(tiles[0]) // todo binarytiles rewrite
 	report = board.scoreMonasteries(binaryTile, true)
 
 	expectedReport := elements.NewScoreReport()
@@ -512,7 +511,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 
 	// place tiles
 	for i, tile := range tiles[:len(tiles)-1] {
-		binaryTile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite
+		binaryTile := elements.BinaryTileFromPlacedTile(tile) // todo binarytiles rewrite
 		err := board.addTileToBoard(tile)
 		if err != nil {
 			t.Fatalf("error placing tile number: %#v: %#v", i, err)
@@ -529,7 +528,7 @@ func TestBoardCompleteTwoMonasteriesAtOnce(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error placing tile number: %#v: %#v", 11, err)
 	}
-	binaryTile := binarytiles.FromPlacedTile(tiles[11]) // todo binarytiles rewrite
+	binaryTile := elements.BinaryTileFromPlacedTile(tiles[11]) // todo binarytiles rewrite
 	report = board.scoreMonasteries(binaryTile, false)
 	expectedReport := elements.NewScoreReport()
 	expectedReport.ReceivedPoints = map[elements.ID]uint32{

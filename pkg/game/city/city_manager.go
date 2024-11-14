@@ -5,7 +5,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
@@ -31,7 +30,7 @@ func (manager Manager) DeepClone() Manager {
 
 // Returns a pointer to a City that has the given feature at the given position, and its index in the city manager
 // Returns nil if no such city exists
-func (manager Manager) GetCity(position position.Position, sides binarytiles.BinaryTileSide) (*City, int) {
+func (manager Manager) GetCity(position position.Position, sides elements.BinaryTileSide) (*City, int) {
 	for cityIndex, city := range manager.cities {
 		cityFeatures, exists := city.features[position]
 		if exists {
@@ -48,15 +47,15 @@ func (manager Manager) GetCity(position position.Position, sides binarytiles.Bin
 // Finds cities surrounding position of a tile
 // Returns a map of indexes of cities in
 // manager.cities list with side of a tile as a key.
-func (manager Manager) findCities(pos position.Position) map[binarytiles.BinaryTileSide]int {
-	positions := map[binarytiles.BinaryTileSide]position.Position{
-		binarytiles.SideTop:    position.New(pos.X(), pos.Y()+1),
-		binarytiles.SideRight:  position.New(pos.X()+1, pos.Y()),
-		binarytiles.SideBottom: position.New(pos.X(), pos.Y()-1),
-		binarytiles.SideLeft:   position.New(pos.X()-1, pos.Y()),
+func (manager Manager) findCities(pos position.Position) map[elements.BinaryTileSide]int {
+	positions := map[elements.BinaryTileSide]position.Position{
+		elements.SideTop:    position.New(pos.X(), pos.Y()+1),
+		elements.SideRight:  position.New(pos.X()+1, pos.Y()),
+		elements.SideBottom: position.New(pos.X(), pos.Y()-1),
+		elements.SideLeft:   position.New(pos.X()-1, pos.Y()),
 	}
 
-	foundCities := map[binarytiles.BinaryTileSide]int{}
+	foundCities := map[elements.BinaryTileSide]int{}
 	for side, pos := range positions {
 		cityFound := false
 		for idx, city := range manager.cities {
@@ -84,9 +83,9 @@ func (manager Manager) findCities(pos position.Position) map[binarytiles.BinaryT
 // Checks which cities surrounding positions must be joined after this move.
 // Returns a map of lists of indexes of cities to join. As a key is used a
 // feature that will close the city.
-func (manager Manager) findCitiesToJoin(foundCities map[binarytiles.BinaryTileSide]int, sides binarytiles.BinaryTileSide) []int {
+func (manager Manager) findCitiesToJoin(foundCities map[elements.BinaryTileSide]int, sides elements.BinaryTileSide) []int {
 	var cityIndexesToJoin = []int{}
-	for _, mask := range binarytiles.OrthogonalSides {
+	for _, mask := range elements.OrthogonalSides {
 		if sides.OverlapsSide(mask) {
 			neighbourCityIndex, ok := foundCities[mask]
 			if ok {
@@ -109,7 +108,7 @@ func (manager Manager) findCitiesToJoin(foundCities map[binarytiles.BinaryTileSi
 // Checks whether the tile can be placed at given position taking into account
 // the meeple placed on the given feature and the meeples that are already placed on
 // any city that the feature would join.
-func (manager *Manager) CanBePlaced(tile binarytiles.BinaryTile, feat binarytiles.BinaryTileSide) bool {
+func (manager *Manager) CanBePlaced(tile elements.BinaryTile, feat elements.BinaryTileSide) bool {
 	foundCities := manager.findCities(tile.Position())
 
 	if len(foundCities) == 0 {
@@ -136,7 +135,7 @@ func (manager *Manager) CanBePlaced(tile binarytiles.BinaryTile, feat binarytile
 }
 
 // Performs required operations to add a new city feature.
-func (manager *Manager) UpdateCities(tile binarytiles.BinaryTile) {
+func (manager *Manager) UpdateCities(tile elements.BinaryTile) {
 	foundCities := manager.findCities(tile.Position())
 
 	if len(foundCities) > 0 {
@@ -145,7 +144,7 @@ func (manager *Manager) UpdateCities(tile binarytiles.BinaryTile) {
 			cityIndexesToJoin := manager.findCitiesToJoin(foundCities, cityFeature)
 			// join cities
 			if len(cityIndexesToJoin) == 0 {
-				toAppend := []binarytiles.BinaryTileSide{cityFeature}
+				toAppend := []elements.BinaryTileSide{cityFeature}
 				manager.cities = append(manager.cities, NewCity(tile, toAppend))
 			} else {
 				if len(cityIndexesToJoin) > 1 {
@@ -154,7 +153,7 @@ func (manager *Manager) UpdateCities(tile binarytiles.BinaryTile) {
 						citiesToRemove = append(citiesToRemove, cityIndex)
 					}
 				}
-				toAdd := []binarytiles.BinaryTileSide{cityFeature}
+				toAdd := []elements.BinaryTileSide{cityFeature}
 				manager.cities[cityIndexesToJoin[0]].AddTile(tile, toAdd)
 			}
 
@@ -171,7 +170,7 @@ func (manager *Manager) UpdateCities(tile binarytiles.BinaryTile) {
 		}
 	} else {
 		for _, f := range tile.GetFeaturesOfType(feature.City) {
-			toAppend := []binarytiles.BinaryTileSide{f}
+			toAppend := []elements.BinaryTileSide{f}
 			manager.cities = append(manager.cities, NewCity(tile, toAppend))
 		}
 	}

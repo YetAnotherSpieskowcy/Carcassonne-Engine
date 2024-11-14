@@ -1,10 +1,9 @@
-package binarytiles
+package elements
 
 import (
 	"slices"
 	"testing"
 
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
@@ -13,26 +12,26 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 )
 
-func TestFromPlacedTileCityWithShield(t *testing.T) {
+func TestBinaryTileFromPlacedTileCityWithShield(t *testing.T) {
 	// tile with city on top and right, with shield in the city and meeple belonging to player 2
-	tile := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	tile := ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple =
-		elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
+		Meeple{PlayerID: 2, Type: NormalMeeple}
 	tile.GetPlacedFeatureAtSide(side.Top, feature.City).ModifierType = modifier.Shield
 	tile.Position = position.New(85, 42)
 
 	expected := BinaryTile(0b01010101_00101010_1_10_000000011_00_0011_0000010011_0001001100_1000001110)
-	actual := FromPlacedTile(tile)
+	actual := BinaryTileFromPlacedTile(tile)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
 	}
 }
 
-func TestFromPlacedTileUnconnectedField(t *testing.T) {
+func TestBinaryTileFromPlacedTileUnconnectedField(t *testing.T) {
 	// tile with cities on all sides, the left one having a shield, and a field in the middle.
 	//      On the middle field is a meeple belonging to player 1
-	tile := elements.ToPlacedTile(tiles.Tile{
+	tile := ToPlacedTile(tiles.Tile{
 		Features: []feature.Feature{
 			{
 				FeatureType: feature.Field,
@@ -58,36 +57,36 @@ func TestFromPlacedTileUnconnectedField(t *testing.T) {
 		},
 	})
 	tile.GetPlacedFeatureAtSide(side.NoSide, feature.Field).Meeple =
-		elements.Meeple{PlayerID: 1, Type: elements.NormalMeeple}
+		Meeple{PlayerID: 1, Type: NormalMeeple}
 	tile.Position = position.New(-21, -37)
 
 	expected := BinaryTile(0b11101011_11011011_1_01_100000000_10_1000_0000001111_0000000000_0000000000)
-	actual := FromPlacedTile(tile)
+	actual := BinaryTileFromPlacedTile(tile)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
 	}
 }
 
-func TestFromPlacedTileMonastery(t *testing.T) {
+func TestBinaryTileFromPlacedTileMonastery(t *testing.T) {
 	// monastery with a single road, with a meeple in the monastery belonging to player 2
-	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
-	tile.Monastery().Meeple = elements.Meeple{PlayerID: 2, Type: elements.NormalMeeple}
+	tile := ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile.Monastery().Meeple = Meeple{PlayerID: 2, Type: NormalMeeple}
 	tile.Position = position.New(-128, 127)
 
 	expected := BinaryTile(0b10000000_01111111_1_10_100000000_01_0000_0000000000_0000000100_1111111111)
-	actual := FromPlacedTile(tile)
+	actual := BinaryTileFromPlacedTile(tile)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
 	}
 }
 
-func TestFromPlacedTileEmptyTile(t *testing.T) {
-	var tile elements.PlacedTile
+func TestBinaryTileFromPlacedTileEmptyTile(t *testing.T) {
+	var tile PlacedTile
 
 	expected := BinaryTile(0b00000000_00000000_0_00_000000000_00_0000_0000000000_0000000000_0000000000)
-	actual := FromPlacedTile(tile)
+	actual := BinaryTileFromPlacedTile(tile)
 
 	if expected != actual {
 		t.Fatalf("expected: %064b\ngot: %064b", expected, actual)
@@ -97,10 +96,10 @@ func TestFromPlacedTileEmptyTile(t *testing.T) {
 func TestPosition(t *testing.T) {
 	expectedPos := position.New(-127, 126)
 
-	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile := ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	tile.Position = expectedPos
 
-	binaryTile := FromPlacedTile(tile)
+	binaryTile := BinaryTileFromPlacedTile(tile)
 	actualPos := binaryTile.Position()
 
 	if expectedPos != actualPos {
@@ -109,10 +108,10 @@ func TestPosition(t *testing.T) {
 
 	expectedPos = position.New(85, -42)
 
-	tile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile = ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 	tile.Position = expectedPos
 
-	binaryTile = FromPlacedTile(tile)
+	binaryTile = BinaryTileFromPlacedTile(tile)
 	actualPos = binaryTile.Position()
 
 	if expectedPos != actualPos {
@@ -121,15 +120,15 @@ func TestPosition(t *testing.T) {
 }
 
 func TestHasMonastery(t *testing.T) {
-	tile := elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
-	binaryTile := FromPlacedTile(tile)
+	tile := ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	binaryTile := BinaryTileFromPlacedTile(tile)
 
 	if !binaryTile.HasMonastery() {
 		t.Fatalf("expected: %#v\ngot: %#v", true, binaryTile.HasMonastery())
 	}
 
-	tile = elements.ToPlacedTile(tiletemplates.RoadsTurn())
-	binaryTile = FromPlacedTile(tile)
+	tile = ToPlacedTile(tiletemplates.RoadsTurn())
+	binaryTile = BinaryTileFromPlacedTile(tile)
 
 	if binaryTile.HasMonastery() {
 		t.Fatalf("expected: %#v\ngot: %#v", false, binaryTile.HasMonastery())
@@ -137,20 +136,20 @@ func TestHasMonastery(t *testing.T) {
 }
 
 func TestGetMeepleIDAtSide(t *testing.T) {
-	tile := elements.ToPlacedTile(tiletemplates.RoadsTurn())
-	expectedID := elements.ID(1)
+	tile := ToPlacedTile(tiletemplates.RoadsTurn())
+	expectedID := ID(1)
 
 	tile.GetPlacedFeatureAtSide(side.BottomLeftEdge, feature.Field).Meeple =
-		elements.Meeple{PlayerID: expectedID, Type: elements.NormalMeeple}
+		Meeple{PlayerID: expectedID, Type: NormalMeeple}
 
-	binaryTile := FromPlacedTile(tile)
+	binaryTile := BinaryTileFromPlacedTile(tile)
 
 	actualID := binaryTile.GetMeepleIDAtSide(SideBottomLeftCorner, feature.Field)
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 
-	expectedID = elements.ID(0)
+	expectedID = ID(0)
 	actualID = binaryTile.GetMeepleIDAtSide(SideTopRightCorner, feature.Field)
 	if expectedID != actualID {
 		t.Fatalf("%064b\n%016b\n\nexpected: %#v\ngot: %#v", binaryTile, SideTopRightCorner, expectedID, actualID)
@@ -164,7 +163,7 @@ func TestGetMeepleIDAtSide(t *testing.T) {
 func TestGetMeepleIDAtCenter(t *testing.T) {
 	// tile with cities on all sides, the left one having a shield, and a field in the middle.
 	//      On the middle field is a meeple belonging to player 1
-	tile := elements.ToPlacedTile(tiles.Tile{
+	tile := ToPlacedTile(tiles.Tile{
 		Features: []feature.Feature{
 			{
 				FeatureType: feature.Field,
@@ -190,12 +189,12 @@ func TestGetMeepleIDAtCenter(t *testing.T) {
 		},
 	})
 
-	expectedID := elements.ID(1)
+	expectedID := ID(1)
 
 	tile.GetPlacedFeatureAtSide(side.NoSide, feature.Field).Meeple =
-		elements.Meeple{PlayerID: expectedID, Type: elements.NormalMeeple}
+		Meeple{PlayerID: expectedID, Type: NormalMeeple}
 
-	binaryTile := FromPlacedTile(tile)
+	binaryTile := BinaryTileFromPlacedTile(tile)
 
 	actualID := binaryTile.GetMeepleIDAtCenter(feature.Field)
 
@@ -203,20 +202,20 @@ func TestGetMeepleIDAtCenter(t *testing.T) {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 
-	expectedID = elements.ID(0)
+	expectedID = ID(0)
 	actualID = binaryTile.GetMeepleIDAtCenter(feature.Monastery)
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 
 	// monastery with a single road, with a meeple in the monastery belonging to player 2
-	tile = elements.ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
+	tile = ToPlacedTile(tiletemplates.MonasteryWithSingleRoad())
 
-	expectedID = elements.ID(2)
+	expectedID = ID(2)
 
-	tile.Monastery().Meeple = elements.Meeple{PlayerID: expectedID, Type: elements.NormalMeeple}
+	tile.Monastery().Meeple = Meeple{PlayerID: expectedID, Type: NormalMeeple}
 
-	binaryTile = FromPlacedTile(tile)
+	binaryTile = BinaryTileFromPlacedTile(tile)
 
 	actualID = binaryTile.GetMeepleIDAtCenter(feature.Monastery)
 
@@ -224,7 +223,7 @@ func TestGetMeepleIDAtCenter(t *testing.T) {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
 	}
 
-	expectedID = elements.ID(0)
+	expectedID = ID(0)
 	actualID = binaryTile.GetMeepleIDAtCenter(feature.Field)
 	if expectedID != actualID {
 		t.Fatalf("expected: %#v\ngot: %#v", expectedID, actualID)
@@ -232,7 +231,7 @@ func TestGetMeepleIDAtCenter(t *testing.T) {
 }
 
 func TestGetConnectedSides(t *testing.T) {
-	tile := FromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	tile := BinaryTileFromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	sides := []BinaryTileSide{
 		SideTop,
 		SideRight,
@@ -273,7 +272,7 @@ func TestGetConnectedSides(t *testing.T) {
 }
 
 func TestGetConnectedSidesWithNoConnectedSides(t *testing.T) {
-	tile := FromTile(tiletemplates.SingleCityEdgeCrossRoad())
+	tile := BinaryTileFromTile(tiletemplates.SingleCityEdgeCrossRoad())
 	sides := []BinaryTileSide{
 		SideTop,
 		SideRight,
@@ -303,7 +302,7 @@ func TestGetConnectedSidesWithNoConnectedSides(t *testing.T) {
 }
 
 func TestGetConnectedSidesWithNonexistentSides(t *testing.T) {
-	tile := FromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
+	tile := BinaryTileFromTile(tiletemplates.TwoCityEdgesCornerConnectedRoadTurn())
 	sides := []BinaryTileSide{
 		SideTop,
 		SideRight,
@@ -335,7 +334,7 @@ func TestGetConnectedSidesWithNonexistentSides(t *testing.T) {
 }
 
 func TestGetConnectedSidesWithMultipleFeaturesSides(t *testing.T) {
-	tile := FromTile(tiletemplates.StraightRoads())
+	tile := BinaryTileFromTile(tiletemplates.StraightRoads())
 	sides := []BinaryTileSide{
 		SideTopRightCorner,
 		SideTopRightCorner | SideBottomRightCorner,
@@ -358,7 +357,7 @@ func TestGetConnectedSidesWithMultipleFeaturesSides(t *testing.T) {
 }
 
 func TestGetFeaturesOfType(t *testing.T) {
-	tile := FromTile(tiletemplates.SingleCityEdgeCrossRoad())
+	tile := BinaryTileFromTile(tiletemplates.SingleCityEdgeCrossRoad())
 	expectedFields := []BinaryTileSide{
 		SideTopRightCorner | SideTopLeftCorner,
 		SideBottomRightCorner,
@@ -391,7 +390,7 @@ func TestGetFeaturesOfType(t *testing.T) {
 }
 
 func TestGetFeatureSides(t *testing.T) {
-	tile := FromTile(tiletemplates.SingleCityEdgeCrossRoad())
+	tile := BinaryTileFromTile(tiletemplates.SingleCityEdgeCrossRoad())
 	expectedFieldSides := SideTopRightCorner | SideTopLeftCorner | SideBottomRightCorner | SideBottomLeftCorner
 	expectedCitySides := SideTop
 	expectedRoadSides := SideRight | SideBottom | SideLeft

@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game"
+	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/stack"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tilesets"
 )
@@ -76,7 +76,7 @@ func TestFullGame(t *testing.T) {
 		}
 
 		t.Logf(
-			"iteration %v start: %v\n", i, binarytiles.FromTile(game.CurrentTile),
+			"iteration %v start: %v\n", i, elements.BinaryTileFromTile(game.CurrentTile),
 		)
 		legalMovesReq := &GetLegalMovesRequest{
 			BaseGameID: gameID, TileToPlace: game.CurrentTile,
@@ -93,7 +93,7 @@ func TestFullGame(t *testing.T) {
 		t.Logf(
 			"iteration %v selecting move: %v at position %v\n",
 			i,
-			binarytiles.FromPlacedTile(move),
+			elements.BinaryTileFromPlacedTile(move),
 			move.Position,
 		)
 		playTurnReq := &PlayTurnRequest{GameID: gameID, Move: move}

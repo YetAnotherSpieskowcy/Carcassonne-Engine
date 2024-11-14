@@ -6,7 +6,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -15,7 +14,7 @@ import (
 func TestNewAndIsCompleted(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	cities := a.GetFeaturesOfType(feature.City)
 
 	city := NewCity(a, cities)
@@ -29,7 +28,7 @@ func TestNewAndIsCompleted(t *testing.T) {
 func TestNewAndGetFeaturesFromTile(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	cities := a.GetFeaturesOfType(feature.City)
 
 	city := NewCity(a, cities)
@@ -51,11 +50,11 @@ func TestNewAndGetFeaturesFromTile(t *testing.T) {
 func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
 	city := NewCity(a, aFeatures)
@@ -82,11 +81,11 @@ func TestAddTileAndGetFeaturesFromTile(t *testing.T) {
 func TestCheckCompletedWhenClosed(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(2))
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
 	city := NewCity(a, aFeatures)
@@ -106,10 +105,10 @@ func TestCheckCompletedWhenClosed(t *testing.T) {
 func TestCheckCompletedWhenOpen(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads())
 	pa.Position = position.New(1, 1)
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	pb := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnected())
 	pb.Position = position.New(1, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
 	city := NewCity(a, aFeatures)
@@ -135,7 +134,7 @@ func TestScoreOneTileCity(t *testing.T) {
 	pa.Position = position.New(1, 1)
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{PlayerID: expectedPlayerID, Type: expectedMeepleType}
 
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	aFeatures := a.GetFeaturesOfType(feature.City)
 
 	city := NewCity(a, aFeatures)
@@ -165,7 +164,7 @@ func TestScoreOneTileCityWithShield(t *testing.T) {
 	pa := elements.ToPlacedTile(tiletemplates.TwoCityEdgesCornerConnectedShield())
 	pa.Position = position.New(1, 1)
 	pa.GetPlacedFeatureAtSide(side.Top|side.Right, feature.City).Meeple = elements.Meeple{PlayerID: expectedPlayerID, Type: expectedMeepleType}
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 
 	aFeatures := a.GetFeaturesOfType(feature.City)
 
@@ -197,21 +196,21 @@ func TestScoreThreeTilesPlusShield(t *testing.T) {
 	pa.Position = position.New(1, 1)
 	pa.GetPlacedFeatureAtSide(side.Top, feature.City).Meeple = elements.Meeple{PlayerID: expectedPlayerID, Type: expectedMeepleType}
 
-	a := binarytiles.FromPlacedTile(pa) // todo binarytiles rewrite
+	a := elements.BinaryTileFromPlacedTile(pa) // todo binarytiles rewrite
 	aFeatures := a.GetFeaturesOfType(feature.City)
 
 	city := NewCity(a, aFeatures)
 
 	pb := elements.ToPlacedTile(tiletemplates.SingleCityEdgeNoRoads().Rotate(3))
 	pb.Position = position.New(2, 2)
-	b := binarytiles.FromPlacedTile(pb) // todo binarytiles rewrite
+	b := elements.BinaryTileFromPlacedTile(pb) // todo binarytiles rewrite
 
 	bFeatures := b.GetFeaturesOfType(feature.City)
 	city.AddTile(b, bFeatures)
 
 	pc := elements.ToPlacedTile(tiletemplates.FourCityEdgesConnectedShield())
 	pc.Position = position.New(1, 2)
-	c := binarytiles.FromPlacedTile(pc) // todo binarytiles rewrite
+	c := elements.BinaryTileFromPlacedTile(pc) // todo binarytiles rewrite
 
 	cFeatures := c.GetFeaturesOfType(feature.City)
 	city.AddTile(c, cFeatures)

@@ -6,7 +6,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/city"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	featureMod "github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/utilities"
 )
@@ -21,15 +20,15 @@ Assumptions:
 
 // Represents a field on the board
 type Field struct {
-	features           map[binarytiles.BinaryTileFeature]struct{} // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
-	neighbouringCities map[int]struct{}                           // this is a set of cities' IDs
-	meeples            []elements.MeepleWithPosition              // returned meeples for each player ID (same as in elements.ScoreReport)
+	features           map[elements.BinaryTileFeature]struct{} // this is a set, not a dictionary (the value is always struct{} and only the keys matter)
+	neighbouringCities map[int]struct{}                        // this is a set of cities' IDs
+	meeples            []elements.MeepleWithPosition           // returned meeples for each player ID (same as in elements.ScoreReport)
 
-	startingTile binarytiles.BinaryTile
+	startingTile elements.BinaryTile
 }
 
-func New(side binarytiles.BinaryTileSide, startingTile binarytiles.BinaryTile) Field {
-	features := map[binarytiles.BinaryTileFeature]struct{}{
+func New(side elements.BinaryTileSide, startingTile elements.BinaryTile) Field {
+	features := map[elements.BinaryTileFeature]struct{}{
 		{Side: startingTile.GetConnectedSides(side, featureMod.Field), Tile: startingTile}: {},
 	}
 	return Field{
@@ -57,7 +56,7 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 		panic("the field's starting tile does not exist on the board")
 	}
 
-	newFeatures := map[binarytiles.BinaryTileFeature]struct{}{}
+	newFeatures := map[elements.BinaryTileFeature]struct{}{}
 
 	for len(field.features) != 0 {
 		element, _, _ := utilities.GetAnyElementFromMap(field.features)
@@ -108,11 +107,11 @@ func (field *Field) Expand(board elements.Board, cityManager city.Manager) {
 // (i.e. are there any other meeples on the expanded field)
 // In such cases, maxMeepleCount should be set to 1 if the tested tile already has a meeple and 0 if it does not.
 func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
-	newFeatures := map[binarytiles.BinaryTileFeature]struct{}{}
+	newFeatures := map[elements.BinaryTileFeature]struct{}{}
 	meeplePositions := map[position.Position]struct{}{}
 
 	// copy the original field.features into features, to avoid modifying it
-	features := map[binarytiles.BinaryTileFeature]struct{}{}
+	features := map[elements.BinaryTileFeature]struct{}{}
 	for key := range field.features {
 		features[key] = struct{}{}
 	}
@@ -149,19 +148,19 @@ func (field Field) IsFieldValid(board elements.Board, maxMeepleCount int) bool {
 
 // Returns a slice of fieldKey elements containing all features neighbouring a given fieldKey (feature and position)
 // The slice may contain duplicates in some cases (todo?)
-func (field *Field) findNeighbours(fieldK binarytiles.BinaryTileFeature, board elements.Board) []binarytiles.BinaryTileFeature {
-	neighbours := []binarytiles.BinaryTileFeature{}
+func (field *Field) findNeighbours(fieldK elements.BinaryTileFeature, board elements.Board) []elements.BinaryTileFeature {
+	neighbours := []elements.BinaryTileFeature{}
 
 	neighbouringSides := fieldK.Side.CornersToSides()
 	neighbouringSides &= ^fieldK.Tile.GetFeatureSides(featureMod.City) // clear sides that also have cities
 
-	for _, side := range binarytiles.OrthogonalSides {
+	for _, side := range elements.OrthogonalSides {
 		if neighbouringSides.OverlapsSide(side) {
 			neighbourTile, ok := field.getTile(side.PositionFromSide().Add(fieldK.Tile.Position()), board)
 			if ok {
-				neighbours = append(neighbours, binarytiles.BinaryTileFeature{
+				neighbours = append(neighbours, elements.BinaryTileFeature{
 					Tile: neighbourTile,
-					Side: neighbourTile.GetConnectedSides(binarytiles.CornerFromSide(fieldK.Side&side.SidesToCorners(), side), featureMod.Field),
+					Side: neighbourTile.GetConnectedSides(elements.CornerFromSide(fieldK.Side&side.SidesToCorners(), side), featureMod.Field),
 				})
 			}
 		}
@@ -173,9 +172,9 @@ func (field *Field) findNeighbours(fieldK binarytiles.BinaryTileFeature, board e
 // If a tile exists in board at the given position, returns board.GetTileAt(position)
 // If the tile doesn't exist in board, but the position is the same as field.startingTile, returns (field.startingTile, true)
 // Otherwise returns board.GetTileAt(position) (that is, empty tile and false)
-func (field Field) getTile(position position.Position, board elements.Board) (binarytiles.BinaryTile, bool) {
+func (field Field) getTile(position position.Position, board elements.Board) (elements.BinaryTile, bool) {
 	tile, ok := board.GetTileAt(position)
-	binarytile := binarytiles.FromPlacedTile(tile) // todo binarytiles rewrite
+	binarytile := elements.BinaryTileFromPlacedTile(tile) // todo binarytiles rewrite
 
 	if ok {
 		return binarytile, ok
@@ -188,13 +187,13 @@ func (field Field) getTile(position position.Position, board elements.Board) (bi
 
 // Returns a slice of neighbouring city features* on the same tile
 // *feature = all sides that a city feature occupies
-func findNeighbouringCityFeatures(fieldKey binarytiles.BinaryTileFeature) []binarytiles.BinaryTileSide {
+func findNeighbouringCityFeatures(fieldKey elements.BinaryTileFeature) []elements.BinaryTileSide {
 	side := fieldKey.Side
 	tile := fieldKey.Tile
 
 	cityFeatures := tile.GetFeaturesOfType(featureMod.City)
 
-	if side == binarytiles.SideNone {
+	if side == elements.SideNone {
 		// unconnected field - neighbours all cities on this tile
 		return cityFeatures
 

@@ -7,7 +7,6 @@ import (
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/field"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/side"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/tiletemplates"
@@ -49,8 +48,8 @@ func TestScoreFieldSimple(t *testing.T) {
 
 	// test field.Expand()
 	field := field.New(
-		binarytiles.SideToBinaryTileSide(tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Sides, false),
-		binarytiles.FromPlacedTile(tiles[0]),
+		elements.SideToBinaryTileSide(tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Sides, false),
+		elements.BinaryTileFromPlacedTile(tiles[0]),
 	) // todo binarytiles rewrite
 	field.Expand(board, board.cityManager)
 
@@ -134,8 +133,8 @@ func TestScoreFieldOnePlayerGetsPoints(t *testing.T) {
 
 	// test field.Expand()
 	field := field.New(
-		binarytiles.SideToBinaryTileSide(tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Sides, false),
-		binarytiles.FromPlacedTile(tiles[0]),
+		elements.SideToBinaryTileSide(tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Sides, false),
+		elements.BinaryTileFromPlacedTile(tiles[0]),
 	) // todo binarytiles rewrite
 	field.Expand(board, board.cityManager)
 
@@ -237,8 +236,8 @@ func TestScoreFieldTwoPlayersGetPoints(t *testing.T) {
 
 	// test field.Expand()
 	field := field.New(
-		binarytiles.SideToBinaryTileSide(tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Sides, false),
-		binarytiles.FromPlacedTile(tiles[0]),
+		elements.SideToBinaryTileSide(tiles[0].GetPlacedFeatureAtSide(side.All, feature.Field).Sides, false),
+		elements.BinaryTileFromPlacedTile(tiles[0]),
 	) // todo binarytiles rewrite
 	field.Expand(board, board.cityManager)
 

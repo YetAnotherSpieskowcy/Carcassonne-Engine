@@ -5,7 +5,6 @@ import (
 
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/elements"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/game/position"
-	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/binarytiles"
 	"github.com/YetAnotherSpieskowcy/Carcassonne-Engine/pkg/tiles/feature"
 )
 
@@ -13,23 +12,23 @@ import (
 type City struct {
 	completed bool
 	scored    bool
-	features  map[position.Position][]binarytiles.BinaryTileFeature
+	features  map[position.Position][]elements.BinaryTileFeature
 	shields   uint8
 }
 
-func NewCity(tile binarytiles.BinaryTile, cityFeatures []binarytiles.BinaryTileSide) City {
-	features := make([]binarytiles.BinaryTileFeature, len(cityFeatures))
+func NewCity(tile elements.BinaryTile, cityFeatures []elements.BinaryTileSide) City {
+	features := make([]elements.BinaryTileFeature, len(cityFeatures))
 	var shields = uint8(0)
 	for i, feature := range cityFeatures {
 		if tile.HasShieldAtSide(feature) {
 			shields++
 		}
-		features[i] = binarytiles.BinaryTileFeature{Side: feature, Tile: tile}
+		features[i] = elements.BinaryTileFeature{Side: feature, Tile: tile}
 	}
 	return City{
 		completed: false,
 		scored:    false,
-		features: map[position.Position][]binarytiles.BinaryTileFeature{
+		features: map[position.Position][]elements.BinaryTileFeature{
 			tile.Position(): features,
 		},
 		shields: shields,
@@ -51,7 +50,7 @@ func (city *City) checkCompleted() bool {
 	city.completed = true
 	for pos, features := range city.features {
 		for _, feature := range features {
-			for _, side := range binarytiles.OrthogonalSides {
+			for _, side := range elements.OrthogonalSides {
 				if feature.Side.OverlapsSide(side) {
 					neighbouringPosition := side.PositionFromSide()
 					_, ok := city.GetFeaturesFromTile(pos.Add(neighbouringPosition))
@@ -99,19 +98,19 @@ func (city *City) GetScoreReport() elements.ScoreReport {
 
 // Returns all features from a tile at a given position that are part of a city
 // and whether such a tile is in the city.
-func (city City) GetFeaturesFromTile(pos position.Position) ([]binarytiles.BinaryTileFeature, bool) {
+func (city City) GetFeaturesFromTile(pos position.Position) ([]elements.BinaryTileFeature, bool) {
 	cities, ok := city.features[pos]
 	return cities, ok
 }
 
-func (city *City) AddTile(tile binarytiles.BinaryTile, cityFeatures []binarytiles.BinaryTileSide) {
+func (city *City) AddTile(tile elements.BinaryTile, cityFeatures []elements.BinaryTileSide) {
 	hasShield := false
-	features := make([]binarytiles.BinaryTileFeature, len(cityFeatures))
+	features := make([]elements.BinaryTileFeature, len(cityFeatures))
 	for i, feature := range cityFeatures {
 		if !hasShield && tile.HasShieldAtSide(feature) {
 			hasShield = true
 		}
-		features[i] = binarytiles.BinaryTileFeature{Side: feature, Tile: tile}
+		features[i] = elements.BinaryTileFeature{Side: feature, Tile: tile}
 	}
 
 	_, tileInCity := city.GetFeaturesFromTile(tile.Position())
