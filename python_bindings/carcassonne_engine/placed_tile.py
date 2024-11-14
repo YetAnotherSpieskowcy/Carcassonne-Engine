@@ -1,7 +1,6 @@
 from typing import NamedTuple, Self
 
 from ._bindings import (  # type: ignore[attr-defined] # no stubs
-    binarytiles as _go_binarytiles,
     elements as _go_elements,
     position as _go_position,
     tiles as _go_tiles,
@@ -44,7 +43,7 @@ class Tile:
         return self._go_obj.ExactEquals(other._go_obj)
 
     def to_bits(self) -> int:
-        return _go_binarytiles.FromTile(self._go_obj)
+        return _go_elements.BinaryTileFromTile(self._go_obj)
 
 
 class Position(NamedTuple):
@@ -85,4 +84,4 @@ class PlacedTile:
         return Tile(_go_elements.ToTile(self._go_obj))
 
     def to_bits(self) -> int:
-        return _go_binarytiles.FromPlacedTile(self._go_obj)
+        return _go_elements.BinaryTileFromPlacedTile(self._go_obj)
