@@ -204,8 +204,10 @@ func (engine *GameEngine) generateGameFromDeck(deck deck.Deck) (SerializedGameWi
 		return SerializedGameWithID{}, err
 	}
 
+	engine.threadSafety.Lock()
 	engine.games[id] = g
 	engine.gameMutexes[id] = &sync.RWMutex{}
+	engine.threadSafety.Unlock()
 	return SerializedGameWithID{id, g.Serialized()}, nil
 }
 
@@ -245,6 +247,7 @@ func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
 
 // Delete games with the given IDs.
 func (engine *GameEngine) DeleteGames(gameIDs []int) {
+	engine.threadSafety.Lock()
 	for _, gameID := range gameIDs {
 		delete(engine.games, gameID)
 		delete(engine.gameMutexes, gameID)
@@ -254,6 +257,7 @@ func (engine *GameEngine) DeleteGames(gameIDs []int) {
 			delete(engine.childGames[parentID], gameID)
 		}
 	}
+	engine.threadSafety.Unlock()
 }
 
 func (engine *GameEngine) cloneGame(gameID int, count int, full bool) ([]int, error) {
