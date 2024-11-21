@@ -232,6 +232,7 @@ func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
 		return ret, err
 	}
 
+	engine.threadSafety.Lock()
 	childGames, ok := engine.childGames[gameID]
 	if !ok {
 		childGames = map[int]struct{}{}
@@ -242,6 +243,7 @@ func (engine *GameEngine) SubCloneGame(gameID int, count int) ([]int, error) {
 		childGames[childID] = struct{}{}
 		engine.parentGames[childID] = gameID
 	}
+	engine.threadSafety.Unlock()
 	return ret, nil
 }
 
